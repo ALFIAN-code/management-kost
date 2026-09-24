@@ -1,0 +1,48 @@
+cleclecleclecle
+   PASS  Modules\Maintenance\tests\Feature\DamageReportControllerTest
+  ✓ [BERHASIL] resident dapat mengirim laporan kerusakan baru            0.41s  
+  ✓ [BERHASIL] resident dapat melihat daftar laporan miliknya            0.05s  
+  ✓ [BERHASIL] admin dapat mengupdate status laporan                     0.05s  
+  ✓ [GAGAL] request ditolak jika resident tidak memiliki permission      0.05s  
+clecleclecleclecle
+   PASS  Modules\Maintenance\tests\Feature\ScheduleControllerTest
+  ✓ [BERHASIL] admin dapat membuat jadwal pemeliharaan                   0.05s  
+  ✓ [BERHASIL] admin dapat menambahkan update pada jadwal                0.05s  
+  ✓ [GAGAL] request membuat jadwal ditolak jika tidak memiliki permissi… 0.04s  
+  ✓ [BERHASIL] admin dapat melihat daftar jadwal pemeliharaan            0.05s  
+  ✓ [BERHASIL] admin dapat mengubah jadwal pemeliharaan                  0.05s  
+  ✓ [BERHASIL] admin dapat menghapus jadwal pemeliharaan                 0.04s  
+clecle
+   PASS  Modules\Maintenance\tests\Unit\DamageReportServiceTest
+  ✓ [BERHASIL] createReport membuat laporan dan memicu event LaporanKer… 0.04s  
+  ✓ [BERHASIL] addUpdate menambah update dan memperbarui status laporan  0.04s  
+clecle
+   PASS  Modules\Maintenance\tests\Unit\ScheduleServiceTest
+  ✓ [BERHASIL] create membuat jadwal perawatan dan menyisipkan update a… 0.04s  
+  ✓ [BERHASIL] addUpdate menambahkan progres dan memperbarui status jad… 0.04s  
+cleclecleclecle
+   PASS  Modules\Inventory\tests\Feature\InventoryControllerTest
+  ✓ [BERHASIL] admin dapat melihat daftar inventaris                     0.05s  
+  ✓ [BERHASIL] admin dapat menambah inventaris baru                      0.05s  
+  ✓ [BERHASIL] admin dapat mengubah data inventaris                      0.04s  
+  ✓ [BERHASIL] admin dapat menghapus data inventaris                     0.04s  
+  ✓ [GAGAL] request ditolak jika tidak ada permission view-inventory     0.04s  
+cleclecleclecleclecleclecle
+   PASS  Modules\Inventory\tests\Feature\InventoryServiceTest
+  ✓ membuat inventaris dengan purchase_price memicu event InventariBaru  0.04s  
+  ✓ membuat inventaris tanpa purchase_price tidak memicu event Inventar… 0.04s  
+  ✓ membuat inventaris dengan purchase_price nol tidak memicu event Inv… 0.04s  
+  ✓ memperbarui inventaris dengan purchase_price memicu event Inventari… 0.04s  
+  ✓ memperbarui inventaris tanpa purchase_price tidak memicu event Inve… 0.04s  
+  ✓ menghapus inventaris memicu event InventarisDihapus dengan id yang…  0.04s  
+  ✓ inventaris terhapus dari database setelah deleteInventory            0.04s  
+  ✓ InventoryService tidak membutuhkan Finance module untuk diinstansia… 0.04s  
+  ✓ InventoryService dapat digunakan tanpa Finance module aktif          0.04s  
+clecle
+   PASS  Modules\Inventory\tests\Unit\BuatChecklistInventarisSetelahSewaSelesaiTest
+  ✓ handle tidak melempar exception saat menerima event jadwal sewa sel… 0.04s  
+  ✓ listener memiliki method handle yang menerima JadwalSewaSelesai      0.04s  
+
+  Tests:    30 passed (64 assertions)
+  Duration: 1.77s
+

@@ -1,0 +1,120 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - staging
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.PAT_FOR_DISPATCH }}
+
+      - name: Build and push Backend App
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/alfian-code/wismaamal-backend-app:latest
+
+      - name: Build and push Backend Web (Nginx)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.nginx
+          push: true
+          tags: ${{ env.REGISTRY }}/alfian-code/wismaamal-backend-web:latest
+
+  deploy:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Cloudflared
+        run: |
+          wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+          sudo dpkg -i cloudflared-linux-amd64.deb
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          cat >> ~/.ssh/config <<EOF
+          Host ${{ secrets.SSH_HOST }}
+            User ${{ secrets.SSH_USERNAME }}
+            StrictHostKeyChecking no
+            ProxyCommand /usr/bin/env TUNNEL_SERVICE_AUTH_ID=${{ secrets.CF_CLIENT_ID }} TUNNEL_SERVICE_AUTH_SECRET=${{ secrets.CF_CLIENT_SECRET }} cloudflared access ssh --hostname %h
+          EOF
+
+      - name: Ensure Target Directory Exists
+        run: ssh ${{ secrets.SSH_HOST }} "mkdir -p ~/wismaamal-deploy"
+      
+      - name: Copy docker-compose via scp
+        run: scp docker-compose.yml ${{ secrets.SSH_HOST }}:~/wismaamal-deploy/
+          
+      - name: Deploy to Remote Server
+        run: |
+          ssh ${{ secrets.SSH_HOST }} << 'EOF'
+            cd ~/wismaamal-deploy
+            # Create .env for docker-compose overrides
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
+            echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+            echo "APP_TIMEZONE=Asia/Jakarta" >> .env
+            echo "MIDTRANS_MERCHANT_ID=G045418980" >> .env
+            echo "MIDTRANS_CLIENT_KEY=${{ secrets.MIDTRANS_CLIENT_KEY }}" >> .env
+            echo "MIDTRANS_SERVER_KEY=${{ secrets.MIDTRANS_SERVER_KEY }}" >> .env
+            echo "MIDTRANS_IS_PRODUCTION=false" >> .env
+            echo "MIDTRANS_NOTIFICATION_URL=https://api-wismaamal.allvvnt.my.id/api/finance/payments/midtrans/notification" >> .env
+            echo "MIDTRANS_ENABLED_PAYMENTS=qris,gopay,shopeepay,bca_va,bni_va,bri_va,echannel,permata_va,other_va,indomaret,alfamart,credit_card,akulaku,kredivo" >> .env
+            echo "FONNTE_TOKEN=${{ secrets.FONNTE_TOKEN }}" >> .env
+            
+            # Create default modules_statuses.json if it doesn't exist
+            if [ ! -f modules_statuses.json ]; then
+              echo '{
+                "Finance": true,
+                "Guest": true,
+                "Maintenance": true,
+                "Notification": true,
+                "Room": true,
+                "Setting": true,
+                "Auth": true,
+                "Inventory": true,
+                "Schedule": true,
+                "Dashboard": true
+              }' > modules_statuses.json
+            fi
+            
+            # Login to GHCR (Server needs to be authenticated to pull)
+            echo "${{ secrets.PAT_FOR_DISPATCH }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # Pull latest images and restart containers
+            docker compose pull backend-app backend-web
+            docker compose up -d backend-app backend-web phpmyadmin
+            
+            echo "Waiting for database connection..."
+            sleep 15
+            
+            docker exec -u www-data wismaamal_backend_app php artisan migrate --force
+            docker exec -u www-data wismaamal_backend_app php artisan db:seed --class="Database\\Seeders\\FeatureToggleSeeder" --force
+            docker exec -u www-data wismaamal_backend_app php artisan optimize:clear
+          EOF

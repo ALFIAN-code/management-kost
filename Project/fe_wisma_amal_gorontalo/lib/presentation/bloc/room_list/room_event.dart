@@ -1,0 +1,38 @@
+import 'package:equatable/equatable.dart';
+import 'package:frontend/domain/entity/room_entity.dart';
+
+abstract class RoomEvent extends Equatable {
+  const RoomEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class GetRoomsEvent extends RoomEvent {
+  final bool? isHighlighted;
+  const GetRoomsEvent({this.isHighlighted});
+  
+  @override
+  List<Object> get props => [if (isHighlighted != null) isHighlighted!];
+}
+
+class SelectRoomEvent extends RoomEvent {
+  final RoomEntity room;
+  const SelectRoomEvent(this.room);
+}
+
+class AddRoomEvent extends RoomEvent {
+  final RoomEntity room;
+  const AddRoomEvent(this.room);
+}
+
+class UpdateRoomEvent extends RoomEvent {
+  final int id;
+  final RoomEntity room;
+  const UpdateRoomEvent(this.id, this.room);
+}
+
+class DeleteRoomEvent extends RoomEvent {
+  final int id;
+  const DeleteRoomEvent(this.id);
+}

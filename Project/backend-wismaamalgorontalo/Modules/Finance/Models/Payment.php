@@ -1,0 +1,46 @@
+<?php
+
+namespace Modules\Finance\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Finance\database\factories\PaymentFactory;
+use Modules\Finance\Enums\PaymentStatus;
+
+class Payment extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'invoice_id',
+        'payment_method',
+        'midtrans_fee',
+        'fee_bearer',
+        'payment_proof_path',
+        'transaction_id',
+        'status',
+        'admin_notes',
+        'snap_token',
+        'payment_data',
+    ];
+
+    protected $casts = [
+        'status' => PaymentStatus::class,
+        'payment_data' => 'array',
+    ];
+
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
+    }
+
+    public function getPaymentProofUrlAttribute()
+    {
+        return $this->payment_proof_path ? url('/storage/'.$this->payment_proof_path) : null;
+    }
+
+    public static function newFactory()
+    {
+        return PaymentFactory::new();
+    }
+}

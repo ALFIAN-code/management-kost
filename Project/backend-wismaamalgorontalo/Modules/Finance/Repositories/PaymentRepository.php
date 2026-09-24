@@ -1,0 +1,101 @@
+<?php
+
+namespace Modules\Finance\Repositories;
+
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Finance\Enums\PaymentStatus;
+use Modules\Finance\Models\Payment;
+use Modules\Finance\Repositories\Contracts\PaymentRepositoryInterface;
+
+class PaymentRepository implements PaymentRepositoryInterface
+{
+    public function getPaginated(int $perPage = 15, array $filters = []): LengthAwarePaginator
+    {
+        $query = Payment::with(['invoice'])->orderBy('created_at', 'desc');
+
+        if (! empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (! empty($filters['payment_method'])) {
+            $query->where('payment_method', $filters['payment_method']);
+        }
+
+        if (! empty($filters['schedule_ids'])) {
+            $query->whereHas('invoice', function ($q) use ($filters) {
+                $q->whereIn('schedule_id', $filters['schedule_ids']);
+            });
+        }
+
+        return $query->paginate($perPage);
+    }
+
+    public function findOrFail(int $id): Payment
+    {
+        return Payment::findOrFail($id);
+    }
+
+    public function countPendingVerification(): int
+    {
+        return Payment::where('status', PaymentStatus::PENDING->value)->count();
+    }
+
+    public function getPendingPayments(int $limit = 5): Collection
+    {
+        return Payment::with(['invoice'])
+            ->where('status', PaymentStatus::PENDING->value)
+            ->latest()
+            ->limit($limit)
+            ->get();
+    }
+
+    public function findByReference(string $transactionId): ?Payment
+    {
+        return Payment::where('transaction_id', $transactionId)->first();
+    }
+
+    public function create(array $data): Payment
+    {
+        return Payment::create($data);
+    }
+
+    public function update(Payment $payment, array $data): bool
+    {
+        return $payment->update($data);
+    }
+
+    public function getMidtransSummary(): array
+    {
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+
+        $settled = Payment::with('invoice')
+            ->where('payment_method', 'midtrans')
+            ->where('status', PaymentStatus::PAID->value)
+            ->get();
+
+        $settledBulanIni = Payment::with('invoice')
+            ->where('payment_method', 'midtrans')
+            ->where('status', PaymentStatus::PAID->value)
+            ->whereMonth('updated_at', $currentMonth)
+            ->whereYear('updated_at', $currentYear)
+            ->get();
+
+        $netAmount = fn ($p) => ($p->invoice?->amount ?? 0) - ($p->fee_bearer === 'merchant' ? $p->midtrans_fee : 0);
+
+        return [
+            'total_transaksi' => Payment::where('payment_method', 'midtrans')->count(),
+            'total_settlement_bersih' => (float) $settled->sum($netAmount),
+            'total_settlement_gross' => (float) $settled->sum(fn ($p) => $p->invoice?->amount ?? 0),
+            'total_biaya_midtrans' => (float) $settled->sum(fn ($p) => $p->fee_bearer === 'merchant' ? $p->midtrans_fee : 0),
+            'jumlah_settlement' => $settled->count(),
+            'jumlah_pending' => Payment::where('payment_method', 'midtrans')
+                ->where('status', PaymentStatus::PENDING->value)
+                ->count(),
+            'settlement_bulan_ini' => (float) $settledBulanIni->sum($netAmount),
+            'bulan' => $currentMonth,
+            'tahun' => $currentYear,
+        ];
+    }
+}

@@ -1,0 +1,26 @@
+<?php
+
+namespace Modules\Maintenance\Repositories\Contracts;
+
+interface DamageReportRepositoryInterface
+{
+    public function createRequest(array $data): \Modules\Maintenance\Models\MaintenanceRequest;
+
+    public function getByResidentId(int $residentId);
+
+    public function getByUserId(int $userId);
+
+    public function getAll();
+
+    public function getPaginated(int $perPage = 10);
+
+    public function findById(int $id);
+
+    public function addRequestImages(\Modules\Maintenance\Models\MaintenanceRequest $request, array $imagePaths);
+
+    public function addUpdate(\Modules\Maintenance\Models\MaintenanceRequest $request, array $data): \Modules\Maintenance\Models\MaintenanceRequestUpdate;
+
+    public function addUpdateImages(\Modules\Maintenance\Models\MaintenanceRequestUpdate $update, array $imagePaths);
+
+    public function updateStatus(\Modules\Maintenance\Models\MaintenanceRequest $request, string $status): bool;
+}
