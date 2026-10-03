@@ -1,0 +1,42 @@
+sequenceDiagram
+  autonumber
+  actor User as Pengguna (Penghuni / Pengelola / Pemilik)
+  participant FE as Flutter Frontend (Web / Mobile)
+  participant KC as Keycloak IAM Server (Realm: wisma-amal-realm)
+  participant Google as Google Identity Broker (OAuth2)
+  participant API as API Gateway / Backend Laravel (Modul Auth)
+  participant JWKS as Keycloak JWKS Certs Endpoint
+  participant DB as MySQL Database (Tabel 'users')
+
+  User->>FE: Klik "Masuk dengan SSO Wisma Amal"
+  FE->>KC: Redirect ke Login OIDC Keycloak
+  
+  alt Opsi A: Login Kredensial Langsung
+    User->>KC: Input Username & Password (+ MFA jika aktif)
+  else Opsi B: Login via Google Identity Broker
+    User->>KC: Klik "Sign in with Google"
+    KC->>Google: Delegasi Autentikasi OAuth2
+    Google-->>KC: Return Verified Google Identity (email, name)
+  end
+
+  KC-->>FE: Return OIDC Tokens (ID Token & Access Token Signed RS256)
+  
+  FE->>API: POST /api/auth/sso/keycloak (Header: Bearer <id_token>)
+  
+  Note over API, JWKS: Validasi Stateless Token Kriptografis
+  API->>JWKS: GET /realms/wisma-amal-realm/protocol/openid-connect/certs
+  JWKS-->>API: Return Public Keys (JWKS JSON)
+  API->>API: Verifikasi Signature RS256, Issuer, Audience, Expire Time
+  
+  Note over API, DB: Just-In-Time (JIT) User Provisioning
+  API->>DB: SELECT * FROM users WHERE keycloak_id = sub OR email = email
+  alt Pengguna Baru (Belum Terdaftar)
+    API->>DB: INSERT INTO users (keycloak_id, email, name, auth_provider='keycloak')
+    API->>DB: Assign Default Spatie Role ('resident' / 'guest')
+  else Pengguna Lama
+    API->>DB: UPDATE users SET keycloak_id = sub, last_login_at = NOW()
+  end
+  
+  API->>API: Terbitkan Token Sesi Internal Laravel Sanctum + Tenant Scope
+  API-->>FE: Return Envelope JSON {status: true, data: {user, token, permissions}}
+  FE-->>User: Sesi Terbuka, Masuk ke Dashboard Sesuai Role

@@ -1,0 +1,45 @@
+flowchart TD
+  subgraph Level1["1. INFRASTRUCTURE TIER (Selalu Aktif)"]
+    direction LR
+    Auth["Modul Auth<br/>(User, Token Sanctum, Spatie RBAC)"]
+    Setting["Modul Setting<br/>(System Config, modules_statuses.json)"]
+  end
+
+  subgraph Level2["2. CORE TIER (Selalu Aktif)"]
+    direction LR
+    Building["Modul Building<br/>(Multi-Tenant Context)"]
+    Room["Modul Room<br/>(Aset Fisik Kamar, Tipe, Fasilitas)"]
+    Schedule["Modul Schedule Core<br/>(Linimasa Sewa, Maintenance, Blokir)"]
+  end
+
+  subgraph Level3["3. BUSINESS MODULES TIER (Independen & Toggleable)"]
+    direction TB
+    subgraph ModulBisnis["Modul Bisnis Opsional"]
+      Finance["Modul Finance<br/>(Invoices, Payments, Midtrans)"]
+      Maintenance["Modul Maintenance<br/>(Damage Reports, Repairs)"]
+      Guest["Modul Guest<br/>(Guest Visits Log)"]
+      Inventory["Modul Inventory<br/>(Item Checklist per Unit)"]
+      Notification["Modul Notification<br/>(WhatsApp & Email Logs)"]
+      MCP["Modul MCP Server<br/>(AI Analytics Interface)"]
+    end
+  end
+
+  subgraph CommunicationRules["Aturan Komunikasi & Batasan (Enforced by Deptrac)"]
+    EventBus["Internal Event Bus (Komunikasi Tulis: Mutasi Data Asinkron)"]
+    ModuleGateway["Module Gateway Layer (Komunikasi Baca: Query Aggregation + Guard)"]
+  end
+
+  Level1 -.->|Fondasi Autentikasi| Level2
+  Level1 -.->|Fondasi Autentikasi| Level3
+  Level2 -->|Emit Domain Events| EventBus
+  EventBus -->|Subscribe & React| Level3
+  Level3 -->|Query Data Lintas Modul| ModuleGateway
+  ModuleGateway -->|ModuleGate::isActive| Level2
+  ModuleGateway -->|ModuleGate::isActive| Level3
+
+  classDef infra fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+  classDef core fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+  classDef biz fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+  class Auth,Setting infra;
+  class Building,Room,Schedule core;
+  class Finance,Maintenance,Guest,Inventory,Notification,MCP biz;

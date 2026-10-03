@@ -1,10 +1,10 @@
 # Arsitektur Kode — Hub Project
 
-**Terakhir diupdate:** 2025-09-19
+**Terakhir diupdate:** 2025-09-20
 
 ## Overview
 
-Sistem Wisma Amal: backend Laravel 11 Modular Monolith + frontend Flutter BLoC. 1 deployment backend, modul toggle via `modules_statuses.json`.
+**Refactoring Sistem Manajemen Rumah Kost dengan Arsitektur Modular Monolithic Berbasis Kerangka Kerja Scrum** (Studi Kasus: Wisma Amal Gorontalo). Backend Laravel 11 Modular Monolith + frontend Flutter BLoC. 1 deployment backend, modul toggle via `modules_statuses.json`.
 
 ## Pointer
 

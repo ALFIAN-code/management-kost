@@ -4,6 +4,253 @@
 
 ---
 
+## [2026-10-03 22:05] Update 5 ERD per-module pasca-migration (buildings, building_id, SSO, MCP log)
+
+**Status:** Selesai (sintaks tervalidasi mermaid-cli + spot-check visual browser)
+**Dikerjakan:**
+- erd_1: +`assigned_building_id`, +`keycloak_id` UK, +`auth_provider` di USERS
+- erd_2: +entitas BUILDINGS (+relasi owns/scopes) +`building_id` (ROOMS, ROOM_SCHEDULES, GUESTS, GUEST_BILLS)
+- erd_3: +`building_id` (INVOICES, FINES, REFUND_REQUESTS, EXPENSES, FIXED_EXPENSE_ENTRIES)
+- erd_4: +`building_id` (MAINTENANCE_REQUESTS, MAINTENANCE_SCHEDULES)
+- erd_5: +`building_id` (INVENTORIES, NOTIFICATION_LOGS) +entitas MCP_TOOL_LOGS (+relasi queries/scopes)
+**File yang diubah:**
+- `PA/docs/diagrams/12_erd_multi_tenant_global/permodule/erd_*.html` (5 file)
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+
+---
+
+## [2026-10-03 21:55] Update erd_full_database ke 41 tabel (buildings + mcp_tool_logs + building_id)
+
+**Status:** Selesai (terverifikasi visual)
+**Dikerjakan:**
+- Tambah entitas `BUILDINGS` + `MCP_TOOL_LOGS`, kolom `building_id` (7 tabel utama), `users.keycloak_id/auth_provider/assigned_building_id`, dan 10 relasi scopes-softref ke `erd_full_database.mmd`; render ulang `.png`
+**File yang diubah:**
+- `PA/docs/diagrams/12_erd_multi_tenant_global/erd_full_database.mmd`/`.png`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+
+---
+
+## [2026-10-03 21:50] Sinkronisasi docs pasca-migration: hapus 3 klaim basi + katalog permodule
+
+**Status:** Selesai
+**Dikerjakan:**
+- Perbaiki 3 pernyataan basi di BAB 3 §3.6 (klaim "belum ada di kode" untuk buildings/keycloak/mcp → SUDAH terimplementasi 2026-10-03)
+- Daftarkan 5 ERD per-cluster HTML sebagai Gambar 3.6c–3.6g resmi di katalog + BAB 3 §3.6; betulkan hitungan 39 → 41 tabel
+- Tambah bullet eksekusi migration ke STATE global & PA
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`, `PA/docs/diagrams/README.md`, `Docs/00_overview/STATE.md`, `PA/docs/00_overview/STATE.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+
+---
+
+## [2026-10-03 21:40] Eksekusi migration WAJIB: buildings, building_id, SSO, MCP log, soft-ref 2 FK
+
+**Status:** Selesai (523 passed, 2 failed pre-existing dashboard — sama seperti baseline 2026-09-22)
+**Dikerjakan:**
+- 5 migration aditif baru (tanpa ubah migration lama): `buildings`, `building_id` (13 tabel domain) + `users.assigned_building_id`, `users.keycloak_id`+`auth_provider`, `mcp_tool_logs`, drop FK `refund_requests.schedule_id` + `maintenance_requests.room_id` → soft-ref (pola defensif existing)
+- Model `User` fillable +3 kolom; `pint --test` PASS 6 file
+- Verifikasi: `migrate:fresh` SQLite bersih (41 tabel), `php artisan test` 523 passed / 2 failed (dashboard admin/resident 404 — pre-existing, di luar scope)
+- Catatan: MySQL lokal (`wisma_amal`) tidak dapat dijangkau (docker daemon mati) — verifikasi via SQLite; `.env` tidak diubah
+**File yang diubah:**
+- `Project/backend-wismaamalgorontalo/database/migrations/2026_10_03_00000*.php` (5 file baru), `Modules/Auth/Models/User.php` (fillable)
+**Dokumen yang diupdate:**
+- `Docs/02_reference/DATABASE_SCHEMA.md` (§5 delta + §6 history), `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- TenantResolverMiddleware + Global Scope + Keycloak JWKS verify + MCP tools (fase implementasi BAB 4)
+- 2 test dashboard 404 menunggu fix endpoint Dashboard
+**Catatan/masalah:**
+- Kategori OPSIONAL (drop `lease_id`/`resident_id` legacy, fix tipe `rooms.price`) sengaja tidak dikerjakan — di luar scope persetujuan
+
+---
+
+## [2026-10-03 21:20] Teori pemisahan DB 3 level + matriks 12 modul ke 5 cluster ERD
+
+**Status:** Selesai
+**Dikerjakan:**
+- BAB 2 §2.2.8: tambah teori 3 tingkatan pemisahan DB Modulith (Physical per-Module, Schema-per-Module, Logical Schema Ownership — pilihan sistem) sebagai jawaban antisipasi pertanyaan penguji
+- BAB 3 §3.6: tambah Tabel 3.3 matriks ketertelusuran 12 modul → 5 domain cluster ERD + renumber kamus data ke §3.6.4 (perbaikan duplikat §3.6.2)
+**File yang diubah:**
+- `PA/docs/modules/bab2/README.md`, `PA/docs/modules/bab3/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+
+---
+
+## [2026-10-03 21:00] Fix judul tabel tak terbaca di 5 ERD per-module HTML
+
+**Status:** Selesai (terverifikasi visual via screenshot browser)
+**Dikerjakan:**
+- Akar masalah: boilerplate CSS memaksa teks nama entitas ke `var(--text-primary)` (putih di dark mode) sementara header box mermaid berwarna krem → judul tak terbaca
+- Fix di 5 file `permodule/erd_*.html`: warna teks judul dikunci `#2a2723` (gelap) + bold via `color` dan `fill`
+**File yang diubah:**
+- `PA/docs/diagrams/12_erd_multi_tenant_global/permodule/erd_*.html` (5 file)
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+
+---
+
+## [2026-10-03 20:30] Audit skema aktual + ERD keseluruhan 39 tabel
+
+**Status:** Selesai
+**Dikerjakan:**
+- Audit seluruh migration + model via subagen: 39 tabel final, FK fisik lintas-modul, temuan `building_id` 0 hasil, kolom hantu `is_highlighted`, tipe `rooms.price` string, legacy `lease_id`/`resident_id`, drift SQLite vs MySQL
+- Buat `erd_full_database.mmd` + render `.png` (Gambar 3.6a resmi) di folder 12; ERD konseptual lama jadi Gambar 3.6b (target)
+- Tulis ulang `Docs/02_reference/DATABASE_SCHEMA.md` (inventaris aktual + delta target §5); referensi ERD dimasukkan ke BAB 3 §3.6
+**File yang diubah:**
+- `PA/docs/diagrams/12_erd_multi_tenant_global/erd_full_database.mmd`/`.png`, `PA/docs/diagrams/README.md`, `Docs/02_reference/DATABASE_SCHEMA.md`, `PA/docs/modules/bab3/README.md`
+**Dokumen yang diupdate:**
+- `Docs/00_overview/STATE.md`, `PA/docs/00_overview/STATE.md`, `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Kompilasi docx v0.1 dengan embed ERD 3.6a
+**Catatan/masalah:**
+- Multi-tenant/Keycloak/MCP murni target desain, belum ada di kode — jujur dicatat di delta §5 untuk BAB 4
+
+---
+
+## [2026-10-03 13:20] Pindah component SVG ke folder 02 + adopsi 2 SVG final
+
+**Status:** Selesai
+**Dikerjakan:**
+- Memindahkan `component_diagram_modular_monolith_3_tier.svg` dari `01_arsitektur_sistem_terpadu/` ke `02_hierarki_3_tier_modulith/`; referensi Gambar 2.2/3.2 + katalog + STATE diperbarui
+**File yang diubah:**
+- `PA/docs/diagrams/02_hierarki_3_tier_modulith/component_diagram_modular_monolith_3_tier.svg` (pindahan)
+**Dokumen yang diupdate:**
+- `PA/docs/diagrams/README.md`, `PA/docs/modules/bab2/README.md`, `PA/docs/modules/bab3/README.md`, `Docs/00_overview/STATE.md`, `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Kompilasi docx v0.1 (BAB 1–3) dengan embed 2 SVG final
+
+---
+
+## [2026-10-03 13:00] Adopsi 2 SVG final arsitektur sebagai diagram resmi docx
+
+**Status:** Selesai
+**Dikerjakan:**
+- Menetapkan `c4_level2_container_wisma_amal.svg` + `component_diagram_modular_monolith_3_tier.svg` di `PA/docs/diagrams/01_arsitektur_sistem_terpadu/` sebagai diagram resmi (Gambar 2.1/2.2 & 3.1/3.2); `.mmd`/`.png` lama di folder itu disupersede
+- Referensi Gambar resmi dimasukkan ke `PA/docs/modules/bab2/README.md` (§2.2.2) dan `PA/docs/modules/bab3/README.md` (§3.3); katalog `PA/docs/diagrams/README.md` baris 01 ditandai ✅ FINAL
+**File yang diubah:**
+- `PA/docs/diagrams/README.md`, `PA/docs/modules/bab2/README.md`, `PA/docs/modules/bab3/README.md`
+**Dokumen yang diupdate:**
+- `Docs/00_overview/STATE.md`, `PA/docs/00_overview/STATE.md`, `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Kompilasi docx v0.1 (BAB 1–3) dengan embed 2 SVG final
+**Catatan/masalah:**
+- File SVG buatan user, tidak di-render ulang via mermaid-cli
+
+---
+
+## [2026-10-03 12:15] Integrasi Single Sign-On (SSO) Keycloak OIDC ke Seluruh Naskah & Diagram
+
+**Status:** Selesai (ADR-006 + 15 Diagram MMD/PNG + Pembaruan BAB 1, 2, 3)
+**Dikerjakan:**
+- Mencatat ADR-006 di `Docs/03_logs/DECISIONS.md`: Single Sign-On (SSO) IAM Berbasis Keycloak OIDC.
+- Memperbarui BAB 1, BAB 2 (sub-bab 2.2.6), dan BAB 3 (tabel users `keycloak_id` & flow OIDC) pada `PA/docs/modules/`.
+- Membuat dan me-render diagram `15_sequence_sso_keycloak` (MMD + PNG) di `PA/docs/diagrams/`.
+- Sinkronisasi katalog diagram, `ARCHITECTURE.md`, dan `STATE.md` (Global & PA).
+**File yang diubah:**
+- `Docs/03_logs/DECISIONS.md`, `PA/docs/modules/bab1/README.md`, `PA/docs/modules/bab2/README.md`, `PA/docs/modules/bab3/README.md`
+- `PA/docs/diagrams/15_sequence_sso_keycloak/**`, `PA/docs/diagrams/README.md`
+- `Docs/00_overview/ARCHITECTURE.md`, `Docs/00_overview/STATE.md`, `PA/docs/00_overview/STATE.md`
+- `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+
+---
+
+## [2026-10-03 11:45] Pembuatan & Rendering 14 Diagram Resmi PA ke Subfolder Terpisah
+
+**Status:** Selesai (14 Diagram Mermaid .mmd + 14 Gambar .png)
+**Dikerjakan:**
+- Membuat 14 subfolder terstruktur di `PA/docs/diagrams/` untuk seluruh kebutuhan visual BAB 2 & 3:
+  1. `01_arsitektur_sistem_terpadu/`
+  2. `02_hierarki_3_tier_modulith/`
+  3. `03_clean_architecture_frontend/`
+  4. `04_bpmn_reservasi_pembayaran/`
+  5. `05_bpmn_komplain_pemeliharaan/`
+  6. `06_bpmn_konsultasi_ai_mcp/`
+  7. `07_use_case_global/`
+  8. `08_dfd_level_0_context/`
+  9. `09_dfd_level_1_dekomposisi/`
+  10. `10_sequence_reservasi_event_driven/`
+  11. `11_sequence_mcp_ai_tool_call/`
+  12. `12_erd_multi_tenant_global/`
+  13. `13_feature_toggle_architecture/`
+  14. `14_testing_pyramid/`
+- Me-render seluruh 14 file `.mmd` menjadi gambar resolusi tinggi `.png` via `@mermaid-js/mermaid-cli`.
+- Membersihkan artefak diagram lama di root `PA/docs/diagrams/` dan memperbarui `PA/docs/diagrams/README.md` sebagai katalog indeks resmi.
+**File yang diubah:**
+- `PA/docs/diagrams/**` (14 subfolder: `.mmd` dan `.png`)
+- `PA/docs/diagrams/README.md`
+- `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+
+---
+
+## [2026-10-03 11:15] Rekonstruksi & Transformasi Penuh Naskah BAB 1, 2, 3 ke Dokumen Resmi
+
+**Status:** Selesai (Naskah BAB 1-3 Lengkap ~9.500 kata)
+**Dikerjakan:**
+- Transformasi seluruh dokumen naskah di `PA/docs/modules/` dari ringkasan poin menjadi naskah Laporan Proyek Akhir (LPA) akademis yang utuh dan siap translasi ke docx:
+  - `PA/docs/modules/bab1/README.md`: Naskah penuh (~2.800 kata), profil empiris, telaah 4 proposal previous work, justifikasi 5 pilar, rumusan masalah (6 butir), tujuan, batasan teknis, manfaat, sistematika.
+  - `PA/docs/modules/bab2/README.md`: Naskah penuh (~3.500 kata), 10 sub-bab teori penunjang mendalam (Modulith 3-tier, Multi-Tenancy, MCP AI, REST Envelope, Clean FE, MySQL ACID/MVCC, Midtrans, Testing, Living Docs), telaah 14 penelitian terkait (Tabel 2.3), dan gap statement.
+  - `PA/docs/modules/bab3/README.md`: Software Design Document lengkap (~3.200 kata), Scrum 4 sprint (114 SP) + User Story Gherkin, diagram Clean-Modulith + MCP, BPMN (4 alur), Use Case Specifications lengkap, DFD L0/L1, ERD & Kamus Basis Data 5 tabel, Mockup UI/UX, JSON Schema MCP, kontrak REST API, dan matriks 20 skenario pengujian.
+  - Sinkronisasi `STATE.md` (Global & PA) ke 75% progress.
+**File yang diubah:**
+- `PA/docs/modules/bab1/README.md`, `PA/docs/modules/bab2/README.md`, `PA/docs/modules/bab3/README.md`, `PA/docs/00_overview/STATE.md`, `Docs/00_overview/STATE.md`, `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+**Dokumen yang diupdate:**
+- Seluruh modul naskah PA dan ringkasan state.
+
+---
+
+## [2026-10-03 10:30] Ekspansi Mendalam Teori Penunjang BAB 2 (2.2.1 - 2.2.10)
+
+**Status:** Selesai
+**Dikerjakan:**
+- Memperluas secara komprehensif Bab 2.2 Teori Penunjang naskah PA (dari ~240 baris menjadi 563 baris) mencakup 10 sub-bab teoritis lengkap: SIM Hunian, Evolusi Monolith vs Microservices vs Modulith (3-tier hierarchy, event bus write, gateway read), Standar I/O API Envelope, Multi-Tenancy Row-Level Scoping, MCP AI & Tool Catalog Grounding, Clean Architecture Flutter 3-layer, Basis Data MySQL ACID/MVCC, Midtrans Production Hardening, Testing Pyramid, dan Living Documentation.
+**File yang diubah:**
+- `PA/docs/modules/bab2/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+
+---
+
+## [2026-10-03 10:00] Penyelarasan 5 Pilar Konseptual PA di Seluruh Dokumentasi
+
+**Status:** Selesai
+**Dikerjakan:**
+- Merumuskan dan mencatat ADR-005 di `Docs/03_logs/DECISIONS.md`: 5 pilar konseptual (Standar Input-Output API, Multi-Tenant Multi-Gedung, MCP with Built-in AI, Modular Monolith Event-Driven & Module Gateway, Clean Architecture FE).
+- Memperbarui `PA/docs/modules/bab1/README.md`: Analisis gap previous work (7 gap), posisi PA (5 pilar), rumusan masalah (6 butir), tujuan, batasan, dan manfaat.
+- Memperbarui `PA/docs/modules/bab2/README.md`: Teori penunjang komprehensif (3-Tier Modulith, Multi-Tenancy Row-Level Scoping, MCP & LLM Tool-Use, Standarisasi Kontrak REST, Clean Architecture FE, MySQL Indexing, Midtrans Hardening) dan gap statement.
+- Memperbarui `PA/docs/modules/bab3/README.md`: Desain sistem Clean-Modulith + MCP, alur komunikasi AI via MCP tool-use, format baku JSON envelope, ERD multi-gedung (`buildings`), dan tabel skenario pengujian komprehensif (tenant isolation, contract testing, AI grounding).
+- Memperbarui `Docs/00_overview/ARCHITECTURE.md`, `Docs/00_overview/STATE.md`, `PA/docs/00_overview/STATE.md`, dan `Docs/02_reference/API_STYLE.md`.
+**File yang diubah:**
+- `Docs/03_logs/DECISIONS.md`, `Docs/03_logs/PROGRESS_LOG.md`, `Docs/00_overview/STATE.md`, `Docs/00_overview/ARCHITECTURE.md`, `Docs/02_reference/API_STYLE.md`
+- `PA/docs/modules/bab1/README.md`, `PA/docs/modules/bab2/README.md`, `PA/docs/modules/bab3/README.md`, `PA/docs/00_overview/STATE.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+**Dokumen yang diupdate:**
+- Seluruh dokumen hub federasi dan modul naskah BAB 1-3.
+**Belum selesai / next steps:**
+- Render diagram visual (ERD multi-tenant, BPMN, Sequence MCP tool-use) untuk lampiran/insert docx.
+**Catatan/masalah:**
+- Judul skripsi dipertahankan tetap sesuai registrasi resmi.
+
+---
+
+## [2025-09-20 05:00] Koreksi diagram: + Module Gateway Layer (semua modul via gateway, bukan langsung)
+
+**Status:** Selesai
+**Dikerjakan:**
+- Arsitektur disesuaikan gambar aktual (Infrastructure: Auth / Core: Room-Schedule-Setting / Event Bus / Business: Finance-Maintenance-Guest-Inventory-Notification + MySQL/Midtrans/WhatsApp Fonnte) + **Module Gateway Layer baru**
+- Buat ulang 3 diagram: `01_arsitektur_modulith_gateway.mmd`, `02_modular_boundaries_gateway.mmd`, `03_sequence_via_gateway.mmd`; hapus 3 file lama yang salah; `04_erd*` + `05_feature_toggle*` tetap
+- Update `PA/docs/modules/bab3/README.md` §3.3.1 + catatan Module Gateway = BARU
+- Update `PA/docs/diagrams/README.md` (daftar versi gateway)
+**File yang diubah:**
+- `PA/docs/diagrams/*gateway*.mmd`, `PA/docs/diagrams/README.md`, `PA/docs/modules/bab3/README.md`
+**Belum selesai / next steps:**
+- Render 5 PNG via mermaid-cli / mermaid.live, review, insert ke docx BAB 3
+**Catatan/masalah:**
+- .mmd belum di-render ke PNG (mmdc tidak tersedia di env ini) — render manual
+
+---
+
 ## [2026-09-22 14:45] Fix red screen feature-toggles — singleton SettingBloc di-close halaman lain
 
 **Status:** Selesai (user perlu hot restart / refresh browser FE)
@@ -127,6 +374,25 @@
 **Catatan/masalah:**
 - DB di docker-compose repo tidak expose port → pakai container mandiri `wisma-mysql` agar artisan lokal bisa konek
 - Flutter lokal 3.41.2 (repo target 3.8.1) — pub get/build OK, warning deprecation `withOpacity` dll wajar
+
+---
+
+## [2025-09-20 03:30] BAB 1 Draft Penuh selesai — Previous Work Analysis + Gap + Proposal Baru
+
+**Status:** Selesai
+**Dikerjakan:**
+- Tulis `PA/docs/modules/bab1/README.md` draft penuh (1.1 Latar Belakang 3 bagian, 1.2 Rumusan Masalah 5 butir, 1.3 Tujuan 5 butir, 1.4 Batasan, 1.5 Manfaat, 1.6 Sistematika)
+- Sitasi IEEE numeric dari DAFTAR_PUSTAKA: [1]-[19] terpakai
+- Struktur: Konteks Umum → Analisis Previous Work (tabel 4 proposal + 5 gap) → Posisi PA Kita (5 perbaikan utama)
+**File yang diubah:**
+- `PA/docs/modules/bab1/README.md`
+**Dokumen yang diupdate:**
+- `PA/docs/modules/bab1/README.md`, `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Draft BAB 2 penuh (teori 2.2 + narasi tabel 2.3 + gap statement 2.4)
+- Outline BAB 3 detail (diagram + trace mapping Project/)
+**Catatan/masalah:**
+- BAB 1 ~2,500 kata, siap review dosen. Sitasi konsisten numeric [1]-[19].
 
 ---
 

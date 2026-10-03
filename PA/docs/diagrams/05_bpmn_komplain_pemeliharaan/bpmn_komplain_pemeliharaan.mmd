@@ -1,0 +1,38 @@
+sequenceDiagram
+  autonumber
+  actor User as Penghuni
+  participant FE as Flutter Frontend
+  participant API as API Gateway / TenantResolver
+  participant Maint as Modul Maintenance
+  participant EventBus as Internal Event Bus
+  participant Sched as Modul Schedule Core
+  participant Admin as Pengelola Gedung
+  participant Notif as Modul Notification
+
+  User->>FE: Input Komplain & Unggah Foto Kerusakan
+  FE->>API: POST /api/maintenance (Multipart, X-Building-ID)
+  API->>Maint: createDamageReport(buildingId, roomId, photoUrls, desc)
+  
+  Maint->>Maint: Simpan Tiket Kerusakan (status: 'pending')
+  Maint->>EventBus: emit(LaporanKerusakanMasuk)
+  
+  EventBus->>Sched: handle(LaporanKerusakanMasuk)
+  Note over Sched: Buat Jadwal 'type: maintenance'<br/>Kunci Kamar dari Reservasi Baru
+  
+  EventBus->>Notif: handle(LaporanKerusakanMasuk)
+  Notif->>Admin: Kirim Notifikasi WhatsApp Tiket Baru ke Admin Gedung Terkait
+  
+  Admin->>FE: Buka Dashboard Maintenance & Tugaskan Teknisi
+  FE->>API: PATCH /api/maintenance/{id}/assign
+  API->>Maint: updateStatus('in_progress')
+  
+  Admin->>FE: Konfirmasi Perbaikan Selesai
+  FE->>API: PATCH /api/maintenance/{id}/complete
+  API->>Maint: updateStatus('completed')
+  Maint->>EventBus: emit(JadwalMaintenanceSelesai)
+  
+  EventBus->>Sched: handle(JadwalMaintenanceSelesai)
+  Sched->>Sched: Selesaikan Jadwal Maintenance (Bebaskan Kamar)
+  
+  EventBus->>Notif: handle(JadwalMaintenanceSelesai)
+  Notif->>User: Kirim WhatsApp: "Fasilitas Selesai Diperbaiki"

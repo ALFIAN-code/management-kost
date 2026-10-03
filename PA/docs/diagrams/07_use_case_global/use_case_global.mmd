@@ -1,0 +1,37 @@
+flowchart LR
+  subgraph Actors["Aktor Sistem"]
+    Owner["Pemilik Properti (Owner)"]
+    Admin["Pengelola Gedung (Admin)"]
+    Resident["Penghuni / Calon Penghuni"]
+    AI["Asisten AI (MCP Protocol)"]
+  end
+
+  subgraph WismaSystem["Sistem Manajemen Wisma Amal Terpadu"]
+    UC1["UC-01: Kelola Master Gedung (Multi-Tenant)"]
+    UC2["UC-02: Kelola Kamar & Tarif Dasar"]
+    UC3["UC-03: Reservasi Kamar & Cek Ketersediaan"]
+    UC4["UC-04: Transaksi Pembayaran SNAP Midtrans"]
+    UC5["UC-05: Pengajuan & Tracking Komplain Fasilitas"]
+    UC6["UC-06: Kelola Inventaris Unit Kamar"]
+    UC7["UC-07: Rekapitulasi Keuangan & Arus Kas"]
+    UC8["UC-08: Konsultasi Wawasan Bisnis AI via MCP"]
+  end
+
+  Owner --> UC1
+  Owner --> UC2
+  Owner --> UC7
+  Owner --> UC8
+
+  Admin --> UC2
+  Admin --> UC3
+  Admin --> UC5
+  Admin --> UC6
+  Admin --> UC8
+
+  Resident --> UC3
+  Resident --> UC4
+  Resident --> UC5
+
+  AI <--> UC8
+  UC4 -.->|Integrasi| MidtransGateway["Midtrans Payment Gateway"]
+  UC5 -.->|Kirim Notif| WhatsAppGateway["WhatsApp Fonnte Gateway"]

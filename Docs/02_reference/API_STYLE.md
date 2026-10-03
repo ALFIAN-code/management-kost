@@ -20,15 +20,20 @@ Semua response backend pakai `App\Traits\ApiResponse`:
 
 ```json
 {
-  "success": true,
-  "data": { },
+  "status": true,
   "message": "OK",
+  "data": { },
   "meta": { "page": 1, "limit": 20, "total": 100 }
 }
 ```
-- `success: false` → `data` null, `message` user-friendly + `errors` jika validasi
+- `status: false` → `data` null, `message` user-friendly + `errors` jika validasi
 - Jangan return array di root — selalu bungkus `data`
-- Flutter `Datasource` wajib parse wrapper ini, bukan langsung `response.data`
+- Flutter `Datasource` wajib parse wrapper ini (`status`, `message`, `data`, `meta`, `errors`)
+
+## Context Multi-Tenant (Gedung)
+
+- Header: `X-Building-ID: <building_id>` (wajib untuk endpoint domain yang scoped per gedung)
+- Divalidasi oleh `TenantResolverMiddleware` untuk menyaring data secara aman.
 
 ## Pagination
 
@@ -46,7 +51,7 @@ Response `meta` wajib jika list.
 
 ```json
 {
-  "success": false,
+  "status": false,
   "message": "Validasi gagal",
   "errors": { "email": ["Email sudah dipakai"] }
 }

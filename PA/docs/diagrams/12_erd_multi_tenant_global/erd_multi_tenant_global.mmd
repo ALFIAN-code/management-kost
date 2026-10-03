@@ -1,0 +1,79 @@
+erDiagram
+    BUILDINGS ||--o{ USERS : assigns
+    BUILDINGS ||--o{ ROOMS : owns
+    BUILDINGS ||--o{ SCHEDULES : scopes
+    BUILDINGS ||--o{ INVOICES : bills
+    BUILDINGS ||--o{ DAMAGE_REPORTS : tracks
+    BUILDINGS ||--o{ INVENTORIES : contains
+    BUILDINGS ||--o{ MCP_TOOL_LOGS : logs
+
+    USERS ||--o{ SCHEDULES : rents
+    USERS ||--o{ DAMAGE_REPORTS : reports
+    USERS ||--o{ INVOICES : billed_to
+    USERS ||--o{ MCP_TOOL_LOGS : executes
+
+    ROOMS ||--o{ SCHEDULES : reserved_for
+    ROOMS ||--o{ DAMAGE_REPORTS : located_at
+    ROOMS ||--o{ INVENTORIES : equipped_with
+
+    SCHEDULES ||--o{ INVOICES : generates
+    INVOICES ||--o{ PAYMENTS : settled_via
+    PAYMENTS ||--|| MIDTRANS_TRANSACTIONS : verified_by
+
+    BUILDINGS {
+        bigint id PK
+        string name
+        text address
+        bigint owner_id FK
+        timestamp created_at
+    }
+
+    ROOMS {
+        bigint id PK
+        bigint building_id FK
+        string room_number
+        string type
+        decimal base_price
+        enum status
+    }
+
+    SCHEDULES {
+        bigint id PK
+        bigint building_id FK
+        bigint room_id FK
+        bigint user_id FK
+        enum type
+        date start_date
+        date end_date
+        enum status
+    }
+
+    INVOICES {
+        bigint id PK
+        bigint building_id FK
+        bigint schedule_id FK
+        string invoice_number
+        decimal amount
+        date due_date
+        enum status
+    }
+
+    DAMAGE_REPORTS {
+        bigint id PK
+        bigint building_id FK
+        bigint room_id FK
+        bigint user_id FK
+        text description
+        json photo_urls
+        enum status
+    }
+
+    MCP_TOOL_LOGS {
+        bigint id PK
+        bigint user_id FK
+        bigint building_id FK
+        string tool_name
+        json parameters
+        int execution_time_ms
+        timestamp created_at
+    }

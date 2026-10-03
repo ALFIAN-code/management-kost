@@ -1,0 +1,32 @@
+sequenceDiagram
+  autonumber
+  actor Resident as Calon Penghuni
+  participant FE as Flutter Frontend
+  participant Sched as Modul Schedule
+  participant DB as MySQL InnoDB
+  participant Bus as Internal Event Bus
+  participant Fin as Modul Finance
+  participant Mid as Midtrans SNAP
+
+  Resident->>FE: Ajukan Reservasi Kamar 101
+  FE->>Sched: reserve(building_id, room_id, dates)
+  
+  Note over Sched, DB: DB::beginTransaction()<br/>SELECT * FROM schedules WHERE room_id=101 FOR UPDATE
+  Sched->>DB: Lock Row & Insert Schedule (status: 'reserved')
+  Note over Sched, DB: DB::commit()
+  
+  Sched->>Bus: emit(JadwalDibuat)
+  Bus->>Fin: handle(JadwalDibuat)
+  
+  Fin->>DB: Insert Invoice (status: 'unpaid')
+  Fin->>Mid: Request SNAP Token (Idempotency-Key)
+  Mid-->>Fin: Return SNAP Token
+  Fin-->>FE: Return SNAP Token
+  
+  Resident->>Mid: Selesaikan Pembayaran VA/QRIS
+  Mid-->>Fin: Webhook Callback Settlement (SHA-512)
+  Fin->>DB: Update Invoice (status: 'paid')
+  Fin->>Bus: emit(PembayaranDiterima)
+  
+  Bus->>Sched: handle(PembayaranDiterima)
+  Sched->>DB: Update Schedule (status: 'active') & Room ('terisi')

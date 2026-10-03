@@ -34,8 +34,9 @@
 ## Cover Fields
 
 ```
-PROPOSAL LAPORAN AKHIR / PROPOSAL PROYEK AKHIR
-Judul (caps) + Sub Judul
+LAPORAN PROYEK AKHIR
+Refactoring Sistem Manajemen Rumah Kost dengan Arsitektur Modular Monolithic Berbasis Kerangka Kerja Scrum
+Studi Kasus: Wisma Amal Gorontalo
 Nama
 NRP
 Dosen Pembimbing: Nama, gelar + NIP

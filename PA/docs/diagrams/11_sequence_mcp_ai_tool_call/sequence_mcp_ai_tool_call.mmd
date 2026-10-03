@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  actor User as Pengguna / Pemilik
+  participant UI as Flutter Web (Chat Panel)
+  participant LLM as LLM Engine
+  participant Server as Modul MCP Server
+  participant Tenant as Tenant Guardrail
+  participant Gateway as Module Gateway
+  participant DB as MySQL Database
+
+  User->>UI: "Berapa okupansi Gedung A saat ini?"
+  UI->>LLM: Prompt + Tools Manifest
+  LLM-->>UI: Invoke Tool get_building_occupancy(building_id: 1)
+  
+  UI->>Server: JSON-RPC Call Tool Request
+  Server->>Tenant: Verify User Tenant Access (building_id: 1)
+  Tenant-->>Server: Access Granted
+  
+  Server->>Gateway: ModuleGate::call(RoomService, getOccupancy, [1])
+  Gateway->>DB: Query Aggregation Data Kamar
+  DB-->>Gateway: Result (Total: 20, Terisi: 16, Rate: 80%)
+  Gateway-->>Server: Formatted Metrics Data
+  
+  Server->>DB: Audit Log to mcp_tool_logs
+  Server-->>UI: JSON-RPC Result Data Faktual
+  
+  UI->>LLM: Grounded Context Data
+  LLM-->>UI: "Tingkat okupansi Gedung A adalah 80% (16 dari 20 kamar terisi)."
+  UI-->>User: Tampilkan Jawaban Teks + Indikator Persentase

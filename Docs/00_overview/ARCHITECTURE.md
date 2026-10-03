@@ -6,7 +6,7 @@
 
 ## Overview
 
-PA-Management-kost adalah proyek akhir D3/D4 Teknik Informatika PENS — **Sistem Informasi Wisma Amal Gorontalo** berbasis **Modular Monolith**. Mengelola hunian sementara (kost) untuk 3 peran: **Pemilik (Owner), Pengelola (Admin), Penghuni/Calon Penghuni**. Masalah inti yang diselesaikan: pencatatan manual penghuni/kamar/reservasi/keuangan/maintenance yang tidak terstruktur, rawan human error, tanpa dashboard real-time.
+**Refactoring Sistem Manajemen Rumah Kost dengan Arsitektur Modular Monolithic Berbasis Kerangka Kerja Scrum** (Studi Kasus: **Wisma Amal Gorontalo**). Proyek akhir D3 Teknik Informatika PENS yang merefaktorisasi 4 proposal previous work (Juni 2025) menjadi sistem terintegrasi utuh. Mengelola hunian sementara (kost) untuk 3 peran: **Pemilik (Owner), Pengelola (Admin), Penghuni/Calon Penghuni**. Masalah inti: pencatatan manual penghuni/kamar/reservasi/keuangan/maintenance yang tidak terstruktur, rawan human error, tanpa dashboard real-time — serta previous work yang fragmentasi (4 proposal terpisah), arsitektur inkonsisten, test lemah, frontend web hilang, payment sandbox-only.
 
 Sistem dibagi 4 domain layanan + core global, diimplementasi sebagai **Laravel Modules (nwidart/laravel-modules)** di backend dan **Flutter (BLoC + GetIt + AutoRoute)** di frontend — namun tetap terintegrasi dalam satu deployment. Dokumentasi skripsi (PA) dan kode (Project) difederasi via hub ini.
 
@@ -16,13 +16,14 @@ Sistem dibagi 4 domain layanan + core global, diimplementasi sebagai **Laravel M
 
 | Layer | Teknologi | Catatan |
 |---|---|---|
-| Frontend Mobile (Penghuni) | Flutter 3.8.1, Dart 3.8.1, BLoC 9.1, GetIt 8.2, AutoRoute 11.1, Dio 5.9, flutter_secure_storage 10 | Semi-Clean → target Clean Arch (lihat `Project/fe_wisma_amal_gorontalo/CLEAN_ARCHITECTURE_GUIDELINE.md`) |
-| Frontend Web (Pemilik/Pengelola) | React/Next.js (proposal awal) — saat ini via Laravel Blade/Vite + Flutter Web | Per proposal: dashboard RBAC terpisah |
-| Backend | Laravel 11, PHP 8.2, nwidart/laravel-modules 12, Spatie Permission 6.23, Midtrans 2.6, Scramble 0.13 | Modular Monolith, Repository-Service pattern |
-| Database | MySQL (MVCC, ACID), Eloquent ORM | Skema per-modul di `Modules/*/database/migrations` |
-| Auth | Firebase Auth (proposal) + Laravel Sanctum 4.2 + Spatie RBAC | Proposals menyebut Firebase, implementasi saat ini Sanctum |
-| Payment | Midtrans Payment Gateway | Tagihan otomatis, verifikasi via callback |
-| Notifikasi | Open-WA (Node.js) + in-app/Email/WhatsApp | Modul Notification |
+| Frontend Mobile (Penghuni) | Flutter 3.8.1, Dart 3.8.1, BLoC 9.1, GetIt 8.2, AutoRoute 11.1, Dio 5.9, flutter_secure_storage 10 | Clean Architecture (Presentation, Domain, Data) |
+| Frontend Web (Semua Peran) | Flutter Web (single codebase dengan Flutter Mobile) | Clean Architecture, Multi-Tenant Switcher, Chat AI MCP |
+| Backend | Laravel 11, PHP 8.2, nwidart/laravel-modules 12, Spatie Permission 6.23, Midtrans 2.6, Scramble 0.13 | Modular Monolith (3-Tier, Event-Driven, Module Gateway, MCP Server) |
+| Database | MySQL (MVCC, ACID), Eloquent ORM | Skema Multi-Tenant (`buildings`, `building_id` row-level scoping) |
+| Auth & Tenancy | Keycloak OIDC IAM + Laravel Sanctum + Spatie RBAC + TenantResolver | SSO terpusat, stateless JWKS verify, tenant-aware RBAC |
+| AI Integration | Model Context Protocol (MCP) JSON-RPC Server | Read-only tool execution (laporan, okupansi, maintenance) |
+| Payment | Midtrans Payment Gateway | Tagihan otomatis, verifikasi via callback, idempotency |
+| Notifikasi | Fonnte / Open-WA (Node.js) + in-app/Email/WhatsApp | Modul Notification |
 | Infra | Docker, nginx, Vite, Laravel Pail |  |
 
 > Aturan spesifik per stack ada di `STACK.md`. Jangan duplikasi di sini.
@@ -61,6 +62,7 @@ PA-Management-kost/
 │   │   ├── Final Proposal PA.pdf      # Kamar & Reservasi (Roihanah 3123500005)
 │   │   ├── Proposal Proyek Akhir.pdf  # Keuangan (Rizal 3123500060)
 │   │   └── PROPOSAL PROYEK AKHIR _ A4.docx.pdf # Operasional & Maintenance (Bagus 3123500031)
+│   ├── diagrams/                      # 15 Diagram Resmi (Mermaid .mmd + Render .png)
 │   └── docs/                          # Docs PA komprehensif
 │       ├── 00_overview/
 │       ├── 01_guides/PANDUAN_PENULISAN.md
@@ -85,7 +87,7 @@ PA-Management-kost/
 
 ```mermaid
 flowchart LR
-  Penghuni[Calon/Penghuni - Flutter Mobile] --> Auth[Auth Sanctum/Firebase]
+  Penghuni[Calon/Penghuni - Flutter Mobile] --> Auth[Keycloak OIDC / Sanctum]
   Pengelola[Pengelola/Pemilik - Web] --> Auth
   Auth --> API[Laravel API - Modular Monolith]
   API --> DB[(MySQL - per modul)]
@@ -97,9 +99,9 @@ flowchart LR
 ```
 
 Flow request umum:
-1. Login via `Modules/Auth` → Sanctum token → RBAC (Spatie) cek role.
-2. Penghuni: `GET /api/rooms` (Room), `POST /api/reservations` (Rental), `GET /api/bills` (Finance), `POST /api/maintenance` (Maintenance).
-3. Finance callback Midtrans → update `tagihan` + `midtrans_transaction` → trigger Notif.
+1. Login via `Keycloak OIDC` $\rightarrow$ Validasi stateless JWKS $\rightarrow$ JIT Provisioning $\rightarrow$ Sanctum token $\rightarrow$ Spatie RBAC + Tenant Scope.
+2. Penghuni: `GET /api/rooms` (Room), `POST /api/reservations` (Schedule), `GET /api/bills` (Finance), `POST /api/maintenance` (Maintenance).
+3. Finance callback Midtrans $\rightarrow$ update `tagihan` + `midtrans_transaction` $\rightarrow$ trigger Notif.
 
 Untuk flow per modul, lihat `Project/backend-wismaamalgorontalo/docs/modules/[nama].md` dan `Docs/modules/[nama].md`.
 
@@ -109,7 +111,7 @@ Untuk flow per modul, lihat `Project/backend-wismaamalgorontalo/docs/modules/[na
 
 | Modul | Domain | Deskripsi singkat | Dokumen Global | Dokumen Project | Dokumen PA | Status |
 |---|---|---|---|---|---|---|
-| **Auth & RBAC** | Core | Login multi-role, Sanctum, Spatie Permission, feature toggle | [modules/wisma-core.md](../modules/wisma-core.md) | `Project/backend/docs/modules/auth.md` | `PA/docs/modules/bab3-auth.md` | Done (Auth) |
+| **Auth & RBAC** | Core | Keycloak OIDC SSO, Sanctum, Spatie Permission, feature toggle | [modules/wisma-core.md](../modules/wisma-core.md) | `Project/backend/docs/modules/auth.md` | `PA/docs/modules/bab3-auth.md` | Done (Auth) |
 | **Room & Reservation** | Room | CRUD kamar, status real-time (kosong/dipesan/terisi harian/bulanan/tahunan), schedule, anti-bentrok | [modules/room-reservation.md](../modules/room-reservation.md) | `Project/backend/docs/modules/room.md` | `PA/docs/modules/bab3-room.md` | WIP |
 | **Resident & Guest** | Resident | Profil penghuni, assignment kamar, guest logging, history sewa | [modules/resident-guest.md](../modules/resident-guest.md) | `Project/backend/docs/modules/resident.md` | `PA/docs/modules/bab3-resident.md` | WIP |
 | **Finance & Midtrans** | Finance | Tagihan otomatis, Midtrans VA/QRIS, pengeluaran rutin, laporan | [modules/finance-midtrans.md](../modules/finance-midtrans.md) | `Project/backend/docs/modules/finance.md` | `PA/docs/modules/bab3-finance.md` | WIP |
@@ -122,10 +124,10 @@ Untuk flow per modul, lihat `Project/backend-wismaamalgorontalo/docs/modules/[na
 
 | Service | Fungsi | Auth | Docs |
 |---|---|---|---|
+| Keycloak IAM | Single Sign-On (SSO), OpenID Connect Identity Provider, Social Identity Broker | OIDC / JWKS (RS256) | `PA/docs/modules/bab2/README.md` |
 | Midtrans | Payment gateway, Snap token, callback settlement | Server Key | `Project/backend/docs/02_reference/midtrans.md` |
-| Open-WA | Notifikasi WhatsApp otomatis (tagihan, jatuh tempo) | API Key | `Project/backend/docs/02_reference/notifikasi.md` |
+| Open-WA / Fonnte | Notifikasi WhatsApp otomatis (tagihan, jatuh tempo) | API Key | `Project/backend/docs/02_reference/notifikasi.md` |
 | Scramble | Auto API docs `/docs/api` | Sanctum | `Project/backend/docs/02_reference/api-reference.md` |
-| Firebase Auth | Auth terpusat (proposal, opsional) | Firebase Token | `PA/docs/02_reference/firebase.md` |
 
 ## Environment Variables Penting
 

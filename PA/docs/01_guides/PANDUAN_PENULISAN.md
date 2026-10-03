@@ -6,7 +6,7 @@
 
 ## 1. Struktur Front Matter
 
-1. Cover: `PROPOSAL LAPORAN AKHIR` / judul + sub-judul, nama, NRP, dosen pembimbing (nama + NIP), prodi, departemen, PENS, tahun
+1. Cover: `LAPORAN PROYEK AKHIR` / **Refactoring Sistem Manajemen Rumah Kost dengan Arsitektur Modular Monolithic Berbasis Kerangka Kerja Scrum** (Studi Kasus: Wisma Amal Gorontalo), nama, NRP, dosen pembimbing (nama + NIP), prodi, departemen, PENS, tahun
 2. Daftar Isi, Daftar Gambar, Daftar Tabel (dengan nomor halaman titik-titik)
 
 ## 2. Gaya Bahasa

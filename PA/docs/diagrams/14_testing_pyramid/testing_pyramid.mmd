@@ -1,0 +1,20 @@
+flowchart TD
+  subgraph Pyramid["Piramida Pengujian Sistem (Testing Pyramid)"]
+    E2E["1. End-to-End Tests (Cypress / Playwright / Flutter Driver)<br/>• Skenario Penuh Reservasi s/d Pembayaran & AI Consultation"]
+    Integration["2. Integration & Isolation Tests (Pest PHP & Flutter Integration)<br/>• Cross-Module Event Bus Tests<br/>• Tenant Row-Level Isolation (HTTP 403 Cross-Building)<br/>• Midtrans Webhook Settlement Simulation"]
+    Contract["3. API Contract & Validation Tests (Pest PHP)<br/>• Envelope Response Structure {status, message, data, meta}<br/>• Strict FormRequest Validation (HTTP 422 Errors)"]
+    Unit["4. Unit Tests (Pest PHP & Flutter Test)<br/>• Domain UseCases & Entities<br/>• BLoC State Transitions<br/>• Service Business Logic & Concurrency Locking<br/>• MCP Tool Function Deterministic Output"]
+  end
+
+  E2E --- Integration
+  Integration --- Contract
+  Contract --- Unit
+
+  classDef e2e fill:#ffcdd2,stroke:#d32f2f,stroke-width:2px;
+  classDef int fill:#ffe0b2,stroke:#f57c00,stroke-width:2px;
+  classDef con fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+  classDef uni fill:#c8e6c9,stroke:#388e3c,stroke-width:2px;
+  class E2E e2e;
+  class Integration int;
+  class Contract con;
+  class Unit uni;

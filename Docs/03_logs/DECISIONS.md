@@ -50,3 +50,38 @@
 **Konsekuensi:** Konsistensi meningkat, boilerplate bertambah — acceptable untuk PA yang akan di-review dosen.
 
 ---
+
+## ADR-005: 5 Pilar Konseptual PA (Standar I/O, Multi-Tenant Gedung, MCP AI, Clean-Modulith)
+
+**Tanggal:** 2026-10-03
+**Status:** Accepted
+**Konteks:** Naskah PA perlu penguatan bobot substansi teknis dan relevansi industri modern tanpa mengubah judul skripsi yang sudah terdaftar. 4 previous work memiliki kelemahan pada fragmentasi, isolasi data gedung, ketiadaan asisten cerdas, serta format API yang inkonsisten.
+**Keputusan:** Mengadopsi 5 pilar konseptual terpadu:
+1. **Standar Input-Output:** Format envelope API konsisten `{status, message, data, meta, errors}` dengan FormRequest input validation dan Resource DTO serialization.
+2. **Multi-Tenant System (Multi-Gedung):** Logical data isolation berbasis `building_id` dan `TenantResolverMiddleware` untuk mendukung pengelolaan multi-properti oleh satu pemilik/pengelola.
+3. **Model Context Protocol (MCP) with Built-in AI:** Modul MCP Server terisolasi yang menyediakan tool-use read-only untuk asisten AI (analitik keuangan, okupansi, laporan kerusakan) dengan ground data ketat dan tenant scoping.
+4. **Modular Monolith Architecture (Backend):** 3-tier module hierarchy (Infrastructure, Core, Business) dengan komunikasi tulis event-driven dan pembacaan lintas modul via Module Gateway terkontrol `ModuleGate::isActive()`.
+5. **Clean Architecture (Frontend Flutter):** Pemisahan 3 layer (Presentation BLoC, Domain UseCase/Entity/Interface, Data DataSource/Model/RepoImpl) pada single codebase Flutter Web + Mobile.
+**Alternatif:**
+- Separate database per tenant (ditolak, overhead operasional dan sumber daya terlalu besar untuk skala wisma/kost).
+- Autonomous AI agent dengan write permission (ditolak untuk fase 1 demi keamanan transaksi dan integritas data).
+**Konsekuensi:** Perubahan ERD global mencakup entitas `buildings`, pembaruan BAB 1, 2, 3 naskah PA, dan perancangan skenario evaluasi multi-tenant serta AI grounding di BAB 4.
+
+---
+
+## ADR-006: Single Sign-On (SSO) IAM Berbasis Keycloak OpenID Connect (OIDC)
+
+**Tanggal:** 2026-10-03
+**Status:** Accepted
+**Konteks:** Sistem membutuhkan mekanisme otentikasi enterprise yang aman, terpusat, dan terstandarisasi industri tanpa perlu membangun sistem credential management dan MFA dari awal. Pengguna (Pemilik, Pengelola, Penghuni) membutuhkan kemudahan akses melalui Single Sign-On (SSO) dan Social Identity Brokering (Google Login via Keycloak).
+**Keputusan:** Mengadopsi **Keycloak** sebagai *Identity Provider (IdP) & Authorization Server* eksternal berbasis protokol **OpenID Connect (OIDC) / OAuth 2.0**:
+1. Keycloak mengelola Realm `wisma-amal-realm`, registrasi pengguna, kredensial password, MFA, dan *Identity Brokering* (Google OAuth).
+2. Frontend Flutter melakukan otentikasi ke Keycloak OIDC $\rightarrow$ menerima ID Token & Access Token JWT.
+3. Backend Laravel (Modul `Auth`) memverifikasi keaslian token OIDC via *JWKS (JSON Web Key Set)* endpoint Keycloak secara stateless.
+4. Backend melakukan *Just-In-Time (JIT) Provisioning* pada tabel lokal `users` (sinkronisasi `keycloak_id`, email, nama) dan mengikatkan role Spatie RBAC serta tenant scope gedung, kemudian menerbitkan token sesi internal Laravel Sanctum.
+**Alternatif:**
+- Otentikasi username/password manual di Laravel saja (ditolak, beban keamanan tinggi, rentan brute-force, dan tidak mendukung federated SSO).
+- Firebase Auth (disebut di proposal 2025, namun digantikan oleh Keycloak karena Keycloak sepenuhnya open-source, self-hostable, dan standar enterprise OIDC/SAML2).
+**Konsekuensi:** Penambahan entitas `keycloak_id` pada tabel `users`, penambahan sub-bab teori protokol OIDC/JWKS di BAB 2, pemodelan alur SSO di BAB 3, dan penambahan diagram sequence otentikasi Keycloak. Masalah ketiadaan SMTP bawaan pada Keycloak diselesaikan melalui SMTP relay / mail catcher di level server.
+
+

@@ -1,0 +1,67 @@
+flowchart TB
+  subgraph Frontend["Frontend Layer (Clean Architecture - Single Codebase)"]
+    direction LR
+    FlutterWeb["Flutter Web Dashboard<br/>(Owner, Admin, Penghuni)"]
+    FlutterMob["Flutter Mobile App<br/>(Penghuni)"]
+  end
+
+  subgraph Gateway["API Gateway & Tenant Resolution"]
+    APIGateway["REST API Router<br/>(Laravel Sanctum Auth)"]
+    TenantResolver["TenantResolverMiddleware<br/>(X-Building-ID Scoping)"]
+    APIGateway --> TenantResolver
+  end
+
+  subgraph Modulith["Backend Modular Monolith"]
+    subgraph ModuleGateway["Module Gateway Layer"]
+      ModGW["ModuleGate Interface & Runtime Checker<br/>(ModuleGate::isActive)"]
+    end
+
+    subgraph InfraTier["1. Infrastructure Tier (Always Active)"]
+      AuthMod["Modul Auth<br/>(Spatie RBAC 78 Permissions)"]
+      SettingMod["Modul Setting<br/>(Feature Toggle & Config)"]
+    end
+
+    subgraph CoreTier["2. Core Tier (Always Active)"]
+      TenantMod["Modul Building<br/>(Tenant Management)"]
+      RoomMod["Modul Room<br/>(Master Kamar & Fasilitas)"]
+      ScheduleMod["Modul Schedule Core<br/>(Sewa, Perawatan, Blokir)"]
+    end
+
+    subgraph EventBus["Internal Event Bus (Asynchronous Decoupling)"]
+      LaravelEvents["Laravel Domain Events<br/>(JadwalDibuat, PembayaranDiterima, dll.)"]
+    end
+
+    subgraph BusinessTier["3. Business Modules Tier (Independent & Toggleable)"]
+      FinanceMod["Modul Finance<br/>(Midtrans SNAP & Rekap)"]
+      MaintMod["Modul Maintenance<br/>(Tiket Komplain Fasilitas)"]
+      GuestMod["Modul Guest<br/>(Buku Tamu & Kunjungan)"]
+      InvMod["Modul Inventory<br/>(Inventaris Unit Kamar)"]
+      NotifMod["Modul Notification<br/>(WhatsApp & Email Gateway)"]
+      MCPMod["Modul MCP Server<br/>(AI Tool-Use Interface) ★"]
+    end
+  end
+
+  subgraph StorageExternal["Data Storage & External Integrasi"]
+    MySQL[("MySQL 8.x Database<br/>(Row-Level Tenancy: building_id)")]
+    MidtransGateway["Midtrans Payment Gateway<br/>(SNAP API, QRIS, VA)"]
+    WhatsAppGateway["WhatsApp Gateway<br/>(Fonnte / Open-WA)"]
+    LLMEngine["LLM Engine / Asisten AI<br/>(Anthropic / OpenAI)"]
+  end
+
+  Frontend -->|JSON Envelope Request| APIGateway
+  TenantResolver --> ModGW
+
+  ModGW --> InfraTier
+  ModGW --> CoreTier
+  ModGW --> BusinessTier
+
+  CoreTier -->|Emit Event| EventBus
+  EventBus -->|Listen Event| BusinessTier
+
+  InfraTier --> MySQL
+  CoreTier --> MySQL
+  BusinessTier --> MySQL
+
+  FinanceMod <-->|SNAP Token & Webhook| MidtransGateway
+  NotifMod -->|Kirim Pesan| WhatsAppGateway
+  MCPMod <-->|JSON-RPC Tools| LLMEngine

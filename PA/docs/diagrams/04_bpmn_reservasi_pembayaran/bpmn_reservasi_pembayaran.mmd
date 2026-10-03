@@ -1,0 +1,41 @@
+sequenceDiagram
+  autonumber
+  actor User as Calon Penghuni
+  participant FE as Flutter Frontend (Web/Mob)
+  participant API as API Gateway / TenantResolver
+  participant Room as Modul Room
+  participant Sched as Modul Schedule Core
+  participant EventBus as Internal Event Bus
+  participant Fin as Modul Finance
+  participant Mid as Midtrans Payment Gateway
+  participant Notif as Modul Notification
+
+  User->>FE: Pilih Gedung, Kamar & Periode Sewa
+  FE->>API: POST /api/reservations (Header: X-Building-ID)
+  API->>Sched: reserveRoom(buildingId, roomId, userId, dates)
+  
+  Note over Sched: DB Transaction & Pessimistic Lock<br/>SELECT ... FOR UPDATE (Anti Double Booking)
+  Sched->>Sched: Simpan Schedule (status: 'reserved')
+  Sched->>EventBus: emit(JadwalDibuat)
+  
+  EventBus->>Fin: handle(JadwalDibuat)
+  Fin->>Fin: Generate Invoice (status: 'unpaid')
+  Fin->>Mid: Request SNAP Token (with Idempotency-Key)
+  Mid-->>Fin: Return SNAP Token & Redirect URL
+  Fin-->>API: Return Invoice & Token
+  API-->>FE: Return Envelope JSON (HTTP 201 Created)
+  
+  FE->>User: Tampilkan Antarmuka Pembayaran SNAP
+  User->>Mid: Bayar via VA / QRIS
+  Mid-->>Fin: Webhook Callback Settlement (SHA-512 Signature)
+  
+  Note over Fin: Verifikasi Signature SHA-512
+  Fin->>Fin: Update Invoice (status: 'paid')
+  Fin->>EventBus: emit(PembayaranDiterima)
+  
+  EventBus->>Sched: handle(PembayaranDiterima)
+  Sched->>Room: Update Status Kamar ('terisi_sewa')
+  Sched->>Sched: Update Schedule (status: 'active')
+  
+  EventBus->>Notif: handle(PembayaranDiterima)
+  Notif->>User: Kirim Bukti Pembayaran via WhatsApp

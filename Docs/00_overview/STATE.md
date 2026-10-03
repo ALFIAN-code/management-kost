@@ -2,45 +2,44 @@
 
 > Ringkasan 1 halaman untuk AI & manusia agar cepat paham konteks tanpa baca semua `docs/`. Update tiap sesi (bagian dari `AGENTS.md:3` checklist). Maks 400 kata.
 
-**Terakhir diupdate:** 2026-09-22 11:00
-**Fase:** Development — **Literature Review Sprint SELESAI**, PA Progress 15% (siap draft BAB 1-3); **local env ready** (BE serve :8000 + MySQL Docker + FE pub get OK)
-**Progress keseluruhan:** 45% kode (backend modular aktif, frontend ready), **15% PA naskah** (lit-review done, TABEL_JURNAL 15 jurnal, DAFTAR_PUSTAKA 22 entry)
-**Tipe stack:** `fullstack` — Laravel 11 Modular + Flutter 3.8.1 (lihat `STACK.md`)
+**Terakhir diupdate:** 2026-10-03
+**Fase:** **BAB 1, 2, 3 Naskah Akademis Lengkap + Keycloak SSO SELESAI** (15 Diagram & Dokumen Terpadu)
+**Progress keseluruhan:** 80% PA naskah (BAB 1, 2, 3 naskah utuh ~9.800 kata dengan 6 pilar arsitektur: Standar I/O, Multi-Tenant, MCP AI, Keycloak OIDC SSO, Clean-Modulith), 50% Project/kode.
 
-## Apa yang Sudah Jalan (Kode + Lit-Review)
+## Pilar Arsitektur Terpadu (ADR-005 & ADR-006)
 
-- 4 proposal sebelumnya (old-files) selesai Juni 2025: Penghuni&Tamu (Rasyidatur), Kamar&Reservasi (Roihanah), Keuangan (Rizal), Operasional&Maintenance (Bagus) — **ini REFERENSI previous work**
-- Backend `backend-wismaamalgorontalo`: 9 modul aktif (Room, Resident, Finance, Maintenance, Auth, Inventory, Setting, Rental, Notification), Repository-Service pattern, MySQL, Spatie RBAC
-- Frontend `fe_wisma_amal_gorontalo`: Semi-Clean Architecture, BLoC + GetIt + AutoRoute + Dio, secure_storage, siap refactor ke full Clean
-- Docs federated lengkap: `Docs/` hub + `PA/docs/` (struktur, PANDUAN_PENULISAN, TEMPLATE_BASELINE, TABEL_JURNAL 15 jurnal, DAFTAR_PUSTAKA 22 entry, skills 43 file) + `Project/docs/` hub + backend/fe docs
-- ✅ Literature Review Sprint: 15 jurnal terpilih (5 modulith, 4 Flutter Clean Arch, 6 kost Indonesia + Midtrans), 22 entry IEEE numeric, gap statement 5 gap utama
+1. **Standar Input-Output API:** Format response JSON envelope seragam (`{status, message, data, meta, errors}`), FormRequest input validation, dan DTO transformer.
+2. **Multi-Tenant System (Multi-Gedung):** Logical row-level scoping dengan `building_id`, `TenantResolverMiddleware`, dan penugasan akses per gedung untuk pemilik/pengelola.
+3. **Model Context Protocol (MCP) with Built-in AI:** Modul MCP Server read-only untuk asisten AI (tanya okupansi, keuangan, kerusakan fasilitas) dengan data grounding terisolasi per tenant.
+4. **Single Sign-On (SSO) Berbasis Keycloak OIDC:** Otentikasi terpusat via Keycloak IAM, verifikasi stateless JWKS, JIT Provisioning, dan Spatie RBAC.
+5. **Modular Monolith Architecture (Backend):** 3-tier hierarchy (Infra/Auth-Setting, Core/Building-Room-Schedule, Business/Finance-Maintenance-Guest-Inventory-Notification-Mcp) dengan mutasi event-driven dan pembacaan via Module Gateway.
+6. **Clean Architecture (Frontend Flutter):** Pemisahan 3 layer (Presentation BLoC, Domain UseCase, Data RepoImpl) pada single codebase Flutter Web dan Mobile.
 
-## Apa yang Sedang Dikerjakan (Draft BAB 1-3 Sprint — minggu ini)
+## Apa yang Sudah Selesai
 
-**PA Naskah Progress: 15%** — Literature Review Sprint **SELESAI**, siap draft BAB 1-3.
-- ✅ Search jurnal 2022-2026 (Semantic Scholar + SINTA/Garuda) → `TABEL_JURNAL.md` 15 jurnal terpilih
-- ✅ `DAFTAR_PUSTAKA.md` 22 entry IEEE numeric urut kemunculan
-- ✅ Gap statement: 5 gap utama (Clean Arch konsisten, test coverage ≥80%, living docs sync, web+mobile terintegrasi, Midtrans production-ready)
-- 🔄 **Next: Draft BAB 1 penuh → BAB 2 penuh → Outline BAB 3 detail**
+- ✅ ADR-005 (5 Pilar Konseptual) & ADR-006 (Keycloak OIDC SSO) tercatat di `Docs/03_logs/DECISIONS.md`.
+- ✅ `PA/docs/modules/bab1/README.md` diperbarui (gap multi-gedung & SSO, rumusan, tujuan, batasan 6 pilar).
+- ✅ `PA/docs/modules/bab2/README.md` diperbarui (11 sub-bab teori penunjang termasuk OIDC/Keycloak).
+- ✅ `PA/docs/modules/bab3/README.md` diperbarui (arsitektur Clean-Modulith + MCP + SSO, alur otentikasi, ERD multi-gedung, skenario pengujian komprehensif).
+- ✅ 15 folder diagram di `PA/docs/diagrams/`; 2 SVG FINAL arsitektur + ERD aktual + 5 ERD per-cluster HTML resmi docx.
+- ✅ Migration WAJIB tereksekusi (2026-10-03): `buildings`, `building_id` 13 tabel, SSO Keycloak, `mcp_tool_logs`, soft-ref 2 FK — 41 tabel, test 523 passed (2 pre-existing failed).
+- ✅ Backend staging: Schedule event-driven, perbaikan kontrak `/permissions`, Spatie RBAC 78 permissions.
+- ✅ Frontend: Flutter Web / Mobile single codebase, fix singleton SettingBloc.
 
-## Apa Selanjutnya (Next Steps)
+## Apa Selanjutnya
 
-1. Draft BAB 1 penuh (previous work analysis + gap + proposal baru) — gunakan TABEL_JURNAL
-2. Draft BAB 2 penuh (teori + 12 penelitian terkait + tabel perbandingan + gap statement)
-3. Outline BAB 3 detail (diagram BPMN/DFD/Activity/ERD + trace mapping Project/ + mockup + skenario)
-4. Generate docx draft v0.1 (BAB1-3) untuk review dosen
+1. Detail diagram UML/ERD multi-tenant & alur MCP untuk BAB 3.
+2. Review naskah BAB 1-3 sebelum kompilasi ke format docx v0.1.
 
 ## Blocker / Keputusan Pending
 
-- Judul final PA baru: 1 judul integrasi sistem perbaikan (PA-DEC-001 Proposed)
-- Style sitasi: numeric `[1]` (proposal previous) dipertahankan — konfirmasi pembimbing
-- Frontend web owner/admin: React vs Flutter Web — konsistenkan dengan implementasi baru
+- Judul dipertahankan: **Refactoring Sistem Manajemen Rumah Kost dengan Arsitektur Modular Monolithic Berbasis Kerangka Kerja Scrum** (Studi Kasus: Wisma Amal Gorontalo).
+- Scope Multi-Tenant: Shared-DB with row-level scoping (`building_id`).
+- Scope AI MCP: Read-only query & insight reporting (fase 1).
 
 ## Link Cepat
 
 - `Docs/00_overview/ARCHITECTURE.md` → index federasi (hub)
 - `PA/docs/00_overview/ARCHITECTURE.md` → index skripsi
-- `Project/docs/00_overview/ARCHITECTURE.md` → index kode
-- `Docs/03_logs/PROGRESS_LOG.md` → detail 3-5 sesi terakhir
-- `Docs/03_logs/DECISIONS.md` → ADR terbaru
-- `PA/docs/01_guides/PANDUAN_PENULISAN.md` → aturan tulis kampus
+- `Docs/03_logs/DECISIONS.md` → ADR terbaru (ADR-001 s/d ADR-006)
+- `Docs/03_logs/PROGRESS_LOG.md` → histori sesi global

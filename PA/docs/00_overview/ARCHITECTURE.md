@@ -1,11 +1,11 @@
 # Arsitektur Naskah — PA Wisma Amal
 
-**Terakhir diupdate:** 2025-09-19
+**Terakhir diupdate:** 2025-09-20
 **Aturan tulis:** lihat `01_guides/PANDUAN_PENULISAN.md` + `02_reference/TEMPLATE_BASELINE.md`
 
 ## Overview
 
-Naskah Proyek Akhir D3 Teknik Informatika PENS — Pengembangan Sistem Informasi Wisma Amal Gorontalo (Modular Monolith, Scrum). Terdiri dari 5 BAB + front matter + lampiran, mengikuti sistematika 4 proposal di `PA/old-files/`.
+Naskah Proyek Akhir D3 Teknik Informatika PENS — **Refactoring Sistem Manajemen Rumah Kost dengan Arsitektur Modular Monolithic Berbasis Kerangka Kerja Scrum** (Studi Kasus: Wisma Amal Gorontalo). Terdiri dari 5 BAB + front matter + lampiran, mengikuti sistematika 4 proposal di `PA/old-files/`.
 
 ## Struktur Naskah
 

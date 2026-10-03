@@ -20,6 +20,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'keycloak_id',
+        'auth_provider',
+        'assigned_building_id',
     ];
 
     protected $hidden = [

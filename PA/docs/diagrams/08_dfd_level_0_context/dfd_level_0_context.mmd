@@ -1,0 +1,25 @@
+flowchart TD
+  Penghuni["Penghuni / Calon Penghuni"]
+  Owner["Pemilik Properti (Owner)"]
+  Pengelola["Pengelola Gedung (Admin)"]
+  Midtrans["Midtrans Payment Gateway"]
+  WhatsApp["WhatsApp Gateway (Fonnte)"]
+  LLM["LLM AI Engine (Anthropic/OpenAI)"]
+
+  System["0.0 SISTEM INFORMASI MANAJEMEN WISMA AMAL<br/>(Clean-Modulith, Multi-Tenant, & MCP AI)"]
+
+  Penghuni -->|Data Registrasi, Reservasi, Pembayaran, Komplain| System
+  System -->|Informasi Kamar, Invoice SNAP, Notifikasi Sewa| Penghuni
+
+  Owner -->|Konfigurasi Gedung, Tarif, Switch Tenant, Prompt AI| System
+  System -->|Dashboard Agregat, Laporan Finansial, Jawaban AI| Owner
+
+  Pengelola -->|Manajemen Kamar, Penjadwalan, Tindak Lanjut Komplain| System
+  System -->|Daftar Tiket Kerusakan, Jadwal Kamar Gedung Binaan| Pengelola
+
+  System -->|Request Charge, Idempotency-Key| Midtrans
+  Midtrans -->|Webhook Callback Settlement, SHA-512 Signature| System
+
+  System -->|Payload Pesan Notifikasi Tagihan & Servis| WhatsApp
+
+  System <-->|JSON-RPC Tool Calls & Grounded Context| LLM

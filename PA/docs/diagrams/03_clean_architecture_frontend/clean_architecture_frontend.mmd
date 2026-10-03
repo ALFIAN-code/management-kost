@@ -1,0 +1,39 @@
+flowchart TD
+  subgraph PresentationLayer["PRESENTATION LAYER (UI & State)"]
+    UIWidgets["UI Widgets & Responsive Pages<br/>(Flutter Web & Mobile)"]
+    BLoC["State Management: BLoC / Cubit<br/>(Unidirectional Data Flow)"]
+    UIWidgets -->|User Action Event| BLoC
+    BLoC -->|Emit Immutable State| UIWidgets
+  end
+
+  subgraph DomainLayer["DOMAIN LAYER (Pure Dart - Enterprise Business Logic)"]
+    UseCases["UseCases<br/>(GetBuildingOccupancy, ReserveRoom, PayBill)"]
+    Entities["Domain Entities<br/>(RoomEntity, InvoiceEntity, BuildingEntity)"]
+    RepoInterfaces["Repository Interfaces (Contracts)<br/>(RoomRepository, FinanceRepository)"]
+  end
+
+  subgraph DataLayer["DATA LAYER (Data Sources & Infrastructure)"]
+    RepoImpl["Repository Implementations<br/>(Either Failure, Success Mapping)"]
+    DataSources["DataSources<br/>(Remote Dio Client & Local Secure Storage)"]
+    Models["Models / DTOs<br/>(JSON Serializers & toEntity Mapper)"]
+  end
+
+  subgraph ExternalBackend["BACKEND REST API"]
+    RESTAPI["Laravel RESTful API Endpoints<br/>(Envelope: status, message, data, meta)"]
+  end
+
+  BLoC -->|Execute| UseCases
+  UseCases -->|Invoke| RepoInterfaces
+  UseCases -.->|Operate On| Entities
+  RepoImpl -.->|Implements| RepoInterfaces
+  RepoImpl -->|Fetch Raw Data| DataSources
+  DataSources -->|Parse JSON| Models
+  Models -.->|Map to| Entities
+  DataSources <-->|HTTP Request + X-Building-ID| RESTAPI
+
+  classDef pres fill:#fce4ec,stroke:#c2185b,stroke-width:2px;
+  classDef dom fill:#e8eaf6,stroke:#3949ab,stroke-width:2px;
+  classDef data fill:#e0f2f1,stroke:#00897b,stroke-width:2px;
+  class UIWidgets,BLoC pres;
+  class UseCases,Entities,RepoInterfaces dom;
+  class RepoImpl,DataSources,Models data;

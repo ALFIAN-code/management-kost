@@ -1,0 +1,35 @@
+sequenceDiagram
+  autonumber
+  actor Owner as Pemilik / Pengelola
+  participant FE as Flutter Web (Tab Chat AI)
+  participant LLM as LLM Engine (Claude / Gemini)
+  participant MCP as Modul MCP Server (Backend)
+  participant Auth as Modul Auth (Token & RBAC)
+  participant ModGW as Module Gateway Layer
+  participant DB as MySQL Multi-Tenant Database
+  participant Log as Audit Trail (mcp_tool_logs)
+
+  Owner->>FE: Input Prompt: "Berapa total pendapatan Gedung Melati bulan ini?"
+  FE->>LLM: Kirim Natural Language Prompt + Schema Tool MCP
+  
+  Note over LLM: LLM Menganalisis Niat & Memilih Tool<br/>get_financial_summary(building_id: 2, date_range: "2026-10")
+  
+  LLM-->>FE: Request Tool Execution via JSON-RPC
+  FE->>MCP: POST /api/mcp/rpc (Tool Call Request)
+  
+  MCP->>Auth: Verifikasi Token & Hak Akses Tenant (building_id: 2)
+  Auth-->>MCP: Otorisasi Sah (Owner memiliki Gedung 2)
+  
+  MCP->>ModGW: Query Financial Summary via FinanceModuleGateway
+  ModGW->>DB: SELECT SUM(nominal) FROM invoices WHERE building_id=2 AND ...
+  DB-->>ModGW: Return Data Angka Faktual
+  ModGW-->>MCP: Return Structured Data JSON
+  
+  MCP->>Log: Simpan Rekam Jejak Tool (user_id, tool_name, params, execution_time)
+  MCP-->>FE: Return JSON-RPC Result Data Faktual
+  
+  FE->>LLM: Kirim Data Hasil Eksekusi Tool
+  Note over LLM: LLM Melakukan Sintesis Respon Alami<br/>Grounding Data Ketat (Anti-Halusinasi)
+  
+  LLM-->>FE: Return Jawaban Teks Lengkap + Rincian Tabel
+  FE-->>Owner: Render Narasi Penjelasan & Tabel Ringkas di UI

@@ -1,0 +1,25 @@
+flowchart TB
+  subgraph ConfigFile["Konfigurasi Modul (modules_statuses.json)"]
+    JSON["{<br/>&nbsp;&nbsp;'Room': true,<br/>&nbsp;&nbsp;'Finance': true,<br/>&nbsp;&nbsp;'Maintenance': false,<br/>&nbsp;&nbsp;'MCP': true<br/>}"]
+  end
+
+  subgraph Bootstrapping["Laravel Application Booting"]
+    Provider["ModuleServiceProvider<br/>(Discovery Engine)"]
+    GateChecker["ModuleGate::isActive('Name')"]
+  end
+
+  subgraph RuntimeSystem["Runtime Execution Layer"]
+    direction TB
+    ActiveMod["Modul Aktif (Finance, Room, MCP)<br/>• Routes Registered<br/>• Event Listeners Registered<br/>• Repositories Bound"]
+    DisabledMod["Modul Nonaktif (Maintenance)<br/>• Routes Blocked (404)<br/>• Listeners Ignored<br/>• Graceful Fallback Output"]
+  end
+
+  subgraph ClientApp["Frontend & Client Interaksi"]
+    FEConfig["GET /api/setting/features<br/>(Dynamic UI Sidebar Rendering)"]
+  end
+
+  ConfigFile --> Provider
+  Provider --> GateChecker
+  GateChecker -->|Status: true| ActiveMod
+  GateChecker -->|Status: false| DisabledMod
+  ActiveMod --> FEConfig
