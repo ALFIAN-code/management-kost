@@ -1,0 +1,39 @@
+sequenceDiagram
+  autonumber
+  actor Resident as Penghuni Kamar
+  actor Admin as Pengelola Gedung
+  actor Tech as Teknisi / Petugas Servis
+  participant Maint as Modul Maintenance (Opsional)
+  participant Room as Modul Room (Core)
+  participant Bus as Internal Event Bus
+  participant Notif as Modul Notification (Opsional)
+
+  Resident->>Maint: Buat Tiket Komplain (room_id, judul, deskripsi, foto_bukti)
+  Maint->>Maint: Simpan Tiket (status: 'open')
+  Maint->>Bus: emit(DamageReportCreated)
+  
+  opt Notifikasi Tiket Masuk
+    Bus->>Notif: handle(DamageReportCreated) -> Kirim WA ke Pengelola
+  end
+
+  Admin->>Maint: Buka Tiket, Tinjau Deskripsi & Foto Kerusakan
+  
+  alt Kasus Kerusakan Fatal (Fasilitas Kamar Rusak Total / Bahaya)
+    Admin->>Room: PATCH /api/rooms/{id}/status -> 'under_maintenance'
+    Note over Room: Kamar terkunci dari alokasi penghuni baru di Modul Schedule
+  end
+
+  Admin->>Maint: Tugaskan Teknisi (assignee_name, target_selesai)
+  Maint->>Maint: Update Tiket -> 'in_progress'
+
+  Tech->>Admin: Laporkan Pekerjaan Selesai
+  Admin->>Maint: Verifikasi Hasil & Tutup Tiket (status: 'resolved')
+  Maint->>Bus: emit(DamageReportResolved)
+
+  opt Pemulihan Status Kamar
+    Admin->>Room: Kembalikan Status Fisik Kamar -> 'available'
+  end
+
+  opt Notifikasi Penyelesaian ke Penghuni
+    Bus->>Notif: handle(DamageReportResolved) -> Kirim WA: Perbaikan Selesai
+  end

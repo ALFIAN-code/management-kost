@@ -10,6 +10,7 @@
 3. **Log append-only.** `PROGRESS_LOG.md`, `CHANGELOG.md`, `DECISIONS.md` tambah entry baru, jangan timpa/hapus.
 4. **Perubahan besar butuh persetujuan eksplisit** (L1 Supervised default).
 5. **Jangan copy-paste mentah.** Selective copy sesuai stack (lihat AGENTS.md:7 template v3).
+6. **Pusat Desain Sistem (Single Source of Truth):** Seluruh perancangan sistem (Daftar Fitur, BPMN, DFD, ERD, dan Arsitektur) WAJIB dicatat terpusat di `PA/docs/System design/`. Dilarang menyebarkan draf versi lain di luar folder ini agar tidak terjadi multi-tafsir. Setiap keputusan yang disetujui user dalam diskusi WAJIB otomatis langsung dicatat ke `PA/docs/System design/` dan `Docs/03_logs/DECISIONS.md` pada turn yang sama.
 
 ---
 
@@ -48,6 +49,7 @@ Baca berurutan, jangan dilompat:
 | Jurnal / pustaka | `PA/docs/02_reference/TABEL_JURNAL.md` + `DAFTAR_PUSTAKA.md` |
 | Kode backend | `Project/backend-wismaamalgorontalo/docs/modules/*.md` + `02_reference/*` jika schema/API berubah + `KNOWLEDGE_BASE.md` (living) |
 | Kode frontend | `Project/fe_wisma_amal_gorontalo/docs/modules/*.md` |
+| Desain Sistem (Fitur, BPMN, DFD, ERD) | `PA/docs/System design/*` + `Docs/03_logs/DECISIONS.md` |
 | Keputusan penting | `Docs/03_logs/DECISIONS.md` (+ `PA/docs/03_logs/DECISIONS.md` jika soal naskah) |
 | **Setiap sesi (selalu)** | `Docs/03_logs/PROGRESS_LOG.md` + `Docs/00_overview/STATE.md` (+ PROGRESS_LOG scope yang dikerjakan) |
 

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>ERD — Sistem Manajemen Hunian Dinamis (Modular Monolith)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #0f172a; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; }
+  .bar { width: 100%; max-width: 1300px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+  .bar h1 { font-size: 1.2rem; } .bar p { font-size: .85rem; color: #64748b; }
+  .btn { padding: 8px 16px; font-weight: 600; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; margin-left: 8px; }
+  .btn.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .wrap { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; max-width: 1300px; width: 100%; overflow-x: auto; display: flex; justify-content: center; }
+  .note { max-width: 1300px; width: 100%; margin-top: 20px; background: #fff; padding: 18px 24px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: .85rem; line-height: 1.6; color: #475569; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div><h1>ERD — Sistem Manajemen Hunian Dinamis (21 Tabel, 9 Modul)</h1>
+  <p>Garis = FK fisik intra-modul · Tag oranye = soft-reference lintas modul (tanpa FK fisik)</p></div>
+  <div>
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+<div class="wrap"><svg id="erd" xmlns="http://www.w3.org/2000/svg" width="1300" height="100"></svg></div>
+<div class="note">
+  <b>Cara baca:</b> setiap panel = satu modul (bisa diaktifkan/dinonaktifkan tanpa memutus modul lain). Relasi dengan garis crow's foot hanya ada <b>di dalam</b> modul (FK fisik). Kolom bertag oranye <code>→ tabel</code> adalah soft-reference ke modul lain (UUID terindeks, tanpa constraint), sehingga menonaktifkan modul opsional tidak memicu konflik FK. Kolom <code>created_at</code>/<code>updated_at</code> ada di semua tabel dan tidak ditampilkan agar ringkas.
+</div>
+
+<script>
+// ===== DATA — kolom: [nama, tipe, key]  key: PK | FK | UK | PFK | '>tabel' (soft-ref)
+const M = [
+ { id:'M1', name:'User & Access Control', core:true, A:['users','roles','permissions'], B:['user_profiles','user_roles','role_permissions'],
+   T:{ users:[['id','uuid','PK'],['keycloak_sub','string','UK'],['name','string'],['email','string','UK'],['phone','string'],['assigned_building_id','uuid','>buildings'],['is_active','bool'],['last_login_at','timestamp']],
+       user_profiles:[['id','uuid','PK'],['user_id','uuid','FK'],['nik_ktp','string'],['gender','string'],['address','text'],['emergency_contact_name','string'],['emergency_contact_phone','string'],['photo_url','string']],
+       roles:[['id','uuid','PK'],['name','string','UK'],['display_name','string'],['description','string'],['is_system','bool']],
+       user_roles:[['user_id','uuid','PFK'],['role_id','uuid','PFK']],
+       permissions:[['id','uuid','PK'],['name','string','UK'],['module','string'],['description','string']],
+       role_permissions:[['role_id','uuid','PFK'],['permission_id','uuid','PFK']] },
+   R:[['users','user_profiles','user_id','1'],['users','user_roles','user_id','N'],['roles','user_roles','role_id','N'],['roles','role_permissions','role_id','N'],['permissions','role_permissions','permission_id','N']] },
+ { id:'M2', name:'Property & Building', core:true, A:['buildings'], B:['building_settings'],
+   T:{ buildings:[['id','uuid','PK'],['code','string','UK'],['name','string'],['address','text'],['total_rooms','int']],
+       building_settings:[['id','uuid','PK'],['building_id','uuid','FK'],['booking_policy','enum'],['min_rental_months','int'],['is_finance_active','bool'],['is_maintenance_active','bool'],['is_guest_active','bool'],['is_inventory_active','bool'],['curfew_time','time'],['fine_daily_rate','decimal'],['auto_invoice_lead_days','int']] },
+   R:[['buildings','building_settings','building_id','1']] },
+ { id:'M3', name:'Room Management', core:true, A:['room_types'], B:['rooms','room_images'],
+   T:{ room_types:[['id','uuid','PK'],['building_id','uuid','>buildings'],['name','string'],['facilities','json']],
+       rooms:[['id','uuid','PK'],['building_id','uuid','>buildings'],['room_type_id','uuid','FK'],['room_number','string'],['floor','int'],['capacity','int'],['physical_status','enum'],['base_price','decimal'],['description','text']],
+       room_images:[['id','uuid','PK'],['room_id','uuid','FK'],['image_url','string'],['is_primary','bool'],['sort_order','int']] },
+   R:[['room_types','rooms','room_type_id','N'],['rooms','room_images','room_id','N']] },
+ { id:'M4', name:'Occupancy & Schedule', core:true, A:['occupancies'], B:['occupancy_members'],
+   T:{ occupancies:[['id','uuid','PK'],['building_id','uuid','>buildings'],['room_id','uuid','>rooms'],['primary_user_id','uuid','>users'],['start_date','date'],['end_date','date'],['status','enum'],['agreed_price','decimal']],
+       occupancy_members:[['id','uuid','PK'],['occupancy_id','uuid','FK'],['user_id','uuid','>users'],['slot_number','int'],['check_in_at','timestamp'],['check_out_at','timestamp']] },
+   R:[['occupancies','occupancy_members','occupancy_id','N']] },
+ { id:'O1', name:'Finance & Billing', core:false, A:['invoices','fines'], B:['payments','expenses'],
+   T:{ invoices:[['id','uuid','PK'],['building_id','uuid','>buildings'],['occupancy_id','uuid','>occupancies'],['invoice_number','string','UK'],['amount','decimal'],['issued_date','date'],['due_date','date'],['status','enum']],
+       payments:[['id','uuid','PK'],['invoice_id','uuid','FK'],['payment_method','enum'],['amount','decimal'],['status','enum'],['transaction_time','timestamp'],['proof_url','string'],['gateway_reference_id','string']],
+       fines:[['id','uuid','PK'],['building_id','uuid','>buildings'],['occupancy_id','uuid','>occupancies'],['reason','enum'],['amount','decimal'],['status','enum']],
+       expenses:[['id','uuid','PK'],['building_id','uuid','>buildings'],['category','enum'],['amount','decimal'],['expense_date','date'],['description','text'],['receipt_url','string'],['recorded_by_user_id','uuid','>users']] },
+   R:[['invoices','payments','invoice_id','N']] },
+ { id:'O2', name:'Maintenance', core:false, A:['damage_reports','maintenance_schedules'], B:['damage_report_logs'],
+   T:{ damage_reports:[['id','uuid','PK'],['building_id','uuid','>buildings'],['room_id','uuid','>rooms'],['reporter_user_id','uuid','>users'],['title','string'],['description','text'],['photo_url','string'],['priority','enum'],['status','enum'],['cost_estimate','decimal']],
+       damage_report_logs:[['id','uuid','PK'],['damage_report_id','uuid','FK'],['actor_user_id','uuid','>users'],['previous_status','string'],['new_status','string'],['notes','text']],
+       maintenance_schedules:[['id','uuid','PK'],['building_id','uuid','>buildings'],['target_type','enum'],['target_id','uuid','>rooms'],['service_name','string'],['frequency_days','int'],['last_service_date','date'],['next_service_date','date'],['status','enum']] },
+   R:[['damage_reports','damage_report_logs','damage_report_id','N']] },
+ { id:'O3', name:'Asset & Inventory', core:false, A:['inventories'], B:['room_inventories'],
+   T:{ inventories:[['id','uuid','PK'],['building_id','uuid','>buildings'],['item_code','string','UK'],['item_name','string'],['brand','string'],['purchase_date','date'],['purchase_price','decimal'],['total_stock','int']],
+       room_inventories:[['id','uuid','PK'],['inventory_id','uuid','FK'],['room_id','uuid','>rooms'],['quantity','int'],['condition','enum'],['last_audit_date','date']] },
+   R:[['inventories','room_inventories','inventory_id','N']] },
+ { id:'O4', name:'Guest Logging', core:false, A:['guests'], B:[],
+   T:{ guests:[['id','uuid','PK'],['building_id','uuid','>buildings'],['occupancy_id','uuid','>occupancies'],['guest_name','string'],['guest_id_number','string'],['phone','string'],['check_in_at','timestamp'],['check_out_at','timestamp'],['overnight_stay','bool'],['stay_fee','decimal'],['status','enum']] }, R:[] },
+ { id:'O5', name:'Notification', core:false, A:['notification_logs'], B:[],
+   T:{ notification_logs:[['id','uuid','PK'],['building_id','uuid','>buildings'],['recipient_user_id','uuid','>users'],['channel','enum'],['event_name','string'],['message_payload','text'],['delivery_status','enum'],['sent_at','timestamp']] }, R:[] },
+];
+
+// ===== LAYOUT
+const NS='http://www.w3.org/2000/svg', svg=document.getElementById('erd');
+const W=1300, COLS=3, PW=416, PG=14, X0=12, TW=166, TG=60, RH=17, HH=22, TOP=70, PAD=12;
+function el(t,a,txt,parent){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!==undefined)e.textContent=txt;(parent||svg).appendChild(e);return e;}
+const tH=rows=>HH+rows.length*RH+4;
+const stackH=(m,list)=>list.reduce((s,n)=>s+tH(m.T[n])+18,0)-18;
+const panelH=m=>36+Math.max(stackH(m,m.A),m.B.length?stackH(m,m.B):0)+PAD;
+
+el('text',{x:12,y:34,'font-size':22,'font-weight':'bold','font-family':'Times New Roman, serif','text-decoration':'underline'},'ENTITY RELATIONSHIP DIAGRAM');
+// legenda
+const lg=[[ '#1e3a8a','PK'],['#15803d','FK (intra-modul)'],['#c2410c','→ soft-ref lintas modul']];
+lg.forEach(([c,t],i)=>{el('rect',{x:700+i*180,y:20,width:26,height:15,rx:3,fill:c});el('text',{x:732+i*180,y:32,'font-size':12,'font-weight':600},t);});
+
+const colY=[TOP,TOP,TOP]; const pos={};
+M.forEach(m=>{
+  const c=colY.indexOf(Math.min(...colY)); const px=X0+c*(PW+PG), py=colY[c], ph=panelH(m);
+  colY[c]+=ph+PG;
+  el('rect',{x:px,y:py,width:PW,height:ph,rx:10,fill:m.core?'#f8fafc':'#fffbeb',stroke:m.core?'#94a3b8':'#f59e0b','stroke-width':1.4,'stroke-dasharray':m.core?'':'6 4'});
+  el('text',{x:px+12,y:py+22,'font-size':12.5,'font-weight':800,fill:m.core?'#334155':'#92400e'},`${m.id} · ${m.name} ${m.core?'(Core)':'(Opsional)'}`);
+  const place=(list,tx)=>{let ty=py+36;list.forEach(n=>{pos[n]={x:tx,y:ty,col:tx};drawTable(n,m.T[n],tx,ty);ty+=tH(m.T[n])+18;});};
+  const ax=px+PAD, bx=ax+TW+TG; place(m.A,ax); place(m.B,bx);
+  // relasi FK
+  const G='#15803d', fromCount={}; let gapLane=0, sideLane=0;
+  const rowY=(t,name)=>pos[t].y+HH+m.T[t].findIndex(r=>r[0]===name)*RH+RH/2+1;
+  const gapEdges=m.R.filter(([p,ch])=>pos[p].x!==pos[ch].x).sort((a,b)=>rowY(a[1],a[2])-rowY(b[1],b[2]));
+  const laneOf=e=>gapEdges.length-1-gapEdges.indexOf(e);
+  m.R.forEach(e=>{ const [p,ch,fk,card]=e;
+    const P=pos[p], C=pos[ch];
+    const j=fromCount[p]=(fromCount[p]||0)+1;            // titik awal dibedakan per relasi
+    const y1=rowY(p,'id')+(j-1)*5-2, y2=rowY(ch,fk);
+    let d, x1, x2, dir;                                   // dir = arah masuk ke child (+1 dari kiri, -1 dari kanan)
+    if(P.x!==C.x){                                        // beda kolom → lewat celah, jalur unik
+      x1=P.x+TW; x2=C.x; const mx=x1+10+laneOf(e)*9; dir=1;
+      d=`M${x1} ${y1} H${mx} V${y2} H${x2}`;
+    } else {                                              // kolom sama → lewat sisi luar kanan
+      x1=P.x+TW; x2=C.x+TW; const mx=x1+8+sideLane*7; sideLane++; dir=-1;
+      d=`M${x1} ${y1} H${mx} V${y2} H${x2}`;
+    }
+    el('path',{d,fill:'none',stroke:G,'stroke-width':1.5});
+    el('line',{x1:x1+5,y1:y1-5,x2:x1+5,y2:y1+5,stroke:G,'stroke-width':1.5});                  // sisi "satu"
+    if(card==='N') [-5,0,5].forEach(o=>el('line',{x1:x2-dir*9,y1:y2,x2:x2,y2:y2+o,stroke:G,'stroke-width':1.5})); // crow's foot
+    else el('line',{x1:x2-dir*5,y1:y2-5,x2:x2-dir*5,y2:y2+5,stroke:G,'stroke-width':1.5});
+  });
+});
+
+function drawTable(n,rows,x,y){
+  const h=tH(rows);
+  el('rect',{x,y,width:TW,height:h,rx:4,fill:'#fff',stroke:'#334155','stroke-width':1.3});
+  el('path',{d:`M${x} ${y+HH} V${y+4} Q${x} ${y} ${x+4} ${y} H${x+TW-4} Q${x+TW} ${y} ${x+TW} ${y+4} V${y+HH} Z`,fill:'#1e293b'});
+  el('text',{x:x+TW/2,y:y+15,'font-size':11.5,'font-weight':700,fill:'#fff','text-anchor':'middle'},n);
+  rows.forEach(([c,t,k],i)=>{
+    const ry=y+HH+i*RH+13; const sr=k&&k[0]==='>';
+    const col=k==='PK'||k==='PFK'?'#1e3a8a':k==='FK'?'#15803d':sr?'#c2410c':'#0f172a';
+    const tag=el('text',{x:x+TW-6,y:ry,'font-size':9,fill:sr?'#c2410c':'#64748b','text-anchor':'end'},sr?'→'+k.slice(1):(k==='UK'?'UK':k==='PFK'?'PK,FK':t));
+    const nm=el('text',{x:x+6,y:ry,'font-size':10,'font-weight':k&&k!=='UK'?700:500,fill:col,'font-family':'Menlo, Consolas, monospace'},c);
+    const room=TW-12-tag.getComputedTextLength()-6;       // ruang tersisa agar nama tidak menabrak tag
+    if(nm.getComputedTextLength()>room){nm.setAttribute('textLength',room);nm.setAttribute('lengthAdjust','spacingAndGlyphs');}
+  });
+}
+const H=Math.max(...colY);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+
+// ===== EXPORT
+function src(){let s=new XMLSerializer().serializeToString(svg);if(!s.includes('xmlns='))s=s.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"');return s;}
+function dl(h,n){const a=document.createElement('a');a.href=h;a.download=n;document.body.appendChild(a);a.click();a.remove();}
+function exportSVG(){dl(URL.createObjectURL(new Blob([src()],{type:'image/svg+xml'})),'erd_sistem_dinamis.svg');}
+function exportPNG(s){const w=+svg.getAttribute('width'),h=+svg.getAttribute('height'),c=document.createElement('canvas');c.width=w*s;c.height=h*s;
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.scale(s,s);const img=new Image();
+  img.onload=()=>{x.drawImage(img,0,0);dl(c.toDataURL('image/png'),'erd_sistem_dinamis@'+s+'x.png');};
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(src());}
+</script>
+</body>
+</html>

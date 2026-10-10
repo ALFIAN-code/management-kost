@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor Resident as Penghuni Kamar
+  actor Guest as Tamu Luar
+  actor Security as Petugas / Pengelola
+  participant GuestMod as Modul Guest (Opsional)
+  participant Fin as Modul Finance (Opsional)
+  participant Bus as Internal Event Bus
+
+  Resident->>GuestMod: Daftarkan Rencana Kunjungan (nama_tamu, identitas, jadwal, menginap: ya/tidak)
+  GuestMod->>GuestMod: Catat Buku Tamu (status: 'registered')
+
+  Guest->>Security: Tamu Tiba di Lokasi Gedung
+  Security->>GuestMod: PATCH /api/guests/{id}/check-in (Konfirmasi Kehadiran Fisik)
+  GuestMod->>GuestMod: Update Status -> 'checked_in' & Catat Waktu Masuk Riil
+
+  Guest->>Security: Tamu Pulang / Meninggalkan Gedung
+  Security->>GuestMod: PATCH /api/guests/{id}/check-out (Konfirmasi Kepulangan)
+  GuestMod->>GuestMod: Update Status -> 'checked_out' & Catat Waktu Keluar Riil
+  GuestMod->>Bus: emit(GuestCheckedOut)
+
+  opt Jika Tamu Menginap & Modul Finance Aktif
+    Note over GuestMod, Fin: Sistem Menghitung Jumlah Malam Menginap
+    alt Biaya Tamu Menginap Diberlakukan (guest_fee_enabled = true)
+      GuestMod->>Fin: POST /api/finance/invoices (Tambahkan Biaya Tamu ke Tagihan Penghuni)
+      Fin->>Fin: Update Total Kewajiban Penghuni
+    end
+  end

@@ -1,0 +1,37 @@
+sequenceDiagram
+  autonumber
+  actor Admin as Pengelola Gedung
+  actor Resident as Penghuni Kamar
+  participant Inv as Modul Inventory (Opsional)
+  participant Room as Modul Room (Core)
+  participant Maint as Modul Maintenance (Opsional)
+  participant Fin as Modul Finance (Opsional)
+  participant Bus as Internal Event Bus
+
+  Note over Admin, Inv: Tahap 1: Pendaftaran Inventaris Unit Kamar
+  Admin->>Inv: Input Barang Aset (room_id, nama_barang, kode_aset, kondisi_awal: 'baik')
+  Inv->>Room: Validasi Keberadaan Unit Kamar Fisik
+  Inv->>Inv: Simpan Master Aset Kamar (status: 'in_use', kondisi: 'good')
+
+  Note over Admin, Resident: Tahap 2: Audit / Checklist Fisik saat Check-in & Check-out
+  Admin->>Inv: Buka Formulir Checklist Inventaris (room_id)
+  Inv-->>Admin: Tampilkan Daftar Barang Bawaan Kamar
+  Admin->>Resident: Inspeksi Fisik Bersama Penghuni
+
+  alt Kondisi Seluruh Barang Baik & Lengkap
+    Admin->>Inv: Konfirmasi Hasil Audit: 'Semua Barang Lengkap & Baik'
+    Inv->>Inv: Catat Log Audit Inventaris (status: 'verified')
+  else Ditemukan Barang Rusak Berat / Hilang
+    Admin->>Inv: Update Kondisi Aset -> 'damaged' / 'lost'
+    Inv->>Bus: emit(AssetDamagedOrLost)
+    
+    alt Opsi A: Butuh Perbaikan Segera (Modul Maintenance Aktif)
+      Bus->>Maint: handle(AssetDamagedOrLost) -> Buat Tiket Servis Otomatis
+      Maint->>Maint: Tiket Kerusakan Aset Terdaftar (status: 'open')
+    end
+    
+    alt Opsi B: Dikenakan Ganti Rugi Kelalaian (Modul Finance Aktif)
+      Bus->>Fin: handle(AssetDamagedOrLost) -> Terbitkan Invoice Denda/Ganti Rugi
+      Fin->>Resident: Tagihan Penggantian Aset Diterbitkan
+    end
+  end

@@ -1,0 +1,137 @@
+<svg width="100%" viewBox="0 0 720 650" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Cara Kerja Model Context Protocol (MCP) - Wisma Amal</title>
+  <desc>Diagram interaksi Pengguna, AI Host (LLM dan MCP Client), MCP Server Laravel 11, Module Gateway, dan Modul Bisnis.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <style>
+    text { font-family: "anthropic-sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .box-title { font-size: 14px; font-weight: 600; fill: #2a2723; }
+    .box-sub { font-size: 12px; font-weight: 400; fill: #5f5e5a; }
+    .group-label-bold { font-size: 14px; font-weight: 600; fill: #2a2723; }
+    .group-label-sub { font-size: 12px; font-weight: 400; fill: #5f5e5a; }
+    .edge-label { font-size: 12px; font-weight: 400; fill: #454442; }
+  </style>
+
+  <!-- Background Canvas -->
+  <rect x="0" y="0" width="720" height="650" fill="#ffffff" rx="12" />
+
+  <!-- 1. PENGGUNA (Top) -->
+  <g transform="translate(270, 20)">
+    <rect x="0" y="0" width="180" height="50" rx="8" fill="#f1efea" stroke="#5f5e5a" stroke-width="1" />
+    <text x="90" y="20" text-anchor="middle" dominant-baseline="central" class="box-title">Pengguna</text>
+    <text x="90" y="36" text-anchor="middle" dominant-baseline="central" class="box-sub">Owner atau Pengelola</text>
+  </g>
+
+  <!-- Arrow Pengguna -> AI Host -->
+  <line x1="360" y1="70" x2="360" y2="108" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="372" y="90" dominant-baseline="central" class="edge-label">bertanya</text>
+
+  <!-- 2. AI HOST (Container Dashed) -->
+  <rect x="30" y="110" width="660" height="150" rx="12" fill="#faf9f6" stroke="#c3c2b7" stroke-width="1.5" stroke-dasharray="6 6" />
+  <text x="45" y="132" class="group-label-bold">AI host</text>
+  <text x="105" y="132" class="group-label-sub">Aplikasi AI yang memakai MCP</text>
+
+  <!-- LLM Box inside AI Host -->
+  <g transform="translate(60, 150)">
+    <rect x="0" y="0" width="220" height="70" rx="8" fill="#eeedfe" stroke="#534ab7" stroke-width="1" />
+    <text x="110" y="26" text-anchor="middle" dominant-baseline="central" class="box-title" fill="#3c3489">LLM</text>
+    <text x="110" y="46" text-anchor="middle" dominant-baseline="central" class="box-sub" fill="#534ab7">Memutuskan tool yang dipakai</text>
+  </g>
+
+  <!-- MCP Client Box inside AI Host -->
+  <g transform="translate(440, 150)">
+    <rect x="0" y="0" width="220" height="70" rx="8" fill="#eeedfe" stroke="#534ab7" stroke-width="1" />
+    <text x="110" y="26" text-anchor="middle" dominant-baseline="central" class="box-title" fill="#3c3489">MCP client</text>
+    <text x="110" y="46" text-anchor="middle" dominant-baseline="central" class="box-sub" fill="#534ab7">Satu koneksi per server</text>
+  </g>
+
+  <!-- Arrows between LLM and MCP Client -->
+  <!-- Top: LLM -> MCP Client (pilih tool) -->
+  <line x1="280" y1="170" x2="438" y2="170" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="360" y="160" text-anchor="middle" class="edge-label">pilih tool</text>
+
+  <!-- Bottom: MCP Client -> LLM (hasil tool) -->
+  <line x1="440" y1="200" x2="282" y2="200" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="360" y="214" text-anchor="middle" class="edge-label">hasil tool</text>
+
+  <!-- Arrow MCP Client -> MCP Server -->
+  <line x1="550" y1="220" x2="550" y2="308" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="558" y="265" dominant-baseline="central" class="edge-label">JSON-RPC 2.0 + Bearer token</text>
+
+  <!-- 3. MCP SERVER (Container Dashed) -->
+  <rect x="30" y="310" width="660" height="130" rx="12" fill="#f7fbf9" stroke="#91d68b" stroke-width="1.5" stroke-dasharray="6 6" />
+  <text x="45" y="332" class="group-label-bold">MCP server</text>
+  <text x="135" y="332" class="group-label-sub">Modul Mcp di Laravel 11 API</text>
+
+  <!-- 3.1 Auth dan Tenant -->
+  <g transform="translate(60, 350)">
+    <rect x="0" y="0" width="180" height="65" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="1" />
+    <text x="90" y="24" text-anchor="middle" dominant-baseline="central" class="box-title" fill="#1b5e20">Auth dan tenant</text>
+    <text x="90" y="44" text-anchor="middle" dominant-baseline="central" class="box-sub" fill="#2e7d32">Token, building_id</text>
+  </g>
+
+  <!-- Arrow Auth -> Tool Registry -->
+  <line x1="240" y1="382" x2="278" y2="382" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- 3.2 Tool Registry -->
+  <g transform="translate(280, 350)">
+    <rect x="0" y="0" width="180" height="65" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="1" />
+    <text x="90" y="24" text-anchor="middle" dominant-baseline="central" class="box-title" fill="#1b5e20">Tool registry</text>
+    <text x="90" y="44" text-anchor="middle" dominant-baseline="central" class="box-sub" fill="#2e7d32">Nama, deskripsi, skema</text>
+  </g>
+
+  <!-- Arrow Tool Registry -> Tool Handler -->
+  <line x1="460" y1="382" x2="498" y2="382" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- 3.3 Tool Handler -->
+  <g transform="translate(500, 350)">
+    <rect x="0" y="0" width="160" height="65" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="1" />
+    <text x="80" y="24" text-anchor="middle" dominant-baseline="central" class="box-title" fill="#1b5e20">Tool handler</text>
+    <text x="80" y="44" text-anchor="middle" dominant-baseline="central" class="box-sub" fill="#2e7d32">Jalankan satu tool</text>
+  </g>
+
+  <!-- Arrow Tool Handler -> Module Gateway -->
+  <line x1="580" y1="415" x2="580" y2="468" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- 4. MODULE GATEWAY -->
+  <g transform="translate(30, 470)">
+    <rect x="0" y="0" width="660" height="50" rx="8" fill="#f1efea" stroke="#5f5e5a" stroke-width="1" />
+    <text x="330" y="18" text-anchor="middle" dominant-baseline="central" class="box-title">Module gateway</text>
+    <text x="330" y="34" text-anchor="middle" dominant-baseline="central" class="box-sub">Query gateway untuk baca, Event bus untuk tulis</text>
+  </g>
+
+  <!-- Arrows Module Gateway -> Modul Bisnis -->
+  <line x1="100" y1="520" x2="100" y2="558" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+  <line x1="260" y1="520" x2="260" y2="558" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+  <line x1="420" y1="520" x2="420" y2="558" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+  <line x1="580" y1="520" x2="580" y2="558" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- 5. MODUL-MODUL BISNIS (Bottom) -->
+  <!-- 5.1 Finance -->
+  <g transform="translate(30, 560)">
+    <rect x="0" y="0" width="140" height="45" rx="8" fill="#fcfcfb" stroke="#5f5e5a" stroke-width="1" />
+    <text x="70" y="23" text-anchor="middle" dominant-baseline="central" class="box-title">Finance</text>
+  </g>
+
+  <!-- 5.2 Maintenance -->
+  <g transform="translate(190, 560)">
+    <rect x="0" y="0" width="140" height="45" rx="8" fill="#fcfcfb" stroke="#5f5e5a" stroke-width="1" />
+    <text x="70" y="23" text-anchor="middle" dominant-baseline="central" class="box-title">Maintenance</text>
+  </g>
+
+  <!-- 5.3 Guest -->
+  <g transform="translate(350, 560)">
+    <rect x="0" y="0" width="140" height="45" rx="8" fill="#fcfcfb" stroke="#5f5e5a" stroke-width="1" />
+    <text x="70" y="23" text-anchor="middle" dominant-baseline="central" class="box-title">Guest</text>
+  </g>
+
+  <!-- 5.4 Modul lain -->
+  <g transform="translate(510, 560)">
+    <rect x="0" y="0" width="180" height="45" rx="8" fill="#fcfcfb" stroke="#5f5e5a" stroke-width="1" />
+    <text x="90" y="23" text-anchor="middle" dominant-baseline="central" class="box-title">Modul lain</text>
+  </g>
+</svg>

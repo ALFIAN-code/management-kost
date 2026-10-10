@@ -58,17 +58,16 @@ PA-Management-kost/
 │
 ├── PA/                                # SKRIPSI
 │   ├── old-files/                     # 4 PDF proposal (sumber knowledge)
-│   │   ├── Revisi Sempro 1.pdf        # Manajemen Penghuni & Tamu (Rasyidatur 3123500039)
-│   │   ├── Final Proposal PA.pdf      # Kamar & Reservasi (Roihanah 3123500005)
-│   │   ├── Proposal Proyek Akhir.pdf  # Keuangan (Rizal 3123500060)
-│   │   └── PROPOSAL PROYEK AKHIR _ A4.docx.pdf # Operasional & Maintenance (Bagus 3123500031)
-│   ├── diagrams/                      # 15 Diagram Resmi (Mermaid .mmd + Render .png)
 │   └── docs/                          # Docs PA komprehensif
 │       ├── 00_overview/
 │       ├── 01_guides/PANDUAN_PENULISAN.md
 │       ├── 02_reference/DAFTAR_PUSTAKA.md, TABEL_JURNAL.md, TEMPLATE_BASELINE.md
 │       ├── 03_logs/
+│       ├── System design/             # PUSAT DESAIN SISTEM (Single Source of Truth)
+│       │   ├── DAFTAR_FITUR.md        # Spesifikasi 17 Fitur (F01–F17)
+│       │   └── BPMN/                  # 8 Subfolder Alur Proses Bisnis Terisolasi
 │       └── modules/bab1..bab5/
+
 │
 └── Project/                           # KODE
     ├── docs/                          # Hub Project (pointer backend+fe)
@@ -83,42 +82,88 @@ PA-Management-kost/
         └── docs/                      # Docs Frontend
 ```
 
-## Alur Data / Flow Utama
+## Alur Data / Flow Modular Dinamis (ADR-008 & ADR-009)
 
 ```mermaid
-flowchart LR
-  Penghuni[Calon/Penghuni - Flutter Mobile] --> Auth[Keycloak OIDC / Sanctum]
-  Pengelola[Pengelola/Pemilik - Web] --> Auth
-  Auth --> API[Laravel API - Modular Monolith]
-  API --> DB[(MySQL - per modul)]
-  API --> Midtrans[Midtrans Gateway]
-  API --> Notif[Open-WA / Notif]
-  Midtrans --> Finance[Module Finance]
-  Finance --> Room[Module Room/Rental]
-  API --> Maint[Module Maintenance]
+flowchart TD
+  subgraph CONSUMERS [Consumer Layer - Klien Sistem]
+    UserClient[Pengguna Manusia\nWeb & Mobile App]
+    AIClient[Asisten AI / LLM Host\nClaude / ChatGPT / Agen]
+  end
+
+  subgraph ADAPTERS [Interface Adapter Layer]
+    REST[REST API Controllers\nHTTP JSON Envelope]
+    MCP[MCP Server Adapter\nJSON-RPC 2.0 Read-Only - ADR-009]
+  end
+
+  UserClient --> REST
+  AIClient --> MCP
+
+  REST --> CORE
+  REST -.-> OPTIONAL
+  MCP -->|Read-only Query| CORE
+  MCP -.->|Read-only Query| OPTIONAL
+
+  subgraph CORE [CORE MODULES - Domain Bisnis Wajib]
+    UserAccess[User & Access Control\nDynamic RBAC]
+    Property[Property & Building\nMulti-Gedung]
+    Room[Room Management\nKatalog Fisik & Kapasitas]
+    Schedule[Occupancy & Schedule\nAlokasi Orang & Waktu]
+    Dashboard[Occupancy Dashboard\nMonitoring Real-time]
+  end
+
+  subgraph OPTIONAL [OPTIONAL MODULES - Plug & Play per Gedung]
+    Finance[Finance & Billing\nTagihan, Bayar, Pengeluaran]
+    Maint[Maintenance & Facility\nLaporan & Jadwal Servis]
+    Inventory[Asset & Inventory\nBarang per Kamar/Gedung]
+    Guest[Guest Logging\nBuku Tamu]
+    Notif[Notification Service\nWA / Email Gateway]
+  end
+
+  Property --> Room
+  UserAccess --> Schedule
+  Room --> Schedule
+  Schedule --> Dashboard
+  Schedule -.->|Event: OccupancyCreated| Finance
+  Room -.->|Status Kamar| Maint
+  Room -.->|Aset Ruang| Inventory
+  Schedule -.->|Kunjungan Tamu| Guest
+  Finance -.->|Event: Tagihan/Lunas| Notif
 ```
 
-Flow request umum:
-1. Login via `Keycloak OIDC` $\rightarrow$ Validasi stateless JWKS $\rightarrow$ JIT Provisioning $\rightarrow$ Sanctum token $\rightarrow$ Spatie RBAC + Tenant Scope.
-2. Penghuni: `GET /api/rooms` (Room), `POST /api/reservations` (Schedule), `GET /api/bills` (Finance), `POST /api/maintenance` (Maintenance).
-3. Finance callback Midtrans $\rightarrow$ update `tagihan` + `midtrans_transaction` $\rightarrow$ trigger Notif.
+## Daftar Modul (Index Federasi Dinamis — ADR-008 & ADR-009)
 
-Untuk flow per modul, lihat `Project/backend-wismaamalgorontalo/docs/modules/[nama].md` dan `Docs/modules/[nama].md`.
+> **Aturan modular:** Sistem didesain *technology-agnostic* dan *as dynamic as possible*.
+> - **Modul Core:** Selalu aktif di semua skenario properti (kost, asrama, mes, pondok).
+> - **Modul Opsional:** Dapat diaktifkan/dinonaktifkan per gedung.
+> - **Lapisan AI (MCP Adapter - ADR-009):** Hidup **di atas** modul-modul bisnis sebagai adaptor query cerdas *read-only*. MCP bukan domain bisnis inti dan tidak masuk ke dokumen data/ERD operasional.
 
-## Daftar Modul (Index Federasi)
+### Modul Core (Wajib)
 
-> **Aturan modular (AGENTS.md:9):** File ini hanya index. Detail tiap modul ada di `Docs/modules/` dan `Project/docs/modules/` atau `PA/docs/modules/`. AI wajib baca file modul relevan sebelum kerjakan task di modul tersebut.
+| Modul | Domain | Tanggung Jawab Utama | Sifat |
+|---|---|---|---|
+| **User & Access Control** | Core | Akun, biodata, dan **Dynamic RBAC** (permission sets bawaan + pembuatan custom role dinamis). | Wajib |
+| **Property & Building** | Core | Konfigurasi properti/gedung multi-lokasi dan kebijakan dasar gedung. | Wajib |
+| **Room Management** | Core | Master data fisik unit kamar (lantai, nomor, tipe, kapasitas maksimal). Terpisah dari jadwal. | Wajib |
+| **Occupancy & Schedule** | Core | Alokasi dinamis orang $\leftrightarrow$ kamar $\leftrightarrow$ rentang waktu huni, validasi anti-bentrok kuota/jadwal. | Wajib |
+| **Occupancy Dashboard** | Core | Monitoring status hunian dan ketersediaan unit secara real-time. | Wajib |
 
-| Modul | Domain | Deskripsi singkat | Dokumen Global | Dokumen Project | Dokumen PA | Status |
-|---|---|---|---|---|---|---|
-| **Auth & RBAC** | Core | Keycloak OIDC SSO, Sanctum, Spatie Permission, feature toggle | [modules/wisma-core.md](../modules/wisma-core.md) | `Project/backend/docs/modules/auth.md` | `PA/docs/modules/bab3-auth.md` | Done (Auth) |
-| **Room & Reservation** | Room | CRUD kamar, status real-time (kosong/dipesan/terisi harian/bulanan/tahunan), schedule, anti-bentrok | [modules/room-reservation.md](../modules/room-reservation.md) | `Project/backend/docs/modules/room.md` | `PA/docs/modules/bab3-room.md` | WIP |
-| **Resident & Guest** | Resident | Profil penghuni, assignment kamar, guest logging, history sewa | [modules/resident-guest.md](../modules/resident-guest.md) | `Project/backend/docs/modules/resident.md` | `PA/docs/modules/bab3-resident.md` | WIP |
-| **Finance & Midtrans** | Finance | Tagihan otomatis, Midtrans VA/QRIS, pengeluaran rutin, laporan | [modules/finance-midtrans.md](../modules/finance-midtrans.md) | `Project/backend/docs/modules/finance.md` | `PA/docs/modules/bab3-finance.md` | WIP |
-| **Operational & Maintenance** | Ops | Laporan kerusakan (multi-foto), inventory, cleaning schedule, issue tracking | [modules/operational-maintenance.md](../modules/operational-maintenance.md) | `Project/backend/docs/modules/maintenance.md` | `PA/docs/modules/bab3-operational.md` | WIP |
-| **Wisma Core** | Core | User Mgmt, RBAC, Notification, Audit Trail, Feature Toggle | [modules/wisma-core.md](../modules/wisma-core.md) | `Project/docs/00_overview/ARCHITECTURE.md` | `PA/docs/00_overview/ARCHITECTURE.md` | Done |
+### Modul Opsional (Toggleable)
 
-*Jika modul sederhana (<200 baris, 1-3 fitur): 1 file `modules/nama.md`. Jika kompleks (>3 fitur): folder `modules/nama/README.md` + file per fitur.*
+| Modul | Domain | Tanggung Jawab Utama | Skenario Penggunaan |
+|---|---|---|---|
+| **Finance & Billing** | Keuangan | Penerbitan tagihan (*invoice*), verifikasi pembayaran, denda keterlambatan, dan pencatatan pengeluaran operasional (*expenses*). | Aktif untuk kost/komersial; Nonaktif untuk asrama/mes/pondok gratis. |
+| **Maintenance & Facility** | Operasional | Tiket laporan kerusakan fasilitas oleh penghuni dan jadwal perawatan rutin berkala fasilitas gedung. | Aktif jika properti membutuhkan sistem penanganan komplain & servis terjadwal. |
+| **Asset & Inventory** | Operasional | Pencatatan aset barang per kamar/gedung dan kondisi kelayakannya. | Aktif jika properti mendata detail inventaris per unit. |
+| **Guest Logging** | Hunian | Pencatatan buku tamu berkunjung/menginap + opsi penarikan tarif tamu jika Finance aktif. | Aktif jika properti memberlakukan pengawasan tamu ketat. |
+| **Notification Service** | Komunikasi | Otomasi pengiriman pengingat tagihan/tiket ke kanal eksternal (WhatsApp/Email/SMS). | Aktif jika gateway pengiriman pesan dihubungkan. |
+
+### Lapisan Ekstensi AI (External Adapter Layer — ADR-009)
+
+| Komponen | Protokol | Fungsi | Posisi Arsitektur |
+|---|---|---|---|
+| **MCP Server Adapter** | JSON-RPC 2.0 (Model Context Protocol) | Menjawab pertanyaan analitik AI (okupansi, status kamar, komplain, keuangan) secara *read-only* dengan pembatasan hak gedung. | Di atas domain bisnis; mengonsumsi query modul internal; tidak menyimpan data bisnis mandiri. |
+
 
 ## Integrasi Eksternal
 

@@ -1,0 +1,36 @@
+flowchart TB
+    Pengguna["<b>Pengguna</b><br/>Owner atau Pengelola"]
+
+    subgraph AIHost["<b>AI host</b> &nbsp; Aplikasi AI yang memakai MCP"]
+        direction LR
+        LLM["<b>LLM</b><br/>Memutuskan tool yang dipakai"]
+        MCPClient["<b>MCP client</b><br/>Satu koneksi per server"]
+        LLM -->|pilih tool| MCPClient
+        MCPClient -->|hasil tool| LLM
+    end
+
+    subgraph MCPServer["<b>MCP server</b> &nbsp; Modul Mcp di Laravel 11 API"]
+        direction LR
+        AuthTenant["<b>Auth dan tenant</b><br/>Token, building_id"]
+        ToolRegistry["<b>Tool registry</b><br/>Nama, deskripsi, skema"]
+        ToolHandler["<b>Tool handler</b><br/>Jalankan satu tool"]
+        AuthTenant --> ToolRegistry --> ToolHandler
+    end
+
+    ModuleGateway["<b>Module gateway</b><br/>Query gateway untuk baca, Event bus untuk tulis"]
+
+    subgraph BusinessModules[" "]
+        direction LR
+        Finance["<b>Finance</b>"]
+        Maintenance["<b>Maintenance</b>"]
+        Guest["<b>Guest</b>"]
+        ModulLain["<b>Modul lain</b>"]
+    end
+
+    Pengguna -->|bertanya| AIHost
+    MCPClient -->|JSON-RPC 2.0 + Bearer token| MCPServer
+    ToolHandler --> ModuleGateway
+    ModuleGateway --> Finance
+    ModuleGateway --> Maintenance
+    ModuleGateway --> Guest
+    ModuleGateway --> ModulLain

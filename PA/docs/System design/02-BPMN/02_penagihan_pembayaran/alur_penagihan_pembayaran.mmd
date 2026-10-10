@@ -1,0 +1,49 @@
+sequenceDiagram
+  autonumber
+  actor Resident as Penghuni
+  actor Admin as Pengelola Gedung
+  participant Fin as Modul Finance (Opsional)
+  participant Bus as Internal Event Bus
+  participant Sched as Modul Schedule
+  participant Mid as Payment Gateway (Midtrans)
+  participant Notif as Modul Notification (Opsional)
+
+  Bus->>Fin: Tangkap Event: OccupancyCreated (Alokasi Baru Terdaftar)
+  Fin->>Fin: Hitung Tarif Sewa (Harga Bulanan x Durasi / Periode)
+  Fin->>Fin: Terbitkan Invoice Baru (Status: 'unpaid', Jatuh Tempo: H+N)
+  
+  opt Notifikasi Tagihan
+    Fin->>Bus: emit(InvoiceCreated)
+    Bus->>Notif: handle(InvoiceCreated) -> Kirim WA Tagihan ke Penghuni
+  end
+
+  alt Metode A: Pembayaran Digital Otomatis (Midtrans)
+    Resident->>Fin: Request Pembayaran Online (invoice_id)
+    Fin->>Mid: Request SNAP Token (VA / QRIS)
+    Mid-->>Fin: Return SNAP Token
+    Fin-->>Resident: Tampilkan Pop-up Pembayaran Midtrans
+    Resident->>Mid: Lakukan Pembayaran (Bank / E-Wallet)
+    Mid-->>Fin: Webhook Callback Settlement (SHA-512 Verified)
+    Fin->>Fin: Update Invoice -> 'paid'
+    Fin->>Bus: emit(PaymentSettled)
+  else Metode B: Pembayaran Manual (Tunai / Transfer Langsung)
+    Resident->>Admin: Serahkan Uang Tunai / Kirim Bukti Transfer
+    Admin->>Fin: PATCH /api/invoices/{id}/pay-manual (Verifikasi Pembayaran)
+    Fin->>Fin: Update Invoice -> 'paid'
+    Fin->>Bus: emit(PaymentSettled)
+  end
+
+  Bus->>Sched: handle(PaymentSettled) -> Buka Barrier -> Set Alokasi 'confirmed'
+  
+  opt Notifikasi Bukti Bayar
+    Bus->>Notif: handle(PaymentSettled) -> Kirim WA Kuitansi Lunas
+  end
+
+  opt Penanganan Keterlambatan Jatuh Tempo (Unhappy Path)
+    Note over Fin: Scheduler Harian Cek Tanggal Jatuh Tempo + Grace Period
+    alt Belum Lunas & Melewati Batas Toleransi
+      Fin->>Fin: Jika Denda Aktif -> Buat Denda Flat & Update Total Tagihan
+      Fin->>Bus: emit(InvoiceOverdue)
+      Bus->>Notif: handle(InvoiceOverdue) -> Kirim WA Peringatan Jatuh Tempo
+    end
+  end

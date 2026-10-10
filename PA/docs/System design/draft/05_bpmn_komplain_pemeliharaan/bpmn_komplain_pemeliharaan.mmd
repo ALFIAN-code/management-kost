@@ -1,0 +1,44 @@
+sequenceDiagram
+  autonumber
+  actor User as Penghuni
+  actor Admin as Pengelola Gedung
+  participant FE as Frontend UI (Web/Mobile)
+  participant Maint as Modul Maintenance (Opsional)
+  participant Room as Modul Room
+  participant Bus as Internal Event Bus
+  participant Notif as Modul Notification (Opsional)
+
+  User->>FE: Input Tiket Komplain (Kamar, Deskripsi & Foto Kerusakan)
+  FE->>Maint: POST /api/maintenance/reports (building_id, room_id, foto, deskripsi)
+  
+  Maint->>Maint: Simpan Tiket Kerusakan (status: 'open')
+  Maint->>Bus: emit(DamageReportCreated)
+  
+  opt Jika Modul Notifikasi Aktif
+    Bus->>Notif: handle(DamageReportCreated)
+    Notif->>Admin: Kirim Notifikasi WhatsApp: Tiket Baru Masuk
+  end
+  
+  Admin->>FE: Review Tiket & Evaluasi Tingkat Kerusakan
+  
+  opt Kerusakan Fatal (Fasilitas Kamar Rusak Berat)
+    Admin->>Room: Update Status Fisik Kamar -> 'under_maintenance'
+    Note over Room: Kamar sementara tidak dapat dialokasikan di Modul Schedule
+  end
+  
+  Admin->>FE: Tugaskan Teknisi / Staf Penanganan
+  FE->>Maint: PATCH /api/maintenance/reports/{id} (status: 'in_progress')
+  
+  Admin->>FE: Konfirmasi Perbaikan Selesai
+  FE->>Maint: PATCH /api/maintenance/reports/{id} (status: 'resolved')
+  Maint->>Bus: emit(MaintenanceResolved)
+  
+  opt Jika Kamar Sempat Di-nonaktifkan
+    Maint->>Room: Kembalikan Status Fisik Kamar -> 'available'
+  end
+  
+  opt Jika Modul Notifikasi Aktif
+    Bus->>Notif: handle(MaintenanceResolved)
+    Notif->>User: Kirim WhatsApp: Fasilitas Kamar Telah Selesai Diperbaiki
+  end
+

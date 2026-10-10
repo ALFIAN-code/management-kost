@@ -1,0 +1,335 @@
+erDiagram
+    %% ==========================================
+    %% DOMAIN 1: IDENTITY & DYNAMIC RBAC (CORE)
+    %% ==========================================
+    USERS {
+        uuid id PK
+        string name
+        string keycloak_sub UK "OIDC subject dari Keycloak (ADR-006)"
+        string email UK
+        string phone
+        uuid assigned_building_id "soft-ref ke buildings"
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    USER_PROFILES {
+        uuid id PK
+        uuid user_id FK "FK fisik intra-modul (users.id)"
+        string nik_ktp
+        string gender "L / P"
+        text address
+        string emergency_contact_name
+        string emergency_contact_phone
+        string photo_url
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ROLES {
+        uuid id PK
+        string name UK "Owner / Admin / Resident / Custom"
+        string display_name
+        string description
+        boolean is_system "true jika bawaan sistem"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PERMISSIONS {
+        uuid id PK
+        string name UK "e.g. occupancy.manage"
+        string module "user / room / finance / dll"
+        string description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    USER_ROLES {
+        uuid user_id PK "FK users.id"
+        uuid role_id PK "FK roles.id"
+    }
+
+    ROLE_PERMISSIONS {
+        uuid role_id PK "FK roles.id"
+        uuid permission_id PK "FK permissions.id"
+    }
+
+    USERS ||--|| USER_PROFILES : "has profile"
+    USERS ||--o{ USER_ROLES : "assigned"
+    ROLES ||--o{ USER_ROLES : "grants"
+    ROLES ||--o{ ROLE_PERMISSIONS : "contains"
+    PERMISSIONS ||--o{ ROLE_PERMISSIONS : "grouped in"
+
+    %% ==========================================
+    %% DOMAIN 2: PROPERTY & CONFIGURATION (CORE)
+    %% ==========================================
+    BUILDINGS {
+        uuid id PK
+        string code UK "WMA-01"
+        string name
+        text address
+        int total_rooms
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    BUILDING_SETTINGS {
+        uuid id PK
+        uuid building_id FK "FK fisik intra-modul UK (buildings.id)"
+        string booking_policy "ADMIN_ASSIGN_ONLY / SELF_SERVICE_APPROVAL / SELF_SERVICE_INSTANT"
+        boolean is_finance_active "Payment barrier toggle"
+        boolean is_maintenance_active
+        boolean is_guest_active
+        boolean is_inventory_active
+        time curfew_time "Jam malam tamu"
+        decimal fine_daily_rate "Tarif denda keterlambatan"
+        int auto_invoice_lead_days "H-hari sebelum jatuh tempo"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    BUILDINGS ||--|| BUILDING_SETTINGS : "configured by"
+
+    %% ==========================================
+    %% DOMAIN 3: PHYSICAL ROOM CATALOG (CORE)
+    %% ==========================================
+    ROOM_TYPES {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        string name "Standard / Deluxe / Barak"
+        json facilities "AC, Kasur, Lemari, dll"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ROOMS {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        uuid room_type_id FK "FK fisik intra-modul (room_types.id)"
+        string room_number
+        int floor
+        int capacity "Kapasitas max orang"
+        string physical_status "available / occupied / maintenance / blocked"
+        decimal base_price "Tarif sewa dasar (0 jika gratis)"
+        text description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ROOM_IMAGES {
+        uuid id PK
+        uuid room_id FK "FK fisik intra-modul (rooms.id)"
+        string image_url
+        boolean is_primary
+        int sort_order
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ROOM_TYPES ||--o{ ROOMS : "classifies"
+    ROOMS ||--o{ ROOM_IMAGES : "has photos"
+
+    %% ==========================================
+    %% DOMAIN 4: OCCUPANCY & SCHEDULING (CORE)
+    %% ==========================================
+    OCCUPANCIES {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        uuid room_id "soft-ref ke rooms"
+        uuid primary_user_id "soft-ref ke users (penanggung jawab)"
+        date start_date
+        date end_date
+        string status "pending_payment / pending_approval / active / completed / cancelled"
+        decimal agreed_price "Tarif disepakati (0 jika mes/gratis)"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    OCCUPANCY_MEMBERS {
+        uuid id PK
+        uuid occupancy_id FK "FK fisik intra-modul (occupancies.id)"
+        uuid user_id "soft-ref ke users (penghuni fisik)"
+        int slot_number "Nomor kasur / ranjang"
+        timestamp check_in_at
+        timestamp check_out_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    OCCUPANCIES ||--o{ OCCUPANCY_MEMBERS : "has members"
+
+    %% ==========================================
+    %% DOMAIN 5: FINANCE & BILLING (OPTIONAL)
+    %% ==========================================
+    INVOICES {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        uuid occupancy_id "soft-ref ke occupancies"
+        string invoice_number UK "INV/YYYY/MM/NNNN"
+        decimal amount
+        date due_date
+        date issued_date
+        string status "unpaid / paid / expired / cancelled"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PAYMENTS {
+        uuid id PK
+        uuid invoice_id FK "FK fisik intra-modul (invoices.id)"
+        string payment_method "midtrans_va / midtrans_qris / manual_transfer / cash"
+        decimal amount
+        string status "pending / settlement / deny / expire / refund"
+        timestamp transaction_time
+        string proof_url "Bukti transfer jika manual"
+        string gateway_reference_id "Snap token / Order ID Midtrans"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    FINES {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        uuid occupancy_id "soft-ref ke occupancies"
+        string reason "late_payment / damage_penalty / violation"
+        decimal amount
+        string status "unpaid / paid / waived"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    EXPENSES {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        string category "listrik_air / kebersihan / perbaikan / operasional"
+        decimal amount
+        date expense_date
+        text description
+        string receipt_url
+        uuid recorded_by_user_id "soft-ref ke users"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    INVOICES ||--o{ PAYMENTS : "paid via"
+
+    %% ==========================================
+    %% DOMAIN 6: FACILITY MAINTENANCE (OPTIONAL)
+    %% ==========================================
+    DAMAGE_REPORTS {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        uuid room_id "soft-ref ke rooms (nullable jika fasilitas umum)"
+        uuid reporter_user_id "soft-ref ke users"
+        string title
+        text description
+        string photo_url
+        string priority "low / medium / high / emergency"
+        string status "submitted / approved / in_progress / completed / rejected"
+        decimal cost_estimate
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    DAMAGE_REPORT_LOGS {
+        uuid id PK
+        uuid damage_report_id FK "FK fisik intra-modul (damage_reports.id)"
+        uuid actor_user_id "soft-ref ke users"
+        string previous_status
+        string new_status
+        text notes
+        timestamp created_at
+    }
+
+    MAINTENANCE_SCHEDULES {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        string target_type "room / building_facility"
+        uuid target_id "soft-ref ke rooms atau fasilitas"
+        string service_name "Service AC / Kuras Tandon"
+        int frequency_days "Interval servis berkala"
+        date last_service_date
+        date next_service_date
+        string status "scheduled / due / completed"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    DAMAGE_REPORTS ||--o{ DAMAGE_REPORT_LOGS : "tracked by"
+
+    %% ==========================================
+    %% DOMAIN 7: ASSET & INVENTORY (OPTIONAL)
+    %% ==========================================
+    INVENTORIES {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        string item_code UK "INV-AC-01"
+        string item_name
+        string brand
+        date purchase_date
+        decimal purchase_price
+        int total_stock
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ROOM_INVENTORIES {
+        uuid id PK
+        uuid inventory_id FK "FK fisik intra-modul (inventories.id)"
+        uuid room_id "soft-ref ke rooms"
+        int quantity
+        string condition "good / fair / damaged / lost"
+        date last_audit_date
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    INVENTORIES ||--o{ ROOM_INVENTORIES : "distributed into"
+
+    %% ==========================================
+    %% DOMAIN 8: GUEST LOGGING (OPTIONAL)
+    %% ==========================================
+    GUESTS {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        uuid occupancy_id "soft-ref ke occupancies (tuan rumah)"
+        string guest_name
+        string guest_id_number "NIK / Paspor / SIM"
+        string phone
+        timestamp check_in_at
+        timestamp check_out_at
+        boolean overnight_stay
+        decimal stay_fee "Biaya inap jika diatur kebijakan"
+        string status "checked_in / checked_out"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ==========================================
+    %% DOMAIN 9: NOTIFICATION SERVICE (OPTIONAL)
+    %% ==========================================
+    NOTIFICATION_LOGS {
+        uuid id PK
+        uuid building_id "soft-ref ke buildings"
+        uuid recipient_user_id "soft-ref ke users"
+        string channel "whatsapp / email / in_app"
+        string event_name "invoice_issued / maintenance_updated"
+        text message_payload
+        string delivery_status "queued / sent / failed"
+        timestamp sent_at
+        timestamp created_at
+    }
+
+    %% ==========================================
+    %% SOFT REFERENCE RELATIONSHIPS (LOGICAL ONLY)
+    %% ==========================================
+    BUILDINGS ||--o{ ROOMS : "soft-ref owns rooms"
+    BUILDINGS ||--o{ OCCUPANCIES : "soft-ref scopes occupancies"
+    ROOMS ||--o{ OCCUPANCIES : "soft-ref allocated in"
+    USERS ||--o{ OCCUPANCIES : "soft-ref contracts"
+    OCCUPANCIES ||--o{ INVOICES : "soft-ref billed by"
+    OCCUPANCIES ||--o{ DAMAGE_REPORTS : "soft-ref reports from"
+    OCCUPANCIES ||--o{ GUESTS : "soft-ref hosts guests"
+    ROOMS ||--o{ ROOM_INVENTORIES : "soft-ref contains items"

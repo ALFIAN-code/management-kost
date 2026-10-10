@@ -47,7 +47,7 @@ Pada industri properti sewa hunian berskala mikro hingga menengah, digitalisasi 
 ```
 
 1. **Manajemen Aset Fisik & Ruang:** Mengelola data master kamar (nomor, tipe, kapasitas, fasilitas, tarif dasar), inventaris barang di dalam unit, serta jadwal pemeliharaan preventif.
-2. **Manajemen Siklus Hidup Sewa (Tenancy Lifecycle):** Memfasilitasi pendaftaran calon penghuni, verifikasi identitas (KTP/kontak), alokasi kamar, kontrak sewa berkala (harian, bulanan, tahunan), mutasi kamar, hingga prosedur *check-out* dan pengembalian deposit.
+2. **Manajemen Siklus Hidup Sewa (Tenancy Lifecycle):** Memfasilitasi pendaftaran calon penghuni, verifikasi identitas (KTP/kontak), alokasi kamar, kontrak sewa **bulanan** dengan minimal durasi configurable per gedung, hingga prosedur *check-out* dan serah terima fasilitas. [Revisi ADR-007: sewa harian/tahunan tidak didukung.]
 3. **Akuntansi & Penagihan Sewa (Rent Accounting & Billing):** Otomasi penerbitan tagihan berkala (*recurring invoice*), integrasi kanal pembayaran digital terverifikasi (*payment gateway*), denda keterlambatan, manajemen uang jaminan (*security deposit*), serta penyusunan laporan laba rugi dan arus kas.
 4. **Manajemen Layanan & Pemeliharaan (Helpdesk & Maintenance):** Sistem tiket penanganan komplain kerusakan fasilitas berbasis multi-foto, penugasan teknisi/petugas kebersihan, pemantauan waktu penyelesaian (*Service Level Agreement* / SLA), dan pencatatan riwayat depresiasi fasilitas aset [4][19].
 
@@ -115,9 +115,11 @@ Kunci modularitas sejati terletak pada penghapusan pemanggilan service langsung 
 - **Operasi Tulis (Mutasi Data) Berbasis Internal Event Bus:** Ketika terjadi mutasi data pada Core Tier (misalnya jadwal sewa baru dibuat), modul `Schedule` memancarkan domain event global `JadwalDibuat`. Modul `Finance` yang bertindak sebagai listener akan menangkap event tersebut dan menerbitkan invoice secara asinkron tanpa modul `Schedule` perlu mengetahui keberadaan modul `Finance`. Jika modul `Finance` dinonaktifkan via `modules_statuses.json`, event tetap dipancarkan tanpa memicu kegagalan sistem (*graceful degradation*).
 - **Operasi Baca (Query Aggregation) Berbasis Module Gateway Layer:** Untuk kebutuhan pembacaan data lintas modul (misalnya dashboard agregasi atau laporan analitik AI), modul bisnis memanggil kontrak publik pada *Module Gateway Layer*. Pemanggilan ini diproteksi oleh pengecekan runtime `ModuleGate::isActive('ModuleName')` guna mengembalikan data fallback aman apabila modul yang dituju sedang nonaktif.
 
-> **Gambar 2.1 — Arsitektur Sistem Terpadu (C4 Container, FINAL):** `PA/docs/diagrams/01_arsitektur_sistem_terpadu/c4_level2_container_wisma_amal.svg` — relasi Flutter App, Laravel 11 API, Keycloak OIDC, Midtrans, Fonnte, dan MySQL 8.x.
+> **Gambar 2.1 — Arsitektur Sistem Terpadu (C4 Container, FINAL):** `PA/docs/System design/01_arsitektur_sistem_terpadu/c4_level2_container_wisma_amal.svg` — relasi Flutter App, Laravel 11 API, Keycloak OIDC, Midtrans, Fonnte, dan MySQL 8.x.
 >
-> **Gambar 2.2 — Dekomposisi Modulith 3-Tier (Component, FINAL):** `PA/docs/diagrams/02_hierarki_3_tier_modulith/component_diagram_modular_monolith_3_tier.svg` — Tier Infrastruktur/Core/Bisnis, Query Gateway, Event Bus, Module Registry, dan Tenant Scope. File `.mmd`/`.png` lama di folder tersebut dinyatakan disupersede.
+> **Gambar 2.2 — Dekomposisi Modulith 3-Tier (Component, FINAL):** `PA/docs/System design/02_hierarki_3_tier_modulith/component_diagram_modular_monolith_3_tier.svg` — Tier Infrastruktur/Core/Bisnis, Query Gateway, Event Bus, Module Registry, dan Tenant Scope. File `.mmd`/`.png` lama di folder tersebut dinyatakan disupersede.
+>
+> **Gambar 2.3 — Arsitektur Feature Toggle & Module Discovery:** `PA/docs/System design/13_feature_toggle_architecture/feature_toggle_architecture.mmd` / `.png` — mekanisme runtime Dynamic Module Discovery via `modules_statuses.json` dan ModuleGate.
 
 ---
 
@@ -237,6 +239,8 @@ Matriks otorisasi Spatie RBAC diperluas dengan dimensi kepemilikan gedung:
 
 ### 2.2.5 Model Context Protocol (MCP) dan Rekayasa Asisten Cerdas (Built-in AI Assistant)
 
+> Catatan revisi ADR-007: sub-bab ini dipertahankan sebagai kajian teori dan **tidak diimplementasikan** pada desain rewrite (di luar 13 tabel). Status: arsip teori.
+
 *Model Context Protocol* (MCP) merupakan standar terbuka yang dirancang untuk mengintegrasikan model kecerdasan buatan (*Large Language Models* / LLM) dengan sumber data kontekstual dan fungsi komputasi perangkat lunak eksternal secara terstruktur dan aman [8].
 
 ```
@@ -264,7 +268,13 @@ Matriks otorisasi Spatie RBAC diperluas dengan dimensi kepemilikan gedung:
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-#### 1. Arsitektur Komponen Protokol MCP
+#### 1. Cara Kerja Dasar Protokol MCP (Fondasi Standar)
+Sebelum membahas implementasi di sistem Wisma, perlu dipahami cara kerja protokol MCP itu sendiri. MCP mendefinisikan tiga peran yang tegas: **MCP Host** (aplikasi AI, misalnya Chat AI Wisma — bertugas membuat dan mengatur koneksi), **MCP Client** (konektor protokol satu-per-sesi yang menjaga state percakapan), dan **MCP Server** (backend yang mengekspos data dan fungsi, dalam hal ini Modul Mcp Laravel). Ketiganya berkomunikasi murni melalui pesan **JSON-RPC 2.0** yang terstandarisasi, sehingga LLM apa pun (Claude, Gemini, GPT) dapat bertukar dengan server apa pun tanpa adaptor khusus.
+Protokol ini mengatur tiga primitif yang berbeda kepemilikannya: **Tools** (fungsi komputasi yang dikendalikan model — misalnya `get_building_occupancy`), **Resources** (data konteks baca yang dikendalikan aplikasi — misalnya skema gedung dan tarif dasar), dan **Prompts** (template instruksi yang dikendalikan pengguna — misalnya persona analis properti profesional). Setiap sesi koneksi mengikuti siklus hidup baku: `initialize` (jabat tangan versi dan kapabilitas) → `notifications/initialized` (sesi siap) → `tools/list` (server mengumumkan katalog) → `tools/call` (model memanggil tool berparameter) → `result` (server mengembalikan data faktual yang menjadi dasar jawaban model).
+
+> **Gambar 2.4 — Cara Kerja Model Context Protocol (MCP, FINAL):** `PA/docs/System design/16_cara_kerja_mcp_protokol/cara_kerja_mcp_protokol.svg` / `.png` — Interaksi Pengguna, AI Host (LLM & MCP Client), MCP Server (Auth/Tenant, Tool Registry, Tool Handler), Module Gateway, dan Modul Bisnis (Finance, Maintenance, Guest, Modul lain).
+
+#### 2. Arsitektur Komponen Protokol MCP pada Sistem Wisma
 Interaksi AI pada sistem Wisma Amal diatur melalui modul `Mcp` yang bertindak sebagai **MCP Server JSON-RPC 2.0**:
 - **MCP Client (Frontend / Gateway AI):** Menerima masukan pertanyaan bahasa alami dari pengguna, meneruskannya ke LLM, dan mengeksekusi *tool request* yang diminta oleh model.
 - **MCP Server (Backend Laravel Modul Mcp):** Mengekspos katalog fungsionalitas sistem yang terdokumentasi dalam format JSON Schema:
@@ -272,21 +282,25 @@ Interaksi AI pada sistem Wisma Amal diatur melalui modul `Mcp` yang bertindak se
   - *Prompts:* Panduan instruksi sistem (*system prompt*) yang mengarahkan model untuk bertindak sebagai analis bisnis properti profesional.
   - *Tools:* Fungsi komputasi deterministik yang dapat dipanggil oleh model untuk mengambil data riil dari basis data MySQL.
 
-#### 2. Katalog Tool Analitik SIM Wisma
+#### 3. Katalog Tool Analitik SIM Wisma
 Modul `Mcp` mengekspos empat tool komputasi read-only utama:
 1. `get_building_occupancy(building_id: int, date: string)`: Menghasilkan persentase okupansi, jumlah kamar terisi, kosong, dan dalam perbaikan pada gedung terpilih.
 2. `get_financial_summary(building_id: int, start_date: string, end_date: string)`: Menghasilkan rekapitulasi total tagihan terbit, total pembayaran terverifikasi, piutang sewa tertunggak, dan rincian pengeluaran operasional.
 3. `get_damage_reports(building_id: int, status: string)`: Mengambil daftar tiket kerusakan aktif beserta tingkat keparahan dan estimasi biaya penanganan.
 4. `get_guest_activity(building_id: int, date_range: string)`: Mengagregasi data kunjungan tamu dan mendeteksi anomali durasi menginap.
 
-#### 3. Deterministic Grounding, Mitigasi Halusinasi, dan Guardrail Keamanan
+#### 4. Deterministic Grounding, Mitigasi Halusinasi, dan Guardrail Keamanan
 - **Deterministic Data Grounding:** Model AI tidak diizinkan membuat inferensi angka secara spekulatif. Seluruh pernyataan kuantitatif wajib bersumber dari payload JSON yang dikembalikan oleh tool MCP melalui kueri basis data riil via *Module Gateway*.
 - **Tenant Boundary Enforcement:** Sebelum tool dieksekusi, server MCP memverifikasi token pengguna dan memastikan bahwa parameter `building_id` berada dalam lingkup hak akses pengguna tersebut.
 - **Audit Logging:** Setiap interaksi tool-use oleh AI dicatat ke dalam tabel basis data `mcp_tool_logs` (merekam ID pengguna, nama tool, parameter yang dikirimkan, durasi eksekusi, dan timestamp) untuk pemantauan integritas dan audit keamanan sistem.
 
+> **Gambar 2.5 — Sequence Diagram Eksekusi Tool AI MCP:** `PA/docs/System design/11_sequence_mcp_ai_tool_call/sequence_mcp_ai_tool_call.mmd` / `.png` — Tool Execution, Tenant Boundary Guardrail, dan Grounded Synthesis.
+
 ---
 
 ### 2.2.6 Single Sign-On (SSO), OpenID Connect (OIDC), dan Arsitektur Keycloak IAM
+
+> Catatan revisi ADR-007: sub-bab ini dipertahankan sebagai kajian teori dan **tidak diimplementasikan** pada desain rewrite (auth memakai Sanctum lokal + role enum). Status: arsip teori.
 
 *Single Sign-On* (SSO) adalah mekanisme otentikasi terpusat yang memungkinkan pengguna mengakses berbagai aplikasi dan layanan independen hanya dengan satu set kredensial otentikasi [8]. Dalam sistem berskala enterprise modern, pemisahan fungsi antara *Identity Provider* (IdP) dan *Resource Server / Service Provider* (SP) merupakan praktik standar untuk meningkatkan postur keamanan dan menyederhanakan tata kelola identitas.
 
@@ -338,6 +352,8 @@ Ketika pengguna berhasil melakukan otentikasi via Keycloak dan mengirimkan ID To
 - Backend mengekstraksi klaim identitas (`sub` sebagai `keycloak_id`, `email`, dan `name`).
 - Jika akun belum terdaftar di basis data lokal MySQL, sistem secara otomatis mengeksekusi *Just-In-Time (JIT) Provisioning* untuk membuat baris pengguna baru.
 - Sistem menyematkan default role Spatie (misalnya role `resident` atau `guest`) dan mengikatkan konteks gedung binaan/sewa, kemudian menerbitkan token *Laravel Sanctum* untuk komunikasi API transaksi selanjutnya.
+
+> **Gambar 2.6 — Sequence Diagram Otentikasi Terfederasi Keycloak OIDC:** `PA/docs/System design/15_sequence_sso_keycloak/sequence_sso_keycloak.mmd` / `.png` — JWKS Token Exchange, JIT Provisioning, dan Sanctum Token Issuance.
 
 ---
 
@@ -391,6 +407,8 @@ Objek dependensi didaftarkan secara terpusat pada *Service Locator* GetIt:
 - `Repository`: Didaftarkan sebagai `LazySingleton`.
 - `UseCase`: Didaftarkan sebagai `Factory` untuk menjamin independensi eksekusi.
 - `BLoC`: Didaftarkan sebagai `Factory` dan diikat ke widget tree menggunakan `BlocProvider.value` (mencegah penutupan state stream yang tidak disengaja).
+
+> **Gambar 2.7 — Clean Architecture Frontend Flutter:** `PA/docs/System design/03_clean_architecture_frontend/clean_architecture_frontend.mmd` / `.png` — Presentation BLoC, Domain UseCase/Entity/Interface, dan Data DataSource/DTO pada single codebase Web + Mobile.
 
 ---
 
@@ -527,6 +545,8 @@ Penjaminan mutu perangkat lunak dilakukan dengan menerapkan piramida pengujian (
 3. **Tenant Isolation Testing:** Pengujian penetrasi keamanan basis data untuk membuktikan bahwa kueri dari token Pengelola Gedung A tidak dapat membaca atau memodifikasi data Gedung B.
 4. **Integration & Event-Driven Testing:** Menguji alur bisnis end-to-end (Pemesanan Jadwal $\rightarrow$ Pemancaran Event $\rightarrow$ Penerbitan Tagihan $\rightarrow$ Callback Midtrans $\rightarrow$ Notifikasi WhatsApp).
 5. **Cakupan Pengujian (Code Coverage):** Pengujian dijalankan otomatis pada pipeline CI/CD dengan target *code coverage* minimal 80%.
+
+> **Gambar 2.8 — Piramida Pengujian Sistem (Testing Pyramid, FINAL):** `PA/docs/System design/14_testing_pyramid/testing_pyramid.svg` / `.png` — 4 Tingkat Pengujian (Unit Tests di dasar piramida ≥80%, Contract Tests, Tenant Isolation Tests, hingga E2E Tests di puncak) disertai indikator biaya, kecepatan eksekusi, dan kakas pengujian.
 
 ---
 

@@ -1,0 +1,21 @@
+sequenceDiagram
+  autonumber
+  actor Admin as Pengelola Gedung
+  participant FE as Frontend UI (Web / Mobile)
+  participant Fin as Modul Finance (Opsional)
+  actor Owner as Pemilik Properti
+
+  Note over Admin: Pengeluaran Riil Terjadi (Token PLN, Air PAM, WiFi, Gaji, Belanja Alat)
+  Admin->>FE: Buka Form Pencatatan Pengeluaran (building_id)
+  Admin->>FE: Input Kategori (Utilitas / Kebersihan / Gaji / Servis), Nominal Rupiah, Tanggal & Unggah Foto Struk
+  FE->>Fin: POST /api/finance/expenses (building_id, category, amount, date, receipt_url)
+  
+  Fin->>Fin: Simpan Rekening Biaya & Validasi Format
+  Fin->>Fin: Rekalkulasi Total Arus Kas Keluar Periode Berjalan
+  Fin-->>FE: Return Pengeluaran Berhasil Dicatat (HTTP 201)
+
+  Owner->>FE: Akses Laporan Keuangan & Dashboard Laba-Rugi
+  FE->>Fin: GET /api/finance/reports/cashflow?building_id=X&period=Y
+  Fin->>Fin: Agregasi: Total Pendapatan Sewa - Total Pengeluaran Operasional
+  Fin-->>FE: Return Laporan Laba Bersih (Net Profit) & Grafik Kategori Biaya
+  FE-->>Owner: Tampilkan Visualisasi Transparansi Keuangan Gedung

@@ -27,6 +27,7 @@ PA/docs/
 │   ├── PROGRESS_LOG.md          # log bimbingan & revisi (append-only)
 │   ├── DECISIONS.md             # alasan pilih judul/metode/rumusan
 │   └── CHANGELOG.md             # versi docx
+├── System design/               # Single Source of Truth Desain Sistem (Fitur F01-F17, BPMN, DFD, ERD, Arsitektur)
 └── modules/
     ├── bab1/ (pendahuluan)
     ├── bab2/ (kajian pustaka)

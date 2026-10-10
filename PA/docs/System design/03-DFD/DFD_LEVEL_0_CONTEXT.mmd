@@ -1,0 +1,51 @@
+flowchart TD
+    %% ==========================================
+    %% ENTITAS EKSTERNAL (TERMINATOR)
+    %% ==========================================
+    Owner["👤 Pemilik Properti (Owner)"]
+    Admin["👔 Pengelola Gedung (Admin)"]
+    Resident["👥 Penghuni / Calon Penghuni"]
+    Midtrans["💳 Midtrans Payment Gateway"]
+    NotificationGW["📱 WhatsApp / Email Gateway"]
+    AIClient["🤖 External AI Client (MCP Host)"]
+
+    %% ==========================================
+    %% SISTEM SENTRAL (PROSES 0.0)
+    %% ==========================================
+    System(("🏢 SISTEM INFORMASI MANAJEMEN<br/>HUNIAN DINAMIS & PROPERTI<br/>(Core + Optional Modules)"))
+
+    %% ==========================================
+    %% ALIRAN DATA MASUK & KELUAR
+    %% ==========================================
+    %% 1. Owner Flows
+    Owner -->|"1. Setup Gedung, Kebijakan Dinamis & Custom Role"| System
+    System -->|"2. Laporan Okupansi, Arus Kas & Audit Log"| Owner
+
+    %% 2. Admin Flows
+    Admin -->|"3. Input Kamar, Plotting Kamar, Approval Tiket, Jadwal Servis, Pengeluaran"| System
+    System -->|"4. Notifikasi Permohonan Kamar, Tiket Aduan, Agenda Servis H-7"| Admin
+
+    %% 3. Resident Flows
+    Resident -->|"5. Pemilihan Kamar Mandiri, Tiket Kerusakan, Log Buku Tamu"| System
+    System -->|"6. Konfirmasi Alokasi, Tagihan Invoice, Status Perbaikan Fasilitas"| Resident
+
+    %% 4. Midtrans Flows
+    System -->|"7. Request SNAP Token & Parameter Transaksi"| Midtrans
+    Midtrans -->|"8. Webhook Callback Status Settlement / Expire"| System
+
+    %% 5. Notification Gateway Flows
+    System -->|"9. Payload Notifikasi (Pesan, Nomor WA, Event)"| NotificationGW
+    NotificationGW -->|"10. Status Delivery Acknowledgement"| System
+
+    %% 6. AI Client Flows
+    AIClient -->|"11. JSON-RPC 2.0 Tool Call (Read-only Query)"| System
+    System -->|"12. Data Faktual Properti (JSON Grounded Response)"| AIClient
+
+    %% Styling
+    style System fill:#2B4C7E,stroke:#1A2E4C,stroke-width:3px,color:#fff
+    style Owner fill:#E8F1F5,stroke:#2B4C7E,stroke-width:2px,color:#1A2E4C
+    style Admin fill:#E8F1F5,stroke:#2B4C7E,stroke-width:2px,color:#1A2E4C
+    style Resident fill:#E8F1F5,stroke:#2B4C7E,stroke-width:2px,color:#1A2E4C
+    style Midtrans fill:#FFF3CD,stroke:#856404,stroke-width:2px,color:#856404
+    style NotificationGW fill:#D4EDDA,stroke:#155724,stroke-width:2px,color:#155724
+    style AIClient fill:#E2E3E5,stroke:#383D41,stroke-width:2px,color:#383D41

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arsitektur Backend - Modular Monolith</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1a1b26;
+            margin: 0;
+            padding: 24px 20px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .header h1 {
+            margin: 0 0 4px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .toolbar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #0d6efd;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background-color: #0b5ed7;
+        }
+
+        button:focus-visible {
+            outline: 2px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        #canvas-container {
+            background-color: #16161e;
+            background-image: radial-gradient(#2c2c38 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            padding: 24px;
+            overflow: auto;
+            max-width: 100%;
+        }
+
+        svg {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Arsitektur Sistem Backend (Modular Monolith)</h1>
+        <p>Modul dipasang ke Module Gateway seperti komponen plug-and-play</p>
+    </div>
+
+    <div class="toolbar">
+        <button id="btn-download-svg">Download SVG</button>
+        <button id="btn-download-png">Download PNG (2x)</button>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script>
+        const config = {
+            width: 1210,
+            height: 1160,
+            bg: '#16161e',
+            colors: {
+                client: { bg: '#e0f2fe', stroke: '#0ea5e9', t1: '#0369a1', t2: '#475569' },
+                adapter: { bg: '#f3e8ff', stroke: '#8b5cf6', t1: '#6d28d9', t2: '#475569' },
+                ext: { bg: '#fef08a', stroke: '#ca8a04', t1: '#713f12', t2: '#854d0e' },
+                gwItem: { bg: '#ffffff', stroke: '#d6d3c6', t1: '#1e293b', t2: '#475569' },
+                core: { bg: 'rgb(225, 245, 238)', stroke: 'rgb(15, 110, 86)', t1: 'rgb(8, 80, 65)', t2: 'rgb(15, 110, 86)' },
+                optional: { bg: 'rgb(250, 236, 231)', stroke: 'rgb(153, 60, 29)', t1: 'rgb(113, 43, 19)', t2: 'rgb(153, 60, 29)' },
+                db: { bg: '#ecfeff', stroke: '#06b6d4', t2: '#0e7490' },
+                gateway: { fill: '#f6f4ee', stroke: '#cccccc', socket: '#e4e0d2', socketStroke: '#b8b5a8' },
+                line: '#8da0b8',
+                laneStroke: '#3b3f55',
+                laneFill: '#1b1c28',
+                laneText: '#94a3b8'
+            }
+        };
+
+        const coreModules = [
+            ['M1', 'User & Access', 'SSO, RBAC, Keycloak Sync'],
+            ['M2', 'Property & Building', 'Tenant, scoping gedung'],
+            ['M3', 'Room Management', 'Master kamar, aset fisik'],
+            ['M4', 'Occupancy & Schedule', 'Linimasa sewa, row lock'],
+            ['M5', 'Occupancy Dashboard', 'KPI lintas gedung']
+        ];
+        const optModules = [
+            ['O1', 'Finance & Billing', 'Invoice, Midtrans, refund'],
+            ['O2', 'Maintenance', 'Tiket kerusakan, teknisi'],
+            ['O3', 'Asset & Inventory', 'Aset dan checklist'],
+            ['O4', 'Guest Logging', 'Buku tamu, biaya inap'],
+            ['O5', 'Notification', 'WhatsApp, in-app, audit']
+        ];
+        const gatewayItems = [
+            ['Query gateway', 'Baca, cek isActive'],
+            ['Event bus', 'Operasi tulis'],
+            ['Module registry', 'Status modul aktif'],
+            ['Tenant scope', 'Scope building_id']
+        ];
+
+        function el(tag, attrs) {
+            const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+            for (const k in attrs) e.setAttribute(k, attrs[k]);
+            return e;
+        }
+        function text(parent, x, y, str, o = {}) {
+            const t = el('text', {
+                x, y, 'text-anchor': o.anchor || 'middle', 'dominant-baseline': 'central',
+                fill: o.fill || '#fff', 'font-size': o.size || 12, 'font-weight': o.weight || 400
+            });
+            t.textContent = str;
+            parent.appendChild(t);
+            return t;
+        }
+        function container(parent, x, y, w, h, o = {}) {
+            parent.appendChild(el('rect', {
+                x, y, width: w, height: h, rx: 14,
+                fill: o.fill || config.colors.laneFill,
+                stroke: o.stroke || config.colors.laneStroke,
+                'stroke-width': o.sw || 1.5,
+                'stroke-dasharray': o.dashed ? '6,5' : ''
+            }));
+        }
+        function box(parent, x, y, w, h, title, sub, s, rx = 8) {
+            const g = el('g', {});
+            g.appendChild(el('rect', { x, y, width: w, height: h, rx, fill: s.bg, stroke: s.stroke, 'stroke-width': 1.5 }));
+            text(g, x + w / 2, y + h / 2 - (sub ? 8 : 0), title, { size: 14, weight: 600, fill: s.t1 });
+            if (sub) text(g, x + w / 2, y + h / 2 + 11, sub, { size: 12, fill: s.t2 });
+            parent.appendChild(g);
+        }
+        function moduleCard(parent, x, y, w, h, id, title, sub, s, toggle) {
+            const g = el('g', {});
+            const cy = y + h / 2;
+            g.appendChild(el('rect', { x, y, width: w, height: h, rx: 8, fill: s.bg, stroke: s.stroke, 'stroke-width': 1.5 }));
+            g.appendChild(el('circle', { cx: x + 28, cy, r: 16, fill: s.stroke }));
+            text(g, x + 28, cy, id, { size: 12, weight: 700, fill: '#fff' });
+            text(g, x + 58, cy - 8, title, { size: 14, weight: 600, fill: s.t1, anchor: 'start' });
+            text(g, x + 58, cy + 11, sub, { size: 12, fill: s.t2, anchor: 'start' });
+            if (toggle) drawToggle(g, x + w - 50, cy, s);
+            parent.appendChild(g);
+        }
+        function drawToggle(parent, x, cy, s) {
+            parent.appendChild(el('rect', { x, y: cy - 9, width: 34, height: 18, rx: 9, fill: s.stroke }));
+            parent.appendChild(el('circle', { cx: x + 25, cy, r: 6.5, fill: '#fff' }));
+        }
+        function socket(parent, hx, cy) {
+            const g = config.colors.gateway;
+            parent.appendChild(el('circle', { cx: hx, cy, r: 21, fill: g.socket, stroke: g.socketStroke, 'stroke-width': 1 }));
+        }
+        function plug(parent, hx, cardEdge, cy, s) {
+            const x1 = Math.min(hx, cardEdge), x2 = Math.max(hx, cardEdge);
+            parent.appendChild(el('rect', { x: x1, y: cy - 9, width: x2 - x1, height: 18, fill: s.bg }));
+            parent.appendChild(el('path', { d: `M ${x1} ${cy - 9} H ${x2} M ${x1} ${cy + 9} H ${x2}`, stroke: s.stroke, 'stroke-width': 1.5, fill: 'none' }));
+            parent.appendChild(el('rect', { x: cardEdge - 2, y: cy - 8, width: 4, height: 16, fill: s.bg }));
+            parent.appendChild(el('circle', { cx: hx, cy, r: 15, fill: s.bg, stroke: s.stroke, 'stroke-width': 1.5 }));
+            parent.appendChild(el('circle', { cx: hx, cy, r: 8, fill: 'none', stroke: s.stroke, 'stroke-width': 0.8 }));
+        }
+        function link(parent, d, o = {}) {
+            const p = el('path', {
+                d, fill: 'none', stroke: config.colors.line, 'stroke-width': 1.6, 'stroke-linejoin': 'round'
+            });
+            if (o.dashed) p.setAttribute('stroke-dasharray', '6,5');
+            if (!o.noEnd) p.setAttribute('marker-end', 'url(#arrow)');
+            if (o.both) p.setAttribute('marker-start', 'url(#arrow)');
+            parent.appendChild(p);
+        }
+        function label(parent, x, y, str, anchor = 'start') {
+            text(parent, x, y, str, { size: 12, fill: config.colors.laneText, anchor });
+        }
+
+        function draw() {
+            const C = config.colors;
+            const svg = el('svg', {
+                width: config.width, height: config.height,
+                viewBox: `0 0 ${config.width} ${config.height}`,
+                'font-family': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+            });
+
+            const defs = el('defs', {});
+            const marker = el('marker', {
+                id: 'arrow', viewBox: '0 0 10 10', refX: '8', refY: '5',
+                markerWidth: '7', markerHeight: '7', orient: 'auto-start-reverse'
+            });
+            marker.appendChild(el('path', { d: 'M 1 1 L 9 5 L 1 9 Z', fill: C.line }));
+            defs.appendChild(marker);
+            svg.appendChild(defs);
+
+            const back = el('g', {}), lines = el('g', {}), nodes = el('g', {});
+            svg.appendChild(back); svg.appendChild(lines); svg.appendChild(nodes);
+
+            // ---------- Posisi utama ----------
+            const GX = 480, GW = 280, GY = 330, GH = 410;     // Module Gateway
+            const GR = GX + GW;                               // tepi kanan gateway (760)
+            const leftX = 100, rightX = 840, cardW = 300, cardH = 52, rowGap = 64, rowY0 = 380;
+
+            // ---------- 1. KLIEN ----------
+            box(nodes, 530, 36, 180, 50, 'Flutter App', '(Mobile client)', C.client, 25);
+            box(nodes, 810, 36, 180, 50, 'AI Assistant', '(LLM Client)', C.client, 25);
+
+            // ---------- 2. ADAPTER ----------
+            container(back, 230, 124, 780, 98, { dashed: true });
+            text(back, 994, 141, 'Interface adapters / gateways', { size: 12, fill: C.laneText, anchor: 'end' });
+            box(nodes, 250, 160, 180, 50, 'Keycloak IAM', 'External SSO', C.ext);
+            box(nodes, 530, 160, 180, 50, 'REST API', 'Sanctum / Guard', C.adapter);
+            box(nodes, 810, 160, 180, 50, 'MCP Server', 'JSON-RPC Adapter', C.adapter);
+
+            link(lines, 'M620 86 V160');
+            link(lines, 'M530 61 H340 V160', { dashed: true });
+            label(lines, 435, 48, 'SSO login', 'middle');
+            link(lines, 'M430 185 H530', { dashed: true });
+            label(lines, 480, 172, 'token JWT', 'middle');
+            link(lines, 'M900 86 V160'); // Line from AI Assistant to MCP Server
+
+            // adapter -> gateway
+            link(lines, 'M340 210 V290 H540 V330', { dashed: true });
+            label(lines, 348, 258, 'sync user');
+            link(lines, 'M620 210 V330');
+            label(lines, 628, 270, 'read & write');
+            link(lines, 'M900 210 V290 H700 V330', { dashed: true });
+            label(lines, 908, 258, 'read-only');
+
+            // ---------- 3. MODULE GATEWAY ----------
+            container(back, GX, GY, GW, GH, { fill: C.gateway.fill, stroke: C.gateway.stroke, sw: 2 });
+            text(back, GX + GW / 2, GY + 22, 'Module Gateway', { size: 16, weight: 600, fill: '#111827' });
+            gatewayItems.forEach((g, i) => box(nodes, GX + 28, 376 + i * 76, GW - 56, 60, g[0], g[1], C.gwItem));
+            text(back, GX + GW / 2, GY + 358, 'Internal event bus (pub/sub)', { size: 12, fill: '#555' });
+            text(back, GX + GW / 2, GY + 378, 'Modul hanya lewat gateway', { size: 12, fill: '#555' });
+
+            // ---------- 4. GRUP TIER ----------
+            container(back, 70, 340, 360, 368, { fill: 'rgba(15,110,86,0.10)', stroke: 'rgb(15,110,86)', dashed: true });
+            text(back, 90, 358, 'Tier core, always-on', { size: 13, weight: 600, fill: '#5fd0b0', anchor: 'start' });
+            container(back, 810, 340, 360, 368, { fill: 'rgba(153,60,29,0.12)', stroke: 'rgb(153,60,29)', dashed: true });
+            text(back, 830, 358, 'Tier opsional, bisa di-toggle', { size: 13, weight: 600, fill: '#f0997b', anchor: 'start' });
+
+            // socket dulu, lalu plug, lalu kartu modul
+            for (let i = 0; i < 5; i++) {
+                const cy = rowY0 + i * rowGap + cardH / 2;
+                socket(nodes, GX, cy);
+                socket(nodes, GR, cy);
+            }
+            for (let i = 0; i < 5; i++) {
+                const cy = rowY0 + i * rowGap + cardH / 2;
+                plug(nodes, GX, leftX + cardW, cy, C.core);
+                plug(nodes, GR, rightX, cy, C.optional);
+            }
+            coreModules.forEach((m, i) => moduleCard(nodes, leftX, rowY0 + i * rowGap, cardW, cardH, m[0], m[1], m[2], C.core, false));
+            optModules.forEach((m, i) => moduleCard(nodes, rightX, rowY0 + i * rowGap, cardW, cardH, m[0], m[1], m[2], C.optional, true));
+
+            // ---------- 5. OUTBOUND ADAPTER (PORTS & ADAPTERS) ----------
+            container(back, 425, 772, 390, 108, { dashed: true });
+            text(back, 620, 788, 'Outbound adapters', { size: 12, fill: C.laneText });
+            link(lines, 'M525 740 V806');
+            label(lines, 533, 756, 'PaymentGatewayContract');
+            link(lines, 'M715 740 V806');
+            label(lines, 723, 756, 'Notification channel');
+            box(nodes, 440, 806, 170, 56, 'MidtransAdapter', 'implements Contract', C.adapter);
+            box(nodes, 630, 806, 170, 56, 'Channel adapter', 'Fonnte / SMTP', C.adapter);
+            link(lines, 'M525 862 V912', { dashed: true });
+            link(lines, 'M715 862 V912', { dashed: true });
+            box(nodes, 440, 912, 170, 52, 'Midtrans API', 'Payment Gateway', C.ext);
+            box(nodes, 630, 912, 170, 52, 'WhatsApp / Email', 'Provider notifikasi', C.ext);
+            text(back, 620, 990, 'Ganti provider: tambah adapter + ubah .env, kode modul tidak berubah', { size: 12, fill: C.laneText });
+
+            // ---------- 6. DATABASE ----------
+            link(lines, 'M330 708 V1016', { both: true });
+            label(lines, 338, 760, 'schema core');
+            link(lines, 'M910 708 V1016', { both: true });
+            label(lines, 918, 760, 'schema opsional');
+
+            const dbX = 300, dbY = 1020, dbW = 640, dbH = 100, ry = 14;
+            const db = el('g', {});
+            db.appendChild(el('path', {
+                d: `M ${dbX} ${dbY + ry} L ${dbX} ${dbY + dbH - ry} A ${dbW / 2} ${ry} 0 0 0 ${dbX + dbW} ${dbY + dbH - ry} L ${dbX + dbW} ${dbY + ry} Z`,
+                fill: C.db.bg, stroke: C.db.stroke, 'stroke-width': 1.5
+            }));
+            db.appendChild(el('ellipse', { cx: dbX + dbW / 2, cy: dbY + ry, rx: dbW / 2, ry, fill: C.db.bg, stroke: C.db.stroke, 'stroke-width': 1.5 }));
+            text(db, dbX + dbW / 2, dbY + 52, 'MySQL Database', { size: 16, weight: 600, fill: '#0e7490' });
+            text(db, dbX + dbW / 2, dbY + 74, 'Logical schema separation per module', { size: 12, fill: C.db.t2 });
+            nodes.appendChild(db);
+
+            // ---------- 7. LEGENDA ----------
+            container(back, 40, 30, 280, 112, { stroke: C.laneStroke });
+            text(back, 56, 46, 'Legenda', { size: 12, weight: 600, fill: '#e2e8f0', anchor: 'start' });
+            link(lines, 'M56 66 H86');
+            text(lines, 96, 66, 'Request / panggilan', { size: 12, fill: C.laneText, anchor: 'start' });
+            link(lines, 'M56 86 H86', { dashed: true });
+            text(lines, 96, 86, 'Auth, read-only, eksternal', { size: 12, fill: C.laneText, anchor: 'start' });
+            nodes.appendChild(el('circle', { cx: 71, cy: 106, r: 8, fill: C.optional.bg, stroke: C.optional.stroke, 'stroke-width': 1.5 }));
+            nodes.appendChild(el('circle', { cx: 71, cy: 106, r: 4, fill: 'none', stroke: C.optional.stroke, 'stroke-width': 0.8 }));
+            text(nodes, 96, 106, 'Colok: modul dipasang ke gateway', { size: 12, fill: C.laneText, anchor: 'start' });
+            drawToggle(nodes, 54, 126, C.optional);
+            text(nodes, 96, 126, 'Toggle: modul opsional on/off', { size: 12, fill: C.laneText, anchor: 'start' });
+
+            document.getElementById('canvas-container').appendChild(svg);
+        }
+
+        draw();
+
+        document.getElementById('btn-download-svg').addEventListener('click', () => {
+            const svg = document.querySelector('svg');
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'arsitektur_backend_modulith.svg';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        });
+
+        document.getElementById('btn-download-png').addEventListener('click', () => {
+            const svg = document.querySelector('svg');
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const scale = 2;
+            const canvas = document.createElement('canvas');
+            canvas.width = config.width * scale;
+            canvas.height = config.height * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = config.bg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const img = new Image();
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                a.download = 'arsitektur_backend_modulith.png';
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            };
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        });
+    </script>
+</body>
+
+</html>

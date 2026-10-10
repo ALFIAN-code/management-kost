@@ -15,7 +15,8 @@
 
 ## Diagram
 
-- Mermaid untuk draft (`flowchart`, `erDiagram`). Final docx: export PNG 300dpi + caption.
+- **✅ Ratified (2026-10-10, preferensi user):** Setiap generate diagram (DFD, ERD, BPMN, arsitektur, dll) **WAJIB dibuat dulu dalam bentuk `.html` mandiri** di `PA/docs/System design/<jenis>/`, berisi SVG yang di-generate dari array data (layout otomatis, label tidak tertimpa garis, tanpa garis bersilangan) + tombol **Download SVG** & **Download PNG (2x)**. Mermaid `.mmd` hanya pendamping opsional.
+- Final docx: export PNG dari HTML + caption.
 - Setiap diagram wajib ada paragraf penjelasan sebelum/sesudah ("Gambar 3.x menunjukkan...").
 
 ## Trace Kode

@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  actor Admin as Pengelola Gedung
+  actor Tech as Teknisi / Vendor Servis
+  participant Maint as Modul Maintenance (Opsional)
+  participant Fin as Modul Finance (Opsional)
+  participant Bus as Internal Event Bus
+
+  Admin->>Maint: Buat Agenda Pemeliharaan Rutin (nama_kegiatan, frekuensi_bulan, target_tanggal)
+  Maint->>Maint: Simpan Agenda Servis Berkala (status: 'scheduled')
+
+  Note over Maint: Sistem Melakukan Pemantauan Tanggal Rutin
+  opt Tanggal Servis Mendekati (H-7)
+    Maint->>Admin: Tampilkan Notifikasi Pengingat Agenda Servis di Dashboard
+  end
+
+  Admin->>Tech: Hubungi Teknisi / Vendor untuk Pelaksanaan Servis
+  Admin->>Maint: Update Status -> 'in_progress'
+
+  Tech->>Admin: Servis Fisik Selesai & Serahkan Nota/Biaya Servis
+  Admin->>Maint: Konfirmasi Realisasi Servis Selesai
+  Maint->>Maint: Update Status -> 'completed' & Hitung Tanggal Servis Berikutnya
+  Maint->>Bus: emit(MaintenanceServiceCompleted)
+
+  opt Jika Terdapat Biaya Servis & Modul Finance Aktif
+    Bus->>Fin: handle(MaintenanceServiceCompleted)
+    Admin->>Fin: Catat Biaya Servis ke Pengeluaran Operasional (Kategori: 'Perawatan/Servis')
+    Fin->>Fin: Update Arus Kas Keluar Gedung
+  end

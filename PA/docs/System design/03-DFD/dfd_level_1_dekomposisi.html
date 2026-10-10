@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>DFD Level 1 — Dekomposisi Sistem Manajemen Hunian Dinamis</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #0f172a; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; }
+  .bar { width: 100%; max-width: 1300px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+  .bar h1 { font-size: 1.2rem; } .bar p { font-size: .85rem; color: #64748b; }
+  .btn { padding: 8px 16px; font-weight: 600; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; margin-left: 8px; }
+  .btn.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .wrap { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; max-width: 1300px; width: 100%; overflow-x: auto; display: flex; justify-content: center; }
+  .note { max-width: 1300px; width: 100%; margin-top: 20px; background: #fff; padding: 18px 24px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: .85rem; line-height: 1.6; color: #475569; }
+  table { border-collapse: collapse; margin-top: 8px; width: 100%; } td, th { border: 1px solid #e2e8f0; padding: 4px 8px; text-align: left; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div><h1>DFD Level 1 — Dekomposisi Fungsional (10 Proses, F01–F17)</h1>
+  <p>Data Store (kiri) · Proses lingkaran (tengah) · Entitas luar (kanan) · Biru = Input, Merah = Output</p></div>
+  <div>
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+<div class="wrap"><svg id="dfd1" xmlns="http://www.w3.org/2000/svg" width="1240" height="100"></svg></div>
+
+<div class="note">
+  <b>Cara baca:</b> setiap baris = satu proses. Entitas/data store yang muncul lebih dari sekali digambar ulang (duplikat) dengan tanda garis miring di pojok (entitas) atau garis vertikal tambahan (data store), sesuai konvensi Gane &amp; Sarson, agar tidak ada panah yang saling silang dan semua label terbaca.
+  <table>
+    <tr><th>Proses</th><th>Fitur</th><th>Data Store</th></tr>
+    <tr><td>1.0 Kelola Akun &amp; Hak Akses</td><td>F01, F02</td><td>D1</td></tr>
+    <tr><td>2.0 Kelola Gedung &amp; Kebijakan</td><td>F03, F04</td><td>D2</td></tr>
+    <tr><td>3.0 Kelola Kamar</td><td>F05</td><td>D2, D3</td></tr>
+    <tr><td>4.0 Kelola Alokasi &amp; Dashboard Hunian</td><td>F06, F07</td><td>D2, D3, D4, D5</td></tr>
+    <tr><td>5.0 Kelola Keuangan</td><td>F08, F09, F10, F11</td><td>D2, D4, D5</td></tr>
+    <tr><td>6.0 Kelola Pemeliharaan</td><td>F12, F13</td><td>D3, D6</td></tr>
+    <tr><td>7.0 Kelola Inventaris Aset</td><td>F14</td><td>D3, D7</td></tr>
+    <tr><td>8.0 Kelola Buku Tamu</td><td>F15</td><td>D4, D5, D8</td></tr>
+    <tr><td>9.0 Kirim Notifikasi</td><td>F16</td><td>D5, D6, D9</td></tr>
+    <tr><td>10.0 Layani Asisten AI (MCP)</td><td>F17</td><td>D3, D4, D5, D6 (read-only)</td></tr>
+  </table>
+</div>
+
+<script>
+// ===== DATA (sumber tunggal) — dir: 'in' = menuju proses (biru), 'out' = keluar dari proses (merah)
+const STORES = { D1:'Pengguna & Role', D2:'Gedung & Pengaturan', D3:'Kamar & Tipe', D4:'Alokasi Hunian',
+  D5:'Keuangan', D6:'Pemeliharaan', D7:'Inventaris Aset', D8:'Buku Tamu', D9:'Log Notifikasi' };
+const ENT = { OWN:['Pemilik','(Owner)'], ADM:['Pengelola','(Admin Gedung)'], RES:['Penghuni','(& Calon Penghuni)'],
+  MID:['Midtrans','Payment Gateway'], WA:['WhatsApp / Email','Gateway Notifikasi'], AI:['AI Client','MCP Host'] };
+
+const P = [
+ { no:'1.0', name:['Kelola Akun','& Hak Akses'], f:'F01, F02',
+   L:[['D1',[['out','Simpan akun, profil, role & izin'],['in','Data kredensial, role & izin']]]],
+   R:[['RES',[['in','Registrasi, login & biodata'],['out','Token sesi & profil']]],
+      ['ADM',[['in','Login & profil staf'],['out','Token sesi & hak akses menu']]],
+      ['OWN',[['in','Buat custom role & centang izin'],['out','Daftar role & audit log']]]] },
+ { no:'2.0', name:['Kelola Gedung','& Kebijakan'], f:'F03, F04',
+   L:[['D2',[['out','Simpan gedung, toggle modul & kebijakan'],['in','Data gedung & kebijakan']]]],
+   R:[['OWN',[['in','Data gedung & toggle modul aktif'],['in','Kebijakan huni (min. sewa, booking policy)'],['out','Profil & konfigurasi gedung']]]] },
+ { no:'3.0', name:['Kelola','Kamar'], f:'F05',
+   L:[['D2',[['in','Data gedung aktif']]],
+      ['D3',[['out','Simpan kamar, tipe, kapasitas & foto'],['in','Data kamar & status fisik']]]],
+   R:[['ADM',[['in','Nomor, lantai, tipe, harga, kapasitas'],['out','Daftar kamar & status fisik']]],
+      ['RES',[['out','Katalog kamar tersedia']]]] },
+ { no:'4.0', name:['Kelola Alokasi','& Dashboard'], f:'F06, F07',
+   L:[['D2',[['in','Booking policy & min. sewa']]],
+      ['D3',[['in','Kapasitas & status kamar']]],
+      ['D4',[['out','Simpan alokasi & anggota huni'],['in','Jadwal huni (cek anti-bentrok)']]],
+      ['D5',[['in','Status lunas (payment gate)']]]],
+   R:[['RES',[['in','Pengajuan kamar mandiri'],['out','Konfirmasi alokasi & status huni']]],
+      ['ADM',[['in','Plotting, approval & check-out'],['out','Dashboard denah & penghuni aktif']]],
+      ['OWN',[['out','Laporan okupansi gedung']]]] },
+ { no:'5.0', name:['Kelola','Keuangan'], f:'F08 – F11',
+   L:[['D2',[['in','Tarif, aturan denda & masa tenggang']]],
+      ['D4',[['in','Alokasi baru & durasi huni']]],
+      ['D5',[['out','Simpan invoice, bayar, denda & beban'],['in','Data invoice & arus kas']]]],
+   R:[['RES',[['out','Invoice tagihan & kuitansi'],['in','Pilih metode bayar / bayar tunai']]],
+      ['ADM',[['in','Verifikasi tunai, input beban + nota'],['out','Rekap tagihan & tunggakan']]],
+      ['OWN',[['out','Laporan arus kas & laba bersih']]],
+      ['MID',[['out','Request token SNAP'],['in','Webhook settlement / expire']]]] },
+ { no:'6.0', name:['Kelola','Pemeliharaan'], f:'F12, F13',
+   L:[['D3',[['out','Ubah status kamar under_maintenance']]],
+      ['D6',[['out','Simpan tiket, log & jadwal servis'],['in','Data tiket & agenda servis']]]],
+   R:[['RES',[['in','Tiket kerusakan + foto'],['out','Status perbaikan']]],
+      ['ADM',[['in','Verifikasi, teknisi, jadwal & biaya servis'],['out','Tiket masuk & pengingat servis H-7']]]] },
+ { no:'7.0', name:['Kelola','Inventaris Aset'], f:'F14',
+   L:[['D3',[['in','Data kamar']]],
+      ['D7',[['out','Simpan aset & hasil inspeksi'],['in','Daftar aset per kamar']]]],
+   R:[['ADM',[['in','Data barang & checklist check-in/out'],['out','Kartu inventaris kamar']]],
+      ['OWN',[['out','Laporan aset rusak / hilang']]]] },
+ { no:'8.0', name:['Kelola','Buku Tamu'], f:'F15',
+   L:[['D4',[['in','Penghuni aktif & kamar']]],
+      ['D8',[['out','Simpan kunjungan tamu'],['in','Riwayat tamu']]],
+      ['D5',[['out','Biaya inap tamu ke invoice']]]],
+   R:[['RES',[['in','Data tamu berkunjung / menginap'],['out','Konfirmasi tamu tercatat']]],
+      ['ADM',[['in','Check-out tamu'],['out','Rekap tamu aktif & pelanggaran jam malam']]]] },
+ { no:'9.0', name:['Kirim','Notifikasi'], f:'F16',
+   L:[['D5',[['in','Event invoice terbit, jatuh tempo, lunas']]],
+      ['D6',[['in','Event tiket selesai & servis H-7']]],
+      ['D9',[['out','Simpan log notifikasi'],['in','Status log pengiriman']]]],
+   R:[['WA',[['out','Payload pesan & nomor tujuan'],['in','Status delivery']]],
+      ['ADM',[['out','Riwayat pengiriman notifikasi']]]] },
+ { no:'10.0', name:['Layani','Asisten AI'], f:'F17',
+   L:[['D3',[['in','Ketersediaan kamar']]],
+      ['D4',[['in','Data okupansi']]],
+      ['D5',[['in','Ringkasan keuangan']]],
+      ['D6',[['in','Status tiket komplain']]]],
+   R:[['AI',[['in','Query tool-call JSON-RPC 2.0'],['out','Data faktual JSON (read-only)']]]] },
+];
+
+// ===== LAYOUT
+const NS='http://www.w3.org/2000/svg', svg=document.getElementById('dfd1');
+const W=1240, CX=640, SX1=40, SX2=250, EX=1010, EW=190, LANE=26, PADG=14, GAPROW=34, TOP=90;
+const BLUE='#2563eb', RED='#dc2626';
+const seenS={}, seenE={};
+function el(t,a,txt){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!==undefined)e.textContent=txt;svg.appendChild(e);return e;}
+function label(x,y,t){const tx=el('text',{x,y,'font-size':11,'font-weight':600,fill:'#1e293b','text-anchor':'middle','font-family':'Arial, sans-serif'},t);
+  const b=tx.getBBox();const r=el('rect',{x:b.x-3,y:b.y-1,width:b.width+6,height:b.height+2,fill:'#fff'});svg.insertBefore(r,tx);}
+function groupH(g){return g[1].length*LANE+PADG;}
+
+el('defs',{}).innerHTML=`<marker id="mb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="${BLUE}"/></marker>
+<marker id="mr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="${RED}"/></marker>`;
+el('text',{x:40,y:45,'font-size':22,'font-weight':'bold','font-family':'Times New Roman, serif','text-decoration':'underline'},'DFD LEVEL 1');
+el('line',{x1:1010,y1:30,x2:1070,y2:30,stroke:BLUE,'stroke-width':2.5,'marker-end':'url(#mb)'});el('text',{x:1080,y:35,'font-size':14,'font-weight':700},'Input');
+el('line',{x1:1010,y1:56,x2:1070,y2:56,stroke:RED,'stroke-width':2.5,'marker-end':'url(#mr)'});el('text',{x:1080,y:61,'font-size':14,'font-weight':700},'Output');
+
+let y=TOP;
+P.forEach((p,i)=>{
+  const hl=p.L.reduce((s,g)=>s+groupH(g),0)+(p.L.length-1)*10;
+  const hr=p.R.reduce((s,g)=>s+groupH(g),0)+(p.R.length-1)*10;
+  const H=Math.max(hl,hr), r=Math.max(64,H/2+14), rowH=Math.max(H,2*r), cy=y+rowH/2;
+  if(i>0) el('line',{x1:30,y1:y-GAPROW/2,x2:W-30,y2:y-GAPROW/2,stroke:'#e2e8f0','stroke-dasharray':'4 4'});
+  const edge=(ly)=>Math.sqrt(Math.max(0,r*r-(ly-cy)**2));
+
+  // Data store (kiri)
+  let ly=cy-hl/2;
+  p.L.forEach(([id,flows])=>{
+    const h=groupH([id,flows]); const dup=seenS[id]; seenS[id]=1;
+    el('rect',{x:SX1,y:ly,width:SX2-SX1,height:h,fill:'#f8fafc'});
+    el('line',{x1:SX1,y1:ly,x2:SX2,y2:ly,stroke:'#334155','stroke-width':2});
+    el('line',{x1:SX1,y1:ly+h,x2:SX2,y2:ly+h,stroke:'#334155','stroke-width':2});
+    el('line',{x1:SX1+42,y1:ly,x2:SX1+42,y2:ly+h,stroke:'#334155','stroke-width':1.5});
+    if(dup) el('line',{x1:SX1+6,y1:ly,x2:SX1+6,y2:ly+h,stroke:'#334155','stroke-width':1.5});
+    el('text',{x:SX1+24,y:ly+h/2+4,'font-size':13,'font-weight':800,fill:'#0369a1','text-anchor':'middle'},id);
+    el('text',{x:SX1+50,y:ly+h/2+4,'font-size':12,'font-weight':700,fill:'#0f172a'},STORES[id]);
+    flows.forEach(([d,t],k)=>{
+      const fy=ly+PADG/2+LANE*k+LANE/2+4, cxE=CX-edge(fy);
+      const [x1,x2]=d==='in'?[SX2,cxE]:[cxE,SX2];
+      el('line',{x1,y1:fy,x2,y2:fy,stroke:d==='in'?BLUE:RED,'stroke-width':1.8,'marker-end':d==='in'?'url(#mb)':'url(#mr)'});
+      label((SX2+cxE)/2,fy-5,t);
+    });
+    ly+=h+10;
+  });
+
+  // Entitas (kanan)
+  let ry=cy-hr/2;
+  p.R.forEach(([id,flows])=>{
+    const h=groupH([id,flows]); const dup=seenE[id]; seenE[id]=1;
+    el('rect',{x:EX,y:ry,width:EW,height:h,rx:3,fill:'#f1f5f9',stroke:'#334155','stroke-width':1.8});
+    if(dup) el('line',{x1:EX,y1:ry+12,x2:EX+12,y2:ry,stroke:'#334155','stroke-width':1.5});
+    el('text',{x:EX+EW/2,y:ry+h/2-1,'font-size':13,'font-weight':700,'text-anchor':'middle'},ENT[id][0]);
+    el('text',{x:EX+EW/2,y:ry+h/2+14,'font-size':11,fill:'#475569','text-anchor':'middle'},ENT[id][1]);
+    flows.forEach(([d,t],k)=>{
+      const fy=ry+PADG/2+LANE*k+LANE/2+4, cxE=CX+edge(fy);
+      const [x1,x2]=d==='in'?[EX,cxE]:[cxE,EX];
+      el('line',{x1,y1:fy,x2,y2:fy,stroke:d==='in'?BLUE:RED,'stroke-width':1.8,'marker-end':d==='in'?'url(#mb)':'url(#mr)'});
+      label((EX+cxE)/2,fy-5,t);
+    });
+    ry+=h+10;
+  });
+
+  // Proses (digambar terakhir agar di atas garis)
+  el('circle',{cx:CX,cy,r,fill:'#eff6ff',stroke:'#2563eb','stroke-width':2.5});
+  el('text',{x:CX,y:cy-24,'font-size':14,'font-weight':800,fill:'#1e3a8a','text-anchor':'middle'},p.no);
+  el('line',{x1:CX-r*0.7,y1:cy-16,x2:CX+r*0.7,y2:cy-16,stroke:'#93c5fd'});
+  el('text',{x:CX,y:cy+2,'font-size':13,'font-weight':700,'text-anchor':'middle'},p.name[0]);
+  el('text',{x:CX,y:cy+18,'font-size':13,'font-weight':700,'text-anchor':'middle'},p.name[1]);
+  el('text',{x:CX,y:cy+36,'font-size':10.5,'font-weight':600,fill:'#2563eb','text-anchor':'middle'},p.f);
+  y+=rowH+GAPROW;
+});
+svg.setAttribute('height',y);svg.setAttribute('viewBox',`0 0 ${W} ${y}`);
+
+// ===== EXPORT
+function src(){let s=new XMLSerializer().serializeToString(svg);if(!s.includes('xmlns='))s=s.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"');return s;}
+function dl(href,name){const a=document.createElement('a');a.href=href;a.download=name;document.body.appendChild(a);a.click();a.remove();}
+function exportSVG(){dl(URL.createObjectURL(new Blob([src()],{type:'image/svg+xml'})),'dfd_level_1.svg');}
+function exportPNG(s){const w=+svg.getAttribute('width'),h=+svg.getAttribute('height'),c=document.createElement('canvas');c.width=w*s;c.height=h*s;
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.scale(s,s);const img=new Image();
+  img.onload=()=>{x.drawImage(img,0,0);dl(c.toDataURL('image/png'),'dfd_level_1@'+s+'x.png');};
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(src());}
+</script>
+</body>
+</html>

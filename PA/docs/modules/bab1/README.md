@@ -153,10 +153,12 @@ Tujuan yang ingin dicapai melalui pelaksanaan Proyek Akhir ini adalah:
 
 ## 1.4 Batasan Masalah
 
+> Revisi ADR-007 (rewrite): sistem dirancang ulang sebagai kost **bulanan penuh** dengan 13 tabel. Batasan di bawah menggantikan desain lama; detail kebutuhan ada di `PA/docs/modules/bab3/DESAIN_REWRITE_FASE1.md`.
+
 Guna menjaga fokus penelitian dan ketercapaian target luaran Proyek Akhir pada lingkup Diploma Tiga (D3) Teknik Informatika, ditetapkan batasan-batasan masalah berikut beserta justifikasi teknisnya:
 
-1. **Lingkup Domain Bisnis:**
-   Domain sistem mencakup *Infrastructure Tier* (`Auth/Keycloak SSO`, `Setting`), *Core Tier* (`Tenant/Building`, `Room`, `Schedule`), serta *Business Modules Tier* (`Finance/Midtrans`, `Maintenance`, `Guest`, `Inventory`, `Notification`, dan `Mcp Server`).
+1. **Lingkup Domain Bisnis (Rewrite):**
+   Domain sistem mencakup modul `Auth`, `Building` (termasuk `building_settings`), `Room`, `Lease`, `Finance/Midtrans`, `Maintenance`, `Guest`, `Inventory`, dan `Notification`. Sewa hanya mendukung satuan **bulan** dengan minimal durasi configurable per gedung (`building_settings.min_rental_months`); tarif harian tidak didukung.
 2. **Peran Pengguna (*User Roles*):**
    Sistem memfasilitasi tiga tingkatan aktor: Pemilik (*Owner* multi-gedung), Pengelola (*Admin* tertugaskan pada gedung tertentu), dan Penghuni/Calon Penghuni.
 3. **Platform Antarmuka:**

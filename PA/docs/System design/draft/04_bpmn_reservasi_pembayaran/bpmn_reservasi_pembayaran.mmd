@@ -1,0 +1,53 @@
+sequenceDiagram
+  autonumber
+  actor User as Calon Penghuni / Staf
+  actor Admin as Pengelola / Pengawas
+  participant FE as Frontend UI (Web/Mobile)
+  participant Sched as Modul Schedule
+  participant Room as Modul Room
+  participant Bus as Internal Event Bus
+  participant Fin as Modul Finance (Opsional)
+  participant Mid as Payment Gateway (Midtrans)
+
+  User->>FE: Pilih Gedung, Kamar & Rentang Waktu Huni
+  FE->>Sched: Request Alokasi (building_id, room_id, user_id, dates)
+  
+  Sched->>Room: Cek Kapasitas Fisik Unit
+  Sched->>Sched: Validasi Sisa Kuota & Anti-Bentrok Jadwal
+  
+  alt Kuota Kamar Penuh / Bentrok Tanggal
+    Sched-->>FE: Return Error 422 (Kamar Penuh pada Periode Terpilih)
+    FE-->>User: Tampilkan Peringatan Kuota Tidak Cukup
+  else Kuota Tersedia
+    Sched->>Sched: Buat Record Alokasi
+    
+    alt Skenario 1: Modul Finance NONAKTIF (Asrama / Mes / Pondok)
+      alt Kebijakan Gedung: Butuh Persetujuan Pengelola
+        Sched->>Sched: Set Status 'pending_approval'
+        Admin->>Sched: Verifikasi & Klik Setujui
+      end
+      Sched->>Sched: Set Status 'upcoming' / 'confirmed'
+      Sched->>Bus: emit(OccupancyConfirmed)
+      Sched-->>FE: Return Alokasi Sukses (Tanpa Tagihan)
+      FE-->>User: Tampilkan Tiket/Konfirmasi Penempatan Kamar
+      
+    else Skenario 2: Modul Finance AKTIF (Kost / Komersial)
+      Sched->>Sched: Set Status 'pending_payment' (Payment Barrier Gate)
+      Sched->>Bus: emit(OccupancyCreated)
+      
+      Bus->>Fin: handle(OccupancyCreated) -> Terbitkan Invoice
+      Fin->>Mid: Request SNAP Token (VA/QRIS)
+      Mid-->>Fin: Return SNAP Token
+      Fin-->>FE: Return Data Invoice & SNAP Token
+      FE-->>User: Tampilkan Antarmuka Pembayaran
+      
+      User->>Mid: Lakukan Pembayaran
+      Mid-->>Fin: Webhook Settlement Callback
+      Fin->>Fin: Update Invoice -> 'paid'
+      Fin->>Bus: emit(PaymentSettled)
+      
+      Bus->>Sched: handle(PaymentSettled) -> Buka Payment Barrier
+      Sched->>Sched: Update Status Alokasi -> 'upcoming' / 'confirmed'
+      FE-->>User: Tampilkan Bukti Pembayaran & Jadwal Huni Aktif
+    end
+  end

@@ -4,6 +4,380 @@
 
 ---
 
+## [2026-10-10 15:06] Keputusan Arsitektur: Adapter Pattern untuk Integrasi Eksternal (ADR-010)
+
+**Status:** Selesai
+**Dikerjakan:**
+- Mencatat keputusan strategis (ADR-010) terkait penanganan layanan pihak ketiga (Midtrans, WhatsApp/Fonnte, Email).
+- Menyepakati penggunaan pola **Hexagonal Architecture (Ports and Adapters)** untuk menghindari *vendor lock-in*. Modul bisnis tidak akan memanggil vendor secara langsung (hardcode), melainkan melalui *Interfaces* dan *Adapters*.
+- Sengaja **tidak mengubah diagram arsitektur** pada turn ini karena User sedang mendesain diagramnya sendiri.
+**Dokumen yang diupdate:**
+- `Docs/03_logs/DECISIONS.md` (Menambahkan ADR-010)
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Menunggu hasil desain diagram arsitektur final yang sedang disesuaikan oleh user.
+
+---
+
+## [2026-10-10 15:04] ADR-010: Pola Integrasi Pihak Ketiga & Update Arsitektur
+
+**Status:** Selesai
+**Dikerjakan:**
+- Mencatat keputusan arsitektural (ADR-010) terkait penggunaan **Ports and Adapters (Gateway Pattern)** untuk integrasi layanan pihak ketiga (Midtrans, Fonnte/SMTP).
+- Menghindari *vendor lock-in* dan menerapkan *Dependency Inversion* menggunakan antarmuka dan adapter (misal: `PaymentGatewayContract` $\rightarrow$ `MidtransAdapter`).
+- Memperbarui diagram HTML arsitektur backend untuk menyisipkan layer **External Integration Adapters** sebelum menembak ke API eksternal.
+**File yang diubah:**
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/DECISIONS.md`
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Tahap perencanaan desain selesai, bersiap menuju implementasi atau pembahasan komponen sistem lain.
+
+---
+
+## [2026-10-10 14:52] Penggabungan Kelengkapan Diagram Arsitektur
+
+**Status:** Selesai
+**Dikerjakan:**
+- Mendesain ulang `arsitektur_backend_modulith.html` dengan menggabungkan kelengkapan dari desain kolom (ada layer Klien, Adapter API, Database MySQL, Midtrans, dan API WhatsApp/Email).
+- Mempertahankan struktur visual yang simpel dan jelas bergaya "puzzle" (Modul Core di sayap kiri, Opsional di sayap kanan, dan Gateway di tengah).
+**File yang diubah:**
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Menunggu konfirmasi final mengenai hasil penggabungan arsitektur ini.
+
+---
+
+## [2026-10-10 14:48] Revisi Desain Visual Diagram Arsitektur
+
+**Status:** Selesai
+**Dikerjakan:**
+- Mendesain ulang `arsitektur_backend_modulith.html` untuk kembali mengikuti gaya visual dari desain lama (tata letak puzzle dengan node kiri-kanan terhubung ke Module Gateway di tengah).
+- Menghapus referensi teknologi spesifik (Laravel) karena framework backend belum diputuskan final.
+- Menyesuaikan 5 modul Core di sisi kiri dan 6 modul Opsional (termasuk MCP Adapter) di sisi kanan.
+**File yang diubah:**
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Menunggu konfirmasi kelayakan bentuk visual yang baru ini.
+
+---
+
+## [2026-10-10 14:45] Pembaruan Diagram Arsitektur Backend (Modular Monolith)
+
+**Status:** Selesai
+**Dikerjakan:**
+- Membuat diagram arsitektur backend interaktif baru di `arsitektur_backend_modulith.html` menggunakan konvensi HTML-first SVG export.
+- Menyesuaikan struktur dengan **10 Modul** (5 Core + 5 Optional) sesuai dengan rancangan terbaru di `ARCHITECTURE.md`.
+- Menggantikan posisi Sanctum Auth dengan **Keycloak IAM** (External SSO) pada adapter layer diagram.
+- Memperbarui `hierarki_3_tier_modulith.mmd` untuk menjaga konsistensi dengan perubahan struktur modul dan Keycloak.
+**File yang diubah:**
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html`
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/hierarki_3_tier_modulith.mmd`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Meminta review user untuk diagram arsitektur backend baru.
+- Menunggu konfirmasi user mengenai field `building_id` di tabel role (seperti log sebelumnya).
+**Catatan/masalah:**
+- Tidak ada masalah. Layout diagram kini lebih ringkas dan sesuai dengan standar yang diminta.
+
+---
+
+## [2026-10-10 14:25] Penyempurnaan DFD Level 0 & Level 1 ke Standar Akademis Murni (3 Kolom Sesuai Contoh Gambar 2, 3, 4)
+
+**Status:** Selesai (Standar Akademis Terverifikasi, Sangat Rapi, & Terbaca Jelas)
+**Dikerjakan:**
+- **Penyusunan Ulang DFD Level 0 ([`dfd_level_0_context.html`](file:///Users/allvvnt/alfianSpace/Kampus/PA-Management-kost/PA/docs/System%20design/DFD/dfd_level_0_context.html)):**
+  - Mengubah notasi proses sentral menjadi Lingkaran (*Bubble*) murni bernomor `0.0 SISTEM INFORMASI MANAJEMEN PROPERTI & HUNIAN DINAMIS` sesuai standar Yourdon & DeMarco (Gambar 4).
+  - Entitas luar persegi panjang di kiri (Pemilik, Pengelola, Penghuni) dan kanan (Midtrans, WhatsApp Gateway, AI Client).
+  - Aliran panah siku orthogonal dengan pembeda tegas: Garis Biru (Input ke Sistem) & Garis Merah (Output ke Entitas).
+- **Penyusunan Ulang DFD Level 1 ([`dfd_level_1_dekomposisi.html`](file:///Users/allvvnt/alfianSpace/Kampus/PA-Management-kost/PA/docs/System%20design/DFD/dfd_level_1_dekomposisi.html)):**
+  - Menerapkan format 3 kolom presisi sesuai referensi baku pengguna (Gambar 3):
+    1. **Kolom Kiri (Data Store):** Notasi 2 garis horizontal paralel terbuka (`D1` s/d `D6`).
+    2. **Kolom Tengah (Proses):** Simbol Lingkaran bertingkat (`1.0` s/d `6.0`).
+    3. **Kolom Kanan (Entitas Luar):** Simbol Persegi Panjang (Pemilik, Pengelola, Penghuni, Layanan Luar).
+  - Mengatur aliran data rapi tanpa kusut:
+    - Garis **Biru** untuk Aliran Masuk (*Input / Read Query*).
+    - Garis **Merah** untuk Aliran Keluar (*Output / Write Mutation / Response*).
+    - Legenda Input (Biru) & Output (Merah) di pojok kanan atas serta judul `DFD LEVEL 1` (bold underline) di kiri atas.
+- **Penyelarasan Naskah & Skrip Pendukung:**
+  - Mengupdate [`DFD_LEVEL_1_DEKOMPOSISI.mmd`](file:///Users/allvvnt/alfianSpace/Kampus/PA-Management-kost/PA/docs/System%20design/DFD/DFD_LEVEL_1_DEKOMPOSISI.mmd) dan [`README.md`](file:///Users/allvvnt/alfianSpace/Kampus/PA-Management-kost/PA/docs/System%20design/DFD/README.md) agar selaras dengan dekomposisi 6 proses fungsional dan matriks 6 data store terisolasi.
+  - Memastikan tombol **Download SVG** dan **Download PNG (2x High-Res)** berfungsi sempurna untuk disematkan ke naskah skripsi (.docx).
+**File yang diubah:**
+- `PA/docs/System design/DFD/dfd_level_0_context.html`
+- `PA/docs/System design/DFD/dfd_level_1_dekomposisi.html`
+- `PA/docs/System design/DFD/DFD_LEVEL_1_DEKOMPOSISI.mmd`
+- `PA/docs/System design/DFD/README.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/03_logs/PROGRESS_LOG.md`
+**Dokumen yang diupdate:**
+- `PA/docs/03_logs/PROGRESS_LOG.md`, `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/System design/DFD/README.md`
+**Belum selesai / next steps:**
+- Melanjutkan ke Step 4: Spesifikasi Kontrak API REST & Skema Event Bus antar-modul di `PA/docs/System design/API/`.
+
+---
+
+## [2026-10-10 14:15] Pembuatan Visualizer HTML Interaktif untuk DFD & ERD dengan Fitur Export SVG & PNG
+
+**Status:** Selesai (Rapi, Ringkas, & Siap Dokumen A4)
+**Dikerjakan:**
+- Merancang visualizer HTML interaktif mandiri (*zero external dependencies*) dengan estetika modern, layout ringkas horizontal, dan tipografi jelas yang pas untuk format dokumen:
+  1. [`dfd_level_0_context.html`](PA/docs/System%20design/DFD/dfd_level_0_context.html): Implementasi persis referensi visual pengguna (Kartu hijau mint di kiri, pill ungu sentral, kartu abu-abu di kanan, dan label aliran horizontal rapi).
+  2. [`dfd_level_1_dekomposisi.html`](PA/docs/System%20design/DFD/dfd_level_1_dekomposisi.html): Visualizer 9 proses domain dan 9 data store terisolasi dengan pembagian zona Core vs Opsional.
+  3. [`erd_sistem_dinamis.html`](PA/docs/System%20design/ERD/erd_sistem_dinamis.html): Visualizer model data 21 entitas dengan tab "Diagram Ringkas A4" (overview modular) dan "Kamus Tabel Lengkap" (detail atribut, PK, FK, soft-ref).
+- Menyematkan tombol **Download SVG** (vektor loss-less) dan **Download PNG (2x High-Res)** pada setiap berkas HTML untuk memudahkan ekspor ke naskah skripsi (.docx).
+- Memperbarui dokumentasi `PA/docs/System design/DFD/README.md` dan `PA/docs/System design/ERD/README.md`.
+**File yang diubah:**
+- `PA/docs/System design/DFD/dfd_level_0_context.html`, `PA/docs/System design/DFD/dfd_level_1_dekomposisi.html`, `PA/docs/System design/ERD/erd_sistem_dinamis.html`, `PA/docs/System design/DFD/README.md`, `PA/docs/System design/ERD/README.md`, `PA/docs/03_logs/PROGRESS_LOG.md`, `Docs/03_logs/PROGRESS_LOG.md`
+**Dokumen yang diupdate:**
+- `PA/docs/03_logs/PROGRESS_LOG.md`, `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/System design/DFD/README.md`, `PA/docs/System design/ERD/README.md`
+**Belum selesai / next steps:**
+- Melanjutkan ke Step 4: Spesifikasi Kontrak API REST & Skema Event Bus antar-modul di `PA/docs/System design/API/`.
+
+---
+
+## [2026-10-10 13:58] Step 3: Perumusan Model Data (ERD Dinamis) & Aliran Data (DFD L0 & L1)
+
+**Status:** Selesai (Dirumuskan & Didokumentasikan Lengkap)
+**Dikerjakan:**
+- **Penetapan Status Folder `draft/`:** Menandai seluruh subfolder lama (04–16) di `PA/docs/System design/draft/` sebagai arsip legacy (*obsolete / superseded*) pasca-keputusan full rewrite (ADR-007 & ADR-008).
+- **Perumusan Model Data (Step 3A - ERD Dinamis):**
+  - Membuat diagram Mermaid [`ERD_SISTEM_DINAMIS.mmd`](PA/docs/System%20design/ERD/ERD_SISTEM_DINAMIS.mmd) dengan 21 entitas logis yang terbagi ke dalam 9 modul domain (Core M1–M4 & Opsional O1–O5).
+  - Menerapkan arsitektur *Modular Monolith* dengan **nol physical foreign key lintas modul** (komunikasi antar modul murni *soft reference* terindeks + Domain Event Bus).
+  - Menerapkan pemisahan tegas antara fisik kamar (`rooms`, `room_types`, `room_images`) dan dimensi waktu sewa/alokasi (`occupancies`, `occupancy_members`), serta isolasi multi-tenant (`building_id`).
+  - Menyusun Kamus Data komprehensif 21 tabel di [`PA/docs/System design/ERD/README.md`](PA/docs/System%20design/ERD/README.md).
+- **Perumusan Aliran Data (Step 3B - DFD Level 0 & Level 1):**
+  - Membuat Diagram Konteks Level 0 [`DFD_LEVEL_0_CONTEXT.mmd`](PA/docs/System%20design/DFD/DFD_LEVEL_0_CONTEXT.mmd) memetakan interaksi 6 entitas eksternal (Owner, Admin, Resident, Midtrans, WhatsApp/Email Gateway, External AI Client/MCP).
+  - Membuat Diagram Dekomposisi Fungsional Level 1 [`DFD_LEVEL_1_DEKOMPOSISI.mmd`](PA/docs/System%20design/DFD/DFD_LEVEL_1_DEKOMPOSISI.mmd) memetakan 9 proses fungsional domain dan 9 data store terisolasi (`D1` s/d `D9`).
+  - Menyusun spesifikasi aliran data lengkap di [`PA/docs/System design/DFD/README.md`](PA/docs/System%20design/DFD/README.md).
+- Memperbarui katalog master [`PA/docs/System design/README.md`](PA/docs/System%20design/README.md) dan sinkronisasi status roadmap di `Docs/00_overview/STATE.md` serta `PA/docs/00_overview/STATE.md`.
+**File yang diubah:**
+- `PA/docs/System design/draft/README.md`, `PA/docs/System design/ERD/**`, `PA/docs/System design/DFD/**`, `PA/docs/System design/README.md`, `Docs/00_overview/STATE.md`, `PA/docs/00_overview/STATE.md`, `PA/docs/03_logs/PROGRESS_LOG.md`, `Docs/03_logs/PROGRESS_LOG.md`
+**Dokumen yang diupdate:**
+- `PA/docs/03_logs/PROGRESS_LOG.md`, `Docs/03_logs/PROGRESS_LOG.md`, `Docs/00_overview/STATE.md`, `PA/docs/00_overview/STATE.md`, `PA/docs/System design/README.md`
+**Belum selesai / next steps:**
+- Melanjutkan ke Step 4: Spesifikasi Kontrak API REST & Skema Event Bus antar-modul di `PA/docs/System design/API/`.
+
+---
+
+## [2026-10-10 13:53] Eliminasi Folder Diagrams & Pembaruan Menyeluruh Seluruh Pointer Dokumen ke System design
+
+**Status:** Selesai (100% Bersih & Sinkron)
+**Dikerjakan:**
+- Menghapus symlink/folder `PA/docs/diagrams` secara permanen sehingga tidak ada lagi folder bernama `diagrams` di lingkungan proyek.
+- Memperbarui seluruh pointer dokumen aktif yang sebelumnya merujuk ke `diagrams` menjadi `PA/docs/System design/`:
+  - `PA/docs/README.md`: Menambahkan `System design/` pada bagan struktur pohon dokumen.
+  - `PA/docs/00_overview/ARCHITECTURE.md`: Menambahkan pointer `System design/` pada tabel BAB 3 dan diagram alur penulisan.
+  - `PA/docs/modules/bab2/README.md`: Memperbarui seluruh referensi Gambar 2.1–2.8 ke `PA/docs/System design/`.
+  - `PA/docs/modules/bab3/README.md`: Memperbarui seluruh referensi Gambar 3.1–3.11 ke `PA/docs/System design/`.
+  - `Docs/02_reference/DATABASE_SCHEMA.md`: Memperbarui path referensi ERD visual ke `PA/docs/System design/`.
+  - `PA/docs/System design/README.md`: Memperbarui perintah CLI ekspor/re-render Mermaid ke `PA/docs/System design`.
+- Merapikan struktur folder `PA/docs/System design/` dengan memindahkan seluruh subfolder diagram (04–16) dari `draft/` ke root dan menghapus direktori `draft/`.
+- Verifikasi otomatis: 0 occurrences `diagrams` tersisa di seluruh dokumen aktif (hanya tersimpan di histori log).
+**File yang diubah:**
+- `PA/docs/README.md`, `PA/docs/00_overview/ARCHITECTURE.md`, `PA/docs/modules/bab2/README.md`, `PA/docs/modules/bab3/README.md`, `Docs/02_reference/DATABASE_SCHEMA.md`, `PA/docs/System design/README.md`, `PA/docs/03_logs/PROGRESS_LOG.md`, `Docs/03_logs/PROGRESS_LOG.md`
+**Dokumen yang diupdate:**
+- `PA/docs/03_logs/PROGRESS_LOG.md`, `Docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Melanjutkan ke Step 3: Perumusan Model Data (ERD Dinamis) dan Aliran Data (DFD Level 0 & Level 1) langsung di `PA/docs/System design/`.
+
+---
+
+## [2026-10-10 13:46] Sentralisasi Folder PA/docs/System design/ sebagai Single Source of Truth & Penyesuaian Rules
+
+**Status:** Selesai (Disepakati & Disinkronkan)
+**Dikerjakan:**
+- Mengubah nama folder sentral perancangan sistem menjadi `PA/docs/System design/` dan membuat symlink `PA/docs/diagrams -> System design` untuk kompatibilitas mundur.
+- Menetapkan `PA/docs/System design/` sebagai satu-satunya pusat sumber kebenaran (*Single Source of Truth*) untuk desain sistem (Daftar Fitur F01–F17, 8 Alur BPMN, DFD, ERD, dan Arsitektur) guna mencegah fragmentasi dokumen dan multi-tafsir.
+- Memperbarui aturan proyek `AGENTS.md` (Prinsip Dasar No. 6 dan tabel kewajiban pembaruan dokumen) agar setiap keputusan diskusi yang disetujui pengguna secara otomatis langsung dicatat ke `PA/docs/System design/` dan `DECISIONS.md` pada turn yang sama.
+- Memperbarui pointer dan roadmap di `Docs/00_overview/STATE.md` serta `PA/docs/00_overview/STATE.md` (Step 1 dan Step 2 selesai 100%, siap lanjut ke Step 3 ERD & DFD).
+**File yang diubah:**
+- `AGENTS.md`, `Docs/00_overview/STATE.md`, `PA/docs/00_overview/STATE.md`, `PA/docs/03_logs/PROGRESS_LOG.md`, `Docs/03_logs/PROGRESS_LOG.md`
+**Dokumen yang diupdate:**
+- `PA/docs/03_logs/PROGRESS_LOG.md`, `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/00_overview/STATE.md`, `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Melanjutkan ke Step 3: Perumusan Model Data (ERD Dinamis) dan Aliran Data (DFD Level 0 Konteks & DFD Level 1 Dekomposisi) di `PA/docs/System design/`.
+
+---
+
+## [2026-10-10 13:35] Pembuatan Folder Terstruktur PA/docs/diagrams/BPMN/ untuk Seluruh 8 Alur (100% Coverage)
+
+**Status:** Selesai (Terstruktur Lengkap 100%)
+**Dikerjakan:**
+- Membuat folder master `PA/docs/diagrams/BPMN/` dengan 8 subfolder alur per fitur:
+  1. `01_alokasi_penempatan_hunian/` (`alur_alokasi_penempatan.mmd` + `README.md`)
+  2. `02_penagihan_pembayaran/` (`alur_penagihan_pembayaran.mmd` + `README.md`)
+  3. `03_laporan_kerusakan_fasilitas/` (`alur_laporan_kerusakan.mmd` + `README.md`)
+  4. `04_pemeliharaan_rutin_berkala/` (`alur_pemeliharaan_rutin.mmd` + `README.md`)
+  5. `05_pengeluaran_operasional/` (`alur_pengeluaran_operasional.mmd` + `README.md`)
+  6. `06_pengawasan_buku_tamu/` (`alur_pengawasan_buku_tamu.mmd` + `README.md`)
+  7. `07_pengaturan_hak_akses_dinamis/` (`alur_hak_akses_dinamis.mmd` + `README.md`)
+  8. `08_pendataan_inventaris_aset/` (`alur_inventaris_aset.mmd` + `README.md`)
+- Membuat katalog `PA/docs/diagrams/BPMN/README.md` dan sinkronisasi ke `PA/docs/diagrams/README.md`.
+**File yang diubah:**
+- `PA/docs/diagrams/BPMN/**` (17 file), `PA/docs/diagrams/README.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Lanjut ke Step 3: Pemodelan data (ERD) dan aliran data (DFD L0/L1).
+
+
+---
+
+## [2026-10-10 13:20] Step 2: Perancangan Alur Proses Bisnis & Payment Gatekeeper Dinamis
+
+**Status:** Selesai (Disepakati & Dicatat)
+**Dikerjakan:**
+- Merumuskan alur proses bisnis terperinci (Flow 1–7) dengan pemisahan Core dan Optional.
+- Menetapkan peranan modul Finance sebagai *Payment Barrier Gate* dan variasi kebijakan pemilihan kamar (`ADMIN_ASSIGN_ONLY`, `SELF_SERVICE_APPROVAL`, `SELF_SERVICE_INSTANT`).
+- Memperbarui diagram di `PA/docs/diagrams/04_bpmn_reservasi_pembayaran/bpmn_reservasi_pembayaran.mmd` dan dokumen `PA/docs/modules/bab3/DESAIN_REWRITE_FASE1.md` (§7).
+**File yang diubah:**
+- `PA/docs/diagrams/04_bpmn_reservasi_pembayaran/bpmn_reservasi_pembayaran.mmd`, `PA/docs/modules/bab3/DESAIN_REWRITE_FASE1.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Lanjut ke Step 3: Pemodelan data (ERD) dan aliran data (DFD L0/L1).
+
+---
+
+## [2026-10-10 13:10] ADR-009: Penempatan MCP sebagai External AI Adapter Layer
+
+**Status:** Selesai (Disepakati & Dicatat)
+**Dikerjakan:**
+- Menetapkan Model Context Protocol (MCP) sebagai **External AI Adapter Layer** yang berada di atas modul-modul bisnis.
+- MCP tidak masuk ke dalam dokumen inti data/ERD operasional dan bersifat *read-only consumer* via Module Gateway.
+- Mencatat ADR-009 di `Docs/03_logs/DECISIONS.md`.
+**File yang diubah:**
+- `Docs/03_logs/DECISIONS.md`, `Docs/00_overview/ARCHITECTURE.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Melanjutkan ke Step 2: Perancangan alur proses bisnis (Flow Diagram).
+
+---
+
+## [2026-10-10 13:05] ADR-008: Pemisahan Room vs Schedule & Decoupling Finance ke Modul Opsional
+
+**Status:** Selesai (Disepakati & Dicatat)
+**Dikerjakan:**
+- Merumuskan keputusan arsitektur dinamis ADR-008 untuk mendukung skenario multi-properti (kost komersial, asrama, mes karyawan, pondok pesantren):
+  1. Memisahkan Room Management (aset fisik & kapasitas) dari Occupancy & Schedule (alokasi dinamis orang & waktu huni).
+  2. Menggeser Finance & Billing menjadi modul Opsional (toggleable), sehingga gedung non-komersial bisa mengelola hunian tanpa penagihan/uang.
+  3. Mengadopsi Dynamic RBAC di modul User & Access Control (permission sets granular + kustom role dinamis).
+  4. Menetapkan 5 Modul Core (User, Property, Room, Schedule, Dashboard) dan 5 Modul Opsional (Finance, Maintenance, Inventory, Guest, Notification).
+- Mencatat ADR-008 di `Docs/03_logs/DECISIONS.md`.
+**File yang diubah:**
+- `Docs/03_logs/DECISIONS.md`, `Docs/00_overview/ARCHITECTURE.md`, `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Pemetaan detail kebutuhan fungsional Step 1 berbasis arsitektur dinamis baru.
+
+---
+
+## [2026-10-10 12:25] Penetapan roadmap perancangan rewrite: Kebutuhan -> Alur (Flow) -> ERD & DFD
+
+**Status:** In Progress
+**Dikerjakan:**
+- Menyepakati 5 langkah sistematis perancangan sistem rewrite total (ADR-007):
+  1. Step 1: Kaji kebutuhan & batasan fitur (F1–F12).
+  2. Step 2: Rancang alur proses bisnis & happy path (Flowchart/BPMN).
+  3. Step 3: Turunkan ke struktur data (ERD 13 tabel) & aliran data (DFD L0/L1).
+  4. Step 4: Spesifikasi kontrak API REST & integrasi event-driven.
+  5. Step 5: Scaffolding kode backend & pembaharuan naskah SDD BAB 3.
+- Mengupdate STATE skripsi dan global log.
+**File yang diubah:**
+- `PA/docs/03_logs/PROGRESS_LOG.md`, `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Mulai Step 1: Diskusi dan verifikasi kebutuhan fitur dari awal bersama user.
+
+---
+
+## [2026-10-07 09:00] ADR-007 rewrite: fondasi desain 13 tabel di BAB 3
+
+**Status:** Selesai (desain)
+**Dikerjakan:**
+- BAB 3 §3.3.1 (9 modul rewrite) + §3.6.2 (ERD bulanan 13 tabel) baru; bagian lama ditandai Arsip.
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+**Belum selesai / next steps:**
+- Fase 1: dokumen kebutuhan + revisi total BAB 1–3
+
+---
+
+## [2026-10-04 13:00] Fix arah panah & padding tepi diagram Testing Pyramid
+
+**Status:** Selesai (terverifikasi visual)
+**Dikerjakan:**
+- Perbaiki orientasi panah kiri/kanan (lurus ke atas/bawah), beri margin 60px di kedua sisi agar teks tidak terpotong, dan re-render PNG 2x via `svgexport`.
+**File yang diubah:**
+- `PA/docs/diagrams/14_testing_pyramid/**`
+
+---
+
+## [2026-10-04 12:45] Perbaikan geometri visual Testing Pyramid (eliminasi text overflow)
+
+**Status:** Selesai (terverifikasi visual)
+**Dikerjakan:**
+- Memperbaiki proporsi trapesium puncak pada `testing_pyramid.svg` dan render ulang `testing_pyramid.png` 2x: teks subjudul, bullet point, dan badge kini berada rapi di dalam batas kontainer piramida dengan margin lega.
+**File yang diubah:**
+- `PA/docs/diagrams/14_testing_pyramid/**`
+
+---
+
+## [2026-10-04 12:30] Pembuatan ulang Testing Pyramid sejati berbasis SVG & PNG 2x
+
+**Status:** Selesai (terverifikasi visual)
+**Dikerjakan:**
+- Membuat ulang diagram `14_testing_pyramid` menjadi bentuk piramida bertingkat sejati (SVG + PNG 2x) dengan 4 tier (Unit Base ≥80%, Contract, Tenant Integration, E2E) dan indikator biaya vs kecepatan; update naskah BAB 2 dan katalog diagram.
+**File yang diubah:**
+- `PA/docs/diagrams/14_testing_pyramid/**`, `PA/docs/diagrams/README.md`, `PA/docs/modules/bab2/README.md`
+
+---
+
+## [2026-10-04 12:15] Pembuatan skill global architecture-diagram-generator
+
+**Status:** Selesai
+**Dikerjakan:**
+- Membuat skill baru `architecture-diagram-generator` di `~/.agents/skills/` berisi panduan pembuatan diagram arsitektur modern (C4 container, 3-tier component, MCP protocol pipeline, per-module ERD, CSS dark/light contrast fix, dan resep render 2x PNG).
+**File yang diubah:**
+- `/Users/allvvnt/.agents/skills/architecture-diagram-generator/SKILL.md` (baru)
+
+---
+
+## [2026-10-04 12:00] Penyelarasan Diagram MCP (16) dengan Format & Desain SVG Final
+
+**Status:** Selesai (terverifikasi visual)
+**Dikerjakan:**
+- Membuat ulang diagram `16_cara_kerja_mcp_protokol` dalam format **SVG (`cara_kerja_mcp_protokol.svg`)** dan me-render ke **PNG (`cara_kerja_mcp_protokol.png`)** mengikuti standar desain arsitektur final (Pengguna -> AI Host [LLM & MCP Client] -> JSON-RPC -> MCP Server [Auth/Tenant, Registry, Handler] -> Module Gateway -> Modul Bisnis).
+- Update naskah `PA/docs/modules/bab2/README.md` dan katalog diagram.
+**File yang diubah:**
+- `PA/docs/diagrams/16_cara_kerja_mcp_protokol/**`, `PA/docs/diagrams/README.md`, `PA/docs/modules/bab2/README.md`
+
+---
+
+## [2026-10-04 11:35] Diagram dasar protokol MCP (16) + teori fondasi §2.2.5
+
+**Status:** Selesai (terverifikasi visual)
+**Dikerjakan:**
+- Diagram `16_cara_kerja_mcp_protokol` (Gambar 2.4) + sub-bab fondasi MCP di §2.2.5; renumber Gambar 2.5–2.8
+**File yang diubah:**
+- `PA/docs/diagrams/16_cara_kerja_mcp_protokol/`, `PA/docs/modules/bab2/README.md`, `PA/docs/diagrams/README.md`
+
+---
+
+## [2026-10-03 22:15] Lengkapi referensi Gambar di BAB 2–3 untuk semua 15 folder diagram
+
+**Status:** Selesai (BAB 2: 2.1–2.7, BAB 3: 3.1–3.10 + 3.11a–3.11g)
+**Dikerjakan:**
+- Lengkapi Gambar yang belum dirujuk + renumber ERD ke 3.11a–g + perbaiki urutan Tabel 3.2/3.3
+**File yang diubah:**
+- `PA/docs/modules/bab2/README.md`, `PA/docs/modules/bab3/README.md`, `PA/docs/diagrams/README.md`, `PA/docs/00_overview/STATE.md`
+
+---
+
 ## [2026-10-03 22:05] Update 5 ERD per-module pasca-migration
 
 **Status:** Selesai (sintaks tervalidasi + spot-check visual)

@@ -147,9 +147,27 @@ Sistem dirancang dengan arsitektur **Clean-Modulith + MCP AI** yang menghubungka
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-> **Gambar 3.1 — Arsitektur Sistem Terpadu (C4 Container, FINAL):** `PA/docs/diagrams/01_arsitektur_sistem_terpadu/c4_level2_container_wisma_amal.svg`.
+> **Gambar 3.1 — Arsitektur Sistem Terpadu (C4 Container, FINAL):** `PA/docs/System design/01_arsitektur_sistem_terpadu/c4_level2_container_wisma_amal.svg`.
 >
-> **Gambar 3.2 — Dekomposisi Modulith 3-Tier (Component, FINAL):** `PA/docs/diagrams/02_hierarki_3_tier_modulith/component_diagram_modular_monolith_3_tier.svg`. Kedua SVG ini adalah diagram resmi yang dipakai untuk docx; file `.mmd`/`.png` lama di masing-masing folder disupersede.
+> **Gambar 3.2 — Dekomposisi Modulith 3-Tier (Component, FINAL):** `PA/docs/System design/02_hierarki_3_tier_modulith/component_diagram_modular_monolith_3_tier.svg`. Kedua SVG ini adalah diagram resmi yang dipakai untuk docx; file `.mmd`/`.png` lama di masing-masing folder disupersede.
+
+### 3.3.1 Arsitektur Rewrite: 9 Modul, 13 Tabel, Nol FK Lintas Modul (ADR-007)
+
+Desain rewrite mempertahankan hirarki 3-tier, namun dengan modul yang ramping dan kepemilikan data tegas sejak hari pertama:
+
+| Tier | Modul | Tabel miliknya |
+|---|---|---|
+| Infrastructure | Auth | `users`, `user_profiles` (role = enum, tanpa Spatie/Keycloak) |
+| Core | Building | `buildings`, `building_settings` |
+| Core | Room | `rooms` |
+| Core | Lease | `leases` |
+| Business | Finance | `invoices`, `payments`, `fines` |
+| Business | Maintenance | `damage_reports` |
+| Business | Guest | `guests` |
+| Business | Inventory | `inventories` |
+| Business | Notification | `notification_logs` |
+
+Aturan yang ditegakkan: (1) satu-satunya FK fisik adalah `payments → invoices` (intra-modul) dan `buildings.owner_id → users` (infra ke infra); (2) semua referensi lintas modul adalah soft-ref tanpa constraint; (3) mutasi antar modul via Event Bus (`LeaseCreated` → Finance buat invoice → Notification kirim WA), agregasi baca via Module Gateway.
 
 ---
 
@@ -181,6 +199,10 @@ Proses bisnis utama dimodelkan menggunakan *Business Process Model and Notation*
 4. **Pembayaran & Settlement:** Penghuni menyelesaikan pembayaran via VA/QRIS. Webhook callback Midtrans memverifikasi signature dan memicu event `PembayaranDiterima`.
 5. **Aktivasi Sewa & Notifikasi:** Modul `Schedule` mengubah status kamar menjadi `terisi_sewa` dan modul `Notification` mengirimkan pesan konfirmasi resmi ke WhatsApp penghuni.
 
+> **Gambar 3.3 — BPMN Reservasi & Pembayaran Midtrans:** `PA/docs/System design/04_bpmn_reservasi_pembayaran/bpmn_reservasi_pembayaran.mmd` / `.png` (Serta 8 alur BPMN terisolasi per fitur di `PA/docs/System design/BPMN/`).
+>
+> **Gambar 3.4 — Sequence Diagram Reservasi Event-Driven:** `PA/docs/System design/10_sequence_reservasi_event_driven/sequence_reservasi_event_driven.mmd` / `.png` — Pessimistic Row Lock (`SELECT ... FOR UPDATE`), Event Bus, dan Webhook Callback Settlement.
+
 ### 3.4.2 BPMN Alur Penanganan Tiket Komplain Kerusakan Fasilitas
 
 ```
@@ -196,6 +218,8 @@ Proses bisnis utama dimodelkan menggunakan *Business Process Model and Notation*
 │ NOTIFIKASI   │ [Kirim Pesan Update Pengerjaan ke Penghuni] <────────────┘
 └──────────────┴──────────────────────────────────────────────────────────┘
 ```
+
+> **Gambar 3.5 — BPMN Komplain & Pemeliharaan:** `PA/docs/System design/05_bpmn_komplain_pemeliharaan/bpmn_komplain_pemeliharaan.mmd` / `.png` — Tiket Kerusakan, Penugasan Teknisi, dan Penguncian Jadwal Maintenance.
 
 ### 3.4.3 BPMN Alur Konsultasi & Wawasan AI via Model Context Protocol (MCP)
 
@@ -213,6 +237,10 @@ Proses bisnis utama dimodelkan menggunakan *Business Process Model and Notation*
 │ LLM & UI     │ [LLM Sintesis Narasi Terstruktur] ──> [Tampilkan di UI]  │
 └──────────────┴──────────────────────────────────────────────────────────┘
 ```
+
+> **Gambar 3.6 — BPMN Konsultasi AI via MCP:** `PA/docs/System design/06_bpmn_konsultasi_ai_mcp/bpmn_konsultasi_ai_mcp.mmd` / `.png`.
+>
+> **Gambar 3.7 — Sequence Diagram Tool-Use AI MCP:** `PA/docs/System design/11_sequence_mcp_ai_tool_call/sequence_mcp_ai_tool_call.mmd` / `.png` — JSON-RPC Tool Call, Tenant Boundary Guardrail, dan Grounded Synthesis.
 
 ---
 
@@ -235,6 +263,8 @@ Proses bisnis utama dimodelkan menggunakan *Business Process Model and Notation*
                         │   ( UC-03: Ajukan Komplain Kerusakan )
                         └─────────────────────────┘
 ```
+
+> **Gambar 3.8 — Diagram Use Case Global:** `PA/docs/System design/07_use_case_global/use_case_global.mmd` / `.png` — 3 Aktor Manusia (Pemilik Multi-Gedung, Pengelola Gedung Binaan, Penghuni) + Sistem Eksternal (Midtrans, WhatsApp API, AI MCP).
 
 ### 3.5.2 Spesifikasi Use Case (Use Case Specifications)
 
@@ -300,6 +330,8 @@ Proses bisnis utama dimodelkan menggunakan *Business Process Model and Notation*
 └──────────────┘                                              └─────────────────┘
 ```
 
+> **Gambar 3.9 — DFD Level 0 (Context Diagram):** `PA/docs/System design/08_dfd_level_0_context/dfd_level_0_context.mmd` / `.png`.
+
 #### 2. DFD Level 1 (Dekomposisi Fungsional Sistem)
 Proses dekomposisi Level 1 membagi sistem ke dalam 6 proses utama:
 - **Proses 1.0 Manajemen Otentikasi & Tenant:** Mengelola login pengguna, pembagian peran Spatie RBAC, dan resolusi identitas gedung (`D1: Users`, `D2: Buildings`).
@@ -309,21 +341,51 @@ Proses dekomposisi Level 1 membagi sistem ke dalam 6 proses utama:
 - **Proses 5.0 Layanan Notifikasi Otomatis:** Mengirimkan pesan WhatsApp/Email berdasarkan event (`D10: Notification_Logs`).
 - **Proses 6.0 Antarmuka Asisten Cerdas MCP:** Mengeksekusi tool komputasi analitik dan mencatat jejak audit query AI (`D11: MCP_Tool_Logs`).
 
+> **Gambar 3.10 — DFD Level 1 (Dekomposisi Fungsional):** `PA/docs/System design/09_dfd_level_1_dekomposisi/dfd_level_1_dekomposisi.mmd` / `.png` — 6 proses dan 11 data store terisolasi.
+
 ---
 
 ## 3.6 Perancangan Basis Data Relasional (ERD & Kamus Data)
 
 ### 3.6.1 Entity Relationship Diagram (ERD) Keseluruhan Database
 
-> **Gambar 3.6a — ERD Keseluruhan Database Aktual (FINAL, hasil audit migration 2026-10-03):** `PA/docs/diagrams/12_erd_multi_tenant_global/erd_full_database.mmd` / `.png` — 39 tabel hasil audit (Auth/global, Room, Schedule, Finance, Maintenance, Guest, Inventory, Notification, Setting; 41 tabel pasca-migration WAJIB 2026-10-03) dengan relasi FK fisik + soft-ref utama. Inventaris lengkap ada di `Docs/02_reference/DATABASE_SCHEMA.md`.
+> **Gambar 3.11a — ERD Keseluruhan Database Aktual (FINAL, hasil audit migration 2026-10-03):** `PA/docs/System design/12_erd_multi_tenant_global/erd_full_database.mmd` / `.png` — 39 tabel hasil audit (Auth/global, Room, Schedule, Finance, Maintenance, Guest, Inventory, Notification, Setting; 41 tabel pasca-migration WAJIB 2026-10-03) dengan relasi FK fisik + soft-ref utama. Inventaris lengkap ada di `Docs/02_reference/DATABASE_SCHEMA.md`.
 >
-> **Gambar 3.6b — ERD Target Desain Multi-Tenant (konseptual):** `PA/docs/diagrams/12_erd_multi_tenant_global/erd_multi_tenant_global.mmd` / `.png` — sentral `buildings` + `building_id` scoping. Per 2026-10-03 skema ini SUDAH terimplementasi di kode via migration `2026_10_03_000001/000002` (41 tabel).
+> **Gambar 3.11b — ERD Target Desain Multi-Tenant (konseptual):** `PA/docs/System design/12_erd_multi_tenant_global/erd_multi_tenant_global.mmd` / `.png` — sentral `buildings` + `building_id` scoping. Per 2026-10-03 skema ini SUDAH terimplementasi di kode via migration `2026_10_03_000001/000002` (41 tabel).
 >
-> **Gambar 3.6c–3.6g — ERD Per Domain Cluster (FINAL, untuk keterbacaan docx):** `PA/docs/diagrams/12_erd_multi_tenant_global/permodule/erd_1_auth_rbac.html` s.d. `erd_5_setting_pendukung.html` — 5 file terverifikasi akurat terhadap audit migration (FK fisik vs soft-ref dibedakan).
+> **Gambar 3.11c–3.11g — ERD Per Domain Cluster (FINAL, untuk keterbacaan docx):** `PA/docs/System design/12_erd_multi_tenant_global/permodule/erd_1_auth_rbac.html` s.d. `erd_5_setting_pendukung.html` — 5 file terverifikasi akurat terhadap audit migration (FK fisik vs soft-ref dibedakan).
 >
 > **Delta aktual vs target:** `buildings`/`building_id`, `users.keycloak_id`, dan `mcp_tool_logs` per 2026-10-03 SUDAH terimplementasi di kode — lihat status terkini di `Docs/02_reference/DATABASE_SCHEMA.md` §5.
 
-### 3.6.2 Entity Relationship Diagram (ERD) Target Multi-Tenant
+### 3.6.2 Entity Relationship Diagram (ERD) Rewrite Bulanan — 13 Tabel (ADR-007)
+
+ERD rewrite menggantikan desain 41 tabel lama. Satu-satunya FK fisik adalah `payments → invoices` (intra-modul Finance) dan `buildings.owner_id → users` (infra ke infra); sisanya soft-ref logis.
+
+```mermaid
+erDiagram
+    BUILDINGS ||--o{ BUILDING_SETTINGS : configures
+    BUILDINGS ||--o{ ROOMS : contains
+    BUILDINGS ||--o{ LEASES : scopes
+    BUILDINGS ||--o{ INVOICES : bills
+    BUILDINGS ||--o{ FINES : penalizes
+    BUILDINGS ||--o{ DAMAGE_REPORTS : tracks
+    BUILDINGS ||--o{ GUESTS : hosts
+    BUILDINGS ||--o{ INVENTORIES : stores
+    USERS ||--o{ BUILDINGS : owns
+    USERS ||--o{ USER_PROFILES : has
+    USERS ||--o{ LEASES : rents
+    ROOMS ||--o{ LEASES : occupied_by
+    LEASES ||--o{ INVOICES : generates
+    LEASES ||--o{ FINES : fined_by
+    LEASES ||--o{ GUESTS : visits
+    INVOICES ||--o{ PAYMENTS : settled_by
+    ROOMS ||--o{ DAMAGE_REPORTS : located_at
+    ROOMS ||--o{ INVENTORIES : equipped_with
+```
+
+Aturan validasi inti: `leases.duration_months >= building_settings.min_rental_months` per gedung + cek bentrok lease aktif pada kamar yang sama. Denda (`fines`) dan biaya tamu dihitung dari `building_settings` (`fine_*`, `guest_*`) dan dicatat sebagai `invoices` biasa — tanpa tabel billing terpisah.
+
+### 3.6.3 Entity Relationship Diagram (ERD) Target Multi-Tenant (Desain Lama — Arsip)
 
 ```mermaid
 erDiagram
@@ -348,13 +410,13 @@ erDiagram
     PAYMENTS ||--|| MIDTRANS_TRANSACTIONS : verified_via
 ```
 
-### 3.6.3 Matriks Ketertelusuran: 12 Modul Arsitektur ke 5 Domain Cluster ERD
+### 3.6.4 Matriks Ketertelusuran: 12 Modul Arsitektur ke 5 Domain Cluster ERD (Desain Lama — Arsip)
 
 Seluruh skema basis data relasional sistem Wisma Amal dikelompokkan ke dalam 5 *Bounded Context* / Domain Cluster yang menaungi 12 modul arsitektur pada Gambar 3.2. Pengelompokan ini mengikuti prinsip *Domain-Driven Design*: diagram ERD disusun berdasarkan keterkaitan domain bisnis (agar relasi antar tabel tetap utuh dan terbaca), bukan dipaksakan satu diagram per satu folder modul fisik.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│              TABEL 3.3 MATRIKS KETERTELUSURAN MODUL → DOMAIN CLUSTER → FILE ERD                        │
+│              TABEL 3.2 MATRIKS KETERTELUSURAN MODUL → DOMAIN CLUSTER → FILE ERD                        │
 ├────────┬──────────────────────┬──────────────────────────────────┬──────────────────────────────────────┤
 │ No │ Domain Cluster (File ERD) │ Modul yang Dinaungi              │ Tabel Utama                          │
 ├────────┼──────────────────────┼──────────────────────────────────┼──────────────────────────────────────┤
@@ -386,7 +448,7 @@ Keterangan:
 - Modul `Dashboard` tidak memiliki tabel karena murni kueri agregasi baca lintas modul via Module Gateway.
 - Modul satu tabel (`Inventory`, `Notification`) digabung ke Cluster 5 agar tidak menjadi diagram tersendiri yang hanya berisi satu kotak tanpa relasi.
 
-### 3.6.4 Kamus Data Basis Data (Database Data Dictionary)
+### 3.6.5 Kamus Data Basis Data (Database Data Dictionary — Desain Lama, Direvisi di Fase 1)
 
 #### 1. Tabel `users` (Entitas Pengguna & Integrasi Keycloak SSO)
 | Nama Kolom | Tipe Data | Nullable | Kunci | Deskripsi Bisnis |
@@ -454,6 +516,26 @@ Keterangan:
 | `parameters` | JSON | No | - | Parameter JSON masukan yang diproses |
 | `execution_time_ms` | INT | No | - | Durasi eksekusi kueri dalam milidetik |
 | `created_at` | TIMESTAMP | No | Index | Waktu pemanggilan tool dilakukan |
+
+### 3.6.6 Kamus Data Rewrite Bulanan — 13 Tabel (ADR-007, FINAL Fase 1)
+
+Detail kebutuhan per fitur ada di `PA/docs/modules/bab3/DESAIN_REWRITE_FASE1.md`. Aturan umum: semua `building_id` adalah soft-ref (tanpa FK, +index); satu-satunya FK fisik adalah `payments.invoice_id` dan `buildings.owner_id`.
+
+| Tabel | Kolom kunci | Kunci/aturan |
+|---|---|---|
+| `buildings` | `id`, `name`, `address`, `owner_id`→users, `phone?` | PK `id` |
+| `building_settings` | `building_id` soft-ref, `key`, `value` | UQ(`building_id`,`key`); keys: `min_rental_months`, `fine_*`, `guest_*` |
+| `users` | `id`, `name`, `email` UQ, `password`, `role` enum(owner/admin/resident), `assigned_building_id`? | PK `id` |
+| `user_profiles` | `user_id`→users cascade, `id_card`, `phone`, `address` | UQ `user_id` |
+| `rooms` | `building_id` soft-ref, `number`, `type`, `monthly_price` decimal, `status` enum(kosong/terisi/maintenance) | UQ(`building_id`,`number`) |
+| `leases` | `building_id` soft-ref, `room_id` soft-ref, `user_id` soft-ref, `start_month` DATE, `duration_months` INT, `monthly_price_snapshot` decimal, `status` enum(active/finished/cancelled) | Validasi: `duration_months >= min_rental_months` + anti-bentrok |
+| `invoices` | `building_id` soft-ref, `lease_id` soft-ref, `invoice_number` UQ, `amount`, `due_date`, `status` | 1 invoice per lease per bulan |
+| `payments` | `invoice_id` FK→invoices cascade, `method`, `snap_token?`, `status`, `paid_at?` | Satu-satunya FK lintas-tabel domain |
+| `fines` | `building_id` soft-ref, `lease_id` soft-ref, `amount`, `reason`, `status` | Dibuat dari setting bila telat lewat grace |
+| `damage_reports` | `building_id` soft-ref, `room_id`? soft-ref, `reporter`, `description`, `photo?`, `status` | 1 tabel, 1 foto |
+| `guests` | `lease_id` soft-ref, `name`, `check_in`, `check_out` | Biaya tamu → `invoices` |
+| `inventories` | `building_id` soft-ref, `room_id` soft-ref, `name`, `qty`, `condition` | — |
+| `notification_logs` | `type`, `target_phone`, `message`, `status` | 3 event: tagihan, pengingat, lunas |
 
 ---
 
@@ -561,7 +643,7 @@ Pengujian sistem dirancang menggunakan matriks skenario komprehensif yang mencak
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                TABEL 3.2 MATRIKS SKENARIO PENGUJIAN SISTEM                             │
+│                                TABEL 3.3 MATRIKS SKENARIO PENGUJIAN SISTEM                             │
 ├────┬──────────────────┬───────────────────────────────────────────┬──────────────────────┬─────────────┤
 │ No │ Kategori Uji     │ Skenario Pengujian                        │ Hasil yang Diharapkan│ Level / Alat│
 ├────┼──────────────────┼───────────────────────────────────────────┼──────────────────────┼─────────────┤
@@ -606,3 +688,5 @@ Pengujian sistem dirancang menggunakan matriks skenario komprehensif yang mencak
 │ 20 │ Code Quality     │ Analisis keteraturan arsitektur layer     │ deptrac 0 violations │ Deptrac CLI │
 └────┴──────────────────┴───────────────────────────────────────────┴──────────────────────┴─────────────┘
 ```
+
+> Distribusi strategi pada Tabel 3.3 mengikuti Piramida Pengujian pada Gambar 2.8 (Unit → Contract → Tenant Isolation → Integration/E2E).

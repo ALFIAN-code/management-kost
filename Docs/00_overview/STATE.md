@@ -2,34 +2,33 @@
 
 > Ringkasan 1 halaman untuk AI & manusia agar cepat paham konteks tanpa baca semua `docs/`. Update tiap sesi (bagian dari `AGENTS.md:3` checklist). Maks 400 kata.
 
-**Terakhir diupdate:** 2026-10-03
-**Fase:** **BAB 1, 2, 3 Naskah Akademis Lengkap + Keycloak SSO SELESAI** (15 Diagram & Dokumen Terpadu)
-**Progress keseluruhan:** 80% PA naskah (BAB 1, 2, 3 naskah utuh ~9.800 kata dengan 6 pilar arsitektur: Standar I/O, Multi-Tenant, MCP AI, Keycloak OIDC SSO, Clean-Modulith), 50% Project/kode.
+**Terakhir diupdate:** 2026-10-10
+**Fase:** **REWRITE TOTAL (ADR-007) — Roadmap Perancangan & Implementasi Baru** (Step 1: Kaji Kebutuhan & Fitur).
+**Progress keseluruhan:** 80% PA naskah (arsip teori/desain lama siap dialihkan ke desain baru), 40% Project/kode (menuju scaffolding ulang modular 13 tabel).
 
-## Pilar Arsitektur Terpadu (ADR-005 & ADR-006)
+## Pilar Arsitektur Terpadu (ADR-005, ADR-007, ADR-008)
 
-1. **Standar Input-Output API:** Format response JSON envelope seragam (`{status, message, data, meta, errors}`), FormRequest input validation, dan DTO transformer.
-2. **Multi-Tenant System (Multi-Gedung):** Logical row-level scoping dengan `building_id`, `TenantResolverMiddleware`, dan penugasan akses per gedung untuk pemilik/pengelola.
-3. **Model Context Protocol (MCP) with Built-in AI:** Modul MCP Server read-only untuk asisten AI (tanya okupansi, keuangan, kerusakan fasilitas) dengan data grounding terisolasi per tenant.
-4. **Single Sign-On (SSO) Berbasis Keycloak OIDC:** Otentikasi terpusat via Keycloak IAM, verifikasi stateless JWKS, JIT Provisioning, dan Spatie RBAC.
-5. **Modular Monolith Architecture (Backend):** 3-tier hierarchy (Infra/Auth-Setting, Core/Building-Room-Schedule, Business/Finance-Maintenance-Guest-Inventory-Notification-Mcp) dengan mutasi event-driven dan pembacaan via Module Gateway.
-6. **Clean Architecture (Frontend Flutter):** Pemisahan 3 layer (Presentation BLoC, Domain UseCase, Data RepoImpl) pada single codebase Flutter Web dan Mobile.
+1. **Arsitektur Hunian Dinamis (ADR-008):** Desain *as dynamic as possible*, mendukung kost komersial, asrama gratis, mes karyawan, dan pondok pesantren.
+2. **Pemisahan Room vs Occupancy/Schedule (ADR-008):** Room mengelola unit fisik & kapasitas; Schedule mengelola alokasi dinamis orang & waktu huni.
+3. **Decoupling Modul Opsional (ADR-008):** 5 Modul Core wajib (User, Property, Room, Schedule, Dashboard) + 5 Modul Opsional plug-and-play (Finance, Maintenance, Inventory, Guest, Notification).
+4. **Dynamic RBAC (ADR-008):** Manajemen peran dinamis (permission sets bawaan + pembuatan custom roles oleh pengguna).
+5. **Standar Input-Output API:** Format response JSON envelope seragam (`{status, message, data, meta, errors}`), FormRequest input validation, dan DTO transformer.
+6. **Modular Monolith Architecture (Backend):** Nol FK fisik lintas modul, komunikasi mutasi via Event Bus, dan pembacaan lintas modul via Module Gateway.
 
 ## Apa yang Sudah Selesai
 
-- ✅ ADR-005 (5 Pilar Konseptual) & ADR-006 (Keycloak OIDC SSO) tercatat di `Docs/03_logs/DECISIONS.md`.
-- ✅ `PA/docs/modules/bab1/README.md` diperbarui (gap multi-gedung & SSO, rumusan, tujuan, batasan 6 pilar).
-- ✅ `PA/docs/modules/bab2/README.md` diperbarui (11 sub-bab teori penunjang termasuk OIDC/Keycloak).
-- ✅ `PA/docs/modules/bab3/README.md` diperbarui (arsitektur Clean-Modulith + MCP + SSO, alur otentikasi, ERD multi-gedung, skenario pengujian komprehensif).
-- ✅ 15 folder diagram di `PA/docs/diagrams/`; 2 SVG FINAL arsitektur + ERD aktual + 5 ERD per-cluster HTML resmi docx.
-- ✅ Migration WAJIB tereksekusi (2026-10-03): `buildings`, `building_id` 13 tabel, SSO Keycloak, `mcp_tool_logs`, soft-ref 2 FK — 41 tabel, test 523 passed (2 pre-existing failed).
-- ✅ Backend staging: Schedule event-driven, perbaikan kontrak `/permissions`, Spatie RBAC 78 permissions.
-- ✅ Frontend: Flutter Web / Mobile single codebase, fix singleton SettingBloc.
+- ✅ ADR-007 (Rewrite Total Kost Bulanan 13 Tabel) & ADR-008 (Arsitektur Dinamis Core vs Opsional) disahkan di `Docs/03_logs/DECISIONS.md`.
+- ✅ Pemetaan arsitektur modular baru diselaraskan di `Docs/00_overview/ARCHITECTURE.md`.
+- ✅ Kesepakatan roadmap metodologis rekayasa perangkat lunak (Kebutuhan → Alur/Flow → ERD/DFD → Kontrak API → Kode & Naskah).
 
-## Apa Selanjutnya
+## Roadmap Kerja Rewrite Terkini
 
-1. Detail diagram UML/ERD multi-tenant & alur MCP untuk BAB 3.
-2. Review naskah BAB 1-3 sebelum kompilasi ke format docx v0.1.
+1. ✅ **Step 1 (Selesai):** Pengkajian kebutuhan & daftar fitur lengkap F01–F17 di `PA/docs/System design/DAFTAR_FITUR.md`.
+2. ✅ **Step 2 (Selesai):** Pendefinisian alur proses bisnis lengkap di `PA/docs/System design/BPMN/` (8 subfolder alur per fitur).
+3. ✅ **Step 3 (Selesai):** Pemodelan data (ERD terisolasi 21 entitas di `PA/docs/System design/ERD/`) & aliran data (DFD L0 & L1 di `PA/docs/System design/DFD/`).
+4. 🟡 **Step 4 (Berikutnya):** Spesifikasi Kontrak API REST & skema Event Bus antar-modul.
+5. ⚪ **Step 5:** Scaffolding folder baru backend modular monolith & sinkronisasi naskah BAB 3.
+
 
 ## Blocker / Keputusan Pending
 

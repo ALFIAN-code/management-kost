@@ -51,8 +51,8 @@
 
 ## 4. ERD Visual
 
-- **Aktual (kode):** `PA/docs/diagrams/12_erd_multi_tenant_global/erd_full_database.mmd` / `.png` — 39 tabel + relasi FK fisik & soft-ref utama.
-- **Target (desain PA):** `PA/docs/diagrams/12_erd_multi_tenant_global/erd_multi_tenant_global.mmd` / `.png` — sentral `buildings` + `keycloak_id` + `mcp_tool_logs`.
+- **Aktual (kode):** `PA/docs/System design/12_erd_multi_tenant_global/erd_full_database.mmd` / `.png` — 39 tabel + relasi FK fisik & soft-ref utama.
+- **Target (desain PA):** `PA/docs/System design/12_erd_multi_tenant_global/erd_multi_tenant_global.mmd` / `.png` — sentral `buildings` + `keycloak_id` + `mcp_tool_logs`.
 
 ## 5. Delta Desain Target vs Kode Aktual
 

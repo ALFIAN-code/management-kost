@@ -1,0 +1,17 @@
+flowchart TD
+    Start([Pemilik Membuka Menu Pengaturan Peran & Izin]) --> FetchPerm[Sistem Mengambil Daftar Permission Sets Granular]
+    FetchPerm --> Choice{Pilihan Konfigurasi Pemilik}
+
+    Choice -->|Pakai Peran Standar| DefaultRole[Pilih Peran Bawaan:\nOwner / Pengelola / Penghuni]
+    Choice -->|Buat Peran Baru| NewRoleForm[Klik 'Tambah Peran Baru']
+
+    NewRoleForm --> InputName[Input Nama Peran Baru\nMisal: 'Wali Asrama' / 'Teknisi Servis']
+    InputName --> ChecklistPerm[Centang Izin yang Diberikan\nContoh: room:read, maintenance:update]
+    ChecklistPerm --> SaveRole[Simpan Peran Kustom ke Database]
+
+    DefaultRole --> AssignUser[Pilih Akun Staf / Pengguna]
+    SaveRole --> AssignUser
+
+    AssignUser --> LinkRole[Kaitkan Peran ke Pengguna]
+    LinkRole --> EnforceAPI[Sistem Menerapkan Pembatasan Menu di UI & Guard API]
+    EnforceAPI --> End([Hak Akses Dinamis Aktif])
