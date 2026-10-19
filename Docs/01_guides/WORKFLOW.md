@@ -49,6 +49,22 @@ Beda dengan kode — workflow PA adalah **write-review-revise**:
 
 ## Workflow untuk AI Agent
 
+### Aturan Wajib: Protokol Revisi Dokumen (BERLAKU SEMUA SESI)
+
+Diperintahkan pemilik proyek 2026-10-18. **Tidak ada file naskah yang boleh diubah sebelum pengguna menyetujuinya.**
+
+Urutan wajib:
+1. **Tampilkan BEFORE** — teks utuh bagian yang akan diubah, ke dalam chat. Bukan ringkasan, bukan tabel poin.
+2. **Tunggu komentar** — pengguna me-review kalimat demi kalimat.
+3. **Catat point** — AI menulis daftar nomor dari setiap masukan.
+4. **Tunggu ACC** — baru setelah tidak ada revisi lagi, AI boleh menulis ke file.
+5. **Setelah ACC** — terapkan, tampilkan AFTER bila diminta.
+
+Dilarang: menimpa `PA/docs/modules/bab*/README.md` tanpa ACC; memberi "ringkasan perubahan" sebagai pengganti teks penuh; menggarap banyak bab sekaligus; mengarang draft yang belum pernah ditampilkan.
+
+Detail lengkap ada di `AGENTS.md` §2.0.
+
+### Aturan Lain
 - Jika diminta "langsung push ke main" atau "langsung generate docx final" → konfirmasi L1 dulu.
 - Tulis ringkasan PR / progress log dalam Indonesia, kode tetap Inggris.
 - Setiap selesai sprint/feature, update `Docs/03_logs/PROGRESS_LOG.md` + `Docs/00_overview/STATE.md` (checklist AGENTS.md:3).

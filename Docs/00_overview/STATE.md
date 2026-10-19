@@ -2,32 +2,31 @@
 
 > Ringkasan 1 halaman untuk AI & manusia agar cepat paham konteks tanpa baca semua `docs/`. Update tiap sesi (bagian dari `AGENTS.md:3` checklist). Maks 400 kata.
 
-**Terakhir diupdate:** 2026-10-10
-**Fase:** **REWRITE TOTAL (ADR-007) — Roadmap Perancangan & Implementasi Baru** (Step 1: Kaji Kebutuhan & Fitur).
-**Progress keseluruhan:** 80% PA naskah (arsip teori/desain lama siap dialihkan ke desain baru), 40% Project/kode (menuju scaffolding ulang modular 13 tabel).
+**Terakhir diupdate:** 2026-10-18
+**Fase:** **REWRITE TOTAL (ADR-007, ADR-011)** — Generalisasi Domain Kost Multi-Gedung, Backend NestJS, Frontend Web-First (Flutter Web).
+**Progress keseluruhan:** 80% PA naskah (penyelarasan BAB 1–3 ke arsitektur NestJS & generalisasi kost), 40% Project/kode (persiapan scaffolding repo NestJS).
 
-## Pilar Arsitektur Terpadu (ADR-005, ADR-007, ADR-008)
+## Pilar Arsitektur Terpadu (ADR-007, ADR-011)
 
-1. **Arsitektur Hunian Dinamis (ADR-008):** Desain *as dynamic as possible*, mendukung kost komersial, asrama gratis, mes karyawan, dan pondok pesantren.
-2. **Pemisahan Room vs Occupancy/Schedule (ADR-008):** Room mengelola unit fisik & kapasitas; Schedule mengelola alokasi dinamis orang & waktu huni.
-3. **Decoupling Modul Opsional (ADR-008):** 5 Modul Core wajib (User, Property, Room, Schedule, Dashboard) + 5 Modul Opsional plug-and-play (Finance, Maintenance, Inventory, Guest, Notification).
-4. **Dynamic RBAC (ADR-008):** Manajemen peran dinamis (permission sets bawaan + pembuatan custom roles oleh pengguna).
-5. **Standar Input-Output API:** Format response JSON envelope seragam (`{status, message, data, meta, errors}`), FormRequest input validation, dan DTO transformer.
-6. **Modular Monolith Architecture (Backend):** Nol FK fisik lintas modul, komunikasi mutasi via Event Bus, dan pembacaan lintas modul via Module Gateway.
+1. **Generalisasi Domain Kost Multi-Gedung (ADR-011):** Menghapus dependensi studi kasus tunggal (Wisma Amal); sistem ditujukan untuk manajemen rumah kost multi-gedung secara umum.
+2. **Backend Modular Monolith NestJS (ADR-011):** 9 modul terenkapsulasi bawaan (`@Module()`), nol FK fisik lintas modul, event-driven mutasi, dan pembacaan via Module Gateway.
+3. **Penyederhanaan Skema 13 Tabel Domain (ADR-007):** Sewa bulanan murni, aturan per gedung (`building_settings`), mengeliminasi 28 tabel warisan berlebih.
+4. **Platform Antarmuka Web-First (Flutter Web) (ADR-011):** Prioritas implementasi dan pengujian fungsional pada Flutter Web (desktop/tablet), kesiapan mobile sebagai *expansion readiness*.
+5. **Standarisasi Kontrak REST API & DTO:** Amplop JSON seragam `{status, message, data, meta, errors}`, validasi DTO `class-validator`, dan dokumentasi otomatis OpenAPI Swagger.
+6. **Identity & Access Management (Keycloak SSO OIDC):** Server Keycloak mandiri untuk email validation, forgot password, dan session handling; NestJS verifikasi stateless JWT via JWKS + tenant scoping `building_id`.
+7. **Dashboard Analitik & Integrasi MCP AI:** Endpoint agregasi baca operasional serta modul server MCP read-only untuk memfasilitasi asisten AI/LLM dalam kueri data cepat pemilik/pengelola.
 
 ## Apa yang Sudah Selesai
 
-- ✅ ADR-007 (Rewrite Total Kost Bulanan 13 Tabel) & ADR-008 (Arsitektur Dinamis Core vs Opsional) disahkan di `Docs/03_logs/DECISIONS.md`.
-- ✅ Pemetaan arsitektur modular baru diselaraskan di `Docs/00_overview/ARCHITECTURE.md`.
-- ✅ Kesepakatan roadmap metodologis rekayasa perangkat lunak (Kebutuhan → Alur/Flow → ERD/DFD → Kontrak API → Kode & Naskah).
+- ✅ ADR-007 (Rewrite Total Kost Bulanan 13 Tabel) disahkan di `Docs/03_logs/DECISIONS.md`.
+- ✅ ADR-011 (Generalisasi Domain, Backend NestJS, Platform Web-First) disahkan di `Docs/03_logs/DECISIONS.md`.
+- ✅ Draft BAB 1 diselaraskan dengan gaya penulisan natural Indonesia (bebas kata kaku/AI-isms).
 
-## Roadmap Kerja Rewrite Terkini
+## Roadmap Kerja Terkini
 
-1. ✅ **Step 1 (Selesai):** Pengkajian kebutuhan & daftar fitur lengkap F01–F17 di `PA/docs/System design/DAFTAR_FITUR.md`.
-2. ✅ **Step 2 (Selesai):** Pendefinisian alur proses bisnis lengkap di `PA/docs/System design/BPMN/` (8 subfolder alur per fitur).
-3. ✅ **Step 3 (Selesai):** Pemodelan data (ERD terisolasi 21 entitas di `PA/docs/System design/ERD/`) & aliran data (DFD L0 & L1 di `PA/docs/System design/DFD/`).
-4. 🟡 **Step 4 (Berikutnya):** Spesifikasi Kontrak API REST & skema Event Bus antar-modul.
-5. ⚪ **Step 5:** Scaffolding folder baru backend modular monolith & sinkronisasi naskah BAB 3.
+1. 🟡 **Fase Naskah:** Sinkronisasi BAB 1 (selesai draf), revisi BAB 2 & 3 mengikuti arsitektur NestJS 13 tabel dan Flutter Web.
+2. ⚪ **Fase Desain Teknis:** Finalisasi spesifikasi kontrak endpoint REST API & skema event bus NestJS.
+3. ⚪ **Fase Implementasi:** Scaffolding basis kode backend baru berbasis NestJS modular & Flutter Web.
 
 
 ## Blocker / Keputusan Pending

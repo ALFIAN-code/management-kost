@@ -33,6 +33,28 @@ Baca berurutan, jangan dilompat:
 
 ## 2. SELAMA Kerja
 
+### 2.0 ATURAN WAJIB: PROTOKOL REVISI DOKUMEN NASKAH
+
+> Aturan ini mengikat SEMUA sesi AI, tanpa kecuali. Diperintahkan langsung oleh pemilik proyek (2026-10-18) setelah insiden: AI pernah mengubah BAB 2 dan BAB 3 tanpa persetujuan.
+
+**Tidak boleh ada file naskah yang diubah sebelum pengguna menyetujuinya.** Urutan kerja wajib:
+
+1. **TAMPILKAN BEFORE** — Salin teks *utuh* bagian yang akan diubah ke dalam chat (bukan ringkasan, bukan tabel poin). Untuk revisi besar (1 bab penuh)整个人 seluruh bab ditampilkan. Untuk revisi kecil (1 sub-bab) hanya sub-bab itu beserta konteks pembuka dan penutupnya.
+2. **TUNGGU KOMENTAR** — Pengguna reviewing kalimat demi kalimat dan memberi catatan. Jangan buat draft baru dulu, jangan_edit file dulu.
+3. **CATAT POINT** — AI menulis daftar nomor dari setiap masukan/comments pengguna.
+4. **TUNGGU ACC** — Pengguna menyatakan setelah tidak ada revisi lagi: *hanya setelah itu* AI boleh menulis perubahan ke file.
+5. **SETELAH ACC** — Terapkan perubahan, lalu tampilkan AFTER kalau diminta.
+
+**Dilarang keras:**
+- Menulis/menimpa `PA/docs/modules/bab*/README.md` atau dokumen naskah lain tanpa ACC eksplisit.
+- Mengganti teks dengan "ringkasan perubahan" alih-alih "teks penuh before-after".
+- Menerapkan banyak bab sekaligus. **Satu bab satu putaran.** Kalau user minta lanjut ke bab berikutnya, bab sebelumnya harus sudah di-ACC.
+- Mengarang isi draft yang belum pernah ditampilkan ke user.
+
+**Kalau skala revisi besar:** pecah jadi beberapa giliran (misal §1.1 tampil dulu, tunggu komentar, baru §1.2). Ikuti perintah user soal potongannya.
+
+---
+
 - Unit kecil, mudah direview. Jangan ubah schema/arsitektur/konvensi tanpa izin.
 - Dampak besar (auth, payment Midtrans, migrasi, breaking) → tanya dulu.
 - **Source-first untuk PA:** klaim BAB3/4 wajib jejak ke `Project/backend-wismaamalgorontalo/Modules/*` atau `Project/fe_wisma_amal_gorontalo/lib/*` atau DOI. Tanpa bukti → `[CODE EVIDENCE NEEDED]` / `[CITATION NEEDED]`.

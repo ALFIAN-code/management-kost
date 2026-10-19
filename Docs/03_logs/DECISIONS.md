@@ -184,5 +184,53 @@ Mengadopsi pendekatan **Hexagonal Architecture (Ports and Adapters) / Dependency
 - Menjadikan vendor sebagai modul mandiri (ditolak — Midtrans dan Fonnte adalah perangkat infrastruktur, bukan sebuah domain bisnis kos-kosan).
 **Konsekuensi:**
 - Kemudahan dalam *Unit Testing* karena dependensi eksternal bisa dengan mudah di-mock/dipalsukan.
-- Apabila pengelola ingin berganti dari Midtrans ke Xendit, atau dari Fonnte ke Wablas, cukup membuat *Adapter* baru dan mengganti injeksinya (biasanya melalui `.env` atau *Service Provider*), tanpa risiko merusak stabilitas perhitungan keuangan.
-- Diagram arsitektur akan diperbarui nantinya untuk menampilkan entitas "3rd-Party Integration Adapters".
+---
+
+## ADR-011: Generalisasi Domain Kost Multi-Gedung, Backend Rewrite ke NestJS, dan Prioritas Web-First
+
+**Tanggal:** 2026-10-18
+**Status:** Accepted
+**Konteks:**
+1. Keterikatan kaku pada satu objek studi kasus (Wisma Amal Gorontalo) membatasi generalisasi sistem. Pengelolaan kost multi-gedung membutuhkan solusi yang berlaku umum untuk berbagai karakteristik operasional properti hunian sewa.
+2. Keputusan rewrite total dari 41 tabel ke skema bersih 13 tabel menuntut penulisan ulang seluruh lapisan persistensi data. Mempertahankan Laravel dengan paket modular pihak ketiga terbukti rentan terhadap kebocoran batas modul domain.
+3. Luaran tugas akhir memerlukan batasan deliverable yang teruji tuntas dan realistis. Mengembangkan serta menguji antarmuka web dan mobile fisik secara bersamaan memicu redundansi pengujian UI.
+4. Fitur pendukung seperti Keycloak OIDC SSO dan asisten AI berbasis MCP dinilai berlebihan (*overengineered*) untuk lingkup operasional inti sewa bulanan.
+
+**Keputusan:**
+1. **Generalisasi Domain:** Sistem dirancang sebagai Sistem Informasi Manajemen Rumah Kost Multi-Gedung secara umum. Seluruh dependensi naskah dan arsitektur yang mengikat secara kaku pada Wisma Amal Gorontalo dieliminasi. Nama properti hanya dapat digunakan sebagai sampel data empiris saat pengujian.
+2. **Backend Rewrite Total ke NestJS (TypeScript):** Mengadopsi NestJS sebagai kerangka kerja backend baru untuk menerapkan arsitektur Modular Monolith 9 modul terenkapsulasi secara native (`@Module()`), menegakkan nol FK lintas modul di tingkat kompilasi, memanfaatkan I/O non-blocking asinkron, dan menyatukan validasi kontrak DTO via `class-validator` serta Swagger.
+3. **Platform Antarmuka Web-First (Flutter Web):** Target implementasi dan pengujian fungsional difokuskan pada Flutter Web (antarmuka dashboard pemilik, pengelola, dan portal penghuni). Dukungan mobile diposisikan sebagai kesiapan arsitektur multi-platform (*expansion readiness*), bukan kewajiban deliverable pengujian PA ini.
+4. **Otentikasi Terpusat Keycloak SSO (OIDC):** Menggunakan Keycloak sebagai Identity and Access Management (IAM) untuk menyelesaikan kelemahan autentikasi primitif pada sistem lama (belum ada lupa kata sandi, validasi email, dan manajemen sesi). Backend NestJS bertindak sebagai *Resource Server* yang memvalidasi token JWT secara *stateless* menggunakan JWKS, memetakan peran pengguna (*Owner*, *Admin*, *Resident*), serta mengikatkan *tenant boundary* `building_id`.
+5. **Dashboard Analitik & External AI Adapter (Model Context Protocol / MCP):** Menyediakan endpoint ringkasan operasional serta modul server MCP read-only (selaras dengan ADR-009) yang memungkinkan model AI (LLM) mengeksekusi kueri analitik cepat bagi pemilik dan pengelola tanpa melanggar batasan data (*tenant boundary*).
+
+**Konsekuensi:**
+- Judul naskah PA disesuaikan menjadi umum: *Refactoring Sistem Manajemen Rumah Kost dengan Arsitektur Modular Monolithic Berbasis Kerangka Kerja Scrum* (tanpa sub-judul studi kasus spesifik).
+- BAB 1–3 diselaraskan secara konsisten ke arsitektur NestJS, skema 13 tabel bulanan, Keycloak OIDC SSO, server MCP AI read-only, dan Flutter Web.
+- Repo/folder backend baru akan diinisiasi berbasis template NestJS modular.
+
+---
+
+## ADR-012: PostgreSQL sebagai Basis Data Utama dan Docker sebagai Wajib Deployment
+
+**Tanggal:** 2026-10-18
+**Status:** Accepted
+**Konteks:**
+1. Rancangan awal rewrite (ADR-007 dan ADR-011) masih menyebut MySQL sebagai basis data utama. Setelah dikaji ulang, PostgreSQL lebih sesuai untuk proyek ini karena tipe data `NUMERIC` untuk nilai uang, dukungan `JSONB` untuk payload event dan parameter tool MCP, serta `partial index` yang memudahkan penyaringan tagihan yang belum lunas.
+2. Deployment sistem ini akan melibatkan beberapa komponen terpisah (backend NestJS, basis data, Keycloak IAM, dan MCP server). Tanpa orkestrasi container, instalasi di lingkungan uji menjadi sulit direproduksi.
+3. Proyek membutuhkan standar deployment yang seragam untuk menjalankan sistem di desktop, laptop, hingga server.
+
+**Keputusan:**
+1. **Basis Data Utama: PostgreSQL** — Seluruh 13 tabel domain memakai PostgreSQL sebagai RDBMS. Semua referensi MySQL pada naskah dan kode harus diganti ke PostgreSQL.
+2. **Docker Wajib untuk Deployment** — Seluruh komponen sistem (NestJS, PostgreSQL, Keycloak) dibungkus dalam image Docker dan dijalankan lewat Docker Compose. Konsep *containerization* dan *orchestration* masuk ke dalam ruang lingkup PA dan wajib diuji pada bagian implementasi.
+
+**Alternatif:**
+- Tetap memakai MySQL (ditolak — `NUMERIC` dan `JSONB` pada PostgreSQL lebih memadai untuk data keuangan dan payload MCP).
+- Deployment manual tanpa Docker (ditolak — sulit direplikasi antar lingkungan).
+
+**Konsekuensi:**
+- Bab 2 (Kajian Pustaka) harus memuat teori PostgreSQL, bukan MySQL.
+- Bab 3 (Perancangan) harus menampilkan diagram Docker Compose dan spesifikasi `docker-compose.yml`.
+- Kode dan migration di folder baru wajib mengikuti dialek SQL PostgreSQL (misalnya `SERIAL`/`IDENTITY` untuk auto-increment dan `TIMESTAMPTZ` untuk kolom waktu).
+- Infrastruktur lokal dapat dijalankan dengan satu perintah `docker compose up`.
+
+

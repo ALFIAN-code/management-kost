@@ -4,6 +4,47 @@
 
 ---
 
+## [2026-10-18 11:15] Rekonstruksi Penuh BAB 3: NestJS Modular Monolith, BPMN, DFD, ERD 13 Tabel, & Kontrak REST/MCP
+
+**Status:** Selesai
+**Dikerjakan:**
+- Menulis ulang `PA/docs/modules/bab3/README.md` (Metodologi dan Perancangan Sistem):
+  1. §3.1: Deskripsi solusi terpadu sistem informasi manajemen rumah kost multi-gedung berbasis NestJS, Keycloak OIDC, MCP AI, dan Flutter Web.
+  2. §3.2: Rincian 4 siklus sprint Scrum dan user stories sewa bulanan dengan `min_rental_months` serta kueri analitik AI.
+  3. §3.3: Diagram arsitektur Clean-Modulith NestJS, dekomposisi 9 modul, 13 tabel domain bersih, dan nol FK fisik lintas modul.
+  4. §3.4: BPMN alur sewa bulanan dan pembayaran Midtrans SNAP, tiket komplain berfoto, dan kueri analitik via MCP JSON-RPC 2.0.
+  5. §3.5: Use Case global dan DFD Level 0 & Level 1 dengan 13 data store logis.
+  6. §3.6: Diagram ERD tunggal 13 tabel domain bersih dan kamus data komprehensif 13 tabel.
+  7. §3.7: Desain antarmuka Flutter Web responsif (dashboard pemilik dengan multi-gedung switcher & panel asisten AI MCP, dashboard pengelola, portal penghuni).
+  8. §3.8: Spesifikasi teknis tool server MCP (JSON Schema) dan kontrak endpoint REST API.
+  9. §3.9: Matriks skenario pengujian piramida (Supertest, Jest, Flutter Test, ESLint module boundary).
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Tinjau bersama naskah BAB 3
+- Perbarui diagram arsitektur visual / SVG bila diperlukan
+- Lanjut ke tahap perancangan teknis / scaffolding backend NestJS
+
+---
+
+## [2026-10-10 15:11] Penyelesaian Desain Konseptual & Penjadwalan Revisi BAB 1-3
+
+**Status:** Selesai
+**Dikerjakan:**
+- Mengonfirmasi bahwa seluruh bekal konseptual sistem untuk sidang proposal (Daftar Fitur, BPMN, DFD, ERD, dan Arsitektur Backend) telah selesai dirancang dan disetujui.
+- Menambahkan task "Revisi Naskah Modul BAB 1 - BAB 3" ke dalam antrean (Next Steps) di `STATE.md`. Task ini akan dikerjakan pada sesi berikutnya, untuk menyelaraskan isi naskah skripsi dengan rancangan sistem terbaru.
+**File yang diubah:**
+- `PA/docs/00_overview/STATE.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Menulis/Merevisi naskah `PA/docs/modules/bab1/` hingga `bab3/` (Sesi Berikutnya).
+
+---
+
 ## [2026-10-10 15:06] Keputusan Arsitektur: Adapter Pattern untuk Integrasi Eksternal (ADR-010)
 
 **Status:** Selesai

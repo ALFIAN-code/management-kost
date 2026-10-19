@@ -1,4 +1,13 @@
-# Daftar Pustaka — Database Terkurasi
+# Daftar Pustaka — Database Terkurasi (ARSIP)
+
+> **⚠️ DIAFKAN 2026-10-18.** File ini tidak lagi menjadi sumber nomor sitasi naskah.
+> Nomor `[10]–[13]` di sini bentrok dengan pemakaian naskah (previous work vs jurnal).
+> Sumber resmi sekarang: `PA/docs/modules/referensi/DAFTAR_PUSTAKA_LENGKAP.md`.
+> File ini dipertahankan hanya sebagai catatan historis kisikan literatur September 2025.
+
+---
+
+# Daftar Pustaka — Database Terkurasi (lama)
 
 > Semua sitasi naskah wajib ada di sini dengan DOI/URL verifikabel. Format IEEE numeric urut kemunculan. Jangan tambah yang tidak disitasi di body.
 

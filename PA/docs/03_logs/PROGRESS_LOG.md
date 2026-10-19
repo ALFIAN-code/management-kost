@@ -4,6 +4,36 @@
 
 ---
 
+## [2026-10-18 11:15] Rekonstruksi Penuh BAB 3: NestJS Modular Monolith, BPMN, DFD, ERD 13 Tabel, & Kontrak REST/MCP
+
+**Status:** Selesai
+**Dikerjakan:**
+- Menulis ulang `PA/docs/modules/bab3/README.md` (Metodologi dan Perancangan Sistem) sesuai arsitektur NestJS, Keycloak OIDC, MCP AI, Flutter Web, dan ERD 13 tabel domain bersih.
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+**Belum selesai / next steps:**
+- Tinjau bersama naskah BAB 3
+- Perbarui diagram arsitektur visual / SVG bila diperlukan
+- Lanjut ke persiapan implementasi / scaffolding backend NestJS
+
+---
+
+## [2026-10-10 15:11] Penyelesaian Desain Konseptual & Penjadwalan Revisi BAB 1-3
+
+**Status:** Selesai
+**Dikerjakan:**
+- Mengonfirmasi bahwa seluruh bekal konseptual sistem untuk sidang proposal (Daftar Fitur, BPMN, DFD, ERD, dan Arsitektur Backend) telah selesai dirancang dan disetujui.
+- Menambahkan task "Revisi Naskah Modul BAB 1 - BAB 3" ke dalam antrean (Next Steps) di `STATE.md`. Task ini akan dikerjakan pada sesi berikutnya, untuk menyelaraskan isi naskah skripsi dengan rancangan sistem terbaru.
+**File yang diubah:**
+- `PA/docs/00_overview/STATE.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Menulis/Merevisi naskah `PA/docs/modules/bab1/` hingga `bab3/` (Sesi Berikutnya).
+
+---
+
 ## [2026-10-10 15:06] Keputusan Arsitektur: Adapter Pattern untuk Integrasi Eksternal (ADR-010)
 
 **Status:** Selesai

@@ -2,36 +2,38 @@
 
 > 1 halaman. Update tiap sesi bimbingan/revisi.
 
-**Terakhir diupdate:** 2026-10-10
-**Fase:** **REWRITE TOTAL (ADR-007) — Perancangan Ulang 5 Tahap** (Step 1: Kebutuhan & Fitur)
+**Terakhir diupdate:** 2026-10-18
+**Fase:** **Penyelarasan Naskah BAB 1–3 (Rewrite NestJS & Generalisasi Domain)**
 
-**Progress:** 80% PA naskah (naskah lama diarsipkan sebagai referensi, penulisan diselaraskan dengan hasil 5 tahap perancangan baru).
+**Progress:** 80% PA naskah (BAB 1 selesai draf ulang natural, persiapan BAB 2 & 3).
+
 ## Judul PA
 
-**Refactoring Sistem Manajemen Rumah Kost dengan Arsitektur Modular Monolithic Berbasis Kerangka Kerja Scrum** (Studi Kasus: Wisma Amal Gorontalo)
+**Refactoring Sistem Manajemen Rumah Kost dengan Arsitektur Modular Monolithic Berbasis Kerangka Kerja Scrum**
 
-## Pilar Arsitektur Terpadu (ADR-005 & ADR-007)
+## Pilar Arsitektur Terpadu (ADR-007, ADR-011)
 
-1. **Modular Monolith Architecture (Backend)**: 3-tier hierarchy, mutasi via event bus, query via Module Gateway, nol FK lintas modul.
-2. **Sewa Bulanan Penuh**: Tanpa tarif harian, configurable minimum rental months per gedung.
-3. **Clean Architecture (Frontend Flutter)**: Pemisahan Presentation BLoC, Domain UseCase, dan Data DataSource pada single codebase Web + Mobile.
-4. **Multi-Tenant System (Multi-Gedung)**: Row-level tenancy berbasis `building_id`.
-5. **Standar Input-Output API**: JSON response envelope konsisten (`{status, message, data, meta, errors}`), FormRequest, dan DTO transformer.
-6. **Autentikasi Sederhana & Aman**: Sanctum lokal dengan role enum (owner, admin, resident).
+1. **Generalisasi Domain Kost Multi-Gedung**: Solusi umum pengelolaan kost komersial multi-gedung tanpa keterikatan kaku pada satu nama properti.
+2. **Modular Monolith NestJS**: 9 modul mandiri, penegakan batas modul bawaan framework, komunikasi event-driven, dan nol FK fisik lintas modul.
+3. **Penyederhanaan Skema 13 Tabel**: Fokus sewa bulanan murni, konfigurasi per gedung (`building_settings`), mengeliminasi 28 tabel warisan.
+4. **Antarmuka Web-First (Flutter Web)**: Prioritas implementasi dan evaluasi fungsional pada Web, dengan arsitektur Clean Architecture yang siap ekspansi ke Mobile.
+5. **Standar Kontrak REST API & DTO**: Response envelope seragam, validasi ketat `class-validator`, dan dokumentasi otomatis OpenAPI Swagger.
+6. **Identity & Access Management (Keycloak SSO OIDC)**: Integrasi Keycloak untuk menangani email validation, forgot password, dan session out-of-the-box; backend NestJS verifikasi stateless JWT via JWKS.
+7. **Dashboard Analitik & Integrasi MCP AI**: Agregasi baca metrik operasional serta modul server MCP read-only untuk kueri cepat asisten AI/LLM bagi pemilik dan pengelola.
 
 ## Apa yang Sudah Selesai
 
-- ✅ **ADR-007 Ditetapkan**: Keputusan rewrite total kost bulanan 13 tabel dicatat di `Docs/03_logs/DECISIONS.md`.
-- ✅ **Draf Awal Fase 1**: Kebutuhan F1–F12 dan draf ERD 13 tabel di `PA/docs/modules/bab3/DESAIN_REWRITE_FASE1.md`.
-- ✅ **Roadmap 5 Langkah Disepakati**: Metodologi rekayasa perangkat lunak bertahap untuk rekonstruksi BAB 3 dan kode.
+- ✅ **ADR-007 & ADR-011 Ditetapkan**: Keputusan rewrite 13 tabel bulanan, transisi ke NestJS, platform web-first, dan generalisasi domain kost dicatat di `Docs/03_logs/DECISIONS.md`.
+- ✅ **BAB 1 Naskah Diperbarui**: Ditulis ulang dengan gaya bahasa natural Indonesia, bebas dari istilah kaku dan dependensi wisma tunggal.
 
 ## Roadmap Perancangan & Implementasi Baru
 
-1. ✅ **Step 1 (Selesai):** Kaji kebutuhan & daftar fitur resmi (F01–F17) di `PA/docs/System design/DAFTAR_FITUR.md`.
-2. ✅ **Step 2 (Selesai):** Pendefinisian alur proses bisnis lengkap di `PA/docs/System design/BPMN/` (8 subfolder alur per fitur).
-3. ✅ **Step 3 (Selesai):** Pemodelan data (ERD terisolasi 21 entitas di `PA/docs/System design/ERD/`) & aliran data (DFD L0 & L1 di `PA/docs/System design/DFD/`).
-4. 🟡 **Step 4 (Berikutnya):** Spesifikasi Kontrak API REST & skema Event Bus.
-5. ⚪ **Step 5:** Scaffolding kode backend & update naskah SDD BAB 3.
+1. ✅ **Step 1 (Selesai):** Kaji kebutuhan & daftar fitur resmi (F01–F17).
+2. ✅ **Step 2 (Selesai):** Pendefinisian alur proses bisnis lengkap (BPMN).
+3. ✅ **Step 3 (Selesai):** Pemodelan data (ERD Dinamis) & aliran data (DFD L0 & L1).
+4. ✅ **Step Konseptual Arsitektur (Selesai):** Desain Modular Monolith, Keycloak SSO, Outbound Adapters (disetujui untuk bekal sidang proposal).
+5. 🟡 **Next PR / Task Utama:** Revisi dan penulisan ulang naskah modul `bab1` hingga `bab3` untuk menyesuaikan dengan keseluruhan desain sistem konseptual terbaru di atas. (Akan dikerjakan di sesi berikutnya).
+6. ⚪ **Step Lanjutan (Pasca Proposal):** Spesifikasi Kontrak API REST, Event Bus, dan Scaffolding kode.
 
 ## Blocker / Keputusan Pending
 
