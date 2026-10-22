@@ -31,10 +31,10 @@ class FineManagementPage extends StatefulWidget {
 
 class _FineManagementPageState extends State<FineManagementPage> {
   String _formatCurrency(double v) =>
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(v);
+      NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0).format(v);
 
   String _formatDate(DateTime dt) =>
-      DateFormat('d MMM yyyy', 'id_ID').format(dt);
+      DateFormat('d MMM yyyy', 'en_US').format(dt);
 
   String? _filterStatus;
   String _searchQuery = '';
@@ -104,10 +104,10 @@ class _FineManagementPageState extends State<FineManagementPage> {
   };
 
   String _statusLabel(String s) => switch (s) {
-    'paid'      => 'Lunas',
-    'waived'    => 'Dimaafkan',
-    'cancelled' => 'Dibatalkan',
-    _           => 'Belum Bayar',
+    'paid'      => 'Paid',
+    'waived'    => 'Waived',
+    'cancelled' => 'Cancelled',
+    _           => 'Unpaid',
   };
 
   Widget _statusChip(String status, bool isDark) {
@@ -150,30 +150,30 @@ class _FineManagementPageState extends State<FineManagementPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Maafkan Denda'),
+        title: const Text('Waive Fine'),
         content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Penghuni: ${fine.tenantName}', style: const TextStyle(fontWeight: FontWeight.w600)),
-          Text('Nominal: ${_formatCurrency(fine.amount)}', style: const TextStyle(fontSize: 13)),
+          Text('Resident: ${fine.tenantName}', style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text('Amount: ${_formatCurrency(fine.amount)}', style: const TextStyle(fontSize: 13)),
           const SizedBox(height: AppSpacing.md),
           TextField(
             controller: ctrl,
             decoration: const InputDecoration(
-              labelText: 'Alasan memaafkan *',
-              hintText: 'Penghuni sudah meminta maaf...',
+              labelText: 'Reason for waiving *',
+              hintText: 'The resident has apologized...',
               border: OutlineInputBorder(),
             ),
             maxLines: 3,
           ),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           FilledButton(
             onPressed: () {
               if (ctrl.text.trim().isEmpty) return;
               _cubit.waiveFine(fine.id, ctrl.text.trim());
               Navigator.pop(context);
             },
-            child: const Text('Maafkan'),
+            child: const Text('Waive'),
           ),
         ],
       ),
@@ -184,19 +184,19 @@ class _FineManagementPageState extends State<FineManagementPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Batalkan Denda'),
+        title: const Text('Cancel Fine'),
         content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Penghuni: ${fine.tenantName}', style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text('Resident: ${fine.tenantName}', style: const TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
-          Text('Yakin ingin membatalkan denda sebesar ${_formatCurrency(fine.amount)}?',
+          Text('Are you sure you want to cancel the fine of ${_formatCurrency(fine.amount)}?',
               style: const TextStyle(fontSize: 13)),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Tidak')),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('No')),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () { _cubit.cancelFine(fine.id); Navigator.pop(context); },
-            child: const Text('Batalkan'),
+            child: const Text('Cancel'),
           ),
         ],
       ),
@@ -231,12 +231,12 @@ class _FineManagementPageState extends State<FineManagementPage> {
             backgroundColor: isDark ? AppColorsDark.background : AppColorsLight.background,
             body: Column(children: [
               AppTopBar(
-                title: 'Manajemen Denda',
-                breadcrumb: 'Keuangan / Denda',
+                title: 'Fine Management',
+                breadcrumb: 'Finance / Fines',
                 action: FilledButton.icon(
                   onPressed: _showCreateDialog,
                   icon: const Icon(Icons.add_rounded, size: 18),
-                  label: const Text('Buat Denda'),
+                  label: const Text('Create Fine'),
                 ),
               ),
               Expanded(
@@ -272,39 +272,39 @@ class _FineManagementPageState extends State<FineManagementPage> {
         // ── Summary cards ─────────────────────────────────────────────────────
         Row(children: [
           Expanded(child: SummaryStatCard(
-            label: 'Total Denda',
-            value: '${allFines.length} Denda',
+            label: 'Total Fines',
+            value: '${allFines.length} Fines',
             icon: Icons.gavel_rounded,
             iconColor: isDark ? AppColorsDark.primary : AppColorsLight.primary,
             iconBg:    isDark ? AppColorsDark.primaryLight : AppColorsLight.primaryLight,
-            trend: 'Semua status',
+            trend: 'All statuses',
           )),
           const SizedBox(width: AppSpacing.lg),
           Expanded(child: SummaryStatCard(
-            label: 'Belum Dibayar',
+            label: 'Unpaid',
             value: _formatCurrency(totalUnpaid),
             icon: Icons.warning_amber_rounded,
             iconColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
             iconBg:    isDark ? AppColorsDark.statusWaitingBg : AppColorsLight.statusWaitingBg,
-            trend: '${allFines.where((f) => f.isUnpaid).length} denda',
+            trend: '${allFines.where((f) => f.isUnpaid).length} fines',
           )),
           const SizedBox(width: AppSpacing.lg),
           Expanded(child: SummaryStatCard(
-            label: 'Terkumpul (Lunas)',
+            label: 'Collected (Paid)',
             value: _formatCurrency(totalPaid),
             icon: Icons.check_circle_outline_rounded,
             iconColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
             iconBg:    isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg,
-            trend: '${allFines.where((f) => f.isPaid).length} denda lunas',
+            trend: '${allFines.where((f) => f.isPaid).length} paid fines',
           )),
           const SizedBox(width: AppSpacing.lg),
           Expanded(child: SummaryStatCard(
-            label: 'Dimaafkan',
-            value: '$countWaived Denda',
+            label: 'Waived',
+            value: '$countWaived Fines',
             icon: Icons.handshake_outlined,
             iconColor: isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess,
             iconBg:    isDark ? AppColorsDark.statusProcessBg : AppColorsLight.statusProcessBg,
-            trend: 'Denda yg dihapuskan',
+            trend: 'Fines that were cleared',
           )),
         ]).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0, duration: 300.ms),
 
@@ -313,19 +313,19 @@ class _FineManagementPageState extends State<FineManagementPage> {
         // ── Search & Filter ───────────────────────────────────────────────────
         SearchAndFilterBar(
           searchController: _searchCtrl,
-          searchHint: 'Cari nama penghuni atau alasan denda...',
+          searchHint: 'Search resident name or fine reason...',
           onSearchChanged: (val) => setState(() { _searchQuery = val; _currentPage = 1; }),
           dropdownFilter: Row(mainAxisSize: MainAxisSize.min, children: [
             _buildDropdown<String?>(
               value: _filterStatus,
-              hint: 'Semua Status',
+              hint: 'All Statuses',
               isDark: isDark,
               items: const [
-                DropdownMenuItem(value: null,        child: Text('Semua Status')),
-                DropdownMenuItem(value: 'unpaid',    child: Text('Belum Bayar')),
-                DropdownMenuItem(value: 'paid',      child: Text('Lunas')),
-                DropdownMenuItem(value: 'waived',    child: Text('Dimaafkan')),
-                DropdownMenuItem(value: 'cancelled', child: Text('Dibatalkan')),
+                DropdownMenuItem(value: null,        child: Text('All Statuses')),
+                DropdownMenuItem(value: 'unpaid',    child: Text('Unpaid')),
+                DropdownMenuItem(value: 'paid',      child: Text('Paid')),
+                DropdownMenuItem(value: 'waived',    child: Text('Waived')),
+                DropdownMenuItem(value: 'cancelled', child: Text('Cancelled')),
               ],
               onChanged: (val) => setState(() { _filterStatus = val; _currentPage = 1; }),
             ),
@@ -348,24 +348,24 @@ class _FineManagementPageState extends State<FineManagementPage> {
           EmptyStateWidget(
             icon: Icons.gavel_rounded,
             title: _searchQuery.isNotEmpty
-                ? 'Tidak ada hasil untuk "$_searchQuery"'
+                ? 'No results for "$_searchQuery"'
                 : _filterStatus != null
-                    ? 'Tidak ada denda dengan status "${_statusLabel(_filterStatus!)}"'
-                    : 'Belum ada data denda',
+                    ? 'No fines with status "${_statusLabel(_filterStatus!)}"'
+                    : 'No fine data yet',
             subtitle: _searchQuery.isNotEmpty || _filterStatus != null
-                ? 'Coba ubah filter atau kata kunci pencarian.'
-                : 'Buat denda baru menggunakan tombol di atas.',
+                ? 'Try changing the filter or search keyword.'
+                : 'Create a new fine using the button above.',
           ).animate().fadeIn()
         else ...[
           AppDataTable(
             dataRowMinHeight: 64,
             columns: const [
-              DataColumn(label: Text('Penghuni')),
-              DataColumn(label: Text('Alasan')),
-              DataColumn(label: Text('Nominal'), numeric: true),
+              DataColumn(label: Text('Resident')),
+              DataColumn(label: Text('Reason')),
+              DataColumn(label: Text('Amount'), numeric: true),
               DataColumn(label: Text('Status')),
-              DataColumn(label: Text('Tanggal')),
-              DataColumn(label: Text('Aksi')),
+              DataColumn(label: Text('Date')),
+              DataColumn(label: Text('Action')),
             ],
             rows: paged.map((f) => _buildRow(f, isDark)).toList(),
           ).animate().fadeIn(delay: 150.ms, duration: 300.ms),
@@ -373,7 +373,7 @@ class _FineManagementPageState extends State<FineManagementPage> {
           const SizedBox(height: AppSpacing.lg),
 
           Row(children: [
-            Text('Menampilkan ${paged.length} dari ${filtered.length} data',
+            Text('Showing ${paged.length} of ${filtered.length} records',
                 style: TextStyle(fontSize: 13, color: textSecondary)),
             const Spacer(),
             _PaginationBar(
@@ -393,7 +393,7 @@ class _FineManagementPageState extends State<FineManagementPage> {
     final cancelColor   = isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled;
 
     return DataRow(cells: [
-      // Penghuni
+      // Resident
       DataCell(Row(children: [
         CircleAvatar(
           radius: 18,
@@ -413,7 +413,7 @@ class _FineManagementPageState extends State<FineManagementPage> {
         ]),
       ])),
 
-      // Alasan
+      // Reason
       DataCell(Tooltip(
         message: fine.reason,
         child: SizedBox(
@@ -424,7 +424,7 @@ class _FineManagementPageState extends State<FineManagementPage> {
         ),
       )),
 
-      // Nominal
+      // Amount
       DataCell(Text(
         _formatCurrency(fine.amount),
         style: TextStyle(
@@ -438,13 +438,13 @@ class _FineManagementPageState extends State<FineManagementPage> {
       // Status
       DataCell(_statusChip(fine.status, isDark)),
 
-      // Tanggal
+      // Date
       DataCell(Text(
         fine.createdAt != null ? _formatDate(fine.createdAt!) : '-',
         style: TextStyle(fontSize: 13, color: textSecondary),
       )),
 
-      // Aksi
+      // Action
       DataCell(fine.isUnpaid
           ? Row(mainAxisSize: MainAxisSize.min, children: [
               TextButton(
@@ -455,7 +455,7 @@ class _FineManagementPageState extends State<FineManagementPage> {
                   minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                 ),
-                child: const Text('Maafkan'),
+                child: const Text('Waive'),
               ),
               TextButton(
                 onPressed: () => _confirmCancel(fine),
@@ -465,7 +465,7 @@ class _FineManagementPageState extends State<FineManagementPage> {
                   minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                 ),
-                child: const Text('Batalkan'),
+                child: const Text('Cancel'),
               ),
             ])
           : Text('—', style: TextStyle(fontSize: 16,
@@ -550,7 +550,7 @@ class _FineManagementPageState extends State<FineManagementPage> {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// Dialog Buat Denda — fetch eligible users (member+resident) dari API
+// Create Fine Dialog — fetch eligible users (member+resident) from the API
 // ══════════════════════════════════════════════════════════════════════════════
 
 class _CreateFineDialog extends StatefulWidget {
@@ -613,16 +613,16 @@ class _CreateFineDialogState extends State<_CreateFineDialog> {
             ),
             const SizedBox(width: 12),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Buat Denda', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-              Text('Pilih penghuni dan isi detail denda',
+              const Text('Create Fine', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+              Text('Select a resident and fill in the fine details',
                   style: TextStyle(fontSize: 12, color: textSecondary)),
             ]),
           ]),
 
           const Divider(height: 28),
 
-          // ── Pilih pengguna ────────────────────────────────────────────────
-          const Text('Pengguna', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+          // ── Select user ────────────────────────────────────────────────
+          const Text('User', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
           const SizedBox(height: 8),
 
           FutureBuilder<List<FineEligibleUserEntity>>(
@@ -636,7 +636,7 @@ class _CreateFineDialogState extends State<_CreateFineDialog> {
                 );
               }
               if (snap.hasError) {
-                return Text('Gagal memuat daftar pengguna: ${snap.error}',
+                return Text('Failed to load user list: ${snap.error}',
                     style: const TextStyle(color: Colors.red, fontSize: 12));
               }
 
@@ -656,7 +656,7 @@ class _CreateFineDialogState extends State<_CreateFineDialog> {
                 TextField(
                   controller: _searchCtrl,
                   decoration: InputDecoration(
-                    hintText: 'Cari nama atau email...',
+                    hintText: 'Search name or email...',
                     prefixIcon: const Icon(Icons.search, size: 18),
                     border: const OutlineInputBorder(),
                     isDense: true,
@@ -676,7 +676,7 @@ class _CreateFineDialogState extends State<_CreateFineDialog> {
                   child: filtered.isEmpty
                       ? const Padding(
                           padding: EdgeInsets.all(16),
-                          child: Center(child: Text('Tidak ada pengguna ditemukan',
+                          child: Center(child: Text('No users found',
                               style: TextStyle(color: Colors.grey))),
                         )
                       : ListView.separated(
@@ -698,11 +698,11 @@ class _CreateFineDialogState extends State<_CreateFineDialog> {
 
           const SizedBox(height: AppSpacing.lg),
 
-          // ── Nominal ───────────────────────────────────────────────────────
+          // ── Amount ───────────────────────────────────────────────────────
           TextField(
             controller: _amountCtrl,
             decoration: InputDecoration(
-              labelText: 'Nominal Denda (Rp)',
+              labelText: 'Fine Amount (Rp)',
               prefixIcon: const Icon(Icons.monetization_on_outlined, size: 18),
               border: const OutlineInputBorder(),
               isDense: true,
@@ -714,12 +714,12 @@ class _CreateFineDialogState extends State<_CreateFineDialog> {
           ),
           const SizedBox(height: AppSpacing.md),
 
-          // ── Alasan ────────────────────────────────────────────────────────
+          // ── Reason ────────────────────────────────────────────────────────
           TextField(
             controller: _reasonCtrl,
             decoration: InputDecoration(
-              labelText: 'Alasan Denda',
-              hintText: 'Melanggar peraturan kos...',
+              labelText: 'Fine Reason',
+              hintText: 'Violating the boarding house rules...',
               border: const OutlineInputBorder(),
               isDense: true,
               filled: true,
@@ -734,12 +734,12 @@ class _CreateFineDialogState extends State<_CreateFineDialog> {
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
+              child: const Text('Cancel'),
             ),
             const SizedBox(width: AppSpacing.md),
             FilledButton.icon(
               icon: const Icon(Icons.gavel_rounded, size: 16),
-              label: const Text('Buat Denda'),
+              label: const Text('Create Fine'),
               onPressed: () {
                 final userId = _selectedUser?.id;
                 final amount = double.tryParse(_amountCtrl.text);
@@ -801,7 +801,7 @@ class _CreateFineDialogState extends State<_CreateFineDialog> {
   }
 }
 
-// ── Tile pengguna dalam list ───────────────────────────────────────────────────
+// ── User tile in list ─────────────────────────────────────────────────────────
 
 class _UserListTile extends StatelessWidget {
   final FineEligibleUserEntity user;
@@ -843,7 +843,7 @@ class _UserListTile extends StatelessWidget {
             Text(user.email,
                 style: TextStyle(fontSize: 11, color: textSecondary),
                 overflow: TextOverflow.ellipsis),
-            // Info kamar untuk resident
+            // Room info for resident
             if (user.isResident && user.hasActiveRoom) ...[
               const SizedBox(height: 3),
               Row(children: [
@@ -852,9 +852,9 @@ class _UserListTile extends StatelessWidget {
                 Flexible(child: Text(user.roomLabel,
                     style: TextStyle(fontSize: 11, color: primaryColor, fontWeight: FontWeight.w600))),
                 if (user.scheduleEndDate != null) ...[
-                  Text('  ·  s/d ', style: TextStyle(fontSize: 11, color: textSecondary)),
+                  Text('  ·  until ', style: TextStyle(fontSize: 11, color: textSecondary)),
                   Text(
-                    DateFormat('d MMM yyyy', 'id_ID').format(DateTime.parse(user.scheduleEndDate!)),
+                    DateFormat('d MMM yyyy', 'en_US').format(DateTime.parse(user.scheduleEndDate!)),
                     style: TextStyle(fontSize: 11, color: textSecondary),
                   ),
                 ],
@@ -867,7 +867,7 @@ class _UserListTile extends StatelessWidget {
   }
 }
 
-// ── Role chip kecil ────────────────────────────────────────────────────────────
+// ── Small role chip ────────────────────────────────────────────────────────────
 
 class _RoleChip extends StatelessWidget {
   final String role;
@@ -885,7 +885,7 @@ class _RoleChip extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(
-        isResident ? 'Penghuni' : 'Member',
+        isResident ? 'Resident' : 'Member',
         style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.w600),
       ),
     );

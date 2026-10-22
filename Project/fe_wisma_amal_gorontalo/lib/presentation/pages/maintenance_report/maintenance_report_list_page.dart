@@ -47,15 +47,15 @@ class _MaintenanceReportListView extends StatefulWidget {
 
 class _MaintenanceReportListViewState
     extends State<_MaintenanceReportListView> {
-  String _filterStatus = 'Semua';
+  String _filterStatus = 'All';
   String _searchQuery = '';
 
   final List<String> _statusFilters = [
-    'Semua',
-    'Menunggu',
-    'Dalam Proses',
-    'Selesai',
-    'Dibatalkan',
+    'All',
+    'Pending',
+    'In Progress',
+    'Completed',
+    'Cancelled',
   ];
 
   @override
@@ -83,15 +83,15 @@ class _MaintenanceReportListViewState
   String _statusLabel(dynamic status) {
     switch (status.value) {
       case 'pending':
-        return 'Menunggu';
+        return 'Pending';
       case 'in_progress':
-        return 'Dalam Proses';
+        return 'In Progress';
       case 'completed':
-        return 'Selesai';
+        return 'Completed';
       case 'cancelled':
-        return 'Dibatalkan';
+        return 'Cancelled';
       default:
-        return 'Semua';
+        return 'All';
     }
   }
 
@@ -113,14 +113,14 @@ class _MaintenanceReportListViewState
       body: Column(
         children: [
           AppTopBar(
-            title: 'Laporan Kerusakan',
-            breadcrumb: 'Operasional / Laporan Kerusakan',
+            title: 'Damage Reports',
+            breadcrumb: 'Operations / Damage Reports',
             action: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (isAdmin)
                   IconButton(
-                    tooltip: 'Muat Ulang',
+                    tooltip: 'Reload',
                     onPressed: _loadReports,
                     icon: const Icon(Icons.refresh_rounded),
                   ),
@@ -133,7 +133,7 @@ class _MaintenanceReportListViewState
                       if (mounted) _loadReports();
                     },
                     icon: const Icon(Icons.add_rounded, size: 18),
-                    label: const Text('Buat Laporan'),
+                    label: const Text('Create Report'),
                   ),
               ],
             ),
@@ -148,11 +148,11 @@ class _MaintenanceReportListViewState
                 if (state is MaintenanceListError) {
                   return EmptyStateWidget(
                     icon: Icons.error_outline,
-                    title: 'Gagal Memuat Data',
+                    title: 'Failed to Load Data',
                     subtitle: state.message,
                     action: ElevatedButton(
                       onPressed: _loadReports,
-                      child: const Text('Coba Lagi'),
+                      child: const Text('Try Again'),
                     ),
                   );
                 }
@@ -170,7 +170,7 @@ class _MaintenanceReportListViewState
                           _searchQuery.toLowerCase(),
                         );
                     final matchStatus =
-                        _filterStatus == 'Semua' ||
+                        _filterStatus == 'All' ||
                         _statusLabel(item.status) == _filterStatus;
                     return matchQuery && matchStatus;
                   }).toList();
@@ -209,7 +209,7 @@ class _MaintenanceReportListViewState
         .length;
     final selesai = allItems.where((r) => r.status.value == 'completed').length;
 
-    final dateFormat = DateFormat('dd MMM yyyy, HH:mm', 'id_ID');
+    final dateFormat = DateFormat('dd MMM yyyy, HH:mm', 'en_US');
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.xxxl),
@@ -221,7 +221,7 @@ class _MaintenanceReportListViewState
                 children: [
                   Expanded(
                     child: SummaryStatCard(
-                      label: 'Total Laporan',
+                      label: 'Total Reports',
                       value: totalLaporan.toString(),
                       icon: Icons.report_problem_outlined,
                       iconColor: isDark
@@ -235,7 +235,7 @@ class _MaintenanceReportListViewState
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: SummaryStatCard(
-                      label: 'Menunggu',
+                      label: 'Pending',
                       value: menunggu.toString(),
                       icon: Icons.hourglass_empty_rounded,
                       iconColor: isDark
@@ -249,7 +249,7 @@ class _MaintenanceReportListViewState
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: SummaryStatCard(
-                      label: 'Dalam Proses',
+                      label: 'In Progress',
                       value: proses.toString(),
                       icon: Icons.sync_rounded,
                       iconColor: isDark
@@ -263,7 +263,7 @@ class _MaintenanceReportListViewState
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: SummaryStatCard(
-                      label: 'Selesai',
+                      label: 'Completed',
                       value: selesai.toString(),
                       icon: Icons.check_circle_outline,
                       iconColor: isDark
@@ -284,11 +284,11 @@ class _MaintenanceReportListViewState
 
           // Search & Segmented Filter
           SearchAndFilterBar(
-            searchHint: 'Cari judul laporan atau nama...',
+            searchHint: 'Search report title or name...',
             onSearchChanged: (val) => setState(() => _searchQuery = val),
             dropdownFilter: _buildSegmentedFilter(isDark),
             onSortPressed: () {},
-            sortLabel: 'Urutkan: Terbaru',
+            sortLabel: 'Sort: Newest',
           ).animate().fadeIn(delay: 100.ms, duration: 300.ms),
 
           const SizedBox(height: AppSpacing.lg),
@@ -297,17 +297,17 @@ class _MaintenanceReportListViewState
           if (filteredItems.isEmpty)
             EmptyStateWidget(
               icon: Icons.assignment_outlined,
-              title: 'Tidak ada laporan',
-              subtitle: 'Coba ubah filter atau kata kunci pencarian Anda.',
+              title: 'No reports',
+              subtitle: 'Try changing the filter or your search keyword.',
             ).animate().fadeIn()
           else
             AppDataTable(
               columns: const [
-                DataColumn(label: Text('ID LAPORAN')),
-                DataColumn(label: Text('JUDUL LAPORAN')),
-                DataColumn(label: Text('NAMA PELAPOR')),
+                DataColumn(label: Text('REPORT ID')),
+                DataColumn(label: Text('REPORT TITLE')),
+                DataColumn(label: Text('REPORTER NAME')),
                 DataColumn(label: Text('STATUS')),
-                DataColumn(label: Text('TANGGAL LAPOR')),
+                DataColumn(label: Text('REPORT DATE')),
                 DataColumn(label: Text('')),
               ],
               rows: filteredItems
@@ -351,7 +351,7 @@ class _MaintenanceReportListViewState
                                 );
                                 if (mounted) _loadReports();
                               },
-                              child: const Text('Detail'),
+                              child: const Text('Details'),
                             ),
                           ),
                         ),
@@ -394,9 +394,9 @@ class _MaintenanceReportListViewState
             Expanded(
               child: EmptyStateWidget(
                 icon: Icons.handyman_outlined,
-                title: 'Belum ada laporan',
+                title: 'No reports yet',
                 subtitle:
-                    'Anda belum membuat laporan kerusakan dengan status ini.',
+                    'You have not created any damage reports with this status.',
                 action: ElevatedButton.icon(
                   onPressed: () async {
                     await context.router.push(
@@ -405,7 +405,7 @@ class _MaintenanceReportListViewState
                     if (mounted) _loadReports();
                   },
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Buat Laporan Baru'),
+                  label: const Text('Create New Report'),
                 ),
               ).animate().fadeIn(),
             )

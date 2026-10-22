@@ -46,13 +46,13 @@ class InventoryView extends StatefulWidget {
 
 class _InventoryViewState extends State<InventoryView> {
   String _searchQuery = '';
-  String _selectedKondisi = 'Semua Kondisi';
+  String _selectedKondisi = 'All Conditions';
   int _perPage = 10;
 
   String _formatCurrency(double? price) {
     if (price == null || price == 0) return '-';
     final formatCurrency = NumberFormat.currency(
-      locale: 'id_ID',
+      locale: 'en_US',
       symbol: 'Rp ',
       decimalDigits: 0,
     );
@@ -122,13 +122,13 @@ class _InventoryViewState extends State<InventoryView> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Hapus Inventaris?'),
+        title: const Text('Delete Inventory?'),
         content: Text(
-          'Anda yakin ingin menghapus "${item.nama}"? Aksi ini tidak dapat dibatalkan.',
+          'Are you sure you want to delete "${item.nama}"? This action cannot be undone.',
         ),
         actions: [
           TextButton(
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
             onPressed: () => Navigator.pop(ctx),
           ),
           ElevatedButton(
@@ -143,7 +143,7 @@ class _InventoryViewState extends State<InventoryView> {
                 DeleteInventoryEvent(item.id!),
               );
             },
-            child: const Text('Ya, Hapus'),
+            child: const Text('Yes, Delete'),
           ),
         ],
       ),
@@ -224,12 +224,12 @@ class _InventoryViewState extends State<InventoryView> {
         body: Column(
           children: [
             AppTopBar(
-              title: 'Inventaris',
-              breadcrumb: 'Operasional / Inventaris',
+              title: 'Inventory',
+              breadcrumb: 'Operations / Inventory',
               action: ElevatedButton.icon(
                 onPressed: () => _showFormDialog(context),
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('Tambah Inventaris'),
+                label: const Text('Add Inventory'),
               ),
             ),
             Expanded(
@@ -241,13 +241,13 @@ class _InventoryViewState extends State<InventoryView> {
                   } else if (state is InventoryListError) {
                     return EmptyStateWidget(
                       icon: Icons.error_outline,
-                      title: 'Gagal Memuat Data',
+                      title: 'Failed to Load Data',
                       subtitle: state.message,
                       action: ElevatedButton(
                         onPressed: () => context.read<InventoryListBloc>().add(
                           FetchInventories(),
                         ),
-                        child: const Text('Coba Lagi'),
+                        child: const Text('Try Again'),
                       ),
                     );
                   } else if (state is InventoryListLoaded) {
@@ -280,7 +280,7 @@ class _InventoryViewState extends State<InventoryView> {
                             _searchQuery.toLowerCase(),
                           ));
                       final matchKondisi =
-                          _selectedKondisi == 'Semua Kondisi' ||
+                          _selectedKondisi == 'All Conditions' ||
                           item.kondisi.displayName == _selectedKondisi;
                       return matchQuery && matchKondisi;
                     }).toList();
@@ -298,7 +298,7 @@ class _InventoryViewState extends State<InventoryView> {
                                 children: [
                                   Expanded(
                                     child: SummaryStatCard(
-                                      label: 'Total Barang',
+                                      label: 'Total Items',
                                       value: totalBarang.toString(),
                                       icon: Icons.inventory_2_outlined,
                                       iconColor: isDark
@@ -312,7 +312,7 @@ class _InventoryViewState extends State<InventoryView> {
                                   const SizedBox(width: AppSpacing.lg),
                                   Expanded(
                                     child: SummaryStatCard(
-                                      label: 'Total Nilai',
+                                      label: 'Total Value',
                                       value: _formatCurrency(totalNilai),
                                       icon:
                                           Icons.account_balance_wallet_outlined,
@@ -327,8 +327,8 @@ class _InventoryViewState extends State<InventoryView> {
                                   const SizedBox(width: AppSpacing.lg),
                                   Expanded(
                                     child: SummaryStatCard(
-                                      label: 'Kondisi Baik',
-                                      value: '$kondisiBaik Baik',
+                                      label: 'Good Condition',
+                                      value: '$kondisiBaik Good',
                                       icon: Icons.check_circle_outline,
                                       iconColor: isDark
                                           ? AppColorsDark.conditionGood
@@ -341,8 +341,8 @@ class _InventoryViewState extends State<InventoryView> {
                                   const SizedBox(width: AppSpacing.lg),
                                   Expanded(
                                     child: SummaryStatCard(
-                                      label: 'Perlu Perhatian',
-                                      value: '$perluPerhatian Cukup/Buruk',
+                                      label: 'Needs Attention',
+                                      value: '$perluPerhatian Fair/Poor',
                                       icon: Icons.warning_amber_rounded,
                                       iconColor: isDark
                                           ? AppColorsDark.conditionFair
@@ -362,7 +362,7 @@ class _InventoryViewState extends State<InventoryView> {
 
                           // Search & Filter
                           SearchAndFilterBar(
-                            searchHint: 'Cari nama barang...',
+                            searchHint: 'Search item name...',
                             onSearchChanged: (val) =>
                                 setState(() => _searchQuery = val),
                             dropdownFilter: Container(
@@ -385,7 +385,7 @@ class _InventoryViewState extends State<InventoryView> {
                                   value: _selectedKondisi,
                                   items:
                                       [
-                                            'Semua Kondisi',
+                                            'All Conditions',
                                             ...InventoryCondition.displayNames,
                                           ]
                                           .map(
@@ -406,7 +406,7 @@ class _InventoryViewState extends State<InventoryView> {
                               ),
                             ),
                             onSortPressed: () {},
-                            sortLabel: 'Sort: Nama',
+                            sortLabel: 'Sort: Name',
                           ).animate().fadeIn(delay: 100.ms, duration: 300.ms),
 
                           const SizedBox(height: AppSpacing.lg),
@@ -415,18 +415,18 @@ class _InventoryViewState extends State<InventoryView> {
                           if (filteredItems.isEmpty)
                             EmptyStateWidget(
                               icon: Icons.inventory_2_outlined,
-                              title: 'Tidak ada barang ditemukan',
+                              title: 'No items found',
                               subtitle:
-                                  'Coba ubah filter atau kata kunci pencarian Anda.',
+                                  'Try changing the filter or your search keyword.',
                             ).animate().fadeIn()
                           else
                             AppDataTable(
                               columns: const [
-                                DataColumn(label: Text('NAMA BARANG')),
-                                DataColumn(label: Text('KETERANGAN')),
-                                DataColumn(label: Text('JUMLAH')),
-                                DataColumn(label: Text('KONDISI')),
-                                DataColumn(label: Text('TOTAL NILAI')),
+                                DataColumn(label: Text('ITEM NAME')),
+                                DataColumn(label: Text('DESCRIPTION')),
+                                DataColumn(label: Text('QUANTITY')),
+                                DataColumn(label: Text('CONDITION')),
+                                DataColumn(label: Text('TOTAL VALUE')),
                                 DataColumn(label: Text('')),
                               ],
                               rows: filteredItems
@@ -495,7 +495,7 @@ class _InventoryViewState extends State<InventoryView> {
                                                   context,
                                                   item,
                                                 ),
-                                                tooltip: 'Hapus',
+                                                tooltip: 'Delete',
                                               ),
                                             ],
                                           ),
@@ -518,7 +518,7 @@ class _InventoryViewState extends State<InventoryView> {
                                   Row(
                                     children: [
                                       Text(
-                                        'Menampilkan ${state.meta.total == 0 ? 0 : ((state.meta.currentPage - 1) * state.meta.perPage) + 1} - ${((state.meta.currentPage - 1) * state.meta.perPage) + filteredItems.length} dari ${state.meta.total} data',
+                                        'Showing ${state.meta.total == 0 ? 0 : ((state.meta.currentPage - 1) * state.meta.perPage) + 1} - ${((state.meta.currentPage - 1) * state.meta.perPage) + filteredItems.length} of ${state.meta.total} records',
                                         style: TextStyle(
                                           color: isDark
                                               ? AppColorsDark.textSecondary
@@ -577,7 +577,7 @@ class _InventoryViewState extends State<InventoryView> {
                                                   return DropdownMenuItem<int>(
                                                     value: value,
                                                     child: Text(
-                                                      '$value / halaman',
+                                                      '$value / page',
                                                     ),
                                                   );
                                                 })
@@ -608,11 +608,11 @@ class _InventoryViewState extends State<InventoryView> {
                                           Icons.chevron_left,
                                           size: 18,
                                         ),
-                                        label: const Text('Sebelumnya'),
+                                        label: const Text('Previous'),
                                       ),
                                       const SizedBox(width: AppSpacing.md),
                                       Text(
-                                        'Halaman ${state.meta.currentPage} dari ${state.meta.lastPage}',
+                                        'Page ${state.meta.currentPage} of ${state.meta.lastPage}',
                                       ),
                                       const SizedBox(width: AppSpacing.md),
                                       TextButton.icon(
@@ -636,7 +636,7 @@ class _InventoryViewState extends State<InventoryView> {
                                           Icons.chevron_right,
                                           size: 18,
                                         ),
-                                        label: const Text('Selanjutnya'),
+                                        label: const Text('Next'),
                                       ),
                                     ],
                                   ),
@@ -800,7 +800,7 @@ class _InventoryFormDialogState extends State<InventoryFormDialog> {
     final isEditMode = widget.inventoryData != null;
 
     final formatCurrency = NumberFormat.currency(
-      locale: 'id_ID',
+      locale: 'en_US',
       symbol: 'Rp ',
       decimalDigits: 0,
     );
@@ -820,7 +820,7 @@ class _InventoryFormDialogState extends State<InventoryFormDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                isEditMode ? 'Edit Inventaris' : 'Tambah Inventaris',
+                isEditMode ? 'Edit Inventory' : 'Add Inventory',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -833,12 +833,12 @@ class _InventoryFormDialogState extends State<InventoryFormDialog> {
                   Expanded(
                     flex: 2,
                     child: CustomTextForm(
-                      title: 'Nama Barang',
-                      hintText: 'Masukkan nama',
+                      title: 'Item Name',
+                      hintText: 'Enter name',
                       isRequired: true,
                       controller: _namaController,
                       validator: (val) => (val == null || val.trim().isEmpty)
-                          ? 'Wajib diisi'
+                          ? 'Required'
                           : null,
                     ),
                   ),
@@ -846,14 +846,14 @@ class _InventoryFormDialogState extends State<InventoryFormDialog> {
                   Expanded(
                     flex: 1,
                     child: CustomTextForm(
-                      title: 'Jumlah',
+                      title: 'Quantity',
                       hintText: '0',
                       isRequired: true,
                       controller: _jumlahController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       validator: (val) => (val == null || val.trim().isEmpty)
-                          ? 'Wajib diisi'
+                          ? 'Required'
                           : null,
                     ),
                   ),
@@ -861,8 +861,8 @@ class _InventoryFormDialogState extends State<InventoryFormDialog> {
               ),
               const SizedBox(height: AppSpacing.lg),
               CustomTextForm(
-                title: 'Keterangan',
-                hintText: 'Masukkan keterangan (opsional)',
+                title: 'Description',
+                hintText: 'Enter description (optional)',
                 controller: _keteranganController,
                 maxLines: 2,
               ),
@@ -875,7 +875,7 @@ class _InventoryFormDialogState extends State<InventoryFormDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Kondisi *',
+                          'Condition *',
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 13,
@@ -910,7 +910,7 @@ class _InventoryFormDialogState extends State<InventoryFormDialog> {
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: CustomTextForm(
-                      title: 'Harga Satuan (Rp)',
+                      title: 'Unit Price (Rp)',
                       hintText: '0',
                       controller: _hargaBeliController,
                       keyboardType: TextInputType.number,
@@ -932,7 +932,7 @@ class _InventoryFormDialogState extends State<InventoryFormDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Total Harga Estimasi',
+                      'Estimated Total Price',
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(
@@ -954,12 +954,12 @@ class _InventoryFormDialogState extends State<InventoryFormDialog> {
                 children: [
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Batal'),
+                    child: const Text('Cancel'),
                   ),
                   const SizedBox(width: AppSpacing.md),
                   ElevatedButton(
                     onPressed: _handleSubmit,
-                    child: const Text('Simpan'),
+                    child: const Text('Save'),
                   ),
                 ],
               ),

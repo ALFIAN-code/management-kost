@@ -14,13 +14,13 @@ class AdminResidentController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
-        $status = $request->query('status'); // 'Aktif', 'Pending', or null
-        $payment = $request->query('payment'); // 'Lunas', 'Belum Lunas', or null
+        $status = $request->query('status'); // 'Active', 'Pending', or null
+        $payment = $request->query('payment'); // 'Paid', 'Unpaid', or null
         $perPage = $request->query('per_page', 10);
 
         // Map status filter
         $scheduleStatus = null;
-        if ($status === 'Aktif') {
+        if ($status === 'Active') {
             $scheduleStatus = ScheduleStatus::ACTIVE;
         } elseif ($status === 'Pending') {
             $scheduleStatus = ScheduleStatus::PENDING;
@@ -53,7 +53,7 @@ class AdminResidentController extends Controller
 
         // Process schedules to append computed detailBayar and format
         $mapped = $schedules->map(function ($schedule) use ($paymentStatuses) {
-            $detailBayar = $paymentStatuses[$schedule->id] ?? 'Belum Lunas';
+            $detailBayar = $paymentStatuses[$schedule->id] ?? 'Unpaid';
 
             return [
                 'id' => (string) $schedule->id,
@@ -66,7 +66,7 @@ class AdminResidentController extends Controller
         });
 
         // Apply payment filter post-mapping if needed (since it's computed)
-        if ($payment === 'Lunas' || $payment === 'Belum Lunas') {
+        if ($payment === 'Paid' || $payment === 'Unpaid') {
             $mapped = $mapped->where('detailBayar', $payment)->values();
         }
 

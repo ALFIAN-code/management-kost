@@ -4,24 +4,24 @@ sequenceDiagram
   participant FE as Flutter Web (Tab Chat AI)
   participant LLM as LLM Engine (Claude / Gemini)
   participant MCP as Modul MCP Server (Backend)
-  participant Auth as Modul Auth (Token & RBAC)
+  participant Auth as Modul Auth (JWT & Peran)
   participant ModGW as Module Gateway Layer
-  participant DB as MySQL Multi-Tenant Database
-  participant Log as Audit Trail (mcp_tool_logs)
+  participant DB as PostgreSQL (13 Tabel, Row-Level Scoping)
+  participant Log as Log Audit Aplikasi (di luar basis data domain)
 
   Owner->>FE: Input Prompt: "Berapa total pendapatan Gedung Melati bulan ini?"
   FE->>LLM: Kirim Natural Language Prompt + Schema Tool MCP
   
-  Note over LLM: LLM Menganalisis Niat & Memilih Tool<br/>get_financial_summary(building_id: 2, date_range: "2026-10")
+  Note over LLM: LLM Menganalisis Niat & Memilih Tool<br/>Tersedia: get_building_occupancy, get_financial_summary,<br/>get_damage_reports, get_room_inventory (seluruhnya operasi baca)
   
   LLM-->>FE: Request Tool Execution via JSON-RPC
-  FE->>MCP: POST /api/mcp/rpc (Tool Call Request)
+  FE->>MCP: POST /mcp/tools/call (Tool Call Request)
   
   MCP->>Auth: Verifikasi Token & Hak Akses Tenant (building_id: 2)
   Auth-->>MCP: Otorisasi Sah (Owner memiliki Gedung 2)
   
   MCP->>ModGW: Query Financial Summary via FinanceModuleGateway
-  ModGW->>DB: SELECT SUM(nominal) FROM invoices WHERE building_id=2 AND ...
+  ModGW->>DB: SELECT SUM(amount) FROM invoices WHERE building_id=2 AND ...
   DB-->>ModGW: Return Data Angka Faktual
   ModGW-->>MCP: Return Structured Data JSON
   

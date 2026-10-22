@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-// ─── Entity untuk tagihan tamu (resident view) ────────────────────────────────
+// ─── Entity for guest bills (resident view) ──────────────────────────────────
 
 class GuestBillItem {
   final int id;
@@ -47,7 +47,7 @@ class GuestBillItem {
   }
 }
 
-// ─── Entity untuk tagihan tamu (admin view) ───────────────────────────────────
+// ─── Entity for guest bills (admin view) ────────────────────────────────────
 
 class AdminGuestBillItem {
   final int id;
@@ -161,7 +161,7 @@ class AdminGuestBillResponse {
   }
 }
 
-// ─── Payload untuk pembayaran ─────────────────────────────────────────────────
+// ─── Payload for payment ─────────────────────────────────────────────────────
 
 class PayGuestBillPayload {
   final int guestId;

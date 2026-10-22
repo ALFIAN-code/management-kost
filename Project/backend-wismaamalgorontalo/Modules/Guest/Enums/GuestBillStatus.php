@@ -14,12 +14,12 @@ enum GuestBillStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::UNPAID => 'Belum Dibayar',
-            self::PENDING => 'Menunggu Verifikasi',
-            self::VERIFIED => 'Terverifikasi',
-            self::PAID => 'Lunas',
-            self::REJECTED => 'Ditolak',
-            self::FAILED => 'Gagal',
+            self::UNPAID => 'Unpaid',
+            self::PENDING => 'Pending Verification',
+            self::VERIFIED => 'Verified',
+            self::PAID => 'Paid',
+            self::REJECTED => 'Rejected',
+            self::FAILED => 'Failed',
         };
     }
 }

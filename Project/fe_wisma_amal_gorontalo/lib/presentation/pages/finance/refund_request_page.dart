@@ -36,10 +36,10 @@ class _RefundRequestPageState extends State<RefundRequestPage> {
   }
 
   final _filterOptions = const [
-    (label: 'Semua', value: null),
-    (label: 'Menunggu', value: 'pending'),
-    (label: 'Diproses', value: 'processed'),
-    (label: 'Ditolak', value: 'rejected'),
+    (label: 'All', value: null),
+    (label: 'Pending', value: 'pending'),
+    (label: 'Processed', value: 'processed'),
+    (label: 'Rejected', value: 'rejected'),
   ];
 
   @override
@@ -52,14 +52,14 @@ class _RefundRequestPageState extends State<RefundRequestPage> {
           if (state.actionStatus == FormzSubmissionStatus.success) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Berhasil diproses'),
+                content: Text('Processed successfully'),
                 backgroundColor: Colors.green,
               ),
             );
           } else if (state.actionStatus == FormzSubmissionStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Terjadi kesalahan'),
+                content: Text(state.errorMessage ?? 'Something went wrong'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -67,7 +67,7 @@ class _RefundRequestPageState extends State<RefundRequestPage> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Permintaan Pembatalan DP'),
+            title: const Text('DP Cancellation Requests'),
             actions: [
               IconButton(
                 icon: const Icon(Icons.refresh),
@@ -124,11 +124,11 @@ class _RefundRequestPageState extends State<RefundRequestPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(state.errorMessage ?? 'Terjadi kesalahan'),
+                Text(state.errorMessage ?? 'Something went wrong'),
                 TextButton(
                   onPressed: () =>
                       _bloc.add(LoadRefundRequestsEvent(status: _activeFilter)),
-                  child: const Text('Coba lagi'),
+                  child: const Text('Try again'),
                 ),
               ],
             ),
@@ -141,7 +141,7 @@ class _RefundRequestPageState extends State<RefundRequestPage> {
               children: [
                 Icon(Icons.inbox_outlined, size: 48, color: Colors.grey),
                 SizedBox(height: 12),
-                Text('Belum ada permintaan pembatalan',
+                Text('No cancellation requests yet',
                     style: TextStyle(color: Colors.grey)),
               ],
             ),
@@ -204,7 +204,7 @@ class _RefundCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Kamar ${request.roomNumber} · ${request.invoiceNumber}',
+                        'Room ${request.roomNumber} · ${request.invoiceNumber}',
                         style: TextStyle(
                             fontSize: 12, color: Colors.grey.shade600),
                       ),
@@ -244,8 +244,8 @@ class _RefundCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   request.isRefundEligible
-                      ? 'Berhak Refund'
-                      : 'Tidak Berhak Refund',
+                      ? 'Refund Eligible'
+                      : 'Not Refund Eligible',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -257,28 +257,28 @@ class _RefundCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            // Info rekening
+            // Bank account info
             _infoRow(Icons.account_balance_outlined, 'Bank',
                 request.bankName),
             const SizedBox(height: 4),
-            _infoRow(Icons.numbers_outlined, 'No. Rekening',
+            _infoRow(Icons.numbers_outlined, 'Account Number',
                 request.accountNumber),
             const SizedBox(height: 4),
-            _infoRow(Icons.person_outline, 'Atas Nama',
+            _infoRow(Icons.person_outline, 'Account Holder',
                 request.accountHolderName),
             const SizedBox(height: 4),
-            _infoRow(Icons.payments_outlined, 'Jumlah Refund',
+            _infoRow(Icons.payments_outlined, 'Refund Amount',
                 'Rp ${fmt.format(request.refundAmount.toInt())}'),
             if (request.adminFee != null && request.adminFee! > 0) ...[
               const SizedBox(height: 4),
-              _infoRow(Icons.receipt_outlined, 'Biaya Admin',
+              _infoRow(Icons.receipt_outlined, 'Admin Fee',
                   'Rp ${fmt.format(request.adminFee!.toInt())}'),
             ],
             if (request.adminNotes != null &&
                 request.adminNotes!.isNotEmpty) ...[
               const SizedBox(height: 4),
               _infoRow(
-                  Icons.notes_outlined, 'Catatan', request.adminNotes!),
+                  Icons.notes_outlined, 'Note', request.adminNotes!),
             ],
             if (request.status == 'pending') ...[
               const SizedBox(height: 14),
@@ -295,7 +295,7 @@ class _RefundCard extends StatelessWidget {
                           horizontal: 14, vertical: 8),
                       textStyle: const TextStyle(fontSize: 13),
                     ),
-                    child: const Text('Tolak'),
+                    child: const Text('Reject'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -308,7 +308,7 @@ class _RefundCard extends StatelessWidget {
                           horizontal: 14, vertical: 8),
                       textStyle: const TextStyle(fontSize: 13),
                     ),
-                    child: const Text('Setujui'),
+                    child: const Text('Approve'),
                   ),
                 ],
               ),
@@ -350,11 +350,11 @@ class _RefundCard extends StatelessWidget {
   String _statusLabel(String status) {
     switch (status) {
       case 'pending':
-        return 'Menunggu';
+        return 'Pending';
       case 'processed':
-        return 'Diproses';
+        return 'Processed';
       case 'rejected':
-        return 'Ditolak';
+        return 'Rejected';
       default:
         return status;
     }
@@ -367,26 +367,26 @@ class _RefundCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Tolak Permintaan Pembatalan'),
+        title: const Text('Reject Cancellation Request'),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: notesCtrl,
             decoration: const InputDecoration(
-              labelText: 'Catatan Penolakan',
+              labelText: 'Rejection Note',
               border: OutlineInputBorder(),
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             ),
             maxLines: 3,
             validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
+                (v == null || v.trim().isEmpty) ? 'Required' : null,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -400,7 +400,7 @@ class _RefundCard extends StatelessWidget {
             style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white),
-            child: const Text('Tolak'),
+            child: const Text('Reject'),
           ),
         ],
       ),
@@ -422,7 +422,7 @@ class _RefundCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Setujui Pembatalan (Tanpa Refund)'),
+        title: const Text('Approve Cancellation (Without Refund)'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,7 +435,7 @@ class _RefundCard extends StatelessWidget {
                 border: Border.all(color: Colors.red.shade200),
               ),
               child: Text(
-                'Penyewa tidak berhak mendapat pengembalian dana karena pembatalan kurang dari 3 hari sebelum tanggal masuk. Jadwal akan dibatalkan tanpa pengembalian dana.',
+                'The tenant is not eligible for a refund because the cancellation is less than 3 days before the check-in date. The schedule will be cancelled without a refund.',
                 style:
                     TextStyle(fontSize: 12, color: Colors.red.shade800, height: 1.4),
               ),
@@ -444,7 +444,7 @@ class _RefundCard extends StatelessWidget {
             TextField(
               controller: notesCtrl,
               decoration: const InputDecoration(
-                labelText: 'Catatan (opsional)',
+                labelText: 'Note (optional)',
                 border: OutlineInputBorder(),
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -456,7 +456,7 @@ class _RefundCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -469,7 +469,7 @@ class _RefundCard extends StatelessWidget {
             style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepPurple,
                 foregroundColor: Colors.white),
-            child: const Text('Konfirmasi Batalkan'),
+            child: const Text('Confirm Cancellation'),
           ),
         ],
       ),
@@ -488,7 +488,7 @@ class _RefundCard extends StatelessWidget {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('Setujui & Upload Bukti Transfer'),
+          title: const Text('Approve & Upload Transfer Proof'),
           content: SingleChildScrollView(
             child: Form(
               key: formKey,
@@ -496,10 +496,10 @@ class _RefundCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Upload bukti transfer dana refund kepada penyewa.',
+                  const Text('Upload the transfer proof of the refund to the tenant.',
                       style: TextStyle(fontSize: 13)),
                   const SizedBox(height: 12),
-                  // Upload bukti
+                  // Upload proof
                   GestureDetector(
                     onTap: () async {
                       final result = await FilePicker.platform.pickFiles(
@@ -537,7 +537,7 @@ class _RefundCard extends StatelessWidget {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              selectedFileName ?? 'Pilih bukti transfer (wajib)',
+                              selectedFileName ?? 'Select transfer proof (required)',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: selectedFile != null
@@ -557,7 +557,7 @@ class _RefundCard extends StatelessWidget {
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
                     decoration: const InputDecoration(
-                      labelText: 'Biaya Admin (opsional, boleh 0)',
+                      labelText: 'Admin Fee (optional, may be 0)',
                       prefixText: 'Rp ',
                       border: OutlineInputBorder(),
                       contentPadding:
@@ -567,7 +567,7 @@ class _RefundCard extends StatelessWidget {
                       if (v == null || v.trim().isEmpty) return null;
                       final parsed = double.tryParse(v);
                       if (parsed == null || parsed < 0) {
-                        return 'Masukkan angka yang valid';
+                        return 'Enter a valid number';
                       }
                       return null;
                     },
@@ -576,7 +576,7 @@ class _RefundCard extends StatelessWidget {
                   TextField(
                     controller: notesCtrl,
                     decoration: const InputDecoration(
-                      labelText: 'Catatan (opsional)',
+                      labelText: 'Note (optional)',
                       border: OutlineInputBorder(),
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -590,7 +590,7 @@ class _RefundCard extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Batal'),
+              child: const Text('Cancel'),
             ),
             BlocBuilder<RefundRequestBloc, RefundRequestState>(
               builder: (_, state) {
@@ -604,7 +604,7 @@ class _RefundCard extends StatelessWidget {
                           if (selectedFile == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Bukti transfer wajib diunggah'),
+                                content: Text('Transfer proof is required'),
                                 backgroundColor: Colors.red,
                               ),
                             );
@@ -631,7 +631,7 @@ class _RefundCard extends StatelessWidget {
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: Colors.white),
                         )
-                      : const Text('Proses Refund'),
+                      : const Text('Process Refund'),
                 );
               },
             ),

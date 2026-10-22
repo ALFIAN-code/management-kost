@@ -32,7 +32,7 @@ class LeaseScheduleModel extends LeaseScheduleEntity {
   });
 
   factory LeaseScheduleModel.fromJson(Map<String, dynamic> json) {
-    // Nama tenant diambil dari resident -> user -> name jika ada
+    // Tenant name is taken from resident -> user -> name if available
     String? name;
     if (json['resident'] != null && json['resident']['user'] != null) {
       name = json['resident']['user']['name'];

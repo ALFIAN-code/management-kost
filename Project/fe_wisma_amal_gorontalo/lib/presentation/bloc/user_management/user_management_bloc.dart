@@ -127,7 +127,7 @@ class UserManagementBloc extends Bloc<UserManagementEvent, UserManagementState> 
           role: event.role,
           phoneNumber: event.phoneNumber,
         );
-        emit(const UserManagementActionSuccess("Berhasil menambah pengguna baru"));
+        emit(const UserManagementActionSuccess("New user successfully added"));
         add(FetchUsers());
       } catch (e) {
         emit(UserManagementError(e.toString()));
@@ -143,7 +143,7 @@ class UserManagementBloc extends Bloc<UserManagementEvent, UserManagementState> 
           email: event.email,
           role: event.role,
         );
-        emit(const UserManagementActionSuccess("Berhasil memperbarui data pengguna"));
+        emit(const UserManagementActionSuccess("User data successfully updated"));
         add(FetchUsers());
       } catch (e) {
         emit(UserManagementError(e.toString()));
@@ -154,7 +154,7 @@ class UserManagementBloc extends Bloc<UserManagementEvent, UserManagementState> 
       emit(UserManagementLoading());
       try {
         await updateUserUseCase(event.id, role: event.role);
-        emit(const UserManagementActionSuccess("Berhasil mengubah role pengguna"));
+        emit(const UserManagementActionSuccess("User role successfully changed"));
         add(FetchUsers());
       } catch (e) {
         emit(UserManagementError(e.toString()));
@@ -165,7 +165,7 @@ class UserManagementBloc extends Bloc<UserManagementEvent, UserManagementState> 
       emit(UserManagementLoading());
       try {
         await deleteUserUseCase(event.id);
-        emit(const UserManagementActionSuccess("Berhasil menghapus pengguna"));
+        emit(const UserManagementActionSuccess("User successfully deleted"));
         add(FetchUsers());
       } catch (e) {
         emit(UserManagementError(e.toString()));

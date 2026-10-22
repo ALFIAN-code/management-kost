@@ -73,8 +73,8 @@ class _RoomViewState extends State<RoomView>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppTopBar(
-                    title: isAdmin ? 'Kelola Kamar' : 'Daftar Kamar Tersedia',
-                    breadcrumb: 'Kamar & Reservasi / Kelola Kamar',
+                    title: isAdmin ? 'Manage Rooms' : 'Available Room List',
+                    breadcrumb: 'Rooms & Reservations / Manage Rooms',
                     action: isAdmin
                         ? ElevatedButton.icon(
                             onPressed: () async {
@@ -87,7 +87,7 @@ class _RoomViewState extends State<RoomView>
                               }
                             },
                             icon: const Icon(Icons.add, size: 18),
-                            label: const Text('Tambah Kamar'),
+                            label: const Text('Add Room'),
                           )
                         : null,
                   ),
@@ -103,7 +103,7 @@ class _RoomViewState extends State<RoomView>
                               children: [
                                 Expanded(
                                   child: SummaryStatCard(
-                                    label: 'Total Kamar',
+                                    label: 'Total Rooms',
                                     value: state.rooms.length.toString(),
                                     icon: Icons.bed_outlined,
                                     iconColor: isDark
@@ -117,7 +117,7 @@ class _RoomViewState extends State<RoomView>
                                 const SizedBox(width: AppSpacing.lg),
                                 Expanded(
                                   child: SummaryStatCard(
-                                    label: 'Tersedia',
+                                    label: 'Available',
                                     value: state.availableRooms.length
                                         .toString(),
                                     icon: Icons.check_circle_outline,
@@ -132,7 +132,7 @@ class _RoomViewState extends State<RoomView>
                                 const SizedBox(width: AppSpacing.lg),
                                 Expanded(
                                   child: SummaryStatCard(
-                                    label: 'Terisi',
+                                    label: 'Occupied',
                                     value: state.occupiedRooms.length
                                         .toString(),
                                     icon: Icons.person_outline,
@@ -147,7 +147,7 @@ class _RoomViewState extends State<RoomView>
                                 const SizedBox(width: AppSpacing.lg),
                                 Expanded(
                                   child: SummaryStatCard(
-                                    label: 'Perbaikan',
+                                    label: 'Under Repair',
                                     value: state.maintenanceRooms.length
                                         .toString(),
                                     icon: Icons.build_circle_outlined,
@@ -196,10 +196,10 @@ class _RoomViewState extends State<RoomView>
                               dividerColor: Colors.transparent,
                               indicatorSize: TabBarIndicatorSize.tab,
                               tabs: const [
-                                Tab(text: 'Semua'),
-                                Tab(text: 'Tersedia'),
-                                Tab(text: 'Terisi'),
-                                Tab(text: 'Perbaikan'),
+                                Tab(text: 'All'),
+                                Tab(text: 'Available'),
+                                Tab(text: 'Occupied'),
+                                Tab(text: 'Under Repair'),
                               ],
                             ),
                           ),
@@ -259,7 +259,7 @@ class _RoomViewState extends State<RoomView>
     if (state.status == FormzSubmissionStatus.failure) {
       return Center(
         child: Text(
-          'Gagal memuat kamar: ${state.errorMessage}',
+          'Failed to load rooms: ${state.errorMessage}',
           style: TextStyle(
             color: isDark
                 ? AppColorsDark.statusCancelled
@@ -294,7 +294,7 @@ class _RoomViewState extends State<RoomView>
               ),
               const SizedBox(height: 16),
               Text(
-                'Tidak ada kamar',
+                'No rooms',
                 style: TextStyle(
                   fontSize: 16,
                   color: isDark
@@ -347,7 +347,7 @@ class _RoomViewState extends State<RoomView>
               availability: room.status,
               description: room.description,
               roomNumber: room.number,
-              price: '${room.priceFormatted} / bulan',
+              price: '${room.priceFormatted} / month',
             );
           },
         );

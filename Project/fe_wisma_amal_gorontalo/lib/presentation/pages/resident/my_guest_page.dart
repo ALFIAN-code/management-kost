@@ -47,12 +47,12 @@ class _MyGuestView extends StatefulWidget {
 
 class _MyGuestViewState extends State<_MyGuestView> {
   static final _currency = NumberFormat.currency(
-    locale: 'id_ID',
+    locale: 'en_US',
     symbol: 'Rp ',
     decimalDigits: 0,
   );
 
-  String _selectedStatus = 'Semua';
+  String _selectedStatus = 'All';
 
   @override
   Widget build(BuildContext context) {
@@ -76,12 +76,12 @@ class _MyGuestViewState extends State<_MyGuestView> {
         body: Column(
           children: [
             AppTopBar(
-              title: 'Tamu Saya',
-              breadcrumb: 'Penghuni / Tamu Saya',
+              title: 'My Guests',
+              breadcrumb: 'Resident / My Guests',
               action: BasicButton(
                 onPressed: () => _showAddGuestDialog(context),
                 leadIcon: Icon(Icons.add_rounded, size: 18, color: Theme.of(context).colorScheme.onPrimary),
-                label: 'Tambah Tamu',
+                label: 'Add Guest',
               ),
             ),
             Expanded(
@@ -103,12 +103,12 @@ class _MyGuestViewState extends State<_MyGuestView> {
                       if (state.guests.isEmpty) {
                         return EmptyStateWidget(
                           icon: Icons.people_outline,
-                          title: 'Belum ada tamu',
-                          subtitle: 'Tambahkan tamu pertama Anda dengan menekan tombol di atas.',
+                          title: 'No guests yet',
+                          subtitle: 'Add your first guest by pressing the button above.',
                           action: BasicButton(
                             onPressed: () => _showAddGuestDialog(context),
                             leadIcon: Icon(Icons.add_rounded, size: 18, color: Theme.of(context).colorScheme.onPrimary),
-                            label: 'Tambah Tamu',
+                            label: 'Add Guest',
                           ),
                         );
                       }
@@ -121,7 +121,7 @@ class _MyGuestViewState extends State<_MyGuestView> {
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
-                                children: ['Semua', 'Aktif', 'Keluar'].map((status) {
+                                children: ['All', 'Active', 'Checked Out'].map((status) {
                                   return Padding(
                                     padding: const EdgeInsets.only(right: 8.0),
                                     child: ChoiceChip(
@@ -142,14 +142,14 @@ class _MyGuestViewState extends State<_MyGuestView> {
                               child: Builder(
                                 builder: (context) {
                                   final filteredGuests = state.guests.where((item) {
-                                    if (_selectedStatus == 'Semua') return true;
-                                    if (_selectedStatus == 'Aktif') return item.stayCompletedNotifiedAt == null;
-                                    if (_selectedStatus == 'Keluar') return item.stayCompletedNotifiedAt != null;
+                                    if (_selectedStatus == 'All') return true;
+                                    if (_selectedStatus == 'Active') return item.stayCompletedNotifiedAt == null;
+                                    if (_selectedStatus == 'Checked Out') return item.stayCompletedNotifiedAt != null;
                                     return true;
                                   }).toList();
 
                                   if (filteredGuests.isEmpty) {
-                                    return const Center(child: Text('Tidak ada tamu dengan status tersebut.'));
+                                    return const Center(child: Text('No guests with that status.'));
                                   }
 
                                   return ListView.separated(
@@ -187,11 +187,11 @@ class _MyGuestViewState extends State<_MyGuestView> {
   void _confirmDelete(BuildContext context, MyGuestItem item) async {
     final confirmed = await AppDialog.show(
       context,
-      title: 'Hapus Tamu',
+      title: 'Delete Guest',
       message:
-          'Apakah Anda yakin ingin menghapus data tamu "${item.name}"? Tindakan ini tidak dapat dibatalkan.',
-      confirmLabel: 'Hapus',
-      cancelLabel: 'Batal',
+          'Are you sure you want to delete the guest data "${item.name}"? This action cannot be undone.',
+      confirmLabel: 'Delete',
+      cancelLabel: 'Cancel',
       type: AppDialogType.danger,
     );
     if (confirmed == true && context.mounted) {
@@ -202,10 +202,10 @@ class _MyGuestViewState extends State<_MyGuestView> {
   void _confirmCheckout(BuildContext context, MyGuestItem item) async {
     final confirmed = await AppDialog.show(
       context,
-      title: 'Checkout Tamu',
-      message: 'Apakah tamu "${item.name}" telah selesai menginap dan keluar dari area Wisma?',
-      confirmLabel: 'Ya, Selesai',
-      cancelLabel: 'Batal',
+      title: 'Check Out Guest',
+      message: 'Has the guest "${item.name}" finished their stay and left the dormitory area?',
+      confirmLabel: 'Yes, Done',
+      cancelLabel: 'Cancel',
       type: AppDialogType.warning,
     );
     if (confirmed == true && context.mounted) {
@@ -223,13 +223,13 @@ class _MyGuestViewState extends State<_MyGuestView> {
     );
   }
 
-  // REVISI: Cari tamu terkait (check-in/out yang sama) untuk perpanjangan selektif
+  // REVISION: Find related guests (same check-in/out) for a selective extension
   void _showExtendDialog(BuildContext context, MyGuestItem item, List<MyGuestItem> allGuests) {
-    // Cari tamu-tamu lain yang memiliki check-in dan check-out yang sama (didaftarkan bersamaan)
+    // Find other guests with the same check-in and check-out (registered together)
     final relatedGuests = allGuests.where((g) =>
       g.checkInAt == item.checkInAt &&
       g.checkOutAt == item.checkOutAt &&
-      g.stayCompletedNotifiedAt == null // Hanya yang masih aktif
+      g.stayCompletedNotifiedAt == null // Only the ones still active
     ).toList();
 
     showDialog(
@@ -241,7 +241,7 @@ class _MyGuestViewState extends State<_MyGuestView> {
     );
   }
 
-  // REVISI: Tambahkan opsi pembayaran cash
+  // REVISION: Add the cash payment option
   Future<void> _showPaymentDialog(BuildContext context, MyGuestItem item) async {
     final method = await showDialog<String>(
       context: context,
@@ -252,10 +252,10 @@ class _MyGuestViewState extends State<_MyGuestView> {
     if (method == 'midtrans') {
       context.read<MyGuestBloc>().add(PayGuestBillMidtrans(item.id));
     } else if (method == 'cash') {
-      // Pembayaran cash langsung tanpa upload bukti
+      // Direct cash payment without uploading proof
       context.read<MyGuestBloc>().add(PayGuestBillCash(item.id));
     } else {
-      // Manual transfer — navigasi ke halaman upload bukti
+      // Manual transfer — navigate to the proof upload page
       final amount = item.bill != null && (item.bill!.amount < item.chargeAmount)
           ? item.chargeAmount - item.bill!.amount
           : (item.bill?.amount ?? item.chargeAmount);
@@ -274,7 +274,7 @@ class _MyGuestViewState extends State<_MyGuestView> {
   }
 }
 
-// ─── Extend Guest Dialog (REVISI: Perpanjangan Selektif) ─────────────────────
+// ─── Extend Guest Dialog (REVISION: Selective Extension) ─────────────────────
 class _ExtendGuestDialog extends StatefulWidget {
   const _ExtendGuestDialog({required this.item, required this.relatedGuests});
   final MyGuestItem item;
@@ -292,7 +292,7 @@ class _ExtendGuestDialogState extends State<_ExtendGuestDialog> {
   @override
   void initState() {
     super.initState();
-    // Inisialisasi: centang tamu yang diklik, sisanya tidak dicentang
+    // Initialization: check the tapped guest, leave the others unchecked
     _selectedGuests = {};
     for (final g in widget.relatedGuests) {
       _selectedGuests[g.id] = g.id == widget.item.id;
@@ -330,7 +330,7 @@ class _ExtendGuestDialogState extends State<_ExtendGuestDialog> {
   void _submit() {
     if (_checkOut == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih tanggal & jam perpanjangan terlebih dahulu')),
+        const SnackBar(content: Text('Select the extension date & time first')),
       );
       return;
     }
@@ -338,7 +338,7 @@ class _ExtendGuestDialogState extends State<_ExtendGuestDialog> {
     final oldCheckOut = DateTime.tryParse(widget.item.checkOutAt) ?? DateTime.now();
     if (!_checkOut!.isAfter(oldCheckOut)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tanggal keluar baru harus setelah tanggal keluar sebelumnya')),
+        const SnackBar(content: Text('The new check-out date must be after the previous check-out date')),
       );
       return;
     }
@@ -346,14 +346,14 @@ class _ExtendGuestDialogState extends State<_ExtendGuestDialog> {
     final selectedIds = _selectedIds;
     if (selectedIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih minimal satu tamu untuk diperpanjang')),
+        const SnackBar(content: Text('Select at least one guest to extend')),
       );
       return;
     }
 
     setState(() => _isSubmitting = true);
 
-    // Fire ExtendMyGuest event untuk setiap tamu yang dipilih
+    // Fire the ExtendMyGuest event for each selected guest
     for (final id in selectedIds) {
       context.read<MyGuestBloc>().add(ExtendMyGuest(
             id: id,
@@ -389,25 +389,25 @@ class _ExtendGuestDialogState extends State<_ExtendGuestDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Perpanjang Masa Inap',
+                'Extend Stay',
                 style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Text(
                 _hasMultipleGuests
-                    ? 'Pilih tamu yang akan diperpanjang masa inap nya, '
-                      'lalu tentukan tanggal keluar baru. '
-                      'Biaya sewa tambahan (jika ada) akan dihitung secara otomatis.'
-                    : 'Pilih tanggal keluar yang baru untuk tamu ${widget.item.name}. '
-                      'Biaya sewa tambahan (jika ada) akan dihitung secara otomatis.',
+                    ? 'Select the guests whose stay you want to extend, '
+                      'then set the new check-out date. '
+                      'The additional lease cost (if any) is calculated automatically.'
+                    : 'Select the new check-out date for guest ${widget.item.name}. '
+                      'The additional lease cost (if any) is calculated automatically.',
                 style: theme.textTheme.bodyMedium,
               ),
 
-              // REVISI: Tampilkan checkbox jika ada lebih dari 1 tamu terkait
+              // REVISION: Show checkboxes when there is more than 1 related guest
               if (_hasMultipleGuests) ...[
                 const SizedBox(height: 16),
                 Text(
-                  'Pilih Tamu',
+                  'Select Guest',
                   style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
@@ -447,7 +447,7 @@ class _ExtendGuestDialogState extends State<_ExtendGuestDialog> {
 
               const SizedBox(height: 16),
               CustomDateTimePickerField(
-                label: 'Pilih Tanggal Keluar Baru',
+                label: 'Select New Check-out Date',
                 value: _checkOut != null ? _formatDateTime(_checkOut!) : null,
                 onTap: _pickDateTime,
               ),
@@ -458,7 +458,7 @@ class _ExtendGuestDialogState extends State<_ExtendGuestDialog> {
                     child: BasicButton(
                       type: ButtonType.secondary,
                       onPressed: () => Navigator.of(context).pop(),
-                      label: 'Batal',
+                      label: 'Cancel',
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -466,7 +466,7 @@ class _ExtendGuestDialogState extends State<_ExtendGuestDialog> {
                     child: BasicButton(
                       isLoading: _isSubmitting,
                       onPressed: _isSubmitting ? null : _submit,
-                      label: 'Perpanjang${_hasMultipleGuests ? ' (${_selectedIds.length})' : ''}',
+                      label: 'Extend${_hasMultipleGuests ? ' (${_selectedIds.length})' : ''}',
                     ),
                   ),
                 ],
@@ -479,7 +479,7 @@ class _ExtendGuestDialogState extends State<_ExtendGuestDialog> {
   }
 }
 
-// ─── Payment Method Dialog (REVISI: Tambah opsi Cash) ─────────────────────────
+// ─── Payment Method Dialog (REVISION: Add Cash option) ─────────────────────────
 class _PaymentMethodDialog extends StatefulWidget {
   const _PaymentMethodDialog({required this.item});
   final MyGuestItem item;
@@ -492,7 +492,7 @@ class _PaymentMethodDialogState extends State<_PaymentMethodDialog> {
   String _method = 'manual';
 
   static final _currency = NumberFormat.currency(
-    locale: 'id_ID',
+    locale: 'en_US',
     symbol: 'Rp ',
     decimalDigits: 0,
   );
@@ -517,33 +517,33 @@ class _PaymentMethodDialogState extends State<_PaymentMethodDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Bayar Tagihan Tamu',
+              'Pay Guest Invoice',
               style: theme.textTheme.titleLarge
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
-            Text('Tamu: ${widget.item.name}',
+            Text('Guest: ${widget.item.name}',
                 style: theme.textTheme.bodyMedium),
             const SizedBox(height: 2),
             Text(
-              'Jumlah: ${_currency.format(amount)}',
+              'Amount: ${_currency.format(amount)}',
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: theme.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 20),
-            Text('Pilih Metode Pembayaran',
+            Text('Select Payment Method',
                 style: theme.textTheme.labelLarge
                     ?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 10),
-            // REVISI: 3 opsi pembayaran — Manual, Midtrans, Cash
+            // REVISION: 3 payment options — Manual, Midtrans, Cash
             Row(
               children: [
                 Expanded(
                   child: _MethodOption(
                     label: 'Transfer',
-                    subtitle: 'Upload bukti transfer',
+                    subtitle: 'Upload transfer proof',
                     icon: Icons.account_balance_outlined,
                     selected: _method == 'manual',
                     onTap: () => setState(() => _method = 'manual'),
@@ -553,7 +553,7 @@ class _PaymentMethodDialogState extends State<_PaymentMethodDialog> {
                 Expanded(
                   child: _MethodOption(
                     label: 'Midtrans',
-                    subtitle: 'Bayar via gateway',
+                    subtitle: 'Pay via gateway',
                     icon: Icons.payment_outlined,
                     selected: _method == 'midtrans',
                     onTap: () => setState(() => _method = 'midtrans'),
@@ -562,8 +562,8 @@ class _PaymentMethodDialogState extends State<_PaymentMethodDialog> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: _MethodOption(
-                    label: 'Tunai',
-                    subtitle: 'Bayar langsung',
+                    label: 'Cash',
+                    subtitle: 'Pay directly',
                     icon: Icons.money_outlined,
                     selected: _method == 'cash',
                     onTap: () => setState(() => _method = 'cash'),
@@ -578,7 +578,7 @@ class _PaymentMethodDialogState extends State<_PaymentMethodDialog> {
                   child: BasicButton(
                     type: ButtonType.secondary,
                     onPressed: () => Navigator.of(context).pop(null),
-                    label: 'Batal',
+                    label: 'Cancel',
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -586,10 +586,10 @@ class _PaymentMethodDialogState extends State<_PaymentMethodDialog> {
                   child: BasicButton(
                     onPressed: () => Navigator.of(context).pop(_method),
                     label: _method == 'midtrans'
-                        ? 'Lanjut ke Midtrans'
+                        ? 'Continue to Midtrans'
                         : _method == 'cash'
-                            ? 'Konfirmasi Tunai'
-                            : 'Lanjut ke Pembayaran',
+                            ? 'Confirm Cash'
+                            : 'Continue to Payment',
                   ),
                 ),
               ],
@@ -661,7 +661,7 @@ class _MethodOption extends StatelessWidget {
   }
 }
 
-// ─── Add Guest Dialog (REVISI: Multi-Tamu maks 3) ─────────────────────────────
+// ─── Add Guest Dialog (REVISION: Multi-Guest max 3) ─────────────────────────────
 class _AddGuestDialog extends StatefulWidget {
   const _AddGuestDialog();
 
@@ -669,7 +669,7 @@ class _AddGuestDialog extends StatefulWidget {
   State<_AddGuestDialog> createState() => _AddGuestDialogState();
 }
 
-/// Representasi satu entry tamu dalam form
+/// Represents one guest entry in the form
 class _GuestFormEntry {
   final TextEditingController nameController;
   String relationship;
@@ -687,7 +687,7 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
   final _residentController = TextEditingController();
   final _roomController = TextEditingController();
 
-  // REVISI: List dinamis tamu (maks 3)
+  // REVISION: Dynamic guest list (max 3)
   final List<_GuestFormEntry> _guestEntries = [_GuestFormEntry()];
 
   DateTime? _checkIn;
@@ -700,12 +700,12 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
   static const int _maxGuests = 3;
 
   static const _relationships = [
-    ('parent', 'Orang Tua'),
-    ('sibling', 'Saudara'),
-    ('friend', 'Teman'),
-    ('relative', 'Kerabat'),
-    ('colleague', 'Rekan Kerja'),
-    ('other', 'Lainnya'),
+    ('parent', 'Parent'),
+    ('sibling', 'Sibling'),
+    ('friend', 'Friend'),
+    ('relative', 'Relative'),
+    ('colleague', 'Colleague'),
+    ('other', 'Other'),
   ];
 
   @override
@@ -813,24 +813,24 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     if (!_hasActiveLease) {
-      AppSnackbar.showError('Anda tidak memiliki sewa aktif untuk mendaftarkan tamu.');
+      AppSnackbar.showError('You do not have an active lease to register a guest.');
       return;
     }
     if (_checkIn == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih tanggal & jam masuk terlebih dahulu')),
+        const SnackBar(content: Text('Select the check-in date & time first')),
       );
       return;
     }
     if (_checkOut == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih tanggal & jam keluar terlebih dahulu')),
+        const SnackBar(content: Text('Select the check-out date & time first')),
       );
       return;
     }
     if (!_checkOut!.isAfter(_checkIn!)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tanggal keluar harus setelah tanggal masuk')),
+        const SnackBar(content: Text('The check-out date must be after the check-in date')),
       );
       return;
     }
@@ -838,14 +838,14 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
     final missingIdentity = _guestEntries.any((e) => e.imageBytes == null);
     if (missingIdentity) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Harap unggah foto identitas untuk setiap tamu')),
+        const SnackBar(content: Text('Please upload an identity photo for each guest')),
       );
       return;
     }
 
     setState(() => _isSubmitting = true);
 
-    // REVISI: Kirim array tamu ke BLoC
+    // REVISION: Send the guest array to the BLoC
     final guests = _guestEntries.map((e) => {
       'name': e.nameController.text.trim(),
       'relationship': e.relationship,
@@ -883,13 +883,13 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tambah Tamu',
+                  'Add Guest',
                   style: theme.textTheme.titleLarge
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Daftarkan hingga $_maxGuests tamu sekaligus',
+                  'Register up to $_maxGuests guests at once',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -911,7 +911,7 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
                         ),
                         TextButton(
                           onPressed: _loadResidentInfo,
-                          child: const Text('Coba lagi'),
+                          child: const Text('Try Again'),
                         ),
                       ],
                     ),
@@ -920,18 +920,18 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
                 CustomTextField(
                   controller: _residentController,
                   enabled: false,
-                  hintText: 'Nama Penghuni',
+                  hintText: 'Resident Name',
                 ),
                 const SizedBox(height: 16),
 
                 CustomTextField(
                   controller: _roomController,
                   enabled: false,
-                  hintText: 'Nomor Kamar',
+                  hintText: 'Room Number',
                 ),
                 const SizedBox(height: 20),
 
-                // ─── Daftar Tamu Dinamis ──────────────────────────────
+                // ─── Dynamic Guest List ──────────────────────────────
                 ..._guestEntries.asMap().entries.map((entry) {
                   final index = entry.key;
                   final guestEntry = entry.value;
@@ -966,7 +966,7 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Tamu ${index + 1}',
+                              'Guest ${index + 1}',
                               style: theme.textTheme.labelLarge?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -978,7 +978,7 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
                                 icon: Icon(Icons.close_rounded,
                                     color: theme.colorScheme.error, size: 18),
                                 visualDensity: VisualDensity.compact,
-                                tooltip: 'Hapus Tamu ${index + 1}',
+                                tooltip: 'Remove Guest ${index + 1}',
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
                               ),
@@ -987,14 +987,14 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
                         const SizedBox(height: 12),
                         CustomTextField(
                           controller: guestEntry.nameController,
-                          hintText: 'Nama Tamu',
+                          hintText: 'Guest Name',
                           validator: (v) =>
-                              (v == null || v.trim().isEmpty) ? 'Nama tidak boleh kosong' : null,
+                              (v == null || v.trim().isEmpty) ? 'Name cannot be empty' : null,
                         ),
                         const SizedBox(height: 12),
                         CustomDropdownField<String>(
-                          title: 'Hubungan',
-                          hint: 'Pilih hubungan',
+                          title: 'Relationship',
+                          hint: 'Select a relationship',
                           value: guestEntry.relationship,
                           items: _relationships
                               .map((r) => DropdownMenuItem(
@@ -1019,7 +1019,7 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
                               }
                             },
                             icon: Icon(guestEntry.imageBytes != null ? Icons.check_circle : Icons.upload_file, size: 18),
-                            label: Text(guestEntry.imageBytes != null ? guestEntry.imageName! : 'Upload Foto Identitas'),
+                            label: Text(guestEntry.imageBytes != null ? guestEntry.imageName! : 'Upload Identity Photo'),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
@@ -1036,14 +1036,14 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
                   );
                 }),
 
-                // Tombol tambah tamu
+                // Add guest button
                 if (_guestEntries.length < _maxGuests)
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: _addGuestEntry,
                       icon: const Icon(Icons.person_add_outlined, size: 18),
-                      label: Text('Tambah Tamu (${_guestEntries.length}/$_maxGuests)'),
+                      label: Text('Add Guest (${_guestEntries.length}/$_maxGuests)'),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -1058,17 +1058,17 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
                   ),
                 const SizedBox(height: 16),
 
-                // Tanggal Masuk
+                // Check-in Date
                 CustomDateTimePickerField(
-                  label: 'Tanggal & Jam Masuk',
+                  label: 'Check-in Date & Time',
                   value: _checkIn != null ? _formatDateTime(_checkIn!) : null,
                   onTap: () => _pickDateTime(isCheckIn: true),
                 ),
                 const SizedBox(height: 12),
 
-                // Tanggal Keluar
+                // Check-out Date
                 CustomDateTimePickerField(
-                  label: 'Tanggal & Jam Keluar',
+                  label: 'Check-out Date & Time',
                   value: _checkOut != null ? _formatDateTime(_checkOut!) : null,
                   onTap: () => _pickDateTime(isCheckIn: false),
                 ),
@@ -1080,7 +1080,7 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
                       child: BasicButton(
                         type: ButtonType.secondary,
                         onPressed: () => Navigator.of(context).pop(),
-                        label: 'Batal',
+                        label: 'Cancel',
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -1090,7 +1090,7 @@ class _AddGuestDialogState extends State<_AddGuestDialog> {
                         onPressed: (_isSubmitting || _isLoadingResident || !_hasActiveLease)
                             ? null
                             : _submit,
-                        label: 'Simpan (${_guestEntries.length} tamu)',
+                        label: 'Save (${_guestEntries.length} guests)',
                       ),
                     ),
                   ],
@@ -1215,10 +1215,10 @@ class _GuestCard extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: _CompactInfo(label: 'Masuk', value: _formatDateTime(item.checkInAt)),
+                            child: _CompactInfo(label: 'Check In', value: _formatDateTime(item.checkInAt)),
                           ),
                           Expanded(
-                            child: _CompactInfo(label: 'Keluar', value: _formatDateTime(item.checkOutAt)),
+                            child: _CompactInfo(label: 'Check Out', value: _formatDateTime(item.checkOutAt)),
                           ),
                         ],
                       ),
@@ -1228,14 +1228,14 @@ class _GuestCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: _CompactInfo(
-                              label: 'Durasi', 
-                              value: '${item.totalDays} hari${item.billableDays > 0 ? '\n(${item.billableDays} berbayar)' : ''}',
+                              label: 'Duration', 
+                              value: '${item.totalDays} days${item.billableDays > 0 ? '\n(${item.billableDays} billable)' : ''}',
                             ),
                           ),
                           if (item.chargeAmount > 0)
                             Expanded(
                               child: _CompactInfo(
-                                label: isExtensionBill ? 'Total Keseluruhan' : 'Total Biaya', 
+                                label: isExtensionBill ? 'Grand Total' : 'Total Cost', 
                                 value: currency.format(item.chargeAmount),
                                 valueColor: isExtensionBill ? theme.colorScheme.onSurface : theme.colorScheme.error,
                               ),
@@ -1250,7 +1250,7 @@ class _GuestCard extends StatelessWidget {
                   onPressed: onDelete,
                   icon: Icon(Icons.delete_outline_rounded,
                       color: theme.colorScheme.error.withAlpha(200), size: 20),
-                  tooltip: 'Hapus Tamu',
+                  tooltip: 'Delete Guest',
                   visualDensity: VisualDensity.compact,
                 ),
               ],
@@ -1267,7 +1267,7 @@ class _GuestCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Sisa Tagihan (Extend)', 
+                    Text('Remaining Amount (Extension)', 
                       style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error)),
                     Text(currency.format(item.chargeAmount - bill.amount),
                       style: theme.textTheme.labelLarge?.copyWith(
@@ -1306,7 +1306,7 @@ class _GuestCard extends StatelessWidget {
                     TextButton.icon(
                       onPressed: onPay,
                       icon: Icon(Icons.payment_outlined, size: 16, color: theme.colorScheme.primary),
-                      label: Text('Bayar', style: TextStyle(color: theme.colorScheme.primary)),
+                      label: Text('Pay', style: TextStyle(color: theme.colorScheme.primary)),
                       style: TextButton.styleFrom(
                         visualDensity: VisualDensity.compact,
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -1328,7 +1328,7 @@ class _GuestCard extends StatelessWidget {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         side: BorderSide(color: theme.colorScheme.outlineVariant),
                       ),
-                      child: Text('Perpanjang', style: TextStyle(color: theme.colorScheme.onSurface)),
+                      child: Text('Extend', style: TextStyle(color: theme.colorScheme.onSurface)),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -1353,7 +1353,7 @@ class _GuestCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'Telah Keluar',
+                  'Checked Out',
                   textAlign: TextAlign.center,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
@@ -1420,14 +1420,14 @@ class _EmptyView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Belum ada data tamu',
+            'No guest data yet',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Ketuk tombol "Tambah Tamu" untuk mendaftarkan tamu baru',
+            'Tap the "Add Guest" button to register a new guest',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -1437,7 +1437,7 @@ class _EmptyView extends StatelessWidget {
           BasicButton(
             onPressed: onAdd,
             leadIcon: Icon(Icons.add_rounded, size: 18, color: Theme.of(context).colorScheme.onPrimary),
-            label: 'Tambah Tamu',
+            label: 'Add Guest',
           ),
         ],
       ),
@@ -1459,7 +1459,7 @@ class _ErrorView extends StatelessWidget {
           Icon(Icons.error_outline_rounded,
               size: 56, color: Theme.of(context).colorScheme.error),
           const SizedBox(height: 16),
-          Text('Gagal memuat data',
+          Text('Failed to load data',
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           Text(
@@ -1473,7 +1473,7 @@ class _ErrorView extends StatelessWidget {
           BasicButton(
             onPressed: onRetry,
             leadIcon: Icon(Icons.refresh_rounded, size: 18, color: Theme.of(context).colorScheme.onPrimary),
-            label: 'Coba Lagi',
+            label: 'Try Again',
           ),
         ],
       ),

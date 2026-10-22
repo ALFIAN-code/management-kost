@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>DFD Level 1 — Dekomposisi Sistem Manajemen Hunian Dinamis</title>
+<title>DFD Level 1 — Dekomposisi Sistem Manajemen Rumah Kost Multi-Gedung</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #0f172a; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; }
@@ -17,8 +17,8 @@
 </head>
 <body>
 <div class="bar">
-  <div><h1>DFD Level 1 — Dekomposisi Fungsional (10 Proses, F01–F17)</h1>
-  <p>Data Store (kiri) · Proses lingkaran (tengah) · Entitas luar (kanan) · Biru = Input, Merah = Output</p></div>
+  <div><h1>DFD Level 1 — Dekomposisi Fungsional (10 Proses, 13 Data Store)</h1>
+  <p>13 tabel domain (kiri) · Proses lingkaran (tengah) · Entitas luar (kanan) · Biru = Input, Merah = Output</p></div>
   <div>
     <button class="btn" onclick="exportSVG()">Download SVG</button>
     <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
@@ -29,85 +29,85 @@
 <div class="note">
   <b>Cara baca:</b> setiap baris = satu proses. Entitas/data store yang muncul lebih dari sekali digambar ulang (duplikat) dengan tanda garis miring di pojok (entitas) atau garis vertikal tambahan (data store), sesuai konvensi Gane &amp; Sarson, agar tidak ada panah yang saling silang dan semua label terbaca.
   <table>
-    <tr><th>Proses</th><th>Fitur</th><th>Data Store</th></tr>
-    <tr><td>1.0 Kelola Akun &amp; Hak Akses</td><td>F01, F02</td><td>D1</td></tr>
-    <tr><td>2.0 Kelola Gedung &amp; Kebijakan</td><td>F03, F04</td><td>D2</td></tr>
-    <tr><td>3.0 Kelola Kamar</td><td>F05</td><td>D2, D3</td></tr>
-    <tr><td>4.0 Kelola Alokasi &amp; Dashboard Hunian</td><td>F06, F07</td><td>D2, D3, D4, D5</td></tr>
-    <tr><td>5.0 Kelola Keuangan</td><td>F08, F09, F10, F11</td><td>D2, D4, D5</td></tr>
-    <tr><td>6.0 Kelola Pemeliharaan</td><td>F12, F13</td><td>D3, D6</td></tr>
-    <tr><td>7.0 Kelola Inventaris Aset</td><td>F14</td><td>D3, D7</td></tr>
-    <tr><td>8.0 Kelola Buku Tamu</td><td>F15</td><td>D4, D5, D8</td></tr>
-    <tr><td>9.0 Kirim Notifikasi</td><td>F16</td><td>D5, D6, D9</td></tr>
-    <tr><td>10.0 Layani Asisten AI (MCP)</td><td>F17</td><td>D3, D4, D5, D6 (read-only)</td></tr>
+    <tr><th>Proses</th><th>Fitur</th><th>Data Store (tabel fisik)</th></tr>
+    <tr><td>1.0 Kelola Akun &amp; Hak Akses</td><td>F01, F02</td><td>D1 <code>users</code>, D2 <code>user_profiles</code></td></tr>
+    <tr><td>2.0 Kelola Gedung &amp; Kebijakan</td><td>F03, F04</td><td>D3 <code>buildings</code>, D4 <code>building_settings</code></td></tr>
+    <tr><td>3.0 Kelola Kamar &amp; Kapasitas</td><td>F05</td><td>D5 <code>rooms</code></td></tr>
+    <tr><td>4.0 Kelola Alokasi Hunian</td><td>F06, F07</td><td>D6 <code>leases</code></td></tr>
+    <tr><td>5.0 Kelola Keuangan &amp; Transaksi</td><td>F08, F09, F10, F11</td><td>D7 <code>invoices</code>, D8 <code>payments</code>, D9 <code>fines</code></td></tr>
+    <tr><td>6.0 Kelola Pemeliharaan &amp; Tiket</td><td>F12, F13</td><td>D10 <code>damage_reports</code></td></tr>
+    <tr><td>7.0 Kelola Inventaris Aset</td><td>F14</td><td>D11 <code>inventories</code></td></tr>
+    <tr><td>8.0 Kelola Buku Tamu</td><td>F15</td><td>D12 <code>guests</code></td></tr>
+    <tr><td>9.0 Kirim Notifikasi Otomatis</td><td>F16</td><td>D13 <code>notification_logs</code></td></tr>
+    <tr><td>10.0 Layani Asisten Analitik (MCP)</td><td>F17</td><td>Baca saja: D5, D6, D7, D10</td></tr>
   </table>
 </div>
 
 <script>
 // ===== DATA (sumber tunggal) — dir: 'in' = menuju proses (biru), 'out' = keluar dari proses (merah)
-const STORES = { D1:'Pengguna & Role', D2:'Gedung & Pengaturan', D3:'Kamar & Tipe', D4:'Alokasi Hunian',
-  D5:'Keuangan', D6:'Pemeliharaan', D7:'Inventaris Aset', D8:'Buku Tamu', D9:'Log Notifikasi' };
+const STORES = { D1:'Pengguna (users)', D2:'Profil (user_profiles)', D3:'Gedung (buildings)',
+  D4:'Pengaturan (building_settings)', D5:'Kamar (rooms)', D6:'Kontrak (leases)', D7:'Tagihan (invoices)',
+  D8:'Pembayaran (payments)', D9:'Denda (fines)', D10:'Tiket (damage_reports)', D11:'Inventaris (inventories)',
+  D12:'Buku Tamu (guests)', D13:'Log Notifikasi (notification_logs)' };
 const ENT = { OWN:['Pemilik','(Owner)'], ADM:['Pengelola','(Admin Gedung)'], RES:['Penghuni','(& Calon Penghuni)'],
-  MID:['Midtrans','Payment Gateway'], WA:['WhatsApp / Email','Gateway Notifikasi'], AI:['AI Client','MCP Host'] };
+  MID:['Midtrans','Payment Gateway'], WA:['WhatsApp Gateway','Fonnte / Open-WA'], AI:['Model Bahasa AI','(MCP Host / LLM)'],
+  KEYCLOAK:['Keycloak','Identity Provider (OIDC)'], TECH:['Teknisi','(Petugas Servis)'] };
 
 const P = [
  { no:'1.0', name:['Kelola Akun','& Hak Akses'], f:'F01, F02',
-   L:[['D1',[['out','Simpan akun, profil, role & izin'],['in','Data kredensial, role & izin']]]],
-   R:[['RES',[['in','Registrasi, login & biodata'],['out','Token sesi & profil']]],
-      ['ADM',[['in','Login & profil staf'],['out','Token sesi & hak akses menu']]],
-      ['OWN',[['in','Buat custom role & centang izin'],['out','Daftar role & audit log']]]] },
+   L:[['D1',[['out','Simpan akun, peran & status login'],['in','Data pengguna & peran']]],
+      ['D2',[['out','Simpan profil pengguna'],['in','Data biodata & kontak']]]],
+   R:[['RES',[['in','Registrasi, login & biodata'],['out','Token akses & profil']]],
+      ['ADM',[['in','Login & profil staf'],['out','Token akses & hak akses']]],
+      ['OWN',[['in','Susun peran kustom & checklist izin'],['out','Daftar peran & jejak audit']]],
+      ['KEYCLOAK',[['out','Permintaan pencabutan sesi'],['in','Kunci JWKS & identitas terverifikasi']]]] },
  { no:'2.0', name:['Kelola Gedung','& Kebijakan'], f:'F03, F04',
-   L:[['D2',[['out','Simpan gedung, toggle modul & kebijakan'],['in','Data gedung & kebijakan']]]],
-   R:[['OWN',[['in','Data gedung & toggle modul aktif'],['in','Kebijakan huni (min. sewa, booking policy)'],['out','Profil & konfigurasi gedung']]]] },
- { no:'3.0', name:['Kelola','Kamar'], f:'F05',
-   L:[['D2',[['in','Data gedung aktif']]],
-      ['D3',[['out','Simpan kamar, tipe, kapasitas & foto'],['in','Data kamar & status fisik']]]],
-   R:[['ADM',[['in','Nomor, lantai, tipe, harga, kapasitas'],['out','Daftar kamar & status fisik']]],
-      ['RES',[['out','Katalog kamar tersedia']]]] },
- { no:'4.0', name:['Kelola Alokasi','& Dashboard'], f:'F06, F07',
-   L:[['D2',[['in','Booking policy & min. sewa']]],
-      ['D3',[['in','Kapasitas & status kamar']]],
-      ['D4',[['out','Simpan alokasi & anggota huni'],['in','Jadwal huni (cek anti-bentrok)']]],
-      ['D5',[['in','Status lunas (payment gate)']]]],
-   R:[['RES',[['in','Pengajuan kamar mandiri'],['out','Konfirmasi alokasi & status huni']]],
-      ['ADM',[['in','Plotting, approval & check-out'],['out','Dashboard denah & penghuni aktif']]],
-      ['OWN',[['out','Laporan okupansi gedung']]]] },
- { no:'5.0', name:['Kelola','Keuangan'], f:'F08 – F11',
-   L:[['D2',[['in','Tarif, aturan denda & masa tenggang']]],
-      ['D4',[['in','Alokasi baru & durasi huni']]],
-      ['D5',[['out','Simpan invoice, bayar, denda & beban'],['in','Data invoice & arus kas']]]],
-   R:[['RES',[['out','Invoice tagihan & kuitansi'],['in','Pilih metode bayar / bayar tunai']]],
-      ['ADM',[['in','Verifikasi tunai, input beban + nota'],['out','Rekap tagihan & tunggakan']]],
-      ['OWN',[['out','Laporan arus kas & laba bersih']]],
-      ['MID',[['out','Request token SNAP'],['in','Webhook settlement / expire']]]] },
- { no:'6.0', name:['Kelola','Pemeliharaan'], f:'F12, F13',
-   L:[['D3',[['out','Ubah status kamar under_maintenance']]],
-      ['D6',[['out','Simpan tiket, log & jadwal servis'],['in','Data tiket & agenda servis']]]],
-   R:[['RES',[['in','Tiket kerusakan + foto'],['out','Status perbaikan']]],
-      ['ADM',[['in','Verifikasi, teknisi, jadwal & biaya servis'],['out','Tiket masuk & pengingat servis H-7']]]] },
- { no:'7.0', name:['Kelola','Inventaris Aset'], f:'F14',
-   L:[['D3',[['in','Data kamar']]],
-      ['D7',[['out','Simpan aset & hasil inspeksi'],['in','Daftar aset per kamar']]]],
-   R:[['ADM',[['in','Data barang & checklist check-in/out'],['out','Kartu inventaris kamar']]],
-      ['OWN',[['out','Laporan aset rusak / hilang']]]] },
- { no:'8.0', name:['Kelola','Buku Tamu'], f:'F15',
-   L:[['D4',[['in','Penghuni aktif & kamar']]],
-      ['D8',[['out','Simpan kunjungan tamu'],['in','Riwayat tamu']]],
-      ['D5',[['out','Biaya inap tamu ke invoice']]]],
-   R:[['RES',[['in','Data tamu berkunjung / menginap'],['out','Konfirmasi tamu tercatat']]],
-      ['ADM',[['in','Check-out tamu'],['out','Rekap tamu aktif & pelanggaran jam malam']]]] },
- { no:'9.0', name:['Kirim','Notifikasi'], f:'F16',
-   L:[['D5',[['in','Event invoice terbit, jatuh tempo, lunas']]],
-      ['D6',[['in','Event tiket selesai & servis H-7']]],
-      ['D9',[['out','Simpan log notifikasi'],['in','Status log pengiriman']]]],
+   L:[['D3',[['out','Simpan data gedung & penanggung jawab'],['in','Data gedung & alamat']]],
+      ['D4',[['out','Simpan kebijakan per gedung'],['in','Nilai minimum sewa, denda & biaya tamu']]]],
+   R:[['OWN',[['in','Data gedung & kebijakan'],['out','Konfigurasi tersimpan']]],
+      ['ADM',[['in','Data gedung binaannya'],['out','Gedung & kebijakan aktif']]]] },
+ { no:'3.0', name:['Kelola Kamar','& Kapasitas'], f:'F05',
+   L:[['D5',[['out','Simpan kamar, tipe, harga & status'],['in','Data unit kamar & kapasitas']]]],
+   R:[['ADM',[['in','Data kamar'],['out','Status kamar & ketersediaan']]],
+      ['OWN',[['in','Rekap kamar seluruh gedung'],['out','Kapasitas & harga']]]] },
+ { no:'4.0', name:['Kelola Alokasi','Hunian'], f:'F06, F07',
+   L:[['D6',[['out','Simpan kontrak sewa bulanan'],['in','Permintaan sewa & durasi']]],
+      ['D5',[['in','Status & harga kamar']]]],
+   R:[['RES',[['in','Pengajuan sewa & durasi'],['out','Konfirmasi alokasi sewa']]],
+      ['ADM',[['in','Verifikasi & alokasi manual'],['out','Rekap huni aktif & okupansi']]]] },
+ { no:'5.0', name:['Kelola Keuangan','& Transaksi'], f:'F08, F09, F10, F11',
+   L:[['D7',[['out','Simpan tagihan per periode sewa'],['in','Kontrak, harga & aturan gedung']]],
+      ['D8',[['out','Simpan pembayaran & token idempotensi'],['in','Status pembayaran & waktu lunas']]],
+      ['D9',[['out','Simpan denda keterlambatan'],['in','Aturan denda & periode jatuh tempo']]]],
+   R:[['RES',[['in','Permintaan pembayaran'],['out','Tagihan & tombol bayar']]],
+      ['MID',[['out','Permintaan token SNAP'],['in','Webhook settlement bertanda tangan']]],
+      ['OWN',[['in','Rekap keuangan & kas'],['out','Laporan pendapatan & piutang']]]] },
+ { no:'6.0', name:['Kelola Pemeliharaan','& Tiket'], f:'F12, F13',
+   L:[['D10',[['out','Simpan tiket & foto kerusakan'],['in','Laporan kerusakan & foto bukti']]],
+      ['D5',[['in','Status kamar terpengaruh']]]],
+   R:[['RES',[['in','Laporan kerusakan & foto'],['out','Nomor tiket & progres']]],
+      ['ADM',[['in','Verifikasi & tugaskan teknisi'],['out','Daftar tiket terbuka']]],
+      ['TECH',[['in','Progres perbaikan'],['out','Tiket selesai']]]] },
+ { no:'7.0', name:['Kelola Inventaris','Aset'], f:'F14',
+   L:[['D11',[['out','Simpan barang, jumlah & kondisi'],['in','Daftar barang per kamar']]]],
+   R:[['ADM',[['in','Pendataan & audit aset'],['out','Kondisi aset & selisih']]],
+      ['RES',[['in','Konfirmasi barang saat serah terima'],['out','Checklist barang']]]] },
+ { no:'8.0', name:['Kelola Buku','Tamu'], f:'F15',
+   L:[['D12',[['out','Simpan kunjungan tamu'],['in','Data tamu & jam menginap']]],
+      ['D7',[['in','Tagihan penghuni untuk biaya inap']]]],
+   R:[['RES',[['in','Data tamu berkunjung'],['out','Konfirmasi tamu tercatat']]],
+      ['ADM',[['in','Check-out tamu'],['out','Rekap tamu aktif & biaya inap']]]] },
+ { no:'9.0', name:['Kirim Notifikasi','Otomatis'], f:'F16',
+   L:[['D13',[['out','Simpan log notifikasi'],['in','Status pengiriman pesan']]]],
    R:[['WA',[['out','Payload pesan & nomor tujuan'],['in','Status delivery']]],
-      ['ADM',[['out','Riwayat pengiriman notifikasi']]]] },
- { no:'10.0', name:['Layani','Asisten AI'], f:'F17',
-   L:[['D3',[['in','Ketersediaan kamar']]],
-      ['D4',[['in','Data okupansi']]],
-      ['D5',[['in','Ringkasan keuangan']]],
-      ['D6',[['in','Status tiket komplain']]]],
-   R:[['AI',[['in','Query tool-call JSON-RPC 2.0'],['out','Data faktual JSON (read-only)']]]] },
+      ['RES',[['out','Pengingat tagihan & status tiket']]],
+      ['ADM',[['out','Rekap pengiriman notifikasi']]]] },
+ { no:'10.0', name:['Layani Asisten','Analitik'], f:'F17',
+   L:[['D5',[['in','Ketersediaan kamar']]],
+      ['D6',[['in','Data okupansi & kontrak']]],
+      ['D7',[['in','Ringkasan keuangan']]],
+      ['D10',[['in','Status tiket komplain']]]],
+   R:[['AI',[['in','Panggilan tool baca JSON-RPC 2.0'],['out','Data faktual JSON (read-only)']]]] },
 ];
 
 // ===== LAYOUT

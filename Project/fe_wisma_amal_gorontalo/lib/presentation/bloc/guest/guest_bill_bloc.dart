@@ -93,8 +93,8 @@ class GuestBillBloc extends Bloc<GuestBillEvent, GuestBillState> {
         adminNotes: event.adminNotes,
       );
       final msg = event.isApproved
-          ? 'Pembayaran berhasil diverifikasi.'
-          : 'Pembayaran ditolak.';
+          ? 'Payment successfully verified.'
+          : 'Payment rejected.';
       emit(GuestBillVerifySuccess(msg));
     } catch (e) {
       emit(GuestBillVerifyError(e.toString()));

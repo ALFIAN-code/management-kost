@@ -24,7 +24,7 @@ const bool _kMidtransProduction = false;
 const int _kMaxPollAttempts = 10;
 const Duration _kPollInterval = Duration(seconds: 3);
 
-// ── Metadata metode Midtrans (sama persis dengan reservation_detail_form_page) ──
+// ── Midtrans method metadata (exactly the same as reservation_detail_form_page) ──
 
 class _MethodInfo {
   const _MethodInfo(this.name, this.desc, this.icon);
@@ -34,24 +34,24 @@ class _MethodInfo {
 }
 
 const Map<String, _MethodInfo> _kMethodMap = {
-  'qris':        _MethodInfo('QRIS', 'Scan QR dari semua e-wallet & bank', Icons.qr_code),
-  'gopay':       _MethodInfo('GoPay', 'Bayar dengan saldo GoPay', Icons.account_balance_wallet),
-  'shopeepay':   _MethodInfo('ShopeePay', 'Bayar dengan saldo ShopeePay', Icons.shopping_bag),
-  'dana':        _MethodInfo('DANA', 'Bayar dengan saldo DANA', Icons.account_balance_wallet),
-  'linkaja':     _MethodInfo('LinkAja', 'Bayar dengan LinkAja', Icons.account_balance_wallet),
-  'ovo':         _MethodInfo('OVO', 'Bayar dengan saldo OVO', Icons.account_balance_wallet),
+  'qris':        _MethodInfo('QRIS', 'Scan QR from all e-wallets & banks', Icons.qr_code),
+  'gopay':       _MethodInfo('GoPay', 'Pay with your GoPay balance', Icons.account_balance_wallet),
+  'shopeepay':   _MethodInfo('ShopeePay', 'Pay with your ShopeePay balance', Icons.shopping_bag),
+  'dana':        _MethodInfo('DANA', 'Pay with your DANA balance', Icons.account_balance_wallet),
+  'linkaja':     _MethodInfo('LinkAja', 'Pay with LinkAja', Icons.account_balance_wallet),
+  'ovo':         _MethodInfo('OVO', 'Pay with your OVO balance', Icons.account_balance_wallet),
   'bca_va':      _MethodInfo('BCA Virtual Account', 'Transfer via ATM / m-BCA', Icons.account_balance),
   'bni_va':      _MethodInfo('BNI Virtual Account', 'Transfer via ATM / BNI Mobile', Icons.account_balance),
   'bri_va':      _MethodInfo('BRI Virtual Account', 'Transfer via ATM / BRImo', Icons.account_balance),
   'mandiri_va':  _MethodInfo('Mandiri Virtual Account', 'Transfer via Mandiri Livin\'', Icons.account_balance),
-  'echannel':    _MethodInfo('Mandiri Bill', 'Bayar via Mandiri Livin\'', Icons.account_balance),
+  'echannel':    _MethodInfo('Mandiri Bill', 'Pay via Mandiri Livin\'', Icons.account_balance),
   'permata_va':  _MethodInfo('Permata Virtual Account', 'Transfer via ATM Permata', Icons.account_balance),
-  'other_va':    _MethodInfo('Virtual Account', 'Transfer via bank lain', Icons.account_balance),
-  'alfamart':    _MethodInfo('Alfamart', 'Bayar di kasir Alfamart', Icons.store),
-  'indomaret':   _MethodInfo('Indomaret', 'Bayar di kasir Indomaret', Icons.store),
-  'credit_card': _MethodInfo('Kartu Kredit/Debit', 'Visa, Mastercard, JCB', Icons.credit_card),
-  'akulaku':     _MethodInfo('Akulaku', 'Cicilan 0% via Akulaku', Icons.credit_card),
-  'kredivo':     _MethodInfo('Kredivo', 'Cicilan via Kredivo', Icons.credit_card),
+  'other_va':    _MethodInfo('Virtual Account', 'Transfer via other banks', Icons.account_balance),
+  'alfamart':    _MethodInfo('Alfamart', 'Pay at the Alfamart counter', Icons.store),
+  'indomaret':   _MethodInfo('Indomaret', 'Pay at the Indomaret counter', Icons.store),
+  'credit_card': _MethodInfo('Credit/Debit Card', 'Visa, Mastercard, JCB', Icons.credit_card),
+  'akulaku':     _MethodInfo('Akulaku', '0% installments via Akulaku', Icons.credit_card),
+  'kredivo':     _MethodInfo('Kredivo', 'Installments via Kredivo', Icons.credit_card),
 };
 
 String _methodName(String code) => _kMethodMap[code]?.name ?? code.toUpperCase();
@@ -68,7 +68,7 @@ class InvoicePaymentPage extends StatefulWidget {
     this.roomNumber,
     this.invoiceType,
     this.dueDate,
-    // Digunakan untuk widget test saja — produksi pakai serviceLocator
+    // Used only for test widgets — production uses serviceLocator
     this.bloc,
   });
 
@@ -87,20 +87,20 @@ class InvoicePaymentPage extends StatefulWidget {
 class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
   late final MemberFinanceBloc _bloc;
 
-  // Metode pembayaran utama: 'manual' | 'online'
+  // Main payment method: 'manual' | 'online'
   String _selectedMethod = 'manual';
 
-  // Metode Midtrans spesifik yang dipilih (code, mis. 'qris', 'gopay')
+  // Specific Midtrans method selected (code, e.g. 'qris', 'gopay')
   String? _selectedMidtransMethod;
 
-  // Daftar metode Midtrans tersedia dari setting
+  // List of available Midtrans methods from the settings
   List<MidtransMethodEntity> _midtransMethods = [];
   bool _methodsLoading = false;
 
-  // Upload bukti (manual)
+  // Upload proof (manual)
   PlatformFile? _selectedFile;
 
-  // State halaman setelah submit Midtrans
+  // Page state after the Midtrans submit
   _PayPageState _pageState = _PayPageState.selecting;
   String? _snapToken;
   Map<String, dynamic>? _midtransData;
@@ -110,8 +110,8 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
   int _pollAttempts = 0;
   Timer? _pollTimer;
 
-  final _currencyFmt = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
-  final _dateFmt = DateFormat('dd MMMM yyyy', 'id_ID');
+  final _currencyFmt = NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0);
+  final _dateFmt = DateFormat('dd MMMM yyyy', 'en_US');
 
   @override
   void initState() {
@@ -138,20 +138,20 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
   // ── Labels ────────────────────────────────────────────────────────────────
 
   String get _pageTitle => switch (widget.invoiceType) {
-        'pelunasan' => 'Bayar Pelunasan',
-        'dp'        => 'Bayar Uang Muka (DP)',
-        'extension' => 'Bayar Perpanjangan Sewa',
-        'fine'      => 'Bayar Denda',
-        _           => 'Bayar Tagihan',
+        'pelunasan' => 'Pay Full Amount',
+        'dp'        => 'Pay Down Payment (DP)',
+        'extension' => 'Pay Lease Extension',
+        'fine'      => 'Pay Fine',
+        _           => 'Pay Invoice',
       };
 
   String get _invoiceTypeLabel => switch (widget.invoiceType) {
-        'pelunasan' => 'Pelunasan',
-        'dp'        => 'Uang Muka (DP)',
-        'extension' => 'Perpanjangan',
-        'fine'      => 'Denda',
-        'sewa'      => 'Sewa Bulanan',
-        _           => 'Tagihan',
+        'pelunasan' => 'Full Payment',
+        'dp'        => 'Down Payment (DP)',
+        'extension' => 'Extension',
+        'fine'      => 'Fine',
+        'sewa'      => 'Monthly Lease',
+        _           => 'Invoice',
       };
 
   Color get _invoiceTypeColor => switch (widget.invoiceType) {
@@ -191,7 +191,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Tidak dapat membuka halaman pembayaran')),
+          const SnackBar(content: Text('Unable to open the payment page')),
         );
       }
     }
@@ -231,12 +231,12 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
         title: Row(children: [
           const Icon(Icons.hourglass_top, color: Colors.orange, size: 28),
           const SizedBox(width: 8),
-          const Text('Pembayaran Diproses'),
+          const Text('Payment Is Being Processed'),
         ]),
         content: const Text(
-          'Konfirmasi pembayaran belum diterima. '
-          'Status akan diperbarui otomatis. '
-          'Pantau di halaman keuangan Anda.',
+          'Payment confirmation has not been received. '
+          'The status will update automatically. '
+          'Track it on your finance page.',
         ),
         actions: [
           ElevatedButton(
@@ -244,7 +244,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
               Navigator.pop(ctx);
               context.router.replaceAll([const MemberFinanceRoute()]);
             },
-            child: const Text('Lihat Status Pembayaran'),
+            child: const Text('View Payment Status'),
           ),
         ],
       ),
@@ -265,17 +265,17 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
         listener: (context, state) {
           if (state.status == MemberFinanceStatus.paymentSuccess) {
             if (state.snapToken != null || state.paymentData != null) {
-              // Online: tampilkan kode pembayaran di halaman ini
+              // Online: show the payment code on this page
               setState(() {
                 _pageState = _PayPageState.midtransActive;
                 _snapToken = state.snapToken;
                 _midtransData = state.paymentData;
               });
             } else {
-              // Manual: sukses → snackbar + kembali ke keuangan
+              // Manual: success → snackbar + return to finance
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Bukti pembayaran berhasil diunggah. Menunggu verifikasi admin.'),
+                  content: Text('Payment proof uploaded successfully. Waiting for admin verification.'),
                   backgroundColor: Colors.green,
                   duration: Duration(seconds: 4),
                 ),
@@ -285,7 +285,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
           } else if (state.status == MemberFinanceStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Gagal memproses pembayaran'),
+                content: Text(state.errorMessage ?? 'Failed to process the payment'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -358,11 +358,11 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
     final step = _pageState == _PayPageState.midtransActive ? 2 : 1;
     return Row(
       children: [
-        _stepCircle('1', 'Tagihan', step >= 1, done: step > 1),
+        _stepCircle('1', 'Invoice', step >= 1, done: step > 1),
         _stepLine(step > 1),
-        _stepCircle('2', 'Pembayaran', step >= 2, done: _paymentConfirmed),
+        _stepCircle('2', 'Payment', step >= 2, done: _paymentConfirmed),
         _stepLine(_paymentConfirmed),
-        _stepCircle('3', 'Selesai', _paymentConfirmed),
+        _stepCircle('3', 'Done', _paymentConfirmed),
       ],
     );
   }
@@ -414,9 +414,9 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Card pemilihan metode utama ────────────────────────────────────
+        // ── Main method selection card ────────────────────────────────────
         BasicCard(
-          title: 'Metode Pembayaran',
+          title: 'Payment Method',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -426,15 +426,15 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                 children: [
                   if (isMidtrans)
                     _mainMethodCard(
-                      title: 'Pembayaran Online',
+                      title: 'Online Payment',
                       subtitle: _onlineSubtitle(),
                       icon: Icons.account_balance_wallet,
                       selected: _selectedMethod == 'online',
                       onTap: () => setState(() => _selectedMethod = 'online'),
                     ),
                   _mainMethodCard(
-                    title: 'Pembayaran Manual',
-                    subtitle: 'Transfer atau Cash dengan Bukti',
+                    title: 'Manual Payment',
+                    subtitle: 'Transfer or cash with proof',
                     icon: Icons.payments,
                     selected: _selectedMethod == 'manual',
                     onTap: () => setState(() => _selectedMethod = 'manual'),
@@ -442,16 +442,16 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                 ],
               ),
 
-              // Grid metode Midtrans
+              // Midtrans method grid
               if (_selectedMethod == 'online') ...[
                 const SizedBox(height: 20),
                 Text(
-                  'Pilih Metode Pembayaran',
+                  'Choose a Payment Method',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.grey.shade800),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Kode pembayaran akan ditampilkan langsung di aplikasi setelah Anda mengklik Proses Pembayaran.',
+                  'The payment code will be shown directly in the app after you tap Process Payment.',
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                 ),
                 const SizedBox(height: 12),
@@ -464,7 +464,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                   _infoBox(
                     icon: Icons.info_outline,
                     color: Colors.grey,
-                    text: 'Tidak ada metode pembayaran online yang aktif. Hubungi pengelola atau gunakan Pembayaran Manual.',
+                    text: 'No online payment methods are active. Contact the management or use Manual Payment.',
                   )
                 else if (_midtransMethods.every((m) => !m.available))
                   Container(
@@ -480,10 +480,10 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                       Expanded(child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Semua metode sedang maintenance',
+                          Text('All methods are under maintenance',
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.orange.shade800)),
                           const SizedBox(height: 4),
-                          Text('Coba lagi nanti atau gunakan Pembayaran Manual.',
+                          Text('Try again later or use Manual Payment.',
                               style: TextStyle(fontSize: 12, color: Colors.orange.shade700)),
                         ],
                       )),
@@ -514,7 +514,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                   ),
               ],
 
-              // Info manual
+              // Manual info
               if (_selectedMethod == 'manual') ...[
                 const SizedBox(height: 16),
                 Container(
@@ -530,10 +530,10 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                     Expanded(child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Pembayaran Manual',
+                        Text('Manual Payment',
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.orange.shade700)),
                         const SizedBox(height: 4),
-                        Text('Lakukan transfer bank atau bayar cash, lalu unggah bukti pembayaran.',
+                        Text('Make a bank transfer or pay cash, then upload the payment proof.',
                             style: TextStyle(fontSize: 12, color: Colors.orange.shade600)),
                       ],
                     )),
@@ -544,7 +544,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
           ),
         ),
 
-        // ── Konten sesuai metode ────────────────────────────────────────────
+        // ── Content per method ────────────────────────────────────────────
         if (_selectedMethod == 'manual') ...[
           const SizedBox(height: 16),
           _buildTransferBankCard(bankAccounts),
@@ -611,7 +611,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
     required VoidCallback onTap,
   }) {
     final info = _kMethodMap[method.code] ??
-        _MethodInfo(method.code.toUpperCase(), 'Metode Midtrans', Icons.payment);
+        _MethodInfo(method.code.toUpperCase(), 'Midtrans method', Icons.payment);
     final displayName = method.label.isNotEmpty ? method.label : info.name;
 
     return Opacity(
@@ -672,16 +672,16 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
     );
   }
 
-  // ── Transfer bank card ────────────────────────────────────────────────────
+  // ── Bank transfer card ────────────────────────────────────────────────────
 
   Widget _buildTransferBankCard(bankAccounts) {
     return BasicCard(
-      title: 'Pembayaran via Transfer Bank',
+      title: 'Payment via Bank Transfer',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _instructionStep(1, 'Transfer ke Rekening Berikut',
-              'Pastikan nominal transfer sesuai dengan total tagihan.'),
+          _instructionStep(1, 'Transfer to the Following Account',
+              'Make sure the transfer amount matches the invoice total.'),
           const SizedBox(height: 16),
           if (bankAccounts.isEmpty)
             Container(
@@ -692,7 +692,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                 border: Border.all(color: Colors.blue.shade200),
               ),
               child: const Text(
-                'Hubungi pengelola wisma untuk informasi rekening transfer.',
+                'Contact the dormitory management for transfer account details.',
                 style: TextStyle(fontSize: 13),
               ),
             )
@@ -713,8 +713,8 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                     Text(acc.bankName,
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     const SizedBox(height: 8),
-                    _bankInfoRow('No. Rekening', acc.accountNumber),
-                    _bankInfoRow('Atas Nama', acc.accountHolder),
+                    _bankInfoRow('Account No.', acc.accountNumber),
+                    _bankInfoRow('Account Holder', acc.accountHolder),
                     if (acc.paymentInstructions != null && acc.paymentInstructions!.isNotEmpty) ...[
                       const SizedBox(height: 6),
                       Text(acc.paymentInstructions!,
@@ -730,7 +730,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Jumlah Transfer:',
+                          const Text('Transfer Amount:',
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                           Text(
                             _currencyFmt.format(widget.amount),
@@ -745,8 +745,8 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
               ),
             )),
           const SizedBox(height: 16),
-          _instructionStep(2, 'Simpan Bukti Transfer',
-              'Screenshot atau foto struk transfer dari mobile banking / ATM.'),
+          _instructionStep(2, 'Save the Transfer Proof',
+              'Screenshot or photo the transfer receipt from mobile banking / ATM.'),
         ],
       ),
     );
@@ -756,12 +756,12 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
 
   Widget _buildCashCard() {
     return BasicCard(
-      title: 'Pembayaran Cash (Tunai)',
+      title: 'Cash Payment',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _instructionStep(1, 'Datang ke Pengelola Wisma',
-              'Kunjungi kantor pengelola Wisma Amal Gorontalo secara langsung.'),
+          _instructionStep(1, 'Visit the Management Office',
+              'Come in person to the Wisma Amal Gorontalo management office.'),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(12),
@@ -773,17 +773,17 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _bankInfoRow('Alamat', 'Jl. Wisma Amal No. 1, Gorontalo'),
-                _bankInfoRow('Jam Operasional', 'Senin – Sabtu, 08.00 – 17.00 WITA'),
+                _bankInfoRow('Address', 'Jl. Wisma Amal No. 1, Gorontalo'),
+                _bankInfoRow('Operating Hours', 'Monday – Saturday, 08.00 – 17.00 WITA'),
               ],
             ),
           ),
           const SizedBox(height: 12),
-          _instructionStep(2, 'Bayar & Minta Kwitansi',
-              'Lakukan pembayaran tunai dan minta kwitansi resmi dari pengelola.'),
+          _instructionStep(2, 'Pay & Request a Receipt',
+              'Make the cash payment and ask the management for an official receipt.'),
           const SizedBox(height: 12),
-          _instructionStep(3, 'Foto Kwitansi',
-              'Foto kwitansi pembayaran dengan jelas sebagai bukti.'),
+          _instructionStep(3, 'Photograph the Receipt',
+              'Take a clear photo of the payment receipt as proof.'),
         ],
       ),
     );
@@ -793,12 +793,12 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
 
   Widget _buildUploadCard(bool isLoading) {
     return BasicCard(
-      title: 'Upload Bukti Pembayaran',
+      title: 'Upload Payment Proof',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _instructionStep(1, 'Pilih File Bukti',
-              'Pilih foto struk transfer atau kwitansi cash yang jelas dan terbaca.'),
+          _instructionStep(1, 'Select a Proof File',
+              'Choose a clear, readable photo of the transfer receipt or cash receipt.'),
           const SizedBox(height: 16),
           if (_selectedFile != null) ...[
             Container(
@@ -812,7 +812,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                 const Icon(Icons.check_circle, color: Colors.green, size: 20),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text('File terpilih: ${_selectedFile!.name}',
+                  child: Text('Selected file: ${_selectedFile!.name}',
                       style: const TextStyle(fontSize: 13, color: Colors.green)),
                 ),
                 IconButton(
@@ -834,7 +834,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                       if (result != null) setState(() => _selectedFile = result.files.first);
                     },
               icon: const Icon(Icons.image_outlined),
-              label: Text(_selectedFile == null ? 'Pilih Gambar Bukti' : 'Ganti Gambar'),
+              label: Text(_selectedFile == null ? 'Choose Proof Image' : 'Replace Image'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -846,7 +846,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
     );
   }
 
-  // ── Midtrans payment display (setelah submit berhasil) ────────────────────
+  // ── Midtrans payment display (after a successful submit) ────────────────────
 
   Widget _buildMidtransPaymentCard(MemberFinanceState state) {
     final data = _midtransData;
@@ -878,7 +878,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
     }
 
     return BasicCard(
-      title: 'Kode Pembayaran',
+      title: 'Payment Code',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -896,32 +896,32 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
         : 'Midtrans';
 
     return BasicCard(
-      title: 'Pembayaran via $methodName',
+      title: 'Payment via $methodName',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _infoBox(
             icon: Icons.security,
             color: Colors.blue,
-            text: 'Pembayaran akan dilanjutkan di halaman $methodName. '
-                'Setelah selesai bayar, kembali ke sini dan klik konfirmasi.',
+            text: 'The payment continues on the $methodName page. '
+                'After you finish paying, return here and tap the confirmation.',
           ),
           const SizedBox(height: 20),
-          _instructionStep(1, 'Klik "Bayar Sekarang"',
-              'Anda akan diarahkan ke halaman $methodName.'),
+          _instructionStep(1, 'Tap "Pay Now"',
+              'You will be redirected to the $methodName page.'),
           const SizedBox(height: 10),
-          _instructionStep(2, 'Selesaikan Pembayaran',
-              'Ikuti instruksi pada halaman $methodName.'),
+          _instructionStep(2, 'Complete the Payment',
+              'Follow the instructions on the $methodName page.'),
           const SizedBox(height: 10),
-          _instructionStep(3, 'Kembali ke Aplikasi',
-              'Setelah selesai bayar, kembali dan klik tombol konfirmasi.'),
+          _instructionStep(3, 'Return to the App',
+              'After you finish paying, come back and tap the confirmation button.'),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: _isPolling ? null : () => _openSnapUrl(token),
               icon: const Icon(Icons.payment, color: Colors.white),
-              label: Text('Bayar Sekarang',
+              label: Text('Pay Now',
                   style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -956,7 +956,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
               child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blue.shade700),
             ),
             const SizedBox(width: 12),
-            Text('Memverifikasi pembayaran…',
+            Text('Verifying payment…',
                 style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.w600)),
           ],
         ),
@@ -968,7 +968,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
       child: ElevatedButton.icon(
         onPressed: _startPolling,
         icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-        label: const Text('Saya Sudah Bayar',
+        label: const Text('I Have Paid',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.green,
@@ -982,7 +982,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
   // ── Summary section (right col) ───────────────────────────────────────────
 
   Widget _buildSummarySection(MemberFinanceState state, bool isLoading) {
-    // Breakdown biaya Midtrans (tersedia setelah payment diinisiasi)
+    // Midtrans fee breakdown (available after the payment is initiated)
     final grossAmount   = state.paymentGrossAmount;
     final midtransFee   = state.paymentMidtransFee ?? 0;
     final isCustomer    = state.paymentFeeBearer == 'customer';
@@ -991,18 +991,18 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
     final isSelectingManual = _pageState == _PayPageState.selecting && _selectedMethod == 'manual';
     final isSelectingOnline = _pageState == _PayPageState.selecting && _selectedMethod == 'online';
 
-    // Validasi submit online
+    // Online submit validation
     final canSubmitOnline = _selectedMidtransMethod != null &&
         _midtransMethods.any((m) => m.code == _selectedMidtransMethod && m.available);
 
     return Column(
       children: [
         BasicCard(
-          title: 'Ringkasan Tagihan',
+          title: 'Invoice Summary',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Badge tipe invoice
+              // Invoice type badge
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -1020,19 +1020,19 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                 ),
               ),
               const SizedBox(height: 14),
-              _summaryRow('No. Invoice', widget.invoiceNumber),
+              _summaryRow('Invoice No.', widget.invoiceNumber),
               if (widget.roomNumber != null)
-                _summaryRow('Kamar', 'Kamar ${widget.roomNumber}'),
+                _summaryRow('Room', 'Room ${widget.roomNumber}'),
               if (widget.dueDate != null)
-                _summaryRow('Jatuh Tempo', _dateFmt.format(widget.dueDate!)),
+                _summaryRow('Due Date', _dateFmt.format(widget.dueDate!)),
               const Divider(height: 28),
 
-              // Breakdown biaya jika ada Midtrans fee
+              // Fee breakdown when a Midtrans fee applies
               if (hasFee) ...[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Tagihan', style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                    Text('Invoice', style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
                     Text(_currencyFmt.format(widget.amount),
                         style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
                   ],
@@ -1041,7 +1041,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Biaya Transaksi', style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
+                    Text('Transaction Fee', style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
                     Text(_currencyFmt.format(midtransFee),
                         style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
                   ],
@@ -1052,7 +1052,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Total Bayar', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text('Total Payment', style: TextStyle(fontWeight: FontWeight.bold)),
                   Text(
                     _currencyFmt.format(hasFee && grossAmount != null ? grossAmount : widget.amount),
                     style: const TextStyle(
@@ -1074,7 +1074,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                     Icon(Icons.info_outline, size: 13, color: Colors.orange.shade700),
                     const SizedBox(width: 5),
                     Expanded(child: Text(
-                      'Biaya transaksi Midtrans ditanggung penghuni dan sudah termasuk dalam total di atas.',
+                      'The Midtrans transaction fee is borne by the resident and is already included in the total above.',
                       style: TextStyle(fontSize: 10, color: Colors.orange.shade700, height: 1.3),
                     )),
                   ]),
@@ -1086,17 +1086,17 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
 
         const SizedBox(height: 16),
 
-        // Tombol submit — hanya saat selecting
+        // Submit button — only while selecting
         if (isSelectingManual)
           BasicButton(
-            label: isLoading ? 'Mengirim...' : 'Kirim Bukti Pembayaran',
+            label: isLoading ? 'Sending...' : 'Submit Payment Proof',
             isLoading: isLoading,
             onPressed: (isLoading || _selectedFile == null) ? null : _submitManual,
           ),
 
         if (isSelectingOnline)
           BasicButton(
-            label: isLoading ? 'Memproses...' : 'Proses Pembayaran',
+            label: isLoading ? 'Processing...' : 'Process Payment',
             isLoading: isLoading,
             onPressed: (isLoading || !canSubmitOnline) ? null : _submitOnline,
           ),
@@ -1104,7 +1104,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
         if (isSelectingOnline && _selectedMidtransMethod == null) ...[
           const SizedBox(height: 8),
           Text(
-            'Pilih metode pembayaran terlebih dahulu.',
+            'Please choose a payment method first.',
             style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
             textAlign: TextAlign.center,
           ),
@@ -1133,11 +1133,11 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                 child: const Icon(Icons.check_circle, color: Colors.green, size: 56),
               ),
               const SizedBox(height: 24),
-              const Text('Pembayaran Berhasil!',
+              const Text('Payment Successful!',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
               Text(
-                'Pembayaran telah dikonfirmasi.',
+                'The payment has been confirmed.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
@@ -1147,7 +1147,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                 child: ElevatedButton.icon(
                   onPressed: () => context.router.replaceAll([const MemberFinanceRoute()]),
                   icon: const Icon(Icons.home, color: Colors.white),
-                  label: const Text('Lihat Keuangan Saya',
+                  label: const Text('View My Finance',
                       style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
@@ -1204,7 +1204,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
         _infoBox(
           icon: Icons.qr_code_2,
           color: Colors.indigo,
-          text: 'Scan QR Code berikut menggunakan aplikasi $methodLabel atau kamera ponsel Anda.',
+          text: 'Scan the QR code below using the $methodLabel app or your phone camera.',
         ),
         const SizedBox(height: 20),
         if (qrUrl != null)
@@ -1225,7 +1225,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                         child: Center(child: CircularProgressIndicator())),
                 errorBuilder: (_, __, ___) => const SizedBox(
                     width: 200, height: 200,
-                    child: Center(child: Text('Gagal memuat QR Code'))),
+                    child: Center(child: Text('Failed to load QR Code'))),
               ),
             ),
           ),
@@ -1243,7 +1243,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
                 if (await canLaunchUrl(uri)) await launchUrl(uri);
               },
               icon: const Icon(Icons.open_in_new),
-              label: Text('Buka di $methodLabel'),
+              label: Text('Open in $methodLabel'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -1265,7 +1265,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
         _infoBox(
           icon: Icons.account_balance,
           color: Colors.blue,
-          text: 'Transfer ke nomor Virtual Account berikut sebelum waktu kadaluarsa.',
+          text: 'Transfer to the Virtual Account number below before it expires.',
         ),
         const SizedBox(height: 16),
         for (final va in vaNumbers)
@@ -1292,7 +1292,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
         _infoBox(
           icon: Icons.account_balance,
           color: Colors.blue,
-          text: "Bayar melalui Mandiri Livin' atau ATM Mandiri menggunakan kode berikut.",
+          text: "Pay through Mandiri Livin' or a Mandiri ATM using the code below.",
         ),
         const SizedBox(height: 16),
         _codeCard(label: 'Biller Code', value: billerCode),
@@ -1314,10 +1314,10 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
         _infoBox(
           icon: Icons.store,
           color: Colors.red,
-          text: 'Tunjukkan kode berikut ke kasir $store untuk menyelesaikan pembayaran.',
+          text: 'Show the following code to the $store cashier to complete the payment.',
         ),
         const SizedBox(height: 16),
-        _codeCard(label: 'Kode Pembayaran $store', value: paymentCode),
+        _codeCard(label: '$store Payment Code', value: paymentCode),
         if (expiryTime != null) ...[const SizedBox(height: 12), _expiryChip(expiryTime)],
       ],
     );
@@ -1327,21 +1327,21 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
     return _infoBox(
       icon: Icons.payment,
       color: Colors.grey,
-      text: 'Lanjutkan pembayaran dan klik "Saya Sudah Bayar" setelah selesai.',
+      text: 'Continue the payment and tap "I Have Paid" when you are done.',
     );
   }
 
   // ── Shared helpers ────────────────────────────────────────────────────────
 
   String _onlineSubtitle() {
-    if (_midtransMethods.isEmpty) return 'Tidak ada metode aktif';
+    if (_midtransMethods.isEmpty) return 'No active methods';
     final available = _midtransMethods.where((m) => !m.maintenance).toList();
-    if (available.isEmpty) return 'Semua metode sedang maintenance';
+    if (available.isEmpty) return 'All methods are under maintenance';
     final names = available
         .map((m) => m.label.isNotEmpty ? m.label : (_kMethodMap[m.code]?.name ?? m.code.toUpperCase()))
         .take(3)
         .join(', ');
-    return available.length > 3 ? '$names, +${available.length - 3} lainnya' : names;
+    return available.length > 3 ? '$names, +${available.length - 3} more' : names;
   }
 
   Widget _instructionStep(int num, String title, String desc) {
@@ -1438,11 +1438,11 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: vaNumber));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Nomor VA disalin'), duration: Duration(seconds: 2)),
+                const SnackBar(content: Text('VA number copied'), duration: Duration(seconds: 2)),
               );
             },
             icon: const Icon(Icons.copy, color: Colors.blue),
-            tooltip: 'Salin',
+            tooltip: 'Copy',
           ),
         ],
       ),
@@ -1474,11 +1474,11 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: value));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Kode disalin'), duration: Duration(seconds: 2)),
+                const SnackBar(content: Text('Code copied'), duration: Duration(seconds: 2)),
               );
             },
             icon: const Icon(Icons.copy, color: Colors.blue),
-            tooltip: 'Salin',
+            tooltip: 'Copy',
           ),
         ],
       ),
@@ -1490,7 +1490,7 @@ class _InvoicePaymentPageState extends State<InvoicePaymentPage> {
       children: [
         const Icon(Icons.schedule, size: 14, color: Colors.orange),
         const SizedBox(width: 6),
-        Text('Berlaku hingga: $expiryTime',
+        Text('Valid until: $expiryTime',
             style: TextStyle(fontSize: 12, color: Colors.orange.shade700)),
       ],
     );

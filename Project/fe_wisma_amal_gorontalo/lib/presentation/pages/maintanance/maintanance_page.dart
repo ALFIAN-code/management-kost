@@ -72,12 +72,12 @@ class _MaintananceViewState extends State<_MaintananceView> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Hapus Jadwal'),
-        content: const Text('Apakah Anda yakin ingin menghapus jadwal ini?'),
+        title: const Text('Delete Schedule'),
+        content: const Text('Are you sure you want to delete this schedule?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -89,7 +89,7 @@ class _MaintananceViewState extends State<_MaintananceView> {
                   ? AppColorsDark.statusCancelled
                   : AppColorsLight.statusCancelled,
             ),
-            child: const Text('Hapus'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -99,19 +99,19 @@ class _MaintananceViewState extends State<_MaintananceView> {
   String _statusLabel(String status) {
     switch (status) {
       case 'done':
-        return 'Selesai';
+        return 'Done';
       case 'in_progress':
-        return 'Dalam Proses';
+        return 'In Progress';
       case 'cancelled':
-        return 'Dibatalkan';
+        return 'Cancelled';
       default:
-        return 'Terjadwal';
+        return 'Scheduled';
     }
   }
 
   String _fmtDt(DateTime? dt) {
     if (dt == null) return '-';
-    return DateFormat('d MMM yyyy, HH:mm', 'id_ID').format(dt);
+    return DateFormat('d MMM yyyy, HH:mm', 'en_US').format(dt);
   }
 
   @override
@@ -188,8 +188,8 @@ class _MaintananceViewState extends State<_MaintananceView> {
         body: Column(
           children: [
             AppTopBar(
-              title: 'Jadwal Pemeliharaan',
-              breadcrumb: 'Operasional / Jadwal Pemeliharaan',
+              title: 'Maintenance Schedule',
+              breadcrumb: 'Operations / Maintenance Schedule',
               action: context.can(PermissionKeys.createMaintenance)
                   ? ElevatedButton.icon(
                       onPressed: () async {
@@ -203,7 +203,7 @@ class _MaintananceViewState extends State<_MaintananceView> {
                         }
                       },
                       icon: const Icon(Icons.add, size: 18),
-                      label: const Text('Tambah Jadwal'),
+                      label: const Text('Add Schedule'),
                     )
                   : const SizedBox.shrink(),
             ),
@@ -229,7 +229,7 @@ class _MaintananceViewState extends State<_MaintananceView> {
                   ButtonSegment(
                     value: _ViewMode.calendar,
                     icon: Icon(Icons.calendar_month),
-                    label: Text('Kalender', style: TextStyle(fontSize: 12)),
+                    label: Text('Calendar', style: TextStyle(fontSize: 12)),
                   ),
                   ButtonSegment(
                     value: _ViewMode.list,
@@ -259,13 +259,13 @@ class _MaintananceViewState extends State<_MaintananceView> {
                   if (state is ScheduleListError) {
                     return EmptyStateWidget(
                       icon: Icons.error_outline,
-                      title: 'Gagal Memuat Data',
+                      title: 'Failed to Load Data',
                       subtitle: state.message,
                       action: ElevatedButton(
                         onPressed: () => context.read<ScheduleListBloc>().add(
                           FetchSchedules(),
                         ),
-                        child: const Text('Coba Lagi'),
+                        child: const Text('Try Again'),
                       ),
                     );
                   }
@@ -320,9 +320,9 @@ class _MaintananceViewState extends State<_MaintananceView> {
                 selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                 calendarFormat: _calendarFormat,
                 availableCalendarFormats: const {
-                  CalendarFormat.month: 'Bulan',
-                  CalendarFormat.twoWeeks: '2 Minggu',
-                  CalendarFormat.week: 'Minggu',
+                  CalendarFormat.month: 'Month',
+                  CalendarFormat.twoWeeks: '2 Weeks',
+                  CalendarFormat.week: 'Week',
                 },
                 onDaySelected: (selectedDay, focusedDay) {
                   setState(() {
@@ -397,9 +397,9 @@ class _MaintananceViewState extends State<_MaintananceView> {
                       _selectedDay != null
                           ? DateFormat(
                               'dd MMMM yyyy',
-                              'id_ID',
+                              'en_US',
                             ).format(_selectedDay!)
-                          : 'Pilih Tanggal',
+                          : 'Select Date',
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
@@ -423,7 +423,7 @@ class _MaintananceViewState extends State<_MaintananceView> {
                           ),
                           const SizedBox(height: AppSpacing.md),
                           Text(
-                            'Tidak ada jadwal pada tanggal ini',
+                            'No schedules on this date',
                             style: TextStyle(
                               color: isDark
                                   ? AppColorsDark.textSecondary
@@ -547,8 +547,8 @@ class _MaintananceViewState extends State<_MaintananceView> {
     if (schedules.isEmpty) {
       return EmptyStateWidget(
         icon: Icons.calendar_today_outlined,
-        title: 'Tidak ada jadwal',
-        subtitle: 'Belum ada jadwal pemeliharaan yang ditambahkan.',
+        title: 'No schedules',
+        subtitle: 'No maintenance schedules have been added yet.',
       );
     }
 
@@ -563,12 +563,12 @@ class _MaintananceViewState extends State<_MaintananceView> {
         children: [
           AppDataTable(
             columns: const [
-              DataColumn(label: Text('TEKNISI')),
-              DataColumn(label: Text('LOKASI')),
-              DataColumn(label: Text('TIPE')),
+              DataColumn(label: Text('TECHNICIAN')),
+              DataColumn(label: Text('LOCATION')),
+              DataColumn(label: Text('TYPE')),
               DataColumn(label: Text('STATUS')),
-              DataColumn(label: Text('MULAI')),
-              DataColumn(label: Text('SELESAI')),
+              DataColumn(label: Text('START')),
+              DataColumn(label: Text('END')),
               DataColumn(label: Text('')),
             ],
             rows: sortedSchedules
@@ -617,7 +617,7 @@ class _MaintananceViewState extends State<_MaintananceView> {
                               ),
                               onPressed: () =>
                                   _confirmDelete(context, item.id!),
-                              tooltip: 'Hapus',
+                              tooltip: 'Delete',
                             ),
                           ],
                         ),

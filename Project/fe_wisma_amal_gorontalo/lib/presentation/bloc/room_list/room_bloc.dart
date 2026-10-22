@@ -43,7 +43,7 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
         ),
       );
     } catch (e) {
-      AppSnackbar.showError('Gagal memuat data kamar: ${e.toString()}');
+      AppSnackbar.showError('Failed to load room data: ${e.toString()}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -60,12 +60,12 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.success,
-          successMessage: "Berhasil menambah kamar",
+          successMessage: "Room added successfully",
         ),
       );
       add(GetRoomsEvent());
     } on AppException catch (e) {
-      AppSnackbar.showError('Gagal menambah kamar: ${e.message}');
+      AppSnackbar.showError('Failed to add room: ${e.message}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -73,7 +73,7 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
         ),
       );
     } catch (e) {
-      AppSnackbar.showError('Gagal menambah kamar: ${e.toString()}');
+      AppSnackbar.showError('Failed to add room: ${e.toString()}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -93,12 +93,12 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.success,
-          successMessage: "Berhasil mengupdate kamar",
+          successMessage: "Room updated successfully",
         ),
       );
       add(GetRoomsEvent());
     } on AppException catch (e) {
-      AppSnackbar.showError('Gagal mengupdate kamar: ${e.message}');
+      AppSnackbar.showError('Failed to update room: ${e.message}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -106,7 +106,7 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
         ),
       );
     } catch (e) {
-      AppSnackbar.showError('Gagal mengupdate kamar: ${e.toString()}');
+      AppSnackbar.showError('Failed to update room: ${e.toString()}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -126,12 +126,12 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.success,
-          successMessage: "Berhasil menghapus kamar",
+          successMessage: "Room deleted successfully",
         ),
       );
       add(GetRoomsEvent());
     } on AppException catch (e) {
-      AppSnackbar.showError('Gagal menghapus kamar: ${e.message}');
+      AppSnackbar.showError('Failed to delete room: ${e.message}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -139,7 +139,7 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
         ),
       );
     } catch (e) {
-      AppSnackbar.showError('Gagal menghapus kamar: ${e.toString()}');
+      AppSnackbar.showError('Failed to delete room: ${e.toString()}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,

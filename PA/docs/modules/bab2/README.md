@@ -225,7 +225,7 @@ Server MCP mengekspos tiga jenis kemampuan. *Resources* berisi data yang bisa di
 
 Oleh karena itu, pada sistem ini semua *tools* yang diekspos hanya berfungsi membaca. Tidak ada satu pun fungsi yang mengubah data. Dengan begitu, jawaban yang muncul di kolom tanya-jawab pasti berdasarkan angka yang benar-benar ada di basis data, dan keputusan penting tetap diambil manusia.
 
-> **Gambar 2.14 — Alur Jawaban Cepat lewat Asisten Artificial Intelligence dan MCP:** `PA/docs/System design/draft/06_bpmn_konsultasi_ai_mcp/`
+> **Gambar 2.14 — Alur Jawaban Cepat lewat Asisten Artificial Intelligence dan MCP:** `PA/docs/System design/02-BPMN/09_konsultasi_ai_mcp/bpmn_konsultasi_ai_mcp.mmd` (sumber notasi Mermaid, hasil render `.png`)
 
 ---
 

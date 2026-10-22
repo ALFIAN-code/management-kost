@@ -26,7 +26,7 @@ class ResidentDashboardPage extends StatelessWidget {
         body: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, authState) {
             final user = authState.userInfo;
-            final name = user?.name ?? 'Penghuni';
+            final name = user?.name ?? 'Resident';
 
             return BlocBuilder<DashboardBloc, DashboardState>(
               builder: (context, dashboardState) {
@@ -36,7 +36,7 @@ class ResidentDashboardPage extends StatelessWidget {
 
                 if (dashboardState is DashboardError) {
                   return Center(
-                    child: Text('Gagal memuat data: ${dashboardState.message}'),
+                    child: Text('Failed to load data: ${dashboardState.message}'),
                   );
                 }
 
@@ -148,7 +148,7 @@ class ResidentDashboardPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Halo,',
+            'Hello,',
             style: Theme.of(
               context,
             ).textTheme.bodyLarge?.copyWith(color: Colors.white70),
@@ -164,7 +164,7 @@ class ResidentDashboardPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Selamat datang di portal penghuni Wisma Amal.\nSemoga harimu menyenangkan!',
+            'Welcome to the Wisma Amal resident portal.\nMay your day be pleasant!',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.white.withOpacity(0.9),
               height: 1.5,
@@ -180,7 +180,7 @@ class ResidentDashboardPage extends StatelessWidget {
     final colors = AppTheme.colors(context);
     final isActive =
         data.activeRoom?.status.toUpperCase() == 'ACTIVE' ||
-        data.activeRoom?.status == 'Aktif';
+        data.activeRoom?.status == 'Active';
 
     final statusColor = isActive ? colors.statusDone : colors.statusWaiting;
     final statusBg = isActive ? colors.statusDoneBg : colors.statusWaitingBg;
@@ -211,7 +211,7 @@ class ResidentDashboardPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Kamar Anda',
+                  'Your Room',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(
                       context,
@@ -220,7 +220,7 @@ class ResidentDashboardPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  data.activeRoom?.roomNumber ?? 'Belum Ada',
+                  data.activeRoom?.roomNumber ?? 'Not Yet',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -246,7 +246,7 @@ class ResidentDashboardPage extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    isActive ? 'Aktif' : data.activeRoom!.status,
+                    isActive ? 'Active' : data.activeRoom!.status,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: statusColor,
                       fontWeight: FontWeight.bold,
@@ -265,7 +265,7 @@ class ResidentDashboardPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Aksi Cepat',
+          'Quick Actions',
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -278,7 +278,7 @@ class ResidentDashboardPage extends StatelessWidget {
             _buildActionItem(
               context,
               icon: Icons.report_problem_outlined,
-              label: 'Lapor\nKerusakan',
+              label: 'Report\nDamage',
               color: Colors.orange,
               onTap: () {
                 context.router.navigate(const MaintenanceCreateReportRoute());
@@ -287,7 +287,7 @@ class ResidentDashboardPage extends StatelessWidget {
             _buildActionItem(
               context,
               icon: Icons.receipt_long_outlined,
-              label: 'Tagihan\nSaya',
+              label: 'My\nInvoices',
               color: Colors.blue,
               onTap: () {
                 context.router.navigate(const MemberFinanceRoute());
@@ -296,7 +296,7 @@ class ResidentDashboardPage extends StatelessWidget {
             _buildActionItem(
               context,
               icon: Icons.groups_outlined,
-              label: 'Daftar\nTamu',
+              label: 'Guest\nList',
               color: Colors.purple,
               onTap: () {
                 context.router.navigate(const MyGuestRoute());
@@ -305,7 +305,7 @@ class ResidentDashboardPage extends StatelessWidget {
             _buildActionItem(
               context,
               icon: Icons.event_available_outlined,
-              label: 'Reservasi\nFasilitas',
+              label: 'Facility\nBooking',
               color: Colors.teal,
               onTap: () {
                 context.router.navigate(const RoomRoute());
@@ -374,7 +374,7 @@ class ResidentDashboardPage extends StatelessWidget {
   Widget _buildRecentBills(BuildContext context, ResidentDashboardEntity data) {
     final bgColor = Theme.of(context).colorScheme.surface;
     final formatCurrency = NumberFormat.currency(
-      locale: 'id_ID',
+      locale: 'en_US',
       symbol: 'Rp ',
       decimalDigits: 0,
     );
@@ -400,7 +400,7 @@ class ResidentDashboardPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Tagihan Terbaru',
+                'Recent Invoices',
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -409,7 +409,7 @@ class ResidentDashboardPage extends StatelessWidget {
                 onPressed: () {
                   context.router.navigate(const MemberFinanceRoute());
                 },
-                child: const Text('Lihat Semua'),
+                child: const Text('View All'),
               ),
             ],
           ),
@@ -418,7 +418,7 @@ class ResidentDashboardPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: Text(
-                'Belum ada tagihan',
+                'No invoices yet',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(
                     context,
@@ -432,7 +432,7 @@ class ResidentDashboardPage extends StatelessWidget {
               final bill = entry.value;
               final isPaid = bill.status.toUpperCase() == 'PAID';
               final color = isPaid ? colors.statusDone : colors.statusWaiting;
-              final statusText = isPaid ? 'Lunas' : 'Menunggu Pembayaran';
+              final statusText = isPaid ? 'Paid' : 'Awaiting Payment';
               final isLast = idx == data.recentBills.length - 1;
 
               return Column(
@@ -538,7 +538,7 @@ class ResidentDashboardPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Laporan Kerusakan Saya',
+                'My Damage Reports',
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -547,7 +547,7 @@ class ResidentDashboardPage extends StatelessWidget {
                 onPressed: () {
                   context.router.navigate(const MaintenanceReportListRoute());
                 },
-                child: const Text('Lihat Semua'),
+                child: const Text('View All'),
               ),
             ],
           ),
@@ -600,7 +600,7 @@ class ResidentDashboardPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            DateFormat('dd MMM yyyy').format(report.reportedAt),
+                            DateFormat('dd MMM', 'en_US').format(report.reportedAt),
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
                                   color: Theme.of(
@@ -622,10 +622,10 @@ class ResidentDashboardPage extends StatelessWidget {
                       ),
                       child: Text(
                         status == 'PENDING'
-                            ? 'Menunggu'
+                            ? 'Pending'
                             : status == 'IN_PROGRESS'
-                            ? 'Proses'
-                            : 'Selesai',
+                            ? 'In Progress'
+                            : 'Done',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: statusColor,
                           fontWeight: FontWeight.bold,
@@ -676,7 +676,7 @@ class ResidentDashboardPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Tamu Saya',
+                'My Guests',
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -685,7 +685,7 @@ class ResidentDashboardPage extends StatelessWidget {
                 onPressed: () {
                   context.router.navigate(const MyGuestRoute());
                 },
-                child: const Text('Lihat Semua'),
+                child: const Text('View All'),
               ),
             ],
           ),
@@ -726,7 +726,7 @@ class ResidentDashboardPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Hubungan: ${guest.relationship}',
+                            'Relationship: ${guest.relationship}',
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
                                   color: Theme.of(
@@ -738,7 +738,7 @@ class ResidentDashboardPage extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      DateFormat('dd MMM').format(guest.checkInAt),
+                      DateFormat('dd MMM', 'en_US').format(guest.checkInAt),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -788,7 +788,7 @@ class ResidentDashboardPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Agenda Pemeliharaan Pekan Ini',
+                "This Week's Maintenance Schedule",
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -797,7 +797,7 @@ class ResidentDashboardPage extends StatelessWidget {
                 onPressed: () {
                   context.router.navigate(const MaintananceRoute());
                 },
-                child: const Text('Lihat Semua'),
+                child: const Text('View All'),
               ),
             ],
           ),
@@ -815,10 +815,10 @@ class ResidentDashboardPage extends StatelessWidget {
                 ? colors.statusCancelledBg
                 : colors.statusProcessBg;
             final String statusText = status == 'DONE'
-                ? 'Selesai'
+                ? 'Done'
                 : status == 'CANCELLED'
-                ? 'Batal'
-                : 'Proses';
+                ? 'Cancelled'
+                : 'In Progress';
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 12.0),
@@ -846,13 +846,13 @@ class ResidentDashboardPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Teknisi: ${schedule.technicianName}',
+                          'Technician: ${schedule.technicianName}',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
                         ),
                         Text(
-                          'Lokasi: ${schedule.location} • ${schedule.type}',
+                          'Location: ${schedule.location} • ${schedule.type}',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                               ),

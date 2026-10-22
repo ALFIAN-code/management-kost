@@ -47,7 +47,7 @@ class AppColors {
   static const Color surfaceLight = Color(0xFFF4F4F4);
   static const Color surfaceDark = Color(0xFF1E1E1E);
 
-  //survace container
+  // surface container
   static const Color surfaceContainerDark = Color(0xFF2A2A2A);
   static const Color surfaceContainerHighDark = Color(0xFF353535);
   static const Color surfaceContainerHighestDark = Color(0xFF404040);
@@ -71,7 +71,7 @@ class AppColors {
   static const Color borderDark = Color(0xFF404040);
   static const Color dividerDark = Color(0xFF2A2A2A);
 
-  // Status Colors - Dari mockup cards
+  // Status Colors - From mockup cards
   static const Color errorColor = Color(0xFFF25C5C);
   static const Color errorColorDark = Color(0xFFFF6B6B);
   static const Color successColor = Color(0xFF4CAF50);
@@ -81,12 +81,12 @@ class AppColors {
   static const Color infoColor = Color(0xFF42A5F5);
   static const Color infoColorDark = Color(0xFF64B5F6);
 
-  // Card Background Colors - Dari mockup dashboard cards
-  static const Color cardRedBg = Color(0xFFFFCDD2); // Laporan Kerusakan
+  // Card Background Colors - From mockup dashboard cards
+  static const Color cardRedBg = Color(0xFFFFCDD2); // Damage Report
   static const Color cardRedBgDark = Color(0xFF5C2E2E);
-  static const Color cardYellowBg = Color(0xFFFFF9C4); // Stock kritis
+  static const Color cardYellowBg = Color(0xFFFFF9C4); // Critical stock
   static const Color cardYellowBgDark = Color(0xFF5C5530);
-  static const Color cardGreenBg = Color(0xFFC8E6C9); // Jadwal Pembersihan
+  static const Color cardGreenBg = Color(0xFFC8E6C9); // Cleaning Schedule
   static const Color cardGreenBgDark = Color(0xFF2E5C30);
 
   // Icon Background Colors

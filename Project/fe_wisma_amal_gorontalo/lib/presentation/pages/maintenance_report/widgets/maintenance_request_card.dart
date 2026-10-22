@@ -18,7 +18,7 @@ class MaintenanceRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dateFormat = DateFormat('dd MMM yyyy', 'id_ID');
+    final dateFormat = DateFormat('dd MMM yyyy', 'en_US');
 
     return HoverTapWrapper(
       effect: HoverEffectType.combine,
@@ -94,7 +94,7 @@ class MaintenanceRequestCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Kamar ${request.room!.number}',
+                    'Room ${request.room!.number}',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),

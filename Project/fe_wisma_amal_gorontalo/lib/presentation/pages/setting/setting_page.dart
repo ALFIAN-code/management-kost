@@ -64,11 +64,11 @@ class _SettingPageState extends State<SettingPage> {
 
   void _populateData(Map<String, dynamic> settings) {
     _wismaNameController.text = settings['wisma_name']?.toString() ?? 'Wisma Amal Gorontalo';
-    _wismaAddressController.text = settings['wisma_address']?.toString() ?? 'Jl. Wisma Amal No. 1, Gorontalo';
+    _wismaAddressController.text = settings['wisma_address']?.toString() ?? 'Wisma Amal St. No. 1, Gorontalo';
     _wismaPhoneController.text = settings['wisma_phone']?.toString() ?? '0811-4300-XXX';
     _wismaEmailController.text = settings['wisma_email']?.toString() ?? 'wismaamal@email.com';
     _wismaMapsLinkController.text = settings['wisma_maps_link']?.toString() ?? 'https://maps.google.com';
-    _wismaOperationalHoursController.text = settings['wisma_operational_hours']?.toString() ?? 'Senin - Sabtu, 08.00 - 17.00 WITA';
+    _wismaOperationalHoursController.text = settings['wisma_operational_hours']?.toString() ?? 'Monday - Saturday, 08.00 - 17.00 WITA';
     _featureDailyRental         = settings['feature_daily_rental'] == true || settings['feature_daily_rental']?.toString() == 'true';
     _featureWhatsappReceipt   = settings['feature_whatsapp_receipt'] == true || settings['feature_whatsapp_receipt']?.toString() == 'true';
     _featureWhatsappPdfLink   = settings['feature_whatsapp_pdf_link'] == true || settings['feature_whatsapp_pdf_link']?.toString() == 'true';
@@ -123,7 +123,7 @@ class _SettingPageState extends State<SettingPage> {
               content: Row(children: [
                 Icon(Icons.check_circle, color: doneColor, size: 18),
                 const SizedBox(width: 10),
-                Text('Pengaturan berhasil disimpan', style: TextStyle(color: doneColor)),
+                Text('Settings saved successfully', style: TextStyle(color: doneColor)),
               ]),
               backgroundColor: isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg,
               behavior: SnackBarBehavior.floating,
@@ -136,7 +136,7 @@ class _SettingPageState extends State<SettingPage> {
               content: Row(children: [
                 Icon(Icons.error_outline, color: cancelColor, size: 18),
                 const SizedBox(width: 10),
-                Expanded(child: Text('Gagal: ${state.message}', style: TextStyle(color: cancelColor))),
+                Expanded(child: Text('Failed: ${state.message}', style: TextStyle(color: cancelColor))),
               ]),
               backgroundColor: isDark ? AppColorsDark.statusCancelledBg : AppColorsLight.statusCancelledBg,
               behavior: SnackBarBehavior.floating,
@@ -160,8 +160,8 @@ class _SettingPageState extends State<SettingPage> {
             body: Column(
               children: [
                 AppTopBar(
-                  title: 'Pengaturan Aplikasi',
-                  breadcrumb: 'Pengaturan / Umum',
+                  title: 'Application Settings',
+                  breadcrumb: 'Settings / General',
                   action: isSaving
                       ? const SizedBox(
                           width: 140,
@@ -171,7 +171,7 @@ class _SettingPageState extends State<SettingPage> {
                       : ElevatedButton.icon(
                           onPressed: _hasChanges ? _saveSettings : null,
                           icon: const Icon(Icons.save_outlined, size: 18),
-                          label: const Text('Simpan Perubahan'),
+                          label: const Text('Save Changes'),
                         ),
                 ),
                 Expanded(
@@ -184,8 +184,8 @@ class _SettingPageState extends State<SettingPage> {
                           isDark: isDark,
                           icon: Icons.apartment_outlined,
                           accentColor: isDark ? AppColorsDark.primary : AppColorsLight.primary,
-                          title: 'Informasi Wisma',
-                          subtitle: 'Data identitas wisma yang ditampilkan pada invoice dan notifikasi.',
+                          title: 'Wisma Information',
+                          subtitle: 'The wisma identity data shown on invoices and notifications.',
                           child: _buildWismaInfoFields(isDark),
                         ),
                         const SizedBox(height: AppSpacing.xl),
@@ -194,8 +194,8 @@ class _SettingPageState extends State<SettingPage> {
                           isDark: isDark,
                           icon: Icons.account_balance_outlined,
                           accentColor: isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess,
-                          title: 'Rekening Bank Pemilik',
-                          subtitle: 'Daftar rekening transfer manual yang ditampilkan kepada penghuni saat pembayaran.',
+                          title: 'Owner Bank Accounts',
+                          subtitle: 'The list of manual transfer accounts shown to residents during payment.',
                           child: _buildRekeningBankCrud(isDark),
                         ),
                         const SizedBox(height: AppSpacing.xl),
@@ -205,8 +205,8 @@ class _SettingPageState extends State<SettingPage> {
                           isDark: isDark,
                           icon: Icons.tune_outlined,
                           accentColor: isDark ? AppColorsDark.primaryDark : AppColorsLight.primaryDark,
-                          title: 'Fitur Sistem',
-                          subtitle: 'Aktifkan atau nonaktifkan fitur tertentu sesuai kebutuhan operasional.',
+                          title: 'System Features',
+                          subtitle: 'Enable or disable specific features according to operational needs.',
                           child: _buildFiturSistem(isDark),
                         ),
 
@@ -265,17 +265,17 @@ class _SettingPageState extends State<SettingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildField('Nama Wisma / Kos', 'Contoh: Wisma Amal Gorontalo', Icons.apartment_outlined, _wismaNameController),
+        _buildField('Wisma / Dormitory Name', 'Example: Wisma Amal Gorontalo', Icons.apartment_outlined, _wismaNameController),
         const SizedBox(height: AppSpacing.md),
-        _buildField('Alamat Wisma', 'Contoh: Jl. Wisma Amal No. 1, Gorontalo', Icons.location_on_outlined, _wismaAddressController),
+        _buildField('Wisma Address', 'Example: Wisma Amal St. No. 1, Gorontalo', Icons.location_on_outlined, _wismaAddressController),
         const SizedBox(height: AppSpacing.md),
-        _buildField('Kontak / No. Telepon', 'Contoh: 0811-4300-XXX', Icons.phone_outlined, _wismaPhoneController),
+        _buildField('Contact / Phone Number', 'Example: 0811-4300-XXX', Icons.phone_outlined, _wismaPhoneController),
         const SizedBox(height: AppSpacing.md),
-        _buildField('Alamat Email', 'Contoh: wismaamal@email.com', Icons.email_outlined, _wismaEmailController),
+        _buildField('Email Address', 'Example: wismaamal@email.com', Icons.email_outlined, _wismaEmailController),
         const SizedBox(height: AppSpacing.md),
-        _buildField('Link Google Maps', 'Contoh: https://maps.google.com/...', Icons.map_outlined, _wismaMapsLinkController),
+        _buildField('Google Maps Link', 'Example: https://maps.google.com/...', Icons.map_outlined, _wismaMapsLinkController),
         const SizedBox(height: AppSpacing.md),
-        _buildField('Jam Operasional', 'Contoh: Senin - Sabtu, 08.00 - 17.00 WITA', Icons.access_time_outlined, _wismaOperationalHoursController),
+        _buildField('Operating Hours', 'Example: Monday - Saturday, 08.00 - 17.00 WITA', Icons.access_time_outlined, _wismaOperationalHoursController),
       ],
     );
   }
@@ -317,12 +317,12 @@ class _SettingPageState extends State<SettingPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Kelola Fitur & Modul',
+                        'Manage Features & Modules',
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Mengaktifkan atau menonaktifkan modul dan fitur secara granular di seluruh sistem.',
+                        'Enable or disable modules and features granularly across the whole system.',
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
@@ -383,7 +383,7 @@ class _SettingPageState extends State<SettingPage> {
                   border: Border.all(color: borderColor),
                 ),
                 child: Text(
-                  'Belum ada rekening bank. Tambahkan untuk ditampilkan ke penghuni.',
+                  'No bank accounts yet. Add one to display it to residents.',
                   style: TextStyle(fontSize: 13, color: textHint),
                   textAlign: TextAlign.center,
                 ),
@@ -421,7 +421,7 @@ class _SettingPageState extends State<SettingPage> {
                                           borderRadius: BorderRadius.circular(20),
                                         ),
                                         child: Text(
-                                          account.isActive ? 'Aktif' : 'Nonaktif',
+                                          account.isActive ? 'Active' : 'Inactive',
                                           style: TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.w600,
@@ -434,7 +434,7 @@ class _SettingPageState extends State<SettingPage> {
                                   const SizedBox(height: 2),
                                   Text(account.accountNumber,
                                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: textPrimary, letterSpacing: 1)),
-                                  Text('a.n. ${account.accountHolder}',
+                                  Text('Account name: ${account.accountHolder}',
                                       style: TextStyle(fontSize: 12, color: textHint)),
                                   if (account.paymentInstructions != null && account.paymentInstructions!.isNotEmpty) ...[
                                     const SizedBox(height: AppSpacing.xs),
@@ -454,7 +454,7 @@ class _SettingPageState extends State<SettingPage> {
                                 ),
                                 IconButton(
                                   icon: Icon(Icons.delete_outline, size: 18, color: cancelColor),
-                                  tooltip: 'Hapus',
+                                  tooltip: 'Delete',
                                   onPressed: () => _confirmDeleteBankAccount(context, isDark, account),
                                 ),
                               ],
@@ -473,7 +473,7 @@ class _SettingPageState extends State<SettingPage> {
               child: OutlinedButton.icon(
                 onPressed: () => _showBankAccountDialog(context, isDark),
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('Tambah Rekening Bank'),
+                label: const Text('Add Bank Account'),
               ),
             ),
 
@@ -492,8 +492,8 @@ class _SettingPageState extends State<SettingPage> {
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Rekening ini hanya ditampilkan sebagai referensi transfer manual untuk penghuni. '
-                      'Untuk mengubah rekening pencairan dana Midtrans, login ke dashboard Midtrans secara langsung.',
+                      'These accounts are only shown as a manual transfer reference for residents. '
+                      'To change the Midtrans settlement account, sign in to the Midtrans dashboard directly.',
                       style: TextStyle(fontSize: 12, color: infoColor, height: 1.5),
                     ),
                   ),
@@ -554,7 +554,7 @@ class _SettingPageState extends State<SettingPage> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setLocalState) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
-          title: Text(existing == null ? 'Tambah Rekening Bank' : 'Edit Rekening Bank'),
+          title: Text(existing == null ? 'Add Bank Account' : 'Edit Bank Account'),
           content: SizedBox(
             width: 460,
             child: SingleChildScrollView(
@@ -562,19 +562,19 @@ class _SettingPageState extends State<SettingPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  field('Nama Bank', 'Contoh: BSI / BCA / BRI', Icons.account_balance_outlined, bankNameCtrl),
+                  field('Bank Name', 'Example: BSI / BCA / BRI', Icons.account_balance_outlined, bankNameCtrl),
                   const SizedBox(height: AppSpacing.md),
-                  field('Nomor Rekening', 'Contoh: 7000001234', Icons.credit_card_outlined, accountNumCtrl),
+                  field('Account Number', 'Example: 7000001234', Icons.credit_card_outlined, accountNumCtrl),
                   const SizedBox(height: AppSpacing.md),
-                  field('Atas Nama', 'Contoh: Pemilik Wisma', Icons.person_outline, holderCtrl),
+                  field('Account Holder', 'Example: Wisma Owner', Icons.person_outline, holderCtrl),
                   const SizedBox(height: AppSpacing.md),
-                  field('Cara Pembayaran (Opsional)', 'Contoh: Transfer sesuai nominal tagihan dan kirim bukti.',
+                  field('Payment Instructions (Optional)', 'Example: Transfer the invoice amount and send the proof.',
                       Icons.info_outline, instrCtrl, maxLines: 3),
                   const SizedBox(height: AppSpacing.md),
                   SwitchListTile(
                     value: isActive,
                     onChanged: (val) => setLocalState(() => isActive = val),
-                    title: Text('Rekening Aktif', style: TextStyle(fontSize: 13, color: textSecColor)),
+                    title: Text('Active Account', style: TextStyle(fontSize: 13, color: textSecColor)),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ],
@@ -584,7 +584,7 @@ class _SettingPageState extends State<SettingPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Batal'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -608,7 +608,7 @@ class _SettingPageState extends State<SettingPage> {
                 }
                 Navigator.pop(ctx);
               },
-              child: Text(existing == null ? 'Tambah' : 'Simpan'),
+              child: Text(existing == null ? 'Add' : 'Save'),
             ),
           ],
         ),
@@ -624,14 +624,14 @@ class _SettingPageState extends State<SettingPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
-        title: const Text('Hapus Rekening Bank?'),
+        title: const Text('Delete Bank Account?'),
         content: Text(
-          'Rekening "${account.bankName} - ${account.accountNumber}" akan dihapus dan tidak lagi ditampilkan ke penghuni.',
+          'The account "${account.bankName} - ${account.accountNumber}" will be deleted and no longer shown to residents.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: cancelColor, foregroundColor: Colors.white),
@@ -639,7 +639,7 @@ class _SettingPageState extends State<SettingPage> {
               cubit.delete(account.id);
               Navigator.pop(ctx);
             },
-            child: const Text('Hapus'),
+            child: const Text('Delete'),
           ),
         ],
       ),

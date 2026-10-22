@@ -99,7 +99,7 @@ class HeroBentoCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Selamat Pagi,',
+                  'Good Morning,',
                   style: textTheme.titleMedium?.copyWith(
                     color: colorScheme.onPrimaryContainer.withOpacity(0.8),
                     letterSpacing: 0.5,
@@ -133,7 +133,7 @@ class HeroBentoCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Ringkasan Hari Ini',
+                        "Today's Summary",
                         style: textTheme.labelMedium?.copyWith(
                           color: colorScheme.primary,
                           fontWeight: FontWeight.w600,
@@ -172,7 +172,7 @@ class HeroBentoCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Terisi',
+                        'Occupied',
                         style: textTheme.labelSmall?.copyWith(
                           color: colorScheme.onPrimaryContainer.withOpacity(
                             0.8,

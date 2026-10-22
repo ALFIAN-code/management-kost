@@ -35,9 +35,9 @@ class _LandingPageState extends State<LandingPage> {
   final GlobalKey _roomKey = GlobalKey();
   final GlobalKey _testimonialKey = GlobalKey();
   bool _isDarkMode = false;
-  String _headerTitle = 'Temukan Kenyamanan\nTinggal di Wisma Amal Gorontalo';
+  String _headerTitle = 'Find Comfort\nLiving in Wisma Amal Gorontalo';
   String _headerSubtitle =
-      'Mengecek ketersediaan kamar, melihat fasilitas, dan melakukan reservasi secara cepat.';
+      'Check room availability, view facilities, and make a reservation in seconds.';
   List<String> _facilities = [];
 
   String _wismaName = 'Wisma Amal Gorontalo';
@@ -139,7 +139,7 @@ class _LandingPageState extends State<LandingPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Anda sedang melihat Landing Page sebagai Admin.',
+                                'You are viewing the Landing Page as an Admin.',
                                 style: TextStyle(
                                   color: isDark
                                       ? AppColorsDark.textPrimary
@@ -592,11 +592,11 @@ class _HeroSection extends StatelessWidget {
                       ),
                       const Spacer(),
                       if (isWide) ...[
-                        _NavLink('Fasilitas', onFacilityTap, isDark),
+                        _NavLink('Facilities', onFacilityTap, isDark),
                         const SizedBox(width: 8),
-                        _NavLink('Tipe Kamar', onRoomTap, isDark),
+                        _NavLink('Room Types', onRoomTap, isDark),
                         const SizedBox(width: 8),
-                        _NavLink('Testimoni', onTestimonialTap, isDark),
+                        _NavLink('Testimonials', onTestimonialTap, isDark),
                         const SizedBox(width: 20),
                       ],
                       // Theme toggle
@@ -604,7 +604,7 @@ class _HeroSection extends StatelessWidget {
                       if (isWide) ...[
                         const SizedBox(width: 16),
                         _GradientPillButton(
-                          label: 'Reservasi Sekarang',
+                          label: 'Reserve Now',
                           icon: Icons.calendar_month_rounded,
                           onPressed: () => _goToReservation(context),
                         ),
@@ -620,7 +620,7 @@ class _HeroSection extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: isWide ? 80 : 48),
                   child: Column(
                     children: [
-                      const _Eyebrow('Reservasi online tanpa ribet'),
+                      const _Eyebrow('Easy Online Reservation'),
                       const SizedBox(height: 28),
                       Text(
                         title.replaceAll('\\n', '\n'),
@@ -653,12 +653,12 @@ class _HeroSection extends StatelessWidget {
                         alignment: WrapAlignment.center,
                         children: [
                           _GradientPillButton(
-                            label: 'Cek Ketersediaan',
+                            label: 'Check Availability',
                             icon: Icons.search_rounded,
                             onPressed: onRoomTap,
                           ),
                           _OutlinePillButton(
-                            label: 'Lihat Fasilitas',
+                            label: 'View Facilities',
                             icon: Icons.star_border_rounded,
                             onPressed: onFacilityTap,
                           ),
@@ -700,12 +700,12 @@ class _HeroSection extends StatelessWidget {
                                 ),
                                 _FeatureHighlight(
                                   icon: Icons.verified_user_outlined,
-                                  label: 'Keamanan 24 Jam',
+                                  label: '24-Hour Security',
                                   isDark: isDark,
                                 ),
                                 _FeatureHighlight(
                                   icon: Icons.place_outlined,
-                                  label: 'Dekat Kampus & Pusat Kota',
+                                  label: 'Near Campus & City Center',
                                   isDark: isDark,
                                 ),
                               ],
@@ -900,11 +900,11 @@ class _StatsStrip extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _StatItem(value: '30+', label: 'Kamar Tersedia'),
+              _StatItem(value: '30+', label: 'Rooms Available'),
               Container(height: 40, width: 1, color: Colors.white24),
               _StatItem(value: '4.8/5', label: 'Rating'),
               Container(height: 40, width: 1, color: Colors.white24),
-              _StatItem(value: '24/7', label: 'Layanan'),
+              _StatItem(value: '24/7', label: 'Service'),
             ],
           ),
         ),
@@ -965,10 +965,10 @@ class _ValueSection extends StatelessWidget {
       color: bg,
       child: Column(
         children: [
-          _Eyebrow('Mengapa memilih kami'),
+          _Eyebrow('Why choose us'),
           const SizedBox(height: 16),
           Text(
-            'Nilai utama Wisma Amal Gorontalo',
+            'The core values of Wisma Amal Gorontalo',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: textPri,
@@ -981,7 +981,7 @@ class _ValueSection extends StatelessWidget {
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 540),
             child: Text(
-              'Pengalaman tinggal yang rapi, aman, dan serba mudah untuk penghuni baru maupun lama.',
+              'A tidy, safe, and easy living experience for both new and current residents.',
               textAlign: TextAlign.center,
               style: TextStyle(color: textSec, fontSize: 15, height: 1.6),
             ),
@@ -994,24 +994,24 @@ class _ValueSection extends StatelessWidget {
             children: const [
               _ValueCard(
                 icon: Icons.location_on_outlined,
-                title: 'Lokasi Strategis',
-                desc: 'Dekat kampus, pusat kuliner, dan akses transportasi.',
+                title: 'Strategic Location',
+                desc: 'Close to campus, culinary centers, and public transportation.',
               ),
               _ValueCard(
                 icon: Icons.shield_outlined,
-                title: 'Keamanan Terjamin',
-                desc: 'CCTV dan penjagaan untuk kenyamanan penghuni 24 jam.',
+                title: 'Guaranteed Security',
+                desc: 'CCTV and 24-hour guards for resident comfort.',
               ),
               _ValueCard(
                 icon: Icons.auto_awesome_outlined,
-                title: 'Fasilitas Lengkap',
-                desc: 'Kamar bersih, area komunal, laundry, dan parkir aman.',
+                title: 'Complete Facilities',
+                desc: 'Clean rooms, communal areas, laundry, and secure parking.',
               ),
               _ValueCard(
                 icon: Icons.phone_android_outlined,
-                title: 'Aplikasi Mandiri',
+                title: 'Self-Service App',
                 desc:
-                    'Reservasi, pembayaran, hingga laporan keluhan dalam satu portal.',
+                    'Reservations, payments, and complaint reports in a single portal.',
               ),
             ],
           ),
@@ -1096,10 +1096,10 @@ class _RoomSection extends StatelessWidget {
       color: surface,
       child: Column(
         children: [
-          _Eyebrow('Tipe kamar'),
+          _Eyebrow('Room types'),
           const SizedBox(height: 16),
           Text(
-            'Pilih kamar sesuai kebutuhan anda',
+            'Choose the room that fits your needs',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: textPri,
@@ -1110,7 +1110,7 @@ class _RoomSection extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Status ketersediaan diperbarui secara real-time untuk memudahkan reservasi.',
+            'Availability status is updated in real time to make reserving easier.',
             textAlign: TextAlign.center,
             style: TextStyle(color: textSec, fontSize: 15, height: 1.6),
           ),
@@ -1128,7 +1128,7 @@ class _RoomSection extends StatelessWidget {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(32.0),
-                    child: Text('Gagal memuat kamar: ${state.errorMessage}'),
+                    child: Text('Failed to load rooms: ${state.errorMessage}'),
                   ),
                 );
               }
@@ -1136,7 +1136,7 @@ class _RoomSection extends StatelessWidget {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
-                    child: Text('Belum ada data kamar.'),
+                    child: Text('No room data yet.'),
                   ),
                 );
               }
@@ -1155,14 +1155,14 @@ class _RoomSection extends StatelessWidget {
                           child: _RoomCard(
                             title: room.title,
                             price: room.priceFormatted,
-                            period: '/ bulan',
+                            period: '/ month',
                             status: room.status.displayName,
                             statusColor: room.status.getColor,
                             detail: room.description.isNotEmpty
                                 ? room.description
                                 : (room.facilities.isNotEmpty
-                                    ? 'Fasilitas: ${room.facilities.take(3).join(", ")}'
-                                    : 'Kamar nyaman dan strategis.'),
+                                    ? 'Facilities: ${room.facilities.take(3).join(", ")}'
+                                    : 'A comfortable and strategic room.'),
                             icon: Icons.bed_outlined,
                           ),
                         ),
@@ -1294,7 +1294,7 @@ class _RoomCard extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: _OutlinePillButton(
-                        label: 'Lihat Detail',
+                        label: 'View Details',
                         onPressed: () => _goToReservation(context),
                       ),
                     ),
@@ -1338,10 +1338,10 @@ class _FeatureSection extends StatelessWidget {
       color: bg,
       child: Column(
         children: [
-          _Eyebrow('Fitur aplikasi'),
+          _Eyebrow('App features'),
           const SizedBox(height: 16),
           Text(
-            'Semua kebutuhan penghuni ada di genggaman',
+            'All resident needs in your pocket',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: textPri,
@@ -1354,7 +1354,7 @@ class _FeatureSection extends StatelessWidget {
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 560),
             child: Text(
-              'Mulai reservasi sampai pelaporan masalah, semuanya tercatat rapi melalui aplikasi penghuni.',
+              'From booking to reporting problems, everything is neatly recorded through the resident app.',
               textAlign: TextAlign.center,
               style: TextStyle(color: textSec, fontSize: 15, height: 1.6),
             ),
@@ -1370,9 +1370,9 @@ class _FeatureSection extends StatelessWidget {
                       child: _FeatureStep(
                         number: '01',
                         icon: Icons.calendar_today_outlined,
-                        title: 'Reservasi online',
+                        title: 'Online reservation',
                         desc:
-                            'Pilih kamar, tanggal, dan bayar langsung dari aplikasi.',
+                            'Pick a room, choose a date, and pay directly from the app.',
                       ),
                     ),
                     SizedBox(width: 24),
@@ -1380,9 +1380,9 @@ class _FeatureSection extends StatelessWidget {
                       child: _FeatureStep(
                         number: '02',
                         icon: Icons.receipt_long_outlined,
-                        title: 'Manajemen tagihan',
+                        title: 'Invoice management',
                         desc:
-                            'Cek tagihan bulanan, riwayat pembayaran, dan bukti transaksi.',
+                            'Check monthly invoices, payment history, and transaction proofs.',
                       ),
                     ),
                     SizedBox(width: 24),
@@ -1390,9 +1390,9 @@ class _FeatureSection extends StatelessWidget {
                       child: _FeatureStep(
                         number: '03',
                         icon: Icons.report_problem_outlined,
-                        title: 'Laporan keluhan',
+                        title: 'Complaint report',
                         desc:
-                            'Laporkan kerusakan kamar dan pantau status perbaikannya.',
+                            'Report room damage and track the repair status.',
                       ),
                     ),
                   ],
@@ -1402,25 +1402,25 @@ class _FeatureSection extends StatelessWidget {
                     _FeatureStep(
                       number: '',
                       icon: Icons.calendar_today_outlined,
-                      title: 'Reservasi online',
+                      title: 'Online reservation',
                       desc:
-                          'Pilih kamar, tanggal, dan bayar langsung dari aplikasi.',
+                          'Pick a room, choose a date, and pay directly from the app.',
                     ),
                     SizedBox(height: 24),
                     _FeatureStep(
                       number: '02',
                       icon: Icons.receipt_long_outlined,
-                      title: 'Manajemen tagihan',
+                      title: 'Invoice management',
                       desc:
-                          'Cek tagihan bulanan, riwayat pembayaran, dan bukti transaksi.',
+                          'Check monthly invoices, payment history, and transaction proofs.',
                     ),
                     SizedBox(height: 24),
                     _FeatureStep(
                       number: '03',
                       icon: Icons.report_problem_outlined,
-                      title: 'Laporan keluhan',
+                      title: 'Complaint report',
                       desc:
-                          'Laporkan kerusakan kamar dan pantau status perbaikannya.',
+                          'Report room damage and track the repair status.',
                     ),
                   ],
                 ),
@@ -1443,7 +1443,7 @@ class _FeatureSection extends StatelessWidget {
                 const SizedBox(width: 14),
                 Flexible(
                   child: Text(
-                    'Akses informasi kamar, tagihan, dan bantuan dalam satu aplikasi.',
+                    'Access room information, invoices, and support in a single app.',
                     style: TextStyle(
                       color: textPri,
                       fontSize: 15,
@@ -1532,10 +1532,10 @@ class _TestimonialSection extends StatelessWidget {
       color: surface,
       child: Column(
         children: [
-          _Eyebrow('Testimoni penghuni'),
+          _Eyebrow('Resident testimonials'),
           const SizedBox(height: 16),
           Text(
-            'Pengalaman nyata dari penghuni Wisma Amal',
+            'Real experiences from Wisma Amal residents',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: textPri,
@@ -1546,7 +1546,7 @@ class _TestimonialSection extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Cerita singkat yang membuat calon penghuni lebih yakin sebelum reservasi.',
+            'Short stories that help prospective residents feel confident before reserving.',
             textAlign: TextAlign.center,
             style: TextStyle(color: textSec, fontSize: 15, height: 1.6),
           ),
@@ -1558,21 +1558,21 @@ class _TestimonialSection extends StatelessWidget {
             children: const [
               _TestimonialCard(
                 name: 'Ayu Lestari',
-                role: 'Mahasiswa',
+                role: 'Student',
                 quote:
-                    'Proses reservasi cepat, kamar bersih, dan pengelola responsif.',
+                    'Fast reservation process, clean rooms, and responsive management.',
               ),
               _TestimonialCard(
                 name: 'Fajar Prasetyo',
-                role: 'Karyawan',
+                role: 'Employee',
                 quote:
-                    'Lokasinya strategis dan fasilitasnya lengkap, cocok untuk kerja.',
+                    'The location is strategic and the facilities are complete — ideal for work.',
               ),
               _TestimonialCard(
                 name: 'Rina Oktavia',
-                role: 'Mahasiswa',
+                role: 'Student',
                 quote:
-                    'Aplikasinya membantu banget untuk bayar dan lapor masalah.',
+                    'The app really helps with paying and reporting problems.',
               ),
             ],
           ),
@@ -1778,7 +1778,7 @@ class _FooterSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'KONTAK',
+                        'CONTACT',
                         style: TextStyle(
                           color: textSec,
                           fontSize: 11,
@@ -1806,7 +1806,7 @@ class _FooterSection extends StatelessWidget {
                         },
                         child: const _FooterLink(
                           icon: Icons.map_outlined,
-                          label: 'Lihat di Google Maps',
+                          label: 'View on Google Maps',
                         ),
                       ),
                     ],
@@ -1839,7 +1839,7 @@ class _FooterSection extends StatelessWidget {
                         Icon(Icons.map_outlined, color: textSec, size: 26),
                         SizedBox(height: 8),
                         Text(
-                          'Buka peta pusat Kota Gorontalo',
+                          'Open the map of Gorontalo city center',
                           style: TextStyle(color: textSec, fontSize: 13),
                         ),
                       ],
@@ -1852,7 +1852,7 @@ class _FooterSection extends StatelessWidget {
               const Divider(color: border),
               const SizedBox(height: 20),
               const Text(
-                'Kebijakan Privasi  •  Syarat & Ketentuan  •  Portal Penghuni',
+                'Privacy Policy  •  Terms & Conditions  •  Resident Portal',
                 style: TextStyle(color: textHint, fontSize: 13),
               ),
             ],

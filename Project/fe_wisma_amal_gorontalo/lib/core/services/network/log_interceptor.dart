@@ -68,7 +68,7 @@ class PrettyDioLogger extends Interceptor {
       if (data is Map || data is List) {
         return _encoder.convert(data);
       }
-      // fallback aman untuk tipe selain Map/List
+      // safe fallback for types other than Map/List
       return data.toString();
     } catch (e) {
       return data.toString();

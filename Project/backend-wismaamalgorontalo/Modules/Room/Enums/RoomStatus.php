@@ -12,10 +12,10 @@ enum RoomStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::AVAILABLE => 'Tersedia',
-            self::RESERVED => 'Dipesan',
-            self::OCCUPIED => 'Terisi',
-            self::MAINTENANCE => 'Perbaikan',
+            self::AVAILABLE => 'Available',
+            self::RESERVED => 'Reserved',
+            self::OCCUPIED => 'Occupied',
+            self::MAINTENANCE => 'Under Repair',
         };
     }
 }

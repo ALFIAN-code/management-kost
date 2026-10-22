@@ -46,7 +46,7 @@ class AppRouter extends RootStackRouter {
           guards: [AuthGuard(serviceLocator.get<AuthRepository>())],
         ),
 
-        // manajemen penghuni
+        // resident management
         AutoRoute(
           path: RouteConstant.residentName,
           page: ResidentRoute.page,
@@ -74,20 +74,20 @@ class AppRouter extends RootStackRouter {
           page: MyReservationRoute.page,
         ),
 
-        // manajemen kamar & reservasi
+        // room & reservation management
         AutoRoute(
           initial: true,
           path: RouteConstant.roomName,
           page: RoomRoute.page,
           guards: [FeatureToggleGuard('room')],
         ),
-        // form identitas pengguna
+        // user identity form
         AutoRoute(
           // guards: [AuthGuard(serviceLocator.get<AuthRepository>())],
           path: RouteConstant.identityFormName,
           page: IdentityFormRoute.page,
         ),
-        // form detail reservasi
+        // reservation detail form
         AutoRoute(
           path: RouteConstant.reservationDetailFormName,
           page: ReservationDetailFormRoute.page,
@@ -138,7 +138,7 @@ class AppRouter extends RootStackRouter {
           page: RoomScheduleRoute.page,
         ),
 
-        // manajemen keuangan
+        // finance management
         AutoRoute(
           guards: [
             AuthGuard(serviceLocator.get<AuthRepository>()),
@@ -175,7 +175,7 @@ class AppRouter extends RootStackRouter {
           path: RouteConstant.refundRequestName,
           page: RefundRequestRoute.page,
         ),
-        // manajemen inventaris
+        // inventory management
         AutoRoute(
           guards: [
             AuthGuard(serviceLocator.get<AuthRepository>()),
@@ -193,7 +193,7 @@ class AppRouter extends RootStackRouter {
           page: InventoryFormRoute.page,
         ),
 
-        // manajemen maintanance (jadwal)
+        // maintenance management (schedule)
         AutoRoute(
           guards: [
             AuthGuard(serviceLocator.get<AuthRepository>()),
@@ -219,7 +219,7 @@ class AppRouter extends RootStackRouter {
           page: MaintananceDetailRoute.page,
         ),
 
-        // laporan kerusakan
+        // damage reports
         AutoRoute(
           guards: [
             AuthGuard(serviceLocator.get<AuthRepository>()),
@@ -333,7 +333,7 @@ class AppRouter extends RootStackRouter {
           page: MidtransPaymentRoute.page,
         ),
 
-        // pengaturan
+        // settings
         AutoRoute(
           guards: [AuthGuard(serviceLocator.get<AuthRepository>())],
           path: RouteConstant.settingName,

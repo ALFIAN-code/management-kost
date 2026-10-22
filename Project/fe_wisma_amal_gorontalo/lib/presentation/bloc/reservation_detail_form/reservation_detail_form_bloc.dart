@@ -116,7 +116,7 @@ class ReservationDetailFormBloc
   ) {
     final threshold = DateTime.now().add(const Duration(days: 7));
     final dpStillAvailable = event.date.isAfter(threshold);
-    // Jika DP aktif tapi tanggal tidak lagi memenuhi syarat, kembalikan ke full
+    // If the down payment is active but the date no longer qualifies, revert to full
     final scheme = state.paymentScheme == 'dp' && !dpStillAvailable ? 'full' : state.paymentScheme;
     emit(state.copyWith(startDate: event.date, paymentScheme: scheme));
     _calculate(emit);
@@ -146,7 +146,7 @@ class ReservationDetailFormBloc
       state.copyWith(
         paymentMethod: event.paymentMethod,
         selectedMidtransMethod:
-            null, // Reset pilihan metode saat method berubah
+            null, // Reset the method selection when the method changes
       ),
     );
   }
@@ -162,7 +162,7 @@ class ReservationDetailFormBloc
     PaymentSchemeChanged event,
     Emitter<ReservationDetailFormState> emit,
   ) {
-    // Jika DP tidak lagi tersedia (start_date sudah diubah ke ≤ H+7), kembalikan ke full
+    // If the down payment is no longer available (start_date moved to ≤ H+7), revert to full
     final scheme = event.scheme == 'dp' && !state.isDpAvailable ? 'full' : event.scheme;
     emit(state.copyWith(paymentScheme: scheme));
   }
@@ -198,11 +198,11 @@ class ReservationDetailFormBloc
       );
     } catch (e, st) {
       debugPrint('SubmitReservation error [${e.runtimeType}]: $e\n$st');
-      String message = 'Gagal membuat reservasi. Silakan coba lagi.';
+      String message = 'Failed to create the reservation. Please try again.';
       if (e is DioException) {
         final data = e.response?.data;
         if (data is Map<String, dynamic>) {
-          // Prioritaskan pesan error field pertama jika ada (422 validation)
+          // Prioritize the first field error message if present (422 validation)
           final errors = data['errors'] as Map<String, dynamic>?;
           if (errors != null && errors.isNotEmpty) {
             final firstFieldErrors = errors.values.first;

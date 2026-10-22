@@ -10,17 +10,17 @@ sequenceDiagram
 
   Resident->>Maint: Buat Tiket Komplain (room_id, judul, deskripsi, foto_bukti)
   Maint->>Maint: Simpan Tiket (status: 'open')
-  Maint->>Bus: emit(DamageReportCreated)
+  Maint->>Bus: emit(RoomDamaged)
   
   opt Notifikasi Tiket Masuk
-    Bus->>Notif: handle(DamageReportCreated) -> Kirim WA ke Pengelola
+    Bus->>Notif: handle(RoomDamaged) -> Kirim WA ke Pengelola
   end
 
   Admin->>Maint: Buka Tiket, Tinjau Deskripsi & Foto Kerusakan
   
   alt Kasus Kerusakan Fatal (Fasilitas Kamar Rusak Total / Bahaya)
-    Admin->>Room: PATCH /api/rooms/{id}/status -> 'under_maintenance'
-    Note over Room: Kamar terkunci dari alokasi penghuni baru di Modul Schedule
+    Admin->>Room: PUT /api/rooms/{id} (status -> 'maintenance')
+    Note over Room: Kamar terkunci dari alokasi penghuni baru di Modul Lease (Core)
   end
 
   Admin->>Maint: Tugaskan Teknisi (assignee_name, target_selesai)
@@ -28,12 +28,12 @@ sequenceDiagram
 
   Tech->>Admin: Laporkan Pekerjaan Selesai
   Admin->>Maint: Verifikasi Hasil & Tutup Tiket (status: 'resolved')
-  Maint->>Bus: emit(DamageReportResolved)
+  Maint->>Bus: emit(RoomRepaired)
 
   opt Pemulihan Status Kamar
-    Admin->>Room: Kembalikan Status Fisik Kamar -> 'available'
+    Admin->>Room: Kembalikan Status Fisik Kamar -> 'kosong'
   end
 
   opt Notifikasi Penyelesaian ke Penghuni
-    Bus->>Notif: handle(DamageReportResolved) -> Kirim WA: Perbaikan Selesai
+    Bus->>Notif: handle(RoomRepaired) -> Kirim WA: Perbaikan Selesai
   end

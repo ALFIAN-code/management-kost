@@ -1,42 +1,42 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 
-// wrapper untuk menu permission
+// wrapper for the permission menu
 @RoutePage(name: 'PermissionPlaceholderRoute')
 class PermissionPlaceholderPage extends EmptyPlaceholderPage {
   const PermissionPlaceholderPage({super.key}) : super(title: 'Permission');
 }
 
-// wrapper untuk menu peran
+// wrapper for the role menu
 @RoutePage(name: 'RolePlaceholderRoute')
 class RolePlaceholderPage extends EmptyPlaceholderPage {
   const RolePlaceholderPage({super.key}) : super(title: 'Role');
 }
 
-// wrapper untuk Menu Penghuni
+// wrapper for the Residents menu
 @RoutePage(name: 'ResidentPlaceholderRoute')
 class ResidentPlaceholderPage extends EmptyPlaceholderPage {
-  const ResidentPlaceholderPage({super.key}) : super(title: 'Penghuni');
+  const ResidentPlaceholderPage({super.key}) : super(title: 'Residents');
 }
 
-// wrapper untuk Menu Reservasi
+// wrapper for the Reservations menu
 @RoutePage(name: 'RoomAndReservationPlaceholderRoute')
 class RoomAndReservationPlaceholderPage extends EmptyPlaceholderPage {
   const RoomAndReservationPlaceholderPage({super.key})
-    : super(title: 'Reservasi');
+    : super(title: 'Reservations');
 }
 
-// wrapper untuk Menu Keuangan
+// wrapper for the Finance menu
 @RoutePage(name: 'FinancePlaceholderRoute')
 class FinancePlaceholderPage extends EmptyPlaceholderPage {
-  const FinancePlaceholderPage({super.key}) : super(title: 'Keuangan');
+  const FinancePlaceholderPage({super.key}) : super(title: 'Finance');
 }
 
-// wrapper untuk Menu Inventaris
+// wrapper for the Inventory & Maintenance menu
 @RoutePage(name: 'InventoryAndMaintenancePlaceholderRoute')
 class InventoryAndMaintenancePlaceholderPage extends EmptyPlaceholderPage {
   const InventoryAndMaintenancePlaceholderPage({super.key})
-    : super(title: 'Inventaris & Pemeliharaan');
+    : super(title: 'Inventory & Maintenance');
 }
 
 
@@ -47,7 +47,7 @@ class EmptyPlaceholderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Text('Halaman $title sedang dalam pengembangan')),
+      body: Center(child: Text('The $title page is under development')),
     );
   }
 }

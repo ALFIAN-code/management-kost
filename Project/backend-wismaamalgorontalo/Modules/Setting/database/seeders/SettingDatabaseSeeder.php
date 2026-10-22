@@ -13,17 +13,17 @@ class SettingDatabaseSeeder extends Seeder
 
         $settings = [
             'wisma_name' => 'Wisma Amal Gorontalo',
-            'wisma_address' => 'Jl. Wisma Amal No. 1, Gorontalo',
+            'wisma_address' => 'St. Wisma Amal No. 1, Gorontalo',
             'wisma_phone' => '0811-4300-XXX',
             'wisma_email' => 'wismaamal@email.com',
             'wisma_maps_link' => 'https://maps.google.com',
-            'wisma_operational_hours' => 'Senin - Sabtu, 08.00 - 17.00 WITA',
+            'wisma_operational_hours' => 'Monday - Saturday, 08.00 - 17.00 WITA',
             'bank_name' => 'Bank BSI',
             'bank_account' => '7123456789',
             'bank_holder' => 'Wisma Amal Gorontalo',
-            'landing_header_title' => 'Temukan Kenyamanan Tinggal di Wisma Amal Gorontalo',
-            'landing_header_subtitle' => 'Mengecek ketersediaan kamar, melihat fasilitas, dan melakukan reservasi secara cepat.',
-            'landing_facilities' => 'WiFi Cepat, Keamanan 24 Jam, Parkir Luas, Dapur Bersama',
+            'landing_header_title' => 'Discover Comfortable Living at Wisma Amal Gorontalo',
+            'landing_header_subtitle' => 'Check room availability, browse the facilities, and make a reservation in seconds.',
+            'landing_facilities' => 'Fast WiFi, 24-Hour Security, Wide Parking Area, Shared Kitchen',
             'landing_highlighted_rooms' => '[]',
         ];
 

@@ -19,7 +19,8 @@ class ReservationEntity extends Equatable {
   final double? dpAmount;
   final String? dpPaidAt;
   final bool? dpRefundEligible;
-  final String? invoiceType; // 'sewa' | 'dp' | 'pelunasan'
+  // 'sewa' | 'dp' | 'pelunasan' (lease | down payment | full payment)
+  final String? invoiceType;
 
   const ReservationEntity({
     required this.id,

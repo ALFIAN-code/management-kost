@@ -31,7 +31,7 @@ class ScheduleActionBloc
     try {
       final result = await createScheduleUseCase(event.data);
       emit(ScheduleActionSuccess(
-        message: 'Jadwal berhasil ditambahkan',
+        message: 'Schedule added successfully',
         schedule: result,
       ));
     } catch (e) {
@@ -47,7 +47,7 @@ class ScheduleActionBloc
     try {
       final result = await updateScheduleUseCase(event.id, event.data);
       emit(ScheduleActionSuccess(
-        message: 'Jadwal berhasil diperbarui',
+        message: 'Schedule updated successfully',
         schedule: result,
       ));
     } catch (e) {
@@ -62,7 +62,7 @@ class ScheduleActionBloc
     emit(ScheduleActionSubmitting());
     try {
       await deleteScheduleUseCase(event.id);
-      emit(ScheduleActionSuccess(message: 'Jadwal berhasil dihapus'));
+      emit(ScheduleActionSuccess(message: 'Schedule deleted successfully'));
     } catch (e) {
       emit(ScheduleActionFailure(e.toString()));
     }
@@ -79,7 +79,7 @@ class ScheduleActionBloc
         notes: event.notes,
         status: event.status,
       );
-      emit(ScheduleActionSuccess(message: 'Update berhasil ditambahkan'));
+      emit(ScheduleActionSuccess(message: 'Update added successfully'));
     } catch (e) {
       emit(ScheduleActionFailure(e.toString()));
     }

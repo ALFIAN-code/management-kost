@@ -37,7 +37,7 @@ class RoomAvailabilityGrid extends StatelessWidget {
                 borderRadius: const BorderRadius.only(topLeft: Radius.circular(12)),
               ),
               child: Text(
-                'Kamar',
+                'Room',
                 style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),

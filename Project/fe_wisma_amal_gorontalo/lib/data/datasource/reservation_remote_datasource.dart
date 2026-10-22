@@ -25,7 +25,7 @@ class ReservationRemoteDatasource {
     String? tenantName,
     String? paymentScheme,
   }) async {
-    // Step 1: buat schedule di Schedule module
+    // Step 1: create the schedule in the Schedule module
     final scheduleResponse = await dioClient.post(
       '/v1/room-schedules',
       data: {
@@ -43,7 +43,7 @@ class ReservationRemoteDatasource {
     final scheduleJson = scheduleResponse.data['data'] as Map<String, dynamic>;
     final scheduleId = scheduleJson['id'] as int;
 
-    // Step 2: ambil invoice yang dibuat otomatis oleh Finance module
+    // Step 2: fetch the invoice automatically created by the Finance module
     int? invoiceId;
     double? invoiceAmount;
     String? invoiceType;
@@ -62,7 +62,7 @@ class ReservationRemoteDatasource {
         paymentExpiresAt = inv['payment_expires_at']?.toString();
       }
     } catch (_) {
-      // Invoice mungkin belum tersedia — lanjutkan tanpa invoice
+      // Invoice may not be available yet — continue without invoice
     }
 
     final roomJson = scheduleJson['room'] as Map<String, dynamic>? ?? {};

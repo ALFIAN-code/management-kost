@@ -52,7 +52,7 @@ class ReservationBloc extends Bloc<ReservationEvent, ReservationState> {
         ),
       );
     } catch (e) {
-      AppSnackbar.showError('Gagal memuat data reservasi: ${e.toString()}');
+      AppSnackbar.showError('Failed to load reservation data: ${e.toString()}');
 
       emit(
         state.copyWith(
@@ -103,11 +103,11 @@ class ReservationBloc extends Bloc<ReservationEvent, ReservationState> {
   //       status: event.status,
   //     );
 
-  //     AppSnackbar.showSuccess('Status reservasi berhasil diperbarui');
+  //     AppSnackbar.showSuccess('Reservation status updated successfully');
 
   //     add(GetReservationsEvent());
   //   } catch (e) {
-  //     AppSnackbar.showError('Gagal update status reservasi');
+  //     AppSnackbar.showError('Failed to update reservation status');
   //   }
   // }
 }

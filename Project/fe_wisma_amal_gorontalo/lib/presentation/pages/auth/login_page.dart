@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
       if (widget.reason == 'unauthenticated') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Anda harus login untuk melanjutkan.'),
+            content: Text('You must sign in to continue.'),
             backgroundColor: Colors.red.withOpacity(0.8),
           ),
         );
@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.grey.shade300,
       appBar: CustomAppbar(
         icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
-        title: 'Kembali',
+        title: 'Back',
       ),
       body: Stack(
         children: [
@@ -147,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Halaman Login',
+                          'Login Page',
                           style: StyleConstant.customTextStyle.copyWith(
                             fontSize: 30,
                             fontWeight: FontWeight.w900,
@@ -156,7 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'Masukkan Email dan Password untuk melanjutkan',
+                          'Enter your email and password to continue',
                           style: StyleConstant.customTextStyle.copyWith(
                             fontSize: 16,
                             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
@@ -206,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            'Email dan password harus diisi',
+                                            'Email and password are required',
                                           ),
                                           backgroundColor: Colors.red
                                               .withOpacity(0.8),
@@ -232,7 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Belum punya akun?',
+                                "Don't have an account?",
                                 style: StyleConstant.customTextStyle.copyWith(
                                   color: Theme.of(context).colorScheme.onSurface,
                                 ),
@@ -245,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   );
                                 },
-                                child: Text('Daftar disini'),
+                                child: Text('Register here'),
                               ),
                             ],
                           ),

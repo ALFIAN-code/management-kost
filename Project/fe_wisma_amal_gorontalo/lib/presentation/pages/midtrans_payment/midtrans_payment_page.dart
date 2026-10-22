@@ -40,13 +40,13 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
   bool _snapOpened = false;
   bool _isPolling = false;
   bool _paymentConfirmed = false;
-  int _remainingSeconds = 900; // 15 menit default
+  int _remainingSeconds = 900; // 15 minutes default
   int _pollAttempts = 0;
   Timer? _countdownTimer;
   Timer? _pollTimer;
 
   final currencyFormat = NumberFormat.currency(
-    locale: 'id_ID',
+    locale: 'en_US',
     symbol: 'Rp ',
     decimalDigits: 0,
   );
@@ -118,22 +118,22 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Waktu Pembayaran Habis'),
+        title: const Text('Payment Time Expired'),
         content: const Text(
-          'Batas waktu pembayaran (15 menit) telah habis. '
-          'Pemesanan dibatalkan secara otomatis dan kamar kembali tersedia.',
+          'The payment time limit (15 minutes) has expired. '
+          'The booking is cancelled automatically and the room becomes available again.',
         ),
         actions: [
           ElevatedButton(
             onPressed: () { Navigator.pop(ctx); _cancelAndGoBack(); },
-            child: const Text('Kembali ke Beranda'),
+            child: const Text('Back to Home'),
           ),
         ],
       ),
     );
   }
 
-  // ── Snap fallback (untuk metode yang tidak didukung Core API) ─────────────
+  // ── Snap fallback (for methods not supported by Core API) ─────────────
 
   Future<void> _openSnapUrl(String snapToken) async {
     final env = _kMidtransProduction ? '' : 'sandbox.';
@@ -144,14 +144,14 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Tidak dapat membuka halaman pembayaran'),
+          content: Text('Unable to open the payment page'),
           backgroundColor: Colors.red,
         ));
       }
     }
   }
 
-  // ── Polling setelah "Saya Sudah Bayar" ────────────────────────────────────
+  // ── Polling after "I Have Paid" ────────────────────────────────────
 
   void _startPaymentStatusPolling() {
     final invoiceId = widget.reservation.invoiceId;
@@ -198,17 +198,17 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
         title: Row(children: [
           const Icon(Icons.hourglass_top, color: Colors.orange, size: 28),
           const SizedBox(width: 8),
-          const Text('Pembayaran Diproses'),
+          const Text('Payment Processing'),
         ]),
         content: const Text(
-          'Konfirmasi pembayaran belum diterima. '
-          'Status akan diperbarui otomatis. '
-          'Pantau di halaman keuangan Anda.',
+          'Payment confirmation has not been received. '
+          'The status will update automatically. '
+          'Track it on your finance page.',
         ),
         actions: [
           ElevatedButton(
             onPressed: () { Navigator.pop(ctx); _navigateToMemberFinance(); },
-            child: const Text('Lihat Status Pembayaran'),
+            child: const Text('View Payment Status'),
           ),
         ],
       ),
@@ -220,20 +220,20 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Batalkan Pemesanan?'),
+        title: const Text('Cancel Booking?'),
         content: const Text(
-          'Jika Anda meninggalkan halaman ini tanpa melakukan pembayaran, '
-          'pemesanan akan dibatalkan dan kamar kembali tersedia.',
+          'If you leave this page without making a payment, '
+          'the booking will be cancelled and the room becomes available again.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Lanjutkan Bayar'),
+            child: const Text('Continue Payment'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Ya, Batalkan', style: TextStyle(color: Colors.white)),
+            child: const Text('Yes, Cancel', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -262,7 +262,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
           appBar: _paymentConfirmed
               ? null
               : CustomAppbar(
-                  title: 'Pembayaran Online',
+                  title: 'Online Payment',
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () => _onBackPressed(),
                 ),
@@ -272,7 +272,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
                   listener: (context, state) {
                     if (state.status == MemberFinanceStatus.failure) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(state.errorMessage ?? 'Gagal menginisialisasi pembayaran'),
+                        content: Text(state.errorMessage ?? 'Failed to initialize the payment'),
                         backgroundColor: Colors.red,
                       ));
                     }
@@ -316,7 +316,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
     );
   }
 
-  // ── Halaman sukses ────────────────────────────────────────────────────────
+  // ── Success page ────────────────────────────────────────────────────────
 
   Widget _buildSuccessView() {
     return Center(
@@ -335,17 +335,17 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
               child: const Icon(Icons.check_circle, color: Colors.green, size: 56),
             ),
             const SizedBox(height: 24),
-            const Text('Pembayaran Berhasil!',
+            const Text('Payment Successful!',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Text(
-              'Pembayaran Anda telah dikonfirmasi.\nKamar Anda sekarang aktif.',
+              'Your payment has been confirmed.\nYour room is now active.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 12),
             if (widget.reservation.invoiceId != null)
-              Text('ID Invoice: #${widget.reservation.invoiceId}',
+              Text('Invoice ID: #${widget.reservation.invoiceId}',
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade400)),
             const SizedBox(height: 32),
             SizedBox(
@@ -353,7 +353,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
               child: ElevatedButton.icon(
                 onPressed: _navigateToMemberFinance,
                 icon: const Icon(Icons.home, color: Colors.white),
-                label: const Text('Lihat Keuangan Saya',
+                label: const Text('View My Finance',
                     style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -368,7 +368,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
     );
   }
 
-  // ── Routing payment section ───────────────────────────────────────────────
+  // ── Payment section routing ───────────────────────────────────────────────
 
   Widget _buildPaymentSection(MemberFinanceState state) {
     final paymentData = state.paymentData;
@@ -386,7 +386,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
     return const SizedBox.shrink();
   }
 
-  // ── Core API: tampilkan kode pembayaran langsung ──────────────────────────
+  // ── Core API: show the payment code directly ──────────────────────────
 
   Widget _buildCoreApiPaymentUI(Map<String, dynamic> data) {
     final paymentType = data['payment_type'] as String? ?? '';
@@ -405,7 +405,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
     }
 
     return BasicCard(
-      title: 'Kode Pembayaran',
+      title: 'Payment Code',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -448,8 +448,8 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
   }
 
   Widget _buildQrCodeUI(Map<String, dynamic> data, String paymentType) {
-    // qr_string = raw QRIS data dari Midtrans — di-render lokal tanpa request ke server Midtrans.
-    // URL dari actions['generate-qr-code'] butuh server key sebagai Basic Auth, tidak bisa dipakai Image.network.
+    // qr_string = raw QRIS data from Midtrans — rendered locally without requesting the Midtrans server.
+    // The URL from actions['generate-qr-code'] needs the server key as Basic Auth, so it cannot be used with Image.network.
     final qrString = data['qr_string'] as String?;
     final qrImageUrl = _getQrImageUrl(data);
     debugPrint('[MIDTRANS SANDBOX] QR Image URL for simulator: $qrImageUrl');
@@ -463,7 +463,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
         _infoBox(
           icon: Icons.qr_code_2,
           color: Colors.indigo,
-          text: 'Scan QR Code berikut menggunakan aplikasi $methodLabel atau kamera ponsel Anda.',
+          text: 'Scan the QR Code below using the $methodLabel app or your phone camera.',
         ),
         const SizedBox(height: 20),
         if (qrString != null && qrString.isNotEmpty)
@@ -507,7 +507,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
                   Icon(Icons.qr_code_2, size: 40, color: Colors.grey.shade400),
                   const SizedBox(height: 8),
                   Text(
-                    'QR Code tidak tersedia',
+                    'QR Code not available',
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                     textAlign: TextAlign.center,
                   ),
@@ -529,7 +529,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
                 if (await canLaunchUrl(uri)) await launchUrl(uri);
               },
               icon: const Icon(Icons.open_in_new),
-              label: Text('Buka di $methodLabel'),
+              label: Text('Open in $methodLabel'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -551,7 +551,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
         _infoBox(
           icon: Icons.account_balance,
           color: Colors.blue,
-          text: 'Transfer ke nomor Virtual Account berikut sebelum waktu kadaluarsa.',
+          text: 'Transfer to the following Virtual Account number before the expiry time.',
         ),
         const SizedBox(height: 16),
         for (final va in vaNumbers)
@@ -594,11 +594,11 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: vaNumber));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Nomor VA disalin'), duration: Duration(seconds: 2)),
+                const SnackBar(content: Text('VA number copied'), duration: Duration(seconds: 2)),
               );
             },
             icon: const Icon(Icons.copy, color: Colors.blue),
-            tooltip: 'Salin',
+            tooltip: 'Copy',
           ),
         ],
       ),
@@ -616,7 +616,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
         _infoBox(
           icon: Icons.account_balance,
           color: Colors.blue,
-          text: 'Bayar melalui Mandiri Livin\' atau ATM Mandiri menggunakan kode berikut.',
+          text: 'Pay through Mandiri Livin\' or a Mandiri ATM using the following code.',
         ),
         const SizedBox(height: 16),
         _codeCard(label: 'Biller Code', value: billerCode),
@@ -638,10 +638,10 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
         _infoBox(
           icon: Icons.store,
           color: Colors.red,
-          text: 'Tunjukkan kode berikut ke kasir $store untuk menyelesaikan pembayaran.',
+          text: 'Show the following code to the $store cashier to complete the payment.',
         ),
         const SizedBox(height: 16),
-        _codeCard(label: 'Kode Pembayaran $store', value: paymentCode),
+        _codeCard(label: '$store Payment Code', value: paymentCode),
         if (expiryTime != null) ...[const SizedBox(height: 12), _expiryChip(expiryTime)],
       ],
     );
@@ -651,7 +651,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
     return _infoBox(
       icon: Icons.payment,
       color: Colors.grey,
-      text: 'Lanjutkan pembayaran dan klik "Saya Sudah Bayar" setelah selesai.',
+      text: 'Continue the payment and tap "I Have Paid" when done.',
     );
   }
 
@@ -679,11 +679,11 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: value));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Kode disalin'), duration: Duration(seconds: 2)),
+                const SnackBar(content: Text('Code copied'), duration: Duration(seconds: 2)),
               );
             },
             icon: const Icon(Icons.copy, color: Colors.blue),
-            tooltip: 'Salin',
+            tooltip: 'Copy',
           ),
         ],
       ),
@@ -695,7 +695,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
       children: [
         const Icon(Icons.schedule, size: 14, color: Colors.orange),
         const SizedBox(width: 6),
-        Text('Berlaku hingga: $expiryTime',
+        Text('Valid until: $expiryTime',
             style: TextStyle(fontSize: 12, color: Colors.orange.shade700)),
       ],
     );
@@ -736,7 +736,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
               child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blue.shade700),
             ),
             const SizedBox(width: 12),
-            Text('Memverifikasi pembayaran...',
+            Text('Verifying payment...',
                 style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.w600)),
           ],
         ),
@@ -748,7 +748,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
       child: ElevatedButton.icon(
         onPressed: (_isExpired) ? null : _startPaymentStatusPolling,
         icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-        label: const Text('Saya Sudah Bayar',
+        label: const Text('I Have Paid',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.green,
@@ -774,35 +774,35 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
 
   Widget _buildSnapPaymentUI(String snapToken, MemberFinanceState state) {
     return BasicCard(
-      title: 'Pembayaran via Midtrans',
+      title: 'Payment via Midtrans',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _infoBox(
             icon: Icons.security,
             color: Colors.blue,
-            text: 'Pembayaran diproses secara aman oleh Midtrans. '
-                'Tersedia berbagai metode seperti QRIS, GoPay, ShopeePay, dan lainnya.',
+            text: 'Payment is processed securely by Midtrans. '
+                'Various methods are available such as QRIS, GoPay, ShopeePay, and others.',
           ),
           const SizedBox(height: 20),
-          _instructionStep(1, 'Klik "Bayar Sekarang"',
-              'Anda akan diarahkan ke halaman pembayaran Midtrans di browser.'),
+          _instructionStep(1, 'Tap "Pay Now"',
+              'You will be redirected to the Midtrans payment page in your browser.'),
           const SizedBox(height: 12),
-          _instructionStep(2, 'Pilih Metode Pembayaran',
-              'Pilih metode yang tersedia (QRIS, GoPay, ShopeePay, dsb).'),
+          _instructionStep(2, 'Select Payment Method',
+              'Choose an available method (QRIS, GoPay, ShopeePay, etc.).'),
           const SizedBox(height: 12),
-          _instructionStep(3, 'Selesaikan Pembayaran',
-              'Ikuti instruksi pada halaman Midtrans.'),
+          _instructionStep(3, 'Complete the Payment',
+              'Follow the instructions on the Midtrans page.'),
           const SizedBox(height: 12),
-          _instructionStep(4, 'Kembali ke Aplikasi',
-              'Setelah selesai bayar, kembali dan klik tombol konfirmasi.'),
+          _instructionStep(4, 'Return to the App',
+              'After the payment is done, come back and tap the confirm button.'),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: (_isExpired || _isPolling) ? null : () => _openSnapUrl(snapToken),
               icon: const Icon(Icons.payment, color: Colors.white),
-              label: const Text('Bayar Sekarang',
+              label: const Text('Pay Now',
                   style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -823,7 +823,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
 
   Widget _buildErrorCard(String? message) {
     return BasicCard(
-      title: 'Pembayaran via Midtrans',
+      title: 'Payment via Midtrans',
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -837,7 +837,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                message ?? 'Gagal menginisialisasi pembayaran.',
+                message ?? 'Failed to initialize the payment.',
                 style: TextStyle(fontSize: 12, color: Colors.red.shade700),
               ),
             ),
@@ -892,7 +892,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                _isExpired ? 'Waktu Pembayaran Habis' : 'Batas Waktu Pembayaran',
+                _isExpired ? 'Payment Time Expired' : 'Payment Time Limit',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: _isExpired ? Colors.red : _timerColor, fontSize: 13),
@@ -900,8 +900,8 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
               const SizedBox(height: 2),
               Text(
                 _isExpired
-                    ? 'Pemesanan akan dibatalkan secara otomatis.'
-                    : 'Selesaikan pembayaran sebelum waktu habis.',
+                    ? 'The booking will be cancelled automatically.'
+                    : 'Complete the payment before the time runs out.',
                 style: TextStyle(fontSize: 12,
                     color: _isExpired ? Colors.red.shade700 : Colors.grey.shade700),
               ),
@@ -920,11 +920,11 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
 
   Widget _buildStepIndicator() {
     return Row(children: [
-      _stepCircle('1', 'Pemesanan', true, done: true),
+      _stepCircle('1', 'Booking', true, done: true),
       _stepLine(true),
-      _stepCircle('2', 'Pembayaran', true),
+      _stepCircle('2', 'Payment', true),
       _stepLine(false),
-      _stepCircle('3', 'Konfirmasi', false),
+      _stepCircle('3', 'Confirmation', false),
     ]);
   }
 
@@ -963,20 +963,20 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
 
     return Column(children: [
       BasicCard(
-        title: 'Ringkasan Pesanan',
+        title: 'Booking Summary',
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _summaryRow('Kamar', widget.reservation.roomTitle),
-          _summaryRow('No. Kamar', widget.reservation.roomNumber),
-          _summaryRow('Tipe Sewa',
-              widget.reservation.rentalType == 'monthly' ? 'Bulanan' : 'Harian'),
-          _summaryRow('Mulai', widget.reservation.startDate),
-          _summaryRow('Selesai', widget.reservation.endDate),
+          _summaryRow('Room', widget.reservation.roomTitle),
+          _summaryRow('Room No.', widget.reservation.roomNumber),
+          _summaryRow('Lease Type',
+              widget.reservation.rentalType == 'monthly' ? 'Monthly' : 'Daily'),
+          _summaryRow('Start', widget.reservation.startDate),
+          _summaryRow('End', widget.reservation.endDate),
           const Divider(height: 28),
           if (hasFee) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Tagihan Sewa', style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                Text('Lease Invoice', style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
                 Text(baseAmount != null ? currencyFormat.format(baseAmount) : 'Rp -',
                     style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
               ],
@@ -985,7 +985,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Biaya Transaksi Midtrans',
+                Text('Midtrans Transaction Fee',
                     style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
                 Text(currencyFormat.format(midtransFee),
                     style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
@@ -996,7 +996,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Total Bayar', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Total Payment', style: TextStyle(fontWeight: FontWeight.bold)),
               Text(
                 grossAmount != null ? currencyFormat.format(grossAmount) : 'Rp -',
                 style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 16),
@@ -1016,7 +1016,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
                 Icon(Icons.info_outline, size: 13, color: Colors.orange.shade700),
                 const SizedBox(width: 5),
                 Expanded(child: Text(
-                  'Biaya transaksi Midtrans ditanggung penghuni dan sudah termasuk dalam total di atas.',
+                  'The Midtrans transaction fee is borne by the resident and is already included in the total above.',
                   style: TextStyle(fontSize: 10, color: Colors.orange.shade700, height: 1.3),
                 )),
               ]),
@@ -1024,7 +1024,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
           ],
           const SizedBox(height: 8),
           if (widget.reservation.invoiceId != null)
-            Text('ID Invoice: #${widget.reservation.invoiceId}',
+            Text('Invoice ID: #${widget.reservation.invoiceId}',
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
         ]),
       ),
@@ -1036,14 +1036,14 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
             final confirmed = await showDialog<bool>(
               context: context,
               builder: (ctx) => AlertDialog(
-                title: const Text('Batalkan Pemesanan?'),
-                content: const Text('Pemesanan akan dibatalkan dan kamar kembali tersedia.'),
+                title: const Text('Cancel Booking?'),
+                content: const Text('The booking will be cancelled and the room becomes available again.'),
                 actions: [
-                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Tidak')),
+                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('No')),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                     onPressed: () => Navigator.pop(ctx, true),
-                    child: const Text('Ya, Batalkan', style: TextStyle(color: Colors.white)),
+                    child: const Text('Yes, Cancel', style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -1058,12 +1058,12 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
           child: _isCancelling
               ? const SizedBox(height: 18, width: 18,
                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.red))
-              : const Text('Batalkan Pemesanan'),
+              : const Text('Cancel Booking'),
         ),
       ),
       const SizedBox(height: 12),
       Text(
-        'Kamar ini sedang dikunci untuk Anda selama batas waktu pembayaran.',
+        'This room is locked for you during the payment time limit.',
         style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
         textAlign: TextAlign.center,
       ),

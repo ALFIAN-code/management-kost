@@ -19,16 +19,16 @@ class FeatureToggleSeeder extends Seeder
 
         // 1. AUTH (Core)
         $authModule = FeatureToggle::create([
-            'name' => 'Login Akun',
+            'name' => 'Account Login',
             'key' => 'auth',
-            'description' => 'Autentikasi, Hak Akses, & Role (Wajib)',
+            'description' => 'Authentication, Access & Roles (Required)',
             'icon' => 'lock',
             'is_active' => true,
             'is_locked' => true,
         ]);
 
         $authFeatures = [
-            ['name' => 'Registrasi Akun', 'key' => 'auth_registration', 'description' => 'Mengizinkan pendaftaran calon penghuni langsung lewat aplikasi.', 'icon' => 'app_registration'],
+            ['name' => 'Account Registration', 'key' => 'auth_registration', 'description' => 'Allows prospective residents to register directly through the app.', 'icon' => 'app_registration'],
         ];
 
         foreach ($authFeatures as $feat) {
@@ -45,9 +45,9 @@ class FeatureToggleSeeder extends Seeder
 
         // 1. CORE MODULES (Locked)
         $coreModules = [
-            ['name' => 'Room', 'key' => 'room', 'description' => 'Manajemen Kamar & Fasilitas (Wajib)', 'icon' => 'meeting_room'],
-            ['name' => 'Schedule', 'key' => 'schedule', 'description' => 'Pencatatan Penghuni & Reservasi (Wajib)', 'icon' => 'calendar_month'],
-            ['name' => 'Setting', 'key' => 'setting', 'description' => 'Pengaturan Utama Sistem (Wajib)', 'icon' => 'settings'],
+            ['name' => 'Room', 'key' => 'room', 'description' => 'Room & Facility Management (Required)', 'icon' => 'meeting_room'],
+            ['name' => 'Schedule', 'key' => 'schedule', 'description' => 'Resident Registration & Reservation (Required)', 'icon' => 'calendar_month'],
+            ['name' => 'Setting', 'key' => 'setting', 'description' => 'Main System Settings (Required)', 'icon' => 'settings'],
         ];
 
         foreach ($coreModules as $mod) {
@@ -63,9 +63,9 @@ class FeatureToggleSeeder extends Seeder
 
         // 2. INVENTORY (Togglable)
         $inventoryModule = FeatureToggle::create([
-            'name' => 'Manajemen Inventaris',
+            'name' => 'Inventory Management',
             'key' => 'inventory', // Maps to Inventory module
-            'description' => 'Pendataan barang/aset di kos dan di dalam kamar.',
+            'description' => 'Records of items and assets in the boarding house and inside the rooms.',
             'icon' => 'inventory_2',
             'is_active' => true,
             'is_locked' => false,
@@ -73,17 +73,17 @@ class FeatureToggleSeeder extends Seeder
 
         // 3. MAINTENANCE (Togglable)
         $maintenanceModule = FeatureToggle::create([
-            'name' => 'Manajemen Pemeliharaan',
+            'name' => 'Maintenance Management',
             'key' => 'maintenance', // Maps to Maintenance module
-            'description' => 'Manajemen jadwal pembersihan dan pelaporan kerusakan.',
+            'description' => 'Manage cleaning schedules and damage reporting.',
             'icon' => 'home_repair_service',
             'is_active' => true,
             'is_locked' => false,
         ]);
 
         $maintenanceFeatures = [
-            ['name' => 'Jadwal Maintenance', 'key' => 'maintenance_schedule', 'description' => 'Pembuatan jadwal rutin untuk membersihkan kamar atau fasilitas.', 'icon' => 'cleaning_services'],
-            ['name' => 'Laporan Kerusakan', 'key' => 'damage_report', 'description' => 'Mengizinkan penghuni melaporkan kerusakan langsung dari aplikasi.', 'icon' => 'report_problem'],
+            ['name' => 'Maintenance Schedule', 'key' => 'maintenance_schedule', 'description' => 'Create routine schedules for cleaning rooms or facilities.', 'icon' => 'cleaning_services'],
+            ['name' => 'Damage Report', 'key' => 'damage_report', 'description' => 'Allows residents to report damage directly from the app.', 'icon' => 'report_problem'],
         ];
 
         foreach ($maintenanceFeatures as $feat) {
@@ -100,9 +100,9 @@ class FeatureToggleSeeder extends Seeder
 
         // 3. FINANCE (Togglable)
         $financeModule = FeatureToggle::create([
-            'name' => 'Manajemen Keuangan',
+            'name' => 'Finance Management',
             'key' => 'finance', // Maps to Finance module
-            'description' => 'Pengaturan arus kas, invoice, pembayaran, dan pengeluaran kos.',
+            'description' => 'Manage cash flow, invoices, payments, and boarding house expenses.',
             'icon' => 'account_balance_wallet',
             'is_active' => true,
             'is_locked' => false,
@@ -110,9 +110,9 @@ class FeatureToggleSeeder extends Seeder
 
         // Pengeluaran umum: inti, tidak bisa dimatikan
         FeatureToggle::create([
-            'name' => 'Pencatatan Pengeluaran',
+            'name' => 'Expense Tracking',
             'key' => 'finance_expense',
-            'description' => 'Pencatatan pengeluaran operasional kos (wajib).',
+            'description' => 'Records boarding house operational expenses (required).',
             'icon' => 'receipt_long',
             'is_active' => true,
             'is_locked' => true,
@@ -120,8 +120,8 @@ class FeatureToggleSeeder extends Seeder
         ]);
 
         $financeFeatures = [
-            ['name' => 'Pembayaran Midtrans (Online)', 'key' => 'finance_midtrans', 'description' => 'Integrasi Midtrans untuk pembayaran Virtual Account, QRIS, dsb.', 'icon' => 'payment'],
-            ['name' => 'Pengeluaran Tetap Bulanan', 'key' => 'finance_fixed_expense', 'description' => 'Pengingat dan pencatatan tagihan tetap (PLN, PDAM, WiFi).', 'icon' => 'bolt'],
+            ['name' => 'Midtrans Payment (Online)', 'key' => 'finance_midtrans', 'description' => 'Midtrans integration for Virtual Account, QRIS, and other payment methods.', 'icon' => 'payment'],
+            ['name' => 'Monthly Fixed Expenses', 'key' => 'finance_fixed_expense', 'description' => 'Reminders and records for fixed bills (PLN, PDAM, WiFi).', 'icon' => 'bolt'],
         ];
 
         foreach ($financeFeatures as $feat) {
@@ -138,9 +138,9 @@ class FeatureToggleSeeder extends Seeder
 
         // 4. GUEST (Togglable)
         FeatureToggle::create([
-            'name' => 'Manajemen Tamu',
+            'name' => 'Guest Management',
             'key' => 'guest', // Maps to Guest module
-            'description' => 'Mengizinkan penghuni mendaftarkan tamu dan membebankan tarif tambahan jika perlu.',
+            'description' => 'Allows residents to register guests and charge an additional rate when needed.',
             'icon' => 'group_add',
             'is_active' => true,
             'is_locked' => false,
@@ -148,18 +148,18 @@ class FeatureToggleSeeder extends Seeder
 
         // 5. NOTIFICATION (Togglable)
         $notifModule = FeatureToggle::create([
-            'name' => 'Notifikasi Sistem & WhatsApp',
+            'name' => 'System & WhatsApp Notifications',
             'key' => 'notification', // Maps to Notification module
-            'description' => 'Pengaturan pengiriman notifikasi otomatis via WhatsApp kepada penghuni.',
+            'description' => 'Configure automatic WhatsApp notifications for residents.',
             'icon' => 'notifications_active',
             'is_active' => true,
             'is_locked' => false,
         ]);
 
         $notifFeatures = [
-            ['name' => 'WhatsApp Struk Pembayaran', 'key' => 'notif_receipt', 'description' => 'Otomatis mengirim WhatsApp bukti pembayaran setelah verifikasi.', 'icon' => 'mark_chat_read'],
-            ['name' => 'Pengingat Jatuh Tempo (Reminder)', 'key' => 'notif_due_reminder', 'description' => 'Mengirim WA otomatis H-7, H-3, H-2, H-1, dan hari-H sebelum masa sewa habis.', 'icon' => 'alarm'],
-            ['name' => 'Sertakan Link PDF Invoice di WA', 'key' => 'notif_pdf_link', 'description' => 'Menyertakan link download struk PDF di dalam pesan WhatsApp.', 'icon' => 'picture_as_pdf'],
+            ['name' => 'WhatsApp Payment Receipt', 'key' => 'notif_receipt', 'description' => 'Automatically sends a payment proof via WhatsApp after verification.', 'icon' => 'mark_chat_read'],
+            ['name' => 'Due Date Reminder', 'key' => 'notif_due_reminder', 'description' => 'Sends automatic WhatsApp reminders 7, 3, 2, and 1 days before, and on the day the lease ends.', 'icon' => 'alarm'],
+            ['name' => 'Include Invoice PDF Link in WhatsApp', 'key' => 'notif_pdf_link', 'description' => 'Includes a PDF receipt download link in the WhatsApp message.', 'icon' => 'picture_as_pdf'],
         ];
 
         foreach ($notifFeatures as $feat) {

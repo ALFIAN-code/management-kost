@@ -156,7 +156,7 @@ class AppColorsLight {
   static const Color borderLight    = Color(0xFFE2E8F0); // Slate 200
   static const Color borderMedium   = Color(0xFFCBD5E1); // Slate 300
 
-  // Sidebar — white sidebar seperti FlyScope
+  // Sidebar — white sidebar like FlyScope
   static const Color sidebarBg      = Color(0xFFFFFFFF); // White
   static const Color sidebarBorder  = Color(0xFFE2E8F0); // Right border
   static const Color sidebarActive  = Color(0xFF2563EB); // Filled blue active item
@@ -166,7 +166,7 @@ class AppColorsLight {
   static const Color sidebarMuted   = Color(0xFF64748B); // Icon inactive
   static const Color sidebarSection = Color(0xFF94A3B8); // Section label
 
-  // Status — semantic, sama di light & dark
+  // Status — semantic, same in light & dark
   static const Color statusWaiting      = Color(0xFFD97706);
   static const Color statusWaitingBg    = Color(0xFFFFFBEB);
   static const Color statusWaitingBorder= Color(0xFFFDE68A);
@@ -180,20 +180,20 @@ class AppColorsLight {
   static const Color statusCancelledBg  = Color(0xFFFEF2F2);
   static const Color statusCancelledBorder = Color(0xFFFECACA);
 
-  // Kondisi inventaris
+  // Inventory condition
   static const Color conditionGood = Color(0xFF16A34A);
   static const Color conditionFair = Color(0xFFD97706);
   static const Color conditionPoor = Color(0xFFDC2626);
 }
 
 class AppColorsDark {
-  // Primary — blue-violet vivid yang pop di atas gelap
+  // Primary — vivid blue-violet that pops on dark
   static const Color primary        = Color(0xFF5B6EF5); // Vivid blue-violet
   static const Color primaryLight   = Color(0xFF252844); // Dark tinted primary bg
   static const Color primaryDark    = Color(0xFF7B8BFF); // Lighter for text on dark
 
   // Background & surface
-  static const Color background     = Color(0xFF141627); // Deep navy — halaman utama
+  static const Color background     = Color(0xFF141627); // Deep navy — main page
   static const Color surface        = Color(0xFF1E2237); // Card, panel, dialog
   static const Color surfaceVariant = Color(0xFF252844); // Hover row, input bg, active item
 
@@ -206,17 +206,17 @@ class AppColorsDark {
   static const Color borderLight    = Color(0xFF2A2D45); // Subtle dark border
   static const Color borderMedium   = Color(0xFF363A58); // Slightly visible
 
-  // Sidebar — unified dark seperti Homical
+  // Sidebar — unified dark like Homical
   static const Color sidebarBg      = Color(0xFF141627); // Same as background (seamless)
   static const Color sidebarActive  = Color(0xFF252844); // Slightly lighter box for active
   static const Color sidebarActiveText = Color(0xFFFFFFFF);
-  static const Color sidebarActiveIcon = Color(0xFF5B6EF5); // Blue-violet icon saat aktif
+  static const Color sidebarActiveIcon = Color(0xFF5B6EF5); // Blue-violet icon when active
   static const Color sidebarHoverBg = Color(0xFF1E2237);
   static const Color sidebarText    = Color(0xFFE8EAF6);
   static const Color sidebarMuted   = Color(0xFF8B93B3);
   static const Color sidebarSection = Color(0xFF555E7A);
 
-  // Status — warna sama, background disesuaikan gelap
+  // Status — same colors, background adjusted for dark
   static const Color statusWaiting      = Color(0xFFD97706);
   static const Color statusWaitingBg    = Color(0xFF2D2010);
   static const Color statusWaitingBorder= Color(0xFF78450A);
@@ -230,7 +230,7 @@ class AppColorsDark {
   static const Color statusCancelledBg  = Color(0xFF2D0A0A);
   static const Color statusCancelledBorder = Color(0xFF7F1D1D);
 
-  // Kondisi inventaris
+  // Inventory condition
   static const Color conditionGood = Color(0xFF22C55E);
   static const Color conditionFair = Color(0xFFD97706);
   static const Color conditionPoor = Color(0xFFEF4444);

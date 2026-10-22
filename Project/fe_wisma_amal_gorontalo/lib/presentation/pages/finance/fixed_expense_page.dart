@@ -17,18 +17,18 @@ import '../../widget/core/appbar/search_and_filter_bar.dart';
 import '../../widget/core/table/app_data_table.dart';
 import '../../widget/core/wrapper/empty_state_widget.dart';
 
-// ── Config visual per jenis (untuk icon & warna di dialog + tabel) ────────────
+// ── Visual config per type (for icon & color in dialog + table) ────────────
 const _kJenisConfig = {
   'listrik': _JenisConfig(
     icon: Icons.bolt_rounded,
-    label: 'Listrik',
+    label: 'Electricity',
     color: Color(0xFFD97706),
     colorLight: Color(0xFFFFFBEB),
     gradient: [Color(0xFFD97706), Color(0xFFF59E0B)],
   ),
   'air': _JenisConfig(
     icon: Icons.water_drop_rounded,
-    label: 'Air',
+    label: 'Water',
     color: Color(0xFF2563EB),
     colorLight: Color(0xFFEFF6FF),
     gradient: [Color(0xFF2563EB), Color(0xFF3B82F6)],
@@ -79,9 +79,9 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
   }
 
   String _fmt(double v) =>
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(v);
+      NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0).format(v);
 
-  String _bulanLabel(int b) => DateFormat('MMMM', 'id_ID').format(DateTime(0, b));
+  String _bulanLabel(int b) => DateFormat('MMMM', 'en_US').format(DateTime(0, b));
 
   void _applyFilter() =>
       _bloc.add(FetchFixedExpenses(bulan: _filterBulan, tahun: _filterTahun));
@@ -160,7 +160,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          entry.isFilled ? 'Ubah Pengeluaran' : 'Isi Nominal',
+                          entry.isFilled ? 'Edit Expense' : 'Enter Amount',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -190,7 +190,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _FieldLabel('Nominal (Rp)', isDark),
+                    _FieldLabel('Amount (Rp)', isDark),
                     const SizedBox(height: AppSpacing.sm),
                     TextField(
                       controller: amountCtrl,
@@ -213,7 +213,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    _FieldLabel('Catatan (opsional)', isDark),
+                    _FieldLabel('Notes (optional)', isDark),
                     const SizedBox(height: AppSpacing.sm),
                     TextField(
                       controller: notesCtrl,
@@ -225,7 +225,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                         fontSize: 14,
                       ),
                       decoration: const InputDecoration(
-                        hintText: 'Misal: Tagihan PLN bulan Juni...',
+                        hintText: 'Example: PLN bill for June...',
                         prefixIcon: Icon(Icons.notes_outlined, size: 18),
                       ),
                     ),
@@ -239,7 +239,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 OutlinedButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Batal'),
+                  child: const Text('Cancel'),
                 ),
                 const SizedBox(width: AppSpacing.md),
                 ElevatedButton(
@@ -258,7 +258,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                     ));
                     Navigator.pop(ctx);
                   },
-                  child: const Text('Simpan'),
+                  child: const Text('Save'),
                 ),
               ]),
             ),
@@ -385,8 +385,8 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                       ? (isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg)
                       : cfg.colorLight;
                   final trend = isFilled
-                      ? '✓ Sudah diisi'
-                      : (entry != null ? 'Tap untuk isi nominal' : '—');
+                      ? '✓ Filled'
+                      : (entry != null ? 'Tap to enter the amount' : '—');
                   final trendColor = isFilled
                       ? (isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone)
                       : (isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting);
@@ -399,7 +399,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                         onTap: entry != null ? () => _showFillDialog(entry) : null,
                         child: SummaryStatCard(
                           label: cfg.label,
-                          value: isFilled ? _fmt(s.amount ?? 0) : 'Belum Diisi',
+                          value: isFilled ? _fmt(s.amount ?? 0) : 'Not Filled',
                           icon: cfg.icon,
                           iconColor: iconColor,
                           iconBg: iconBg,
@@ -416,18 +416,18 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
 
             // ── Filter & Search ──────────────────────────────────────────
             SearchAndFilterBar(
-              searchHint: 'Cari jenis pengeluaran...',
+              searchHint: 'Search expense type...',
               onSearchChanged: (v) => setState(() => _searchQuery = v),
               dropdownFilter: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _DropdownChip<int?>(
                     value: _filterBulan,
-                    hint: 'Semua Bulan',
+                    hint: 'All Months',
                     isDark: isDark,
                     items: [
                       const DropdownMenuItem<int?>(
-                          value: null, child: Text('Semua Bulan')),
+                          value: null, child: Text('All Months')),
                       ...List.generate(12, (i) => DropdownMenuItem<int?>(
                             value: i + 1,
                             child: Text(_bulanLabel(i + 1)),
@@ -439,11 +439,11 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                   const SizedBox(width: AppSpacing.sm),
                   _DropdownChip<int?>(
                     value: _filterTahun,
-                    hint: 'Semua Tahun',
+                    hint: 'All Years',
                     isDark: isDark,
                     items: [
                       const DropdownMenuItem<int?>(
-                          value: null, child: Text('Semua Tahun')),
+                          value: null, child: Text('All Years')),
                       ...List.generate(5, (i) {
                         final y = now.year - 1 + i;
                         return DropdownMenuItem<int?>(
@@ -482,18 +482,18 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
             else if (filtered.isEmpty)
               EmptyStateWidget(
                 icon: Icons.receipt_long_outlined,
-                title: 'Belum ada data pengeluaran tetap',
+                title: 'No fixed expense data yet',
                 subtitle: _searchQuery.isNotEmpty
-                    ? 'Tidak ada hasil untuk "$_searchQuery".'
-                    : 'Data akan muncul setelah entri bulan ini dibuat oleh sistem.',
+                    ? 'No results for "$_searchQuery".'
+                    : 'Data will appear once this month\'s entries are created by the system.',
               ).animate().fadeIn()
             else
               AppDataTable(
                 columns: const [
-                  DataColumn(label: Text('Jenis')),
-                  DataColumn(label: Text('Periode')),
+                  DataColumn(label: Text('Type')),
+                  DataColumn(label: Text('Period')),
                   DataColumn(label: Text('Status')),
-                  DataColumn(label: Text('Nominal')),
+                  DataColumn(label: Text('Amount')),
                   DataColumn(label: Text('')),
                 ],
                 rows: filtered.map((entry) {
@@ -501,7 +501,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                   final isDone = entry.isFilled;
 
                   return DataRow(cells: [
-                    // Jenis
+                    // Type
                     DataCell(Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -539,7 +539,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                       ],
                     )),
 
-                    // Periode
+                    // Period
                     DataCell(Text(
                       '${_bulanLabel(entry.bulan)} ${entry.tahun}',
                       style: TextStyle(
@@ -575,7 +575,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                         ),
                       ),
                       child: Text(
-                        isDone ? 'Sudah Diisi' : 'Belum Diisi',
+                        isDone ? 'Filled' : 'Not Filled',
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -590,7 +590,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                       ),
                     )),
 
-                    // Nominal
+                    // Amount
                     DataCell(Text(
                       isDone ? _fmt(entry.amount) : '—',
                       style: TextStyle(
@@ -606,7 +606,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                       ),
                     )),
 
-                    // Aksi
+                    // Action
                     DataCell(IconButton(
                       icon: Icon(
                         isDone ? Icons.edit_outlined : Icons.add_rounded,
@@ -620,7 +620,7 @@ class _FixedExpenseTabContentState extends State<FixedExpenseTabContent> {
                                     ? AppColorsDark.primary
                                     : AppColorsLight.primary)),
                       ),
-                      tooltip: isDone ? 'Ubah nominal' : 'Isi nominal',
+                      tooltip: isDone ? 'Edit amount' : 'Enter amount',
                       onPressed: () => _showFillDialog(entry),
                     )),
                   ]);

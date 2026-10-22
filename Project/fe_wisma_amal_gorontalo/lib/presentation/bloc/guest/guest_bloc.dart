@@ -18,7 +18,7 @@ class FetchAdminGuests extends GuestEvent {
 
 class CreateAdminGuest extends GuestEvent {
   final int scheduleId; 
-  final List<Map<String, dynamic>> guests; // <-- REVISI: Menggunakan array tamu
+  final List<Map<String, dynamic>> guests; // <-- REVISION: Using guest array
   final String checkInAt;
   final String checkOutAt;
 
@@ -103,11 +103,11 @@ class GuestBloc extends Bloc<GuestEvent, GuestState> {
       try {
         await createAdminGuestUseCase(
           scheduleId: event.scheduleId,
-          guests: event.guests, // <-- REVISI: Pass array ke UseCase
+          guests: event.guests, // <-- REVISION: Pass array to UseCase
           checkInAt: event.checkInAt,
           checkOutAt: event.checkOutAt,
         );
-        emit(GuestActionSuccess('Data tamu berhasil ditambahkan.'));
+        emit(GuestActionSuccess('Guest data successfully added.'));
       } catch (e) {
         emit(GuestActionError(e.toString()));
       }
@@ -116,7 +116,7 @@ class GuestBloc extends Bloc<GuestEvent, GuestState> {
     on<CheckoutAdminGuest>((event, emit) async {
       try {
         await checkoutAdminGuestUseCase(event.id);
-        emit(GuestActionSuccess('Tamu berhasil ditandai keluar.'));
+        emit(GuestActionSuccess('Guest successfully checked out.'));
       } catch (e) {
         emit(GuestActionError(e.toString()));
       }
@@ -125,7 +125,7 @@ class GuestBloc extends Bloc<GuestEvent, GuestState> {
     on<ExtendAdminGuest>((event, emit) async {
       try {
         await extendAdminGuestUseCase(event.id, event.newCheckOutAt);
-        emit(GuestActionSuccess('Waktu menginap tamu berhasil diperpanjang.'));
+        emit(GuestActionSuccess('Guest stay duration successfully extended.'));
       } catch (e) {
         emit(GuestActionError(e.toString()));
       }

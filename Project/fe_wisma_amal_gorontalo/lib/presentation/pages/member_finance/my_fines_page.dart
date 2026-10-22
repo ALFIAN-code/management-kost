@@ -31,17 +31,17 @@ class _MyFinesPageState extends State<MyFinesPage> {
   final Set<int> _selectedIds = {};
 
   String _formatCurrency(double v) =>
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(v);
+      NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0).format(v);
 
   String _formatDate(DateTime dt) =>
-      DateFormat('d MMM yyyy', 'id_ID').format(dt);
+      DateFormat('d MMM yyyy', 'en_US').format(dt);
 
   Future<void> _launchMidtrans(String token) async {
     final url = Uri.parse('https://app.sandbox.midtrans.com/snap/v2/vtweb/$token');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal membuka halaman pembayaran')),
+          const SnackBar(content: Text('Failed to open the payment page')),
         );
       }
     }
@@ -98,13 +98,13 @@ class _MyFinesPageState extends State<MyFinesPage> {
             if (state.snapToken != null && state.snapToken!.isNotEmpty) {
               _launchMidtrans(state.snapToken!);
             } else {
-              _snack(context, 'Bukti pembayaran berhasil diunggah. Menunggu verifikasi admin.',
+              _snack(context, 'Payment proof uploaded successfully. Waiting for admin verification.',
                   isDark: isDark);
               setState(() => _selectedIds.clear());
             }
           }
           if (state.status == MemberFinanceStatus.failure) {
-            _snackError(context, state.errorMessage ?? 'Terjadi kesalahan', isDark: isDark);
+            _snackError(context, state.errorMessage ?? 'Something went wrong', isDark: isDark);
           }
         },
         builder: (context, state) {
@@ -114,7 +114,7 @@ class _MyFinesPageState extends State<MyFinesPage> {
           return Scaffold(
             backgroundColor: isDark ? AppColorsDark.background : AppColorsLight.background,
             body: Column(children: [
-              AppTopBar(title: 'Denda Saya', breadcrumb: 'Keuangan / Denda Saya'),
+              AppTopBar(title: 'My Fines', breadcrumb: 'Finance / My Fines'),
               Expanded(child: isLoading
                   ? _buildSkeleton(isDark)
                   : fines.isEmpty
@@ -127,7 +127,7 @@ class _MyFinesPageState extends State<MyFinesPage> {
     );
   }
 
-  // ── Content utama ─────────────────────────────────────────────────────────────
+  // ── Main content ─────────────────────────────────────────────────────────────
 
   Widget _buildContent(
     BuildContext context,
@@ -159,9 +159,9 @@ class _MyFinesPageState extends State<MyFinesPage> {
           Row(children: [
             Expanded(child: _SummaryTile(
               icon: Icons.warning_amber_rounded,
-              label: 'Belum Dibayar',
+              label: 'Unpaid',
               value: _formatCurrency(totalUnpaid),
-              sub: '${unpaid.length} denda',
+              sub: '${unpaid.length} fines',
               color: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
               bg:    isDark ? AppColorsDark.statusWaitingBg : AppColorsLight.statusWaitingBg,
               isDark: isDark,
@@ -169,9 +169,9 @@ class _MyFinesPageState extends State<MyFinesPage> {
             const SizedBox(width: AppSpacing.md),
             Expanded(child: _SummaryTile(
               icon: Icons.check_circle_outline_rounded,
-              label: 'Sudah Lunas',
+              label: 'Paid',
               value: _formatCurrency(totalPaid),
-              sub: '${paid.length} denda',
+              sub: '${paid.length} fines',
               color: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
               bg:    isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg,
               isDark: isDark,
@@ -180,7 +180,7 @@ class _MyFinesPageState extends State<MyFinesPage> {
 
           const SizedBox(height: AppSpacing.xl),
 
-          // ── Instruksi pilih (muncul hanya jika ada yang unpaid) ───────────
+          // ── Selection hint (shown only when there are unpaid fines) ───────────
           if (unpaid.isNotEmpty) ...[
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -196,7 +196,7 @@ class _MyFinesPageState extends State<MyFinesPage> {
                     color: isDark ? AppColorsDark.primary : AppColorsLight.primary),
                 const SizedBox(width: 8),
                 Expanded(child: Text(
-                  'Ketuk kartu denda untuk memilih, lalu bayar sekaligus.',
+                  'Tap a fine card to select it, then pay all selected fines at once.',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? AppColorsDark.primary : AppColorsLight.primary,
@@ -207,9 +207,9 @@ class _MyFinesPageState extends State<MyFinesPage> {
             const SizedBox(height: AppSpacing.lg),
           ],
 
-          // ── Daftar denda belum bayar ──────────────────────────────────────
+          // ── Unpaid fines list ──────────────────────────────────────
           if (unpaid.isNotEmpty) ...[
-            _SectionHeader(label: 'Belum Dibayar', count: unpaid.length, isDark: isDark),
+            _SectionHeader(label: 'Unpaid', count: unpaid.length, isDark: isDark),
             const SizedBox(height: AppSpacing.sm),
             ...unpaid.asMap().entries.map((e) => Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -226,9 +226,9 @@ class _MyFinesPageState extends State<MyFinesPage> {
             const SizedBox(height: AppSpacing.lg),
           ],
 
-          // ── Sudah lunas ───────────────────────────────────────────────────
+          // ── Paid ───────────────────────────────────────────────────
           if (paid.isNotEmpty) ...[
-            _SectionHeader(label: 'Sudah Lunas', count: paid.length, isDark: isDark),
+            _SectionHeader(label: 'Paid', count: paid.length, isDark: isDark),
             const SizedBox(height: AppSpacing.sm),
             ...paid.map((f) => Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -244,9 +244,9 @@ class _MyFinesPageState extends State<MyFinesPage> {
             const SizedBox(height: AppSpacing.lg),
           ],
 
-          // ── Dimaafkan ─────────────────────────────────────────────────────
+          // ── Waived ─────────────────────────────────────────────────────
           if (waived.isNotEmpty) ...[
-            _SectionHeader(label: 'Dimaafkan', count: waived.length, isDark: isDark),
+            _SectionHeader(label: 'Waived', count: waived.length, isDark: isDark),
             const SizedBox(height: AppSpacing.sm),
             ...waived.map((f) => Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -262,9 +262,9 @@ class _MyFinesPageState extends State<MyFinesPage> {
             const SizedBox(height: AppSpacing.lg),
           ],
 
-          // ── Dibatalkan ────────────────────────────────────────────────────
+          // ── Cancelled ────────────────────────────────────────────────────
           if (cancelled.isNotEmpty) ...[
-            _SectionHeader(label: 'Dibatalkan', count: cancelled.length, isDark: isDark),
+            _SectionHeader(label: 'Cancelled', count: cancelled.length, isDark: isDark),
             const SizedBox(height: AppSpacing.sm),
             ...cancelled.map((f) => Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -301,8 +301,8 @@ class _MyFinesPageState extends State<MyFinesPage> {
   Widget _buildEmpty() => const Center(
     child: EmptyStateWidget(
       icon: Icons.gavel_rounded,
-      title: 'Tidak Ada Denda',
-      subtitle: 'Kamu belum memiliki denda. Tetap patuhi peraturan kos!',
+      title: 'No Fines',
+      subtitle: 'You have no fines. Keep following the dormitory rules!',
     ),
   );
 
@@ -480,10 +480,10 @@ class _FineCard extends StatelessWidget {
   };
 
   String get _statusLabel => switch (fine.status) {
-    'paid'      => 'Lunas',
-    'waived'    => 'Dimaafkan',
-    'cancelled' => 'Dibatalkan',
-    _           => 'Belum Bayar',
+    'paid'      => 'Paid',
+    'waived'    => 'Waived',
+    'cancelled' => 'Cancelled',
+    _           => 'Unpaid',
   };
 
   IconData get _statusIcon => switch (fine.status) {
@@ -524,7 +524,7 @@ class _FineCard extends StatelessWidget {
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-          // ── Header strip warna sesuai status ──────────────────────────────
+          // ── Status color header strip ──────────────────────────────
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
@@ -548,7 +548,7 @@ class _FineCard extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-              // Checkbox (hanya untuk unpaid)
+              // Checkbox (only for unpaid)
               if (canSelect)
                 Padding(
                   padding: const EdgeInsets.only(right: 12, top: 2),
@@ -570,13 +570,13 @@ class _FineCard extends StatelessWidget {
                 ),
 
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                // Alasan
+                // Reason
                 Text(fine.reason,
                     style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
 
                 const SizedBox(height: 8),
 
-                // Nominal
+                // Amount
                 Row(children: [
                   Icon(Icons.monetization_on_outlined, size: 14, color: statusColor),
                   const SizedBox(width: 4),
@@ -585,7 +585,7 @@ class _FineCard extends StatelessWidget {
                         fontSize: 18, fontWeight: FontWeight.w800, color: statusColor)),
                 ]),
 
-                // Alasan dimaafkan (jika ada)
+                // Waive reason (if any)
                 if (fine.waiveReason != null) ...[
                   const SizedBox(height: 6),
                   Container(
@@ -609,10 +609,10 @@ class _FineCard extends StatelessWidget {
                   ),
                 ],
 
-                // Tip bayar (hanya untuk unpaid)
+                // Payment tip (only for unpaid)
                 if (fine.isUnpaid) ...[
                   const SizedBox(height: 8),
-                  Text('Ketuk untuk pilih denda ini',
+                  Text('Tap to select this fine',
                       style: TextStyle(fontSize: 11, color: textSec,
                           fontStyle: FontStyle.italic)),
                 ],
@@ -669,32 +669,32 @@ class _PayBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Row(children: [
-          // Info pilihan
+          // Selected info
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min, children: [
-            Text('$count denda dipilih',
+            Text('$count fines selected',
                 style: TextStyle(fontSize: 12, color: textSec)),
             Text(formatCurrency(total),
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
           ])),
 
-          // Batal pilih
+          // Clear selection
           IconButton(
             onPressed: onClear,
             icon: const Icon(Icons.close_rounded),
-            tooltip: 'Batal pilih',
+            tooltip: 'Clear selection',
             style: IconButton.styleFrom(foregroundColor: textSec),
           ),
           const SizedBox(width: 8),
 
-          // Tombol bayar
+          // Pay button
           FilledButton.icon(
             onPressed: isLoading ? null : onBayar,
             icon: isLoading
                 ? const SizedBox(width: 16, height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                 : const Icon(Icons.payment_rounded, size: 18),
-            label: const Text('Bayar Sekarang'),
+            label: const Text('Pay Now'),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             ),
@@ -706,7 +706,7 @@ class _PayBar extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// Dialog Pembayaran
+// Payment Dialog
 // ══════════════════════════════════════════════════════════════════════════════
 
 class _PayFineDialog extends StatefulWidget {
@@ -773,8 +773,8 @@ class _PayFineDialogState extends State<_PayFineDialog> {
             ),
             const SizedBox(width: 12),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Bayar Denda', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-              Text('Pilih metode pembayaran', style: TextStyle(fontSize: 12, color: textSec)),
+              const Text('Pay Fine', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+              Text('Choose a payment method', style: TextStyle(fontSize: 12, color: textSec)),
             ]),
           ]),
 
@@ -792,7 +792,7 @@ class _PayFineDialogState extends State<_PayFineDialog> {
               Icon(Icons.monetization_on_outlined, color: waiting, size: 18),
               const SizedBox(width: 8),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Total Pembayaran', style: TextStyle(fontSize: 11, color: waiting)),
+                Text('Total Payment', style: TextStyle(fontSize: 11, color: waiting)),
                 Text(widget.formatCurrency(widget.totalAmount),
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: waiting)),
               ]),
@@ -800,15 +800,15 @@ class _PayFineDialogState extends State<_PayFineDialog> {
           ),
 
           const SizedBox(height: AppSpacing.lg),
-          const Text('Metode Pembayaran', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+          const Text('Payment Method', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
           const SizedBox(height: AppSpacing.sm),
 
-          // Metode: Transfer Manual
+          // Method: Manual Transfer
           _MethodTile(
             value: 'manual',
             groupValue: _method,
-            label: 'Transfer Manual',
-            sub: 'Upload bukti transfer ke rekening kos',
+            label: 'Manual Transfer',
+            sub: 'Upload transfer proof to the dormitory account',
             icon: Icons.account_balance_outlined,
             primary: primary,
             primaryLight: primaryLight,
@@ -819,13 +819,13 @@ class _PayFineDialogState extends State<_PayFineDialog> {
           ),
           const SizedBox(height: AppSpacing.sm),
 
-          // Metode: Midtrans
+          // Method: Midtrans
           if (widget.isMidtransEnabled) ...[
             _MethodTile(
               value: 'midtrans',
               groupValue: _method,
               label: 'Midtrans (Online)',
-              sub: 'Transfer bank, QRIS, e-wallet, kartu kredit',
+              sub: 'Bank transfer, QRIS, e-wallet, credit card',
               icon: Icons.credit_card_rounded,
               primary: primary,
               primaryLight: primaryLight,
@@ -837,7 +837,7 @@ class _PayFineDialogState extends State<_PayFineDialog> {
             const SizedBox(height: AppSpacing.sm),
           ],
 
-          // Rekening tujuan & upload (manual)
+          // Destination account & upload (manual)
           if (_method == 'manual') ...[
             if (widget.bankAccounts.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.sm),
@@ -852,7 +852,7 @@ class _PayFineDialogState extends State<_PayFineDialog> {
                   Row(children: [
                     Icon(Icons.account_balance_outlined, size: 14, color: textSec),
                     const SizedBox(width: 6),
-                    Text('Rekening Tujuan',
+                    Text('Destination Account',
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: textSec)),
                   ]),
                   const SizedBox(height: 8),
@@ -873,7 +873,7 @@ class _PayFineDialogState extends State<_PayFineDialog> {
               const SizedBox(height: AppSpacing.md),
             ],
 
-            // Upload bukti
+            // Upload proof
             GestureDetector(
               onTap: _pickFile,
               child: AnimatedContainer(
@@ -911,7 +911,7 @@ class _PayFineDialogState extends State<_PayFineDialog> {
                   const SizedBox(width: 12),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text(
-                      _proofBytes != null ? 'Bukti berhasil dipilih' : 'Upload Bukti Transfer',
+                      _proofBytes != null ? 'Proof selected' : 'Upload Transfer Proof',
                       style: TextStyle(
                         fontWeight: FontWeight.w600, fontSize: 13,
                         color: _proofBytes != null
@@ -924,7 +924,7 @@ class _PayFineDialogState extends State<_PayFineDialog> {
                           style: TextStyle(fontSize: 11, color: textSec),
                           overflow: TextOverflow.ellipsis),
                     if (_proofBytes == null)
-                      Text('Foto / screenshot bukti transfer (JPG, PNG)',
+                      Text('Transfer proof photo / screenshot (JPG, PNG)',
                           style: TextStyle(fontSize: 11, color: textSec)),
                   ])),
                   if (_proofBytes != null)
@@ -943,12 +943,12 @@ class _PayFineDialogState extends State<_PayFineDialog> {
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
+              child: const Text('Cancel'),
             ),
             const SizedBox(width: AppSpacing.md),
             FilledButton.icon(
               icon: const Icon(Icons.payment_rounded, size: 16),
-              label: const Text('Bayar'),
+              label: const Text('Pay'),
               onPressed: canPay
                   ? () => Navigator.pop(context, {
                       'payment_method': _method,
@@ -1020,7 +1020,7 @@ class _MethodTile extends StatelessWidget {
             )),
             Text(sub, style: TextStyle(fontSize: 11, color: textSec)),
           ])),
-          // Custom radio indicator (menghindari Radio.groupValue/onChanged yg deprecated di 3.32+)
+          // Custom radio indicator (avoids Radio.groupValue/onChanged deprecated in 3.32+)
           AnimatedContainer(
             duration: const Duration(milliseconds: 150),
             width: 20, height: 20,

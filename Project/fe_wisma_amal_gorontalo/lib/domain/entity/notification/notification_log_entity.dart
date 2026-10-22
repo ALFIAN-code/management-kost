@@ -87,31 +87,31 @@ class NotificationLogItem {
   static String _resolveTypeLabel(String? type) {
     switch (type) {
       case 'payment_receipt':
-        return 'Pembayaran';
+        return 'Payment';
       case 'payment_reminder':
-        return 'Tagihan';
+        return 'Invoice';
       case 'manual_broadcast':
         return 'Broadcast';
       case 'system_alert':
-        return 'Sistem';
+        return 'System';
       case 'guest_registered':
-        return 'Tamu Masuk';
+        return 'Guest Check-In';
       case 'guest_stay_ended':
-        return 'Tamu Keluar';
+        return 'Guest Check-Out';
       case 'pembayaran_diterima':
-        return 'Pembayaran Diterima';
+        return 'Payment Received';
       case 'pembayaran_dibatalkan':
-        return 'Pembayaran Batal';
+        return 'Payment Cancelled';
       case 'jadwal_dibuat':
-        return 'Jadwal Dibuat';
+        return 'Schedule Created';
       case 'jadwal_sewa_aktif':
-        return 'Sewa Aktif';
+        return 'Lease Active';
       case 'jadwal_sewa_selesai':
-        return 'Sewa Selesai';
+        return 'Lease Ended';
       case 'jadwal_batal':
-        return 'Jadwal Batal';
+        return 'Schedule Cancelled';
       case 'laporan_kerusakan':
-        return 'Kerusakan';
+        return 'Damage';
       default:
         return type ?? '-';
     }
@@ -129,7 +129,7 @@ class NotificationLogItem {
           '-',
       status: _resolveStatus(json['status']?.toString()),
       isRead: json['is_read'] == 1 || json['is_read'] == true,
-      // 'type' dari backend (enum value: guest_registered, dll)
+      // 'type' from the backend (enum value: guest_registered, etc.)
       channel: json['type']?.toString() ??
           json['channel']?.toString() ??
           json['provider']?.toString(),
@@ -149,9 +149,9 @@ class NotificationLogItem {
   static String _resolveStatus(String? raw) {
     switch (raw) {
       case 'sent':
-        return 'Terkirim';
+        return 'Sent';
       case 'failed':
-        return 'Gagal';
+        return 'Failed';
       case 'pending':
         return 'Pending';
       default:
@@ -160,7 +160,7 @@ class NotificationLogItem {
   }
 
   static String _resolveMessage(Map<String, dynamic> json) {
-    // 'message_body' adalah field utama dari backend NotificationLog model
+    // 'message_body' is the main field of the backend NotificationLog model
     final raw = json['message_body'] ??
         json['message'] ??
         json['title'] ??
@@ -202,7 +202,7 @@ class NotificationLogPagination {
 class NotificationLogResponse {
   final List<NotificationLogItem> logs;
   final NotificationLogPagination pagination;
-  /// Jumlah notifikasi yang belum dibaca (dari field 'unread_count' di root response)
+  /// Number of unread notifications (from the 'unread_count' field in the root response)
   final int unreadCount;
 
   const NotificationLogResponse({
@@ -212,7 +212,7 @@ class NotificationLogResponse {
   });
 
   factory NotificationLogResponse.fromJson(Map<String, dynamic> json) {
-    // 'unread_count' ada di root response: { success, data: {...paginator...}, unread_count: N }
+    // 'unread_count' is in the root response: { success, data: {...paginator...}, unread_count: N }
     final unreadCount = json['unread_count'] as int? ?? 0;
 
     final data = json['data'];
@@ -231,7 +231,7 @@ class NotificationLogResponse {
         items = data['records'] as List<dynamic>;
       }
 
-      // Pagination metadata ada langsung di data (Laravel paginator)
+      // Pagination metadata is directly in data (Laravel paginator)
       if (data['meta'] is Map<String, dynamic>) {
         metaMap = Map<String, dynamic>.from(data['meta'] as Map);
       } else if (data['pagination'] is Map<String, dynamic>) {

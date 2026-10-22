@@ -9,9 +9,21 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        Role::updateOrCreate(['name' => 'super-admin', 'guard_name' => 'api', 'description' => 'Admin utama / owner kost']);
-        Role::updateOrCreate(['name' => 'admin', 'guard_name' => 'api', 'description' => 'admin pengelola kost']);
-        Role::updateOrCreate(['name' => 'member', 'guard_name' => 'api', 'description' => 'pengguna aplikasi yang belum menjadi penghuni kost']);
-        Role::updateOrCreate(['name' => 'resident', 'guard_name' => 'api', 'description' => 'penghuni kost yang sudah memiliki sewa aktif']);
+        Role::updateOrCreate(
+            ['name' => 'super-admin', 'guard_name' => 'api'],
+            ['description' => 'Main admin / boarding house owner']
+        );
+        Role::updateOrCreate(
+            ['name' => 'admin', 'guard_name' => 'api'],
+            ['description' => 'Admin in charge of boarding house management']
+        );
+        Role::updateOrCreate(
+            ['name' => 'member', 'guard_name' => 'api'],
+            ['description' => 'Application user who has not become a boarding house resident yet']
+        );
+        Role::updateOrCreate(
+            ['name' => 'resident', 'guard_name' => 'api'],
+            ['description' => 'Boarding house resident with an active lease']
+        );
     }
 }

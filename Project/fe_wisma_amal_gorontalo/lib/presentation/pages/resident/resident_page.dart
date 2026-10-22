@@ -16,7 +16,7 @@ import 'package:frontend/presentation/widget/core/table/app_data_table.dart';
 import 'package:frontend/presentation/widget/core/wrapper/empty_state_widget.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:frontend/presentation/widget/core/botton/button.dart'; // Catatan: Sepertinya ada typo 'botton', sesuaikan dengan path asli Anda jika error
+import 'package:frontend/presentation/widget/core/botton/button.dart'; // Note: there seems to be a typo 'botton', adjust to the real path if it errors
 import 'form/resident_detail_form.dart';
 
 @RoutePage()
@@ -44,8 +44,8 @@ class _ResidentViewState extends State<_ResidentView> {
   final ScrollController _tableScrollController = ScrollController();
   Timer? _debounce;
 
-  String _selectedStatus = 'Semua';
-  String _selectedPayment = 'Semua';
+  String _selectedStatus = 'All';
+  String _selectedPayment = 'All';
   int _currentPage = 1;
   int _perPage = 10;
   bool _isLoadingMore = false;
@@ -83,8 +83,8 @@ class _ResidentViewState extends State<_ResidentView> {
         page: _currentPage,
         perPage: _perPage,
         search: query.isEmpty ? null : query,
-        status: _selectedStatus == 'Semua' ? null : _selectedStatus,
-        payment: _selectedPayment == 'Semua' ? null : _selectedPayment,
+        status: _selectedStatus == 'All' ? null : _selectedStatus,
+        payment: _selectedPayment == 'All' ? null : _selectedPayment,
       ),
     );
   }
@@ -133,8 +133,8 @@ class _ResidentViewState extends State<_ResidentView> {
       body: Column(
         children: [
           AppTopBar(
-            title: 'Daftar Penghuni',
-            breadcrumb: 'Manajemen / Daftar Penghuni',
+            title: 'Resident List',
+            breadcrumb: 'Management / Resident List',
           ),
           Expanded(
             child: BlocConsumer<ResidentBloc, ResidentState>(
@@ -169,11 +169,11 @@ class _ResidentViewState extends State<_ResidentView> {
                 if (state is ResidentError && _residentCache.isEmpty) {
                   return EmptyStateWidget(
                     icon: Icons.error_outline,
-                    title: 'Gagal Memuat Data',
+                    title: 'Failed to Load Data',
                     subtitle: state.message,
                     action: BasicButton(
                       onPressed: () => _fetchResidents(isRefresh: true),
-                      label: 'Coba Lagi',
+                      label: 'Try Again',
                     ),
                   );
                 }
@@ -196,10 +196,10 @@ class _ResidentViewState extends State<_ResidentView> {
                         row.kontak.toLowerCase().contains(query);
 
                     final matchesStatus =
-                        _selectedStatus == 'Semua' ||
+                        _selectedStatus == 'All' ||
                         row.status == _selectedStatus;
                     final matchesPayment =
-                        _selectedPayment == 'Semua' ||
+                        _selectedPayment == 'All' ||
                         row.detailBayar == _selectedPayment;
 
                     return matchesSearch && matchesStatus && matchesPayment;
@@ -216,7 +216,7 @@ class _ResidentViewState extends State<_ResidentView> {
                               children: [
                                 Expanded(
                                   child: SummaryStatCard(
-                                    label: 'Penghuni Aktif',
+                                    label: 'Active Residents',
                                     value: activeCount.toString(),
                                     icon: Icons.person_outline,
                                     iconColor: isDark
@@ -230,7 +230,7 @@ class _ResidentViewState extends State<_ResidentView> {
                                 const SizedBox(width: AppSpacing.lg),
                                 Expanded(
                                   child: SummaryStatCard(
-                                    label: 'Kontrak Pending',
+                                    label: 'Pending Contracts',
                                     value: pendingCount.toString(),
                                     icon: Icons.note_add_outlined,
                                     iconColor: isDark
@@ -244,7 +244,7 @@ class _ResidentViewState extends State<_ResidentView> {
                                 const SizedBox(width: AppSpacing.lg),
                                 Expanded(
                                   child: SummaryStatCard(
-                                    label: 'Kamar Tersedia',
+                                    label: 'Available Rooms',
                                     value: availableRooms.toString(),
                                     icon: Icons.bedroom_parent_outlined,
                                     iconColor: isDark
@@ -266,7 +266,7 @@ class _ResidentViewState extends State<_ResidentView> {
                         // Search & Filter
                         SearchAndFilterBar(
                           searchController: _searchController,
-                          searchHint: 'Cari nama, kamar, kontak...',
+                          searchHint: 'Search name, room, contact...',
                           onSearchChanged: _onSearchChanged,
                           dropdownFilter: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -274,7 +274,7 @@ class _ResidentViewState extends State<_ResidentView> {
                               _buildDropdownFilter(
                                 isDark: isDark,
                                 value: _selectedStatus,
-                                items: const ['Semua', 'Aktif', 'Pending'],
+                                items: const ['All', 'Active', 'Pending'],
                                 icon: Icons.filter_list,
                                 label: 'Status',
                                 onChanged: (value) {
@@ -286,9 +286,9 @@ class _ResidentViewState extends State<_ResidentView> {
                               _buildDropdownFilter(
                                 isDark: isDark,
                                 value: _selectedPayment,
-                                items: const ['Semua', 'Lunas', 'Belum Lunas'],
+                                items: const ['All', 'Paid', 'Unpaid'],
                                 icon: Icons.receipt_long_outlined,
-                                label: 'Detil Bayar',
+                                label: 'Payment Details',
                                 onChanged: (value) {
                                   setState(() => _selectedPayment = value);
                                   _fetchResidents(isRefresh: true);
@@ -306,21 +306,21 @@ class _ResidentViewState extends State<_ResidentView> {
                             padding: EdgeInsets.only(top: AppSpacing.xxxl),
                             child: EmptyStateWidget(
                               icon: Icons.group_off_outlined,
-                              title: 'Tidak Ada Penghuni',
+                              title: 'No Residents',
                               subtitle:
-                                  'Belum ada data penghuni yang terdaftar atau sesuai filter saat ini.',
+                                  'No resident data registered or matching the current filter.',
                             ),
                           )
                         else
                           AppDataTable(
                             columns: const [
                               DataColumn(label: Text('NO')),
-                              DataColumn(label: Text('NAMA')),
-                              DataColumn(label: Text('KAMAR')),
-                              DataColumn(label: Text('KONTAK')),
-                              DataColumn(label: Text('DETIL BAYAR')),
+                              DataColumn(label: Text('NAME')),
+                              DataColumn(label: Text('ROOM')),
+                              DataColumn(label: Text('CONTACT')),
+                              DataColumn(label: Text('PAYMENT DETAILS')),
                               DataColumn(label: Text('STATUS')),
-                              DataColumn(label: Text('KONTRAK')),
+                              DataColumn(label: Text('CONTRACT')),
                             ],
                             rows: _residentCache.asMap().entries.map((entry) {
                               final index = entry.key + 1;

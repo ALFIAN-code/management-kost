@@ -58,11 +58,11 @@ class RoomDetailView extends StatelessWidget {
           return Scaffold(
             appBar: CustomAppbar(
               icon: const Icon(Icons.arrow_back),
-              title: 'Detail Kamar',
+              title: 'Room Details',
             ),
             body: Center(
               child: Text(
-                state.errorMessage ?? 'Terjadi kesalahan tak terduga',
+                state.errorMessage ?? 'An unexpected error occurred',
               ),
             ),
           );
@@ -71,7 +71,7 @@ class RoomDetailView extends StatelessWidget {
         return Scaffold(
           appBar: CustomAppbar(
             icon: const Icon(Icons.arrow_back),
-            title: 'Detail Kamar',
+            title: 'Room Details',
           ),
           body: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -134,7 +134,7 @@ class RoomDetailView extends StatelessWidget {
                                           LoadDetailRoomEvent(state.room!.id),
                                         );
                                       },
-                                      label: 'Edit Kamar',
+                                      label: 'Edit Room',
                                     ),
                                   ),
                                   const SizedBox(height: 20),
@@ -178,7 +178,7 @@ class RoomDetailView extends StatelessWidget {
 
                                 /// FASILITAS
                                 Text(
-                                  'Fasilitas',
+                                  'Facilities',
                                   style: Theme.of(
                                     context,
                                   ).textTheme.headlineSmall,
@@ -207,7 +207,7 @@ class RoomDetailView extends StatelessWidget {
                                 const SizedBox(height: 30),
 
                                 Text(
-                                  'Deskripsi',
+                                  'Description',
                                   style: Theme.of(
                                     context,
                                   ).textTheme.headlineSmall,
@@ -234,7 +234,7 @@ class RoomDetailView extends StatelessWidget {
                                 children: [
                                   /// PRICE
                                   Text(
-                                    '${state.room?.priceFormatted} / bulan',
+                                    '${state.room?.priceFormatted} / month',
                                     style: Theme.of(
                                       context,
                                     ).textTheme.titleMedium,
@@ -244,7 +244,7 @@ class RoomDetailView extends StatelessWidget {
                                       state.room!.priceDaily > 0) ...[
                                     const SizedBox(height: 8),
                                     // Text(
-                                    //   '${state.room?.priceDailyFormatted} / hari',
+                                    //   '${state.room?.priceDailyFormatted} / day',
                                     //   style: Theme.of(context)
                                     //       .textTheme
                                     //       .titleMedium
@@ -266,7 +266,7 @@ class RoomDetailView extends StatelessWidget {
                                             ),
                                           );
                                         },
-                                        label: 'Pesan Sekarang',
+                                        label: 'Book Now',
                                       )
                                     else
                                       BasicButton(
@@ -275,7 +275,7 @@ class RoomDetailView extends StatelessWidget {
                                             LoginRoute(pendingRoom: state.room),
                                           );
                                         },
-                                        label: 'Login untuk Memesan',
+                                        label: 'Login to Book',
                                       ),
                                   ],
                                 ],

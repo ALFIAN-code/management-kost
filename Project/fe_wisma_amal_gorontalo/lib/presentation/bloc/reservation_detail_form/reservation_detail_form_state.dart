@@ -37,7 +37,7 @@ class ReservationDetailFormState extends Equatable {
   final bool isMidtransEnabled;
   final FormzSubmissionStatus status;
   final String? errorMessage;
-  final String paymentMethod; // 'online' atau 'tunai'
+  final String paymentMethod; // 'online' or 'tunai'
   final String? selectedMidtransMethod;
   final List<MidtransMethodEntity> midtransPaymentMethods;
   final ReservationEntity? createdReservation;
@@ -47,14 +47,14 @@ class ReservationDetailFormState extends Equatable {
   final String? tenantName;
   final String paymentScheme; // 'full' | 'dp'
 
-  /// DP hanya tersedia jika start_date > H+7 dari hari ini
+  /// The down payment is only available if start_date > H+7 from today
   bool get isDpAvailable {
     if (startDate == null) return false;
     final threshold = DateTime.now().add(const Duration(days: 7));
     return startDate!.isAfter(threshold);
   }
 
-  /// Jumlah DP yang harus dibayar (50% dari total)
+  /// The down payment amount to be paid (50% of the total)
   double get dpAmount => totalPrice * 0.5;
 
   ReservationDetailFormState copyWith({

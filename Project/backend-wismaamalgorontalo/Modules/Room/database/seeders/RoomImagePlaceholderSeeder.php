@@ -55,7 +55,7 @@ class RoomImagePlaceholderSeeder extends Seeder
             }
         }
 
-        $this->command->info('✅ Berhasil menyalin dummy images & thumbnails untuk rooms!');
+        $this->command->info('✅ Successfully copied dummy images & thumbnails for rooms!');
     }
 
     private function copyPlaceholder($path, $dummyImages)

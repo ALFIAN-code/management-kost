@@ -1,21 +1,22 @@
 sequenceDiagram
   autonumber
   actor Admin as Pengelola Gedung
-  participant FE as Frontend UI (Web / Mobile)
+  participant FE as Flutter Web (Antarmuka)
   participant Fin as Modul Finance (Opsional)
   actor Owner as Pemilik Properti
 
   Note over Admin: Pengeluaran Riil Terjadi (Token PLN, Air PAM, WiFi, Gaji, Belanja Alat)
+  Note over Fin: Cakupan F11 memerlukan tabel expenses di luar skema 13 tabel
   Admin->>FE: Buka Form Pencatatan Pengeluaran (building_id)
   Admin->>FE: Input Kategori (Utilitas / Kebersihan / Gaji / Servis), Nominal Rupiah, Tanggal & Unggah Foto Struk
-  FE->>Fin: POST /api/finance/expenses (building_id, category, amount, date, receipt_url)
+  FE->>Fin: POST /api/expenses (kategori, nominal, tanggal, bukti nota)
   
   Fin->>Fin: Simpan Rekening Biaya & Validasi Format
   Fin->>Fin: Rekalkulasi Total Arus Kas Keluar Periode Berjalan
   Fin-->>FE: Return Pengeluaran Berhasil Dicatat (HTTP 201)
 
   Owner->>FE: Akses Laporan Keuangan & Dashboard Laba-Rugi
-  FE->>Fin: GET /api/finance/reports/cashflow?building_id=X&period=Y
+  FE->>Fin: GET /api/dashboard/summary?building_id=X&period=Y
   Fin->>Fin: Agregasi: Total Pendapatan Sewa - Total Pengeluaran Operasional
   Fin-->>FE: Return Laporan Laba Bersih (Net Profit) & Grafik Kategori Biaya
   FE-->>Owner: Tampilkan Visualisasi Transparansi Keuangan Gedung

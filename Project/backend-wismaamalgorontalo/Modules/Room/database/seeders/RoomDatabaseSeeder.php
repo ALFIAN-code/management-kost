@@ -18,19 +18,19 @@ class RoomDatabaseSeeder extends Seeder
                 'titles' => ['Standard Deluxe', 'Garden View Standard', 'Budget Standard', 'Access Standard', 'Cozy Standard'],
                 'price' => 500000,
                 'price_daily' => 50000,
-                'facilities' => ['AC', 'WiFi', 'Kasur Single', 'Lemari', 'Meja Belajar'],
+                'facilities' => ['AC', 'WiFi', 'Single Bed', 'Wardrobe', 'Study Desk'],
             ],
             'deluxe' => [
                 'titles' => ['Executive Deluxe', 'Modern Deluxe', 'Bright Deluxe', 'Smart Deluxe', 'Prime Deluxe'],
                 'price' => 750000,
                 'price_daily' => 75000,
-                'facilities' => ['AC', 'WiFi', 'Kasur Queen', 'Lemari', 'Meja Belajar', 'Kamar Mandi Dalam', 'TV'],
+                'facilities' => ['AC', 'WiFi', 'Queen Bed', 'Wardrobe', 'Study Desk', 'En-suite Bathroom', 'TV'],
             ],
             'suite' => [
                 'titles' => ['Royal Suite', 'Penthouse Suite', 'Family Suite', 'Presidential Suite', 'Business Suite'],
                 'price' => 1200000,
                 'price_daily' => 120000,
-                'facilities' => ['AC', 'WiFi', 'Kasur King', 'Lemari Besar', 'Meja Kerja', 'Kamar Mandi Dalam', 'Balkon', 'TV', 'Kulkas', 'Dapur Kecil', 'Sofa'],
+                'facilities' => ['AC', 'WiFi', 'King Bed', 'Large Wardrobe', 'Work Desk', 'En-suite Bathroom', 'Balcony', 'TV', 'Refrigerator', 'Kitchenette', 'Sofa'],
             ],
         ];
 
@@ -71,7 +71,7 @@ class RoomDatabaseSeeder extends Seeder
                         'price' => $typeData['price'],
                         'price_daily' => $typeData['price_daily'],
                         'status' => $status,
-                        'description' => "Kamar {$title} yang dirancang khusus untuk kenyamanan maksimal Anda. Menawarkan suasana tenang dengan pencahayaan alami yang cukup. Dilengkapi dengan fasilitas modern, area kerja yang ergonomis, dan koneksi internet cepat, menjadikannya pilihan ideal baik bagi wisatawan maupun profesional.",
+                        'description' => "The {$title} room is designed specifically for your maximum comfort. It offers a calm atmosphere with plenty of natural light, complete with modern amenities, an ergonomic work area, and a fast internet connection, making it an ideal choice for both tourists and professionals.",
                         'facilities' => $typeData['facilities'],
                     ]
                 );
@@ -90,6 +90,6 @@ class RoomDatabaseSeeder extends Seeder
             }
         }
 
-        $this->command->info('Berhasil membuat 20 data room dengan facilities dan images!');
+        $this->command->info('Successfully created 20 room records with facilities and images!');
     }
 }

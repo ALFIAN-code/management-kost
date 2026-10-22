@@ -1,17 +1,17 @@
 class RouteConstant {
-  // Kalau path diawali / → berarti root / halaman awal
-  // Kalau nggak diawali / → berarti child/nested
+  // If the path starts with / → it means root / landing page
+  // If it doesn't start with / → it means child/nested
 
-  //splash page
+  // splash page
   static const String landingPath = '/';
   static const String rootPath = '/app';
   static const String rootName = 'root';
 
-  //auth page
+  // auth page
   static const String loginName = '/login';
   static const String registerName = '/register';
 
-  //dashboard dan admin panel
+  // dashboard and admin panel
   static const String dashboardName = 'dashboard';
   static const String landingName = 'landing';
   static const String permissionName = 'permissions';
@@ -24,12 +24,12 @@ class RouteConstant {
   static const String editProfileName = 'edit-profile';
   static const String changePasswordName = 'change-password';
 
-  // Manajemen penghuni
+  // Resident management
   static const String residentName = 'residents';
   static const String residentProfileName = '$residentName/profile';
   static const String myReservationName = 'my-reservation';
 
-  // Manajemen kamar & reservasi
+  // Room & reservation management
   static const String roomAndReservationName = 'room-reservations';
   static const String roomName = '$roomAndReservationName/rooms';
   static const String addRoomName = '$roomAndReservationName/$roomName/add';
@@ -40,25 +40,25 @@ class RouteConstant {
   static const String reservationDetailFormName = 'reservation-detail-form';
   static const String roomScheduleName = '$roomAndReservationName/schedule';
 
-  // Manajemen Keuangan
+  // Finance management
   static const String financeName = 'finances';
 
-  // Manajemen Inventaris & Pemeliharaan
+  // Inventory & maintenance management
   static const String inventory = 'inventory';
   static const String inventoryForm = '$inventory/form';
   static const String maintanance = 'maintanance';
   static const String maintananceForm = '$maintanance/form';
   static const String maintananceDetail = '$maintanance/detail';
 
-  // Laporan Kerusakan
+  // Damage Reports
   static const String maintenanceReport = 'maintenance-reports';
   static const String maintenanceReportCreate = '$maintenanceReport/create';
   static const String maintenanceReportDetail = '$maintenanceReport/:id';
 
-  // Modul Finance
+  // Finance module
   static const String financeDashboardName = 'finance/dashboard';
 
-  // Form Identitas Pengguna
+  // User identity form
   static const String identityFormName = 'profile/identity';
   static const String completeProfileName = 'profile/complete';
 
@@ -79,6 +79,6 @@ class RouteConstant {
   static const String myGuestName = 'me/guests';
   static const String adminGuestBillName = 'admin/guest-bills';
 
-  // Notifikasi
+  // Notification
   static const String notificationMonitoringName = 'notification/monitoring';
 }

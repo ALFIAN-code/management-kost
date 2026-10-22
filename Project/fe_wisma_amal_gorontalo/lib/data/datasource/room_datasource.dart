@@ -171,8 +171,8 @@ class RoomDatasource {
         EndpointConstant.uploadRoomImage(roomId: roomId),
         data: formData,
       );
-      // Status 201 (Created) adalah standard Laravel/REST API
-      // untuk request POST yang berhasil membuat data baru.
+      // Status 201 (Created) is the standard Laravel/REST API
+      // response for a POST request that successfully creates new data.
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data['status'] == true;
       } else {

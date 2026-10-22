@@ -87,7 +87,7 @@ class MemberFinanceBloc extends Bloc<MemberFinanceEvent, MemberFinanceState> {
     } catch (e) {
       emit(state.copyWith(
         status: MemberFinanceStatus.failure,
-        errorMessage: _extractErrorMessage(e, 'Gagal memuat data keuangan.'),
+        errorMessage: _extractErrorMessage(e, 'Failed to load financial data.'),
       ));
     }
   }
@@ -106,7 +106,7 @@ class MemberFinanceBloc extends Bloc<MemberFinanceEvent, MemberFinanceState> {
     } catch (e) {
       emit(state.copyWith(
         status: MemberFinanceStatus.failure,
-        errorMessage: _extractErrorMessage(e, 'Gagal memuat daftar tagihan.'),
+        errorMessage: _extractErrorMessage(e, 'Failed to load the invoice list.'),
       ));
     }
   }
@@ -125,7 +125,7 @@ class MemberFinanceBloc extends Bloc<MemberFinanceEvent, MemberFinanceState> {
     } catch (e) {
       emit(state.copyWith(
         status: MemberFinanceStatus.failure,
-        errorMessage: _extractErrorMessage(e, 'Gagal memuat riwayat pembayaran.'),
+        errorMessage: _extractErrorMessage(e, 'Failed to load the payment history.'),
       ));
     }
   }
@@ -141,7 +141,7 @@ class MemberFinanceBloc extends Bloc<MemberFinanceEvent, MemberFinanceState> {
     } catch (e) {
       emit(state.copyWith(
         status: MemberFinanceStatus.failure,
-        errorMessage: _extractErrorMessage(e, 'Gagal memuat daftar denda.'),
+        errorMessage: _extractErrorMessage(e, 'Failed to load the fine list.'),
       ));
     }
   }
@@ -173,7 +173,7 @@ class MemberFinanceBloc extends Bloc<MemberFinanceEvent, MemberFinanceState> {
     } catch (e) {
       emit(state.copyWith(
         status: MemberFinanceStatus.failure,
-        errorMessage: _extractErrorMessage(e, 'Gagal memproses pembayaran denda.'),
+        errorMessage: _extractErrorMessage(e, 'Failed to process the fine payment.'),
       ));
     }
   }
@@ -206,7 +206,7 @@ class MemberFinanceBloc extends Bloc<MemberFinanceEvent, MemberFinanceState> {
     } catch (e) {
       emit(state.copyWith(
         status: MemberFinanceStatus.failure,
-        errorMessage: _extractErrorMessage(e, 'Gagal memproses pembayaran.'),
+        errorMessage: _extractErrorMessage(e, 'Failed to process the payment.'),
       ));
     }
   }
@@ -244,7 +244,7 @@ class MemberFinanceBloc extends Bloc<MemberFinanceEvent, MemberFinanceState> {
     } catch (e) {
       emit(state.copyWith(
         status: MemberFinanceStatus.failure,
-        errorMessage: _extractErrorMessage(e, 'Gagal memproses perpanjangan sewa.'),
+        errorMessage: _extractErrorMessage(e, 'Failed to process the lease extension.'),
       ));
     }
   }

@@ -25,22 +25,22 @@ class PermissionDetailPage extends StatelessWidget {
       child: Scaffold(
         appBar: CustomAppbar(
           icon: const Icon(Icons.arrow_back),
-          title: 'Detail Izin',
+          title: 'Permission Details',
           onPressed: () => context.router.back(),
         ),
         body: BlocBuilder<PermissionBloc, PermissionState>(
           builder: (context, state) {
-            // Menampilkan loading saat data sedang dimuat
+            // Show a loading indicator while the data is being loaded
             if (state.status == FormzSubmissionStatus.inProgress) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            // Mencari data permission secara aman (nullable)
+            // Find the permission data safely (nullable)
             final PermissionEntity? permission = state.permissions
                 .cast<PermissionEntity?>()
                 .firstWhere((p) => p?.id == id, orElse: () => null);
 
-            // Jika data tidak ditemukan, tampilkan pesan error yang informatif
+            // If the data is not found, show an informative error message
             if (permission == null) {
               return Center(
                 child: Column(
@@ -49,7 +49,7 @@ class PermissionDetailPage extends StatelessWidget {
                     const Icon(Icons.search_off, size: 64, color: Colors.grey),
                     const SizedBox(height: 16),
                     Text(
-                      'Data izin dengan ID $id tidak ditemukan',
+                      'Permission data with ID $id was not found',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 24),
@@ -57,7 +57,7 @@ class PermissionDetailPage extends StatelessWidget {
                       width: 200,
                       child: BasicButton(
                         onPressed: () => context.router.back(),
-                        label: 'Kembali',
+                        label: 'Back',
                         type: ButtonType.secondary,
                       ),
                     ),
@@ -66,7 +66,7 @@ class PermissionDetailPage extends StatelessWidget {
               );
             }
 
-            // Tampilkan UI Detail jika data ditemukan
+            // Show the details UI if the data is found
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: BasicCard(
@@ -88,7 +88,7 @@ class PermissionDetailPage extends StatelessWidget {
                           ),
                         ),
                         CustomChip(
-                          label: permission.target ?? 'Semua',
+                          label: permission.target ?? 'All',
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ],
@@ -99,15 +99,15 @@ class PermissionDetailPage extends StatelessWidget {
 
                     _buildDetailItem(
                       context,
-                      'Target Modul',
+                      'Target Module',
                       permission.target ?? '-',
                     ),
                     const SizedBox(height: 24),
                     _buildDetailItem(
                       context,
-                      'Deskripsi Izin',
+                      'Permission Description',
                       permission.description ??
-                          'Tidak ada deskripsi untuk izin ini.',
+                          'There is no description for this permission.',
                     ),
 
                     const SizedBox(height: 40),
@@ -115,7 +115,7 @@ class PermissionDetailPage extends StatelessWidget {
                       width: double.infinity,
                       child: BasicButton(
                         onPressed: () => context.router.back(),
-                        label: 'Kembali',
+                        label: 'Back',
                         type: ButtonType.secondary,
                       ),
                     ),

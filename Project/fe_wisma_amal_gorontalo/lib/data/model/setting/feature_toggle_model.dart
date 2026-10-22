@@ -35,7 +35,7 @@ class FeatureToggleModel {
       icon: json['icon'],
       isActive: json['is_active'] == 1 || json['is_active'] == true,
       isLocked: json['is_locked'] == 1 || json['is_locked'] == true,
-      isLicensed: json['is_licensed'] ?? true, // Default true jika tidak ada
+      isLicensed: json['is_licensed'] ?? true, // Default true if not present
       sortOrder: json['sort_order'] ?? 0,
       children: json['children'] != null
           ? (json['children'] as List)

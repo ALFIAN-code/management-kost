@@ -27,10 +27,10 @@ abstract class PermissionKeys {
   static const updateRooms = 'update-room';
   static const deleteRooms = 'delete-room';
 
-  // ─── Lease / Sewa ────────────────────────────────────────────────────
+  // ─── Lease ────────────────────────────────────────────────────
   static const viewLease = 'view-lease';
   static const approveLease = 'approve-lease';
-  /// Mengajukan sewa kamar (penghuni)
+  /// Submit a room lease application (resident)
   static const applyLease = 'create-lease';
 
   // ─── Finance ─────────────────────────────────────────────────────────
@@ -48,16 +48,16 @@ abstract class PermissionKeys {
   static const financeFixedExpenseCreate = 'finance-fixed-expense-create';
   static const financeFixedExpenseUpdate = 'finance-fixed-expense-update';
   static const financeFixedExpenseDelete = 'finance-fixed-expense-delete';
-  /// Ringkasan keuangan pribadi (member & resident)
+  /// Personal finance summary (member & resident)
   static const financeMeSummaryView = 'finance-me-summary-view';
   static const financeMeInvoiceView = 'finance-me-invoice-view';
   static const financeMePaymentView = 'finance-me-payment-view';
 
-  // ─── Fine / Denda ─────────────────────────────────────────────────────
+  // ─── Fine ─────────────────────────────────────────────────────
   static const financeFineView = 'finance-fine-view';
   static const financeFineCreate = 'finance-fine-create';
   static const financeFineWaive = 'finance-fine-waive';
-  /// Member/resident melihat denda milik sendiri
+  /// Member/resident views their own fines
   static const financeMeFineView = 'finance-me-fine-view';
 
   // ─── Inventory ───────────────────────────────────────────────────────
@@ -72,13 +72,13 @@ abstract class PermissionKeys {
   static const updateMaintenance = 'update-maintenance';
   static const deleteMaintenance = 'delete-maintenance';
   static const scheduleMaintenance = 'schedule-maintenance';
-  /// Melihat semua laporan kerusakan dari penghuni (admin)
+  /// View all damage reports from residents (admin)
   static const viewDamageReport = 'view-damage-report';
 
-  // ─── Damage Report (Penghuni) ────────────────────────────────────────
-  /// Penghuni melaporkan kerusakan
+  // ─── Damage Report (Resident) ────────────────────────────────────────
+  /// Resident reports damage
   static const createDamageReport = 'create-damage-report';
-  /// Penghuni melihat laporan kerusakan milik sendiri
+  /// Resident views their own damage reports
   static const viewMyDamageReport = 'view-my-damage-report';
 
   // ─── Resident Management (Admin) ─────────────────────────────────────
@@ -90,20 +90,20 @@ abstract class PermissionKeys {
   // ─── Profile & Resident Flow ────────────────────────────────────────
   static const completeResidentProfile = 'complete-resident-profile';
 
-  // ─── Guest (Tamu) ────────────────────────────────────────────────────
-  /// Admin melihat semua tamu
+  // ─── Guest ────────────────────────────────────────────────────
+  /// Admin views all guests
   static const viewGuest = 'view-guest';
-  /// Penghuni melihat daftar tamu milik sendiri
+  /// Resident views their own guest list
   static const viewMyGuest = 'view-my-guest';
-  /// Penghuni mendaftarkan tamu baru
+  /// Resident registers a new guest
   static const createGuest = 'create-guest';
-  /// Penghuni menghapus tamu milik sendiri
+  /// Resident deletes their own guest
   static const deleteGuest = 'delete-guest';
-  /// Penghuni membayar tagihan tamu
+  /// Resident pays a guest bill
   static const payGuestBill = 'pay-guest-bill';
-  /// Admin memverifikasi pembayaran tagihan tamu
+  /// Admin verifies a guest bill payment
   static const verifyGuestBill = 'verify-guest-bill';
-  /// Admin melihat semua tagihan tamu
+  /// Admin views all guest bills
   static const viewGuestBill = 'view-guest-bill';
 
   // ─── Notification ────────────────────────────────────────────────────

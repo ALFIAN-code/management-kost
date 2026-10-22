@@ -61,7 +61,7 @@ class _GuestListViewState extends State<_GuestListView> {
   bool _hasMore = true;
   List<GuestItem> _guestCache = <GuestItem>[];
   Timer? _debounce;
-  String _selectedStatus = 'Semua';
+  String _selectedStatus = 'All';
 
   @override
   void initState() {
@@ -155,8 +155,8 @@ class _GuestListViewState extends State<_GuestListView> {
       body: Column(
         children: [
           AppTopBar(
-            title: 'Daftar Tamu',
-            breadcrumb: 'Manajemen / Daftar Tamu',
+            title: 'Guest List',
+            breadcrumb: 'Management / Guest List',
             action: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -172,7 +172,7 @@ class _GuestListViewState extends State<_GuestListView> {
                           type: ButtonType.secondary,
                           onPressed: _showNotificationLog,
                           leadIcon: const Icon(Icons.notifications_none, size: 18),
-                          label: 'Log Notifikasi',
+                          label: 'Notification Log',
                         ),
                         if (hasUnread)
                           Positioned(
@@ -194,7 +194,7 @@ class _GuestListViewState extends State<_GuestListView> {
                 BasicButton(
                   onPressed: _showAddGuestDialog,
                   leadIcon: Icon(Icons.add, size: 18, color: Theme.of(context).colorScheme.onPrimary),
-                  label: 'Tambah Tamu',
+                  label: 'Add Guest',
                 ),
               ],
             ),
@@ -233,11 +233,11 @@ class _GuestListViewState extends State<_GuestListView> {
                 if (state is GuestError && _guestCache.isEmpty) {
                   return EmptyStateWidget(
                     icon: Icons.error_outline,
-                    title: 'Gagal Memuat Data',
+                    title: 'Failed to Load Data',
                     subtitle: state.message,
                     action: BasicButton(
                       onPressed: _reload,
-                      label: 'Coba Lagi',
+                      label: 'Try Again',
                     ),
                   );
                 }
@@ -251,11 +251,11 @@ class _GuestListViewState extends State<_GuestListView> {
                       // Search Bar
                       SearchAndFilterBar(
                         searchController: _searchController,
-                        searchHint: 'Cari tamu, penghuni, kamar...',
+                        searchHint: 'Search guest, resident, room...',
                         onSearchChanged: _onSearch,
                         dropdownFilter: DropdownButton<String>(
                           value: _selectedStatus,
-                          items: ['Semua', 'Aktif', 'Keluar']
+                          items: ['All', 'Active', 'Checked Out']
                               .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                               .toList(),
                           onChanged: (v) {
@@ -276,19 +276,19 @@ class _GuestListViewState extends State<_GuestListView> {
                       AppDataTable(
                         columns: const [
                           DataColumn(label: Text('NO')),
-                          DataColumn(label: Text('NAMA PENGHUNI')),
-                          DataColumn(label: Text('KAMAR')),
-                          DataColumn(label: Text('NAMA TAMU')),
-                          DataColumn(label: Text('HUBUNGAN')),
-                          DataColumn(label: Text('MASUK')),
-                          DataColumn(label: Text('KELUAR')),
-                          DataColumn(label: Text('AKSI')),
+                          DataColumn(label: Text('RESIDENT NAME')),
+                          DataColumn(label: Text('ROOM')),
+                          DataColumn(label: Text('GUEST NAME')),
+                          DataColumn(label: Text('RELATIONSHIP')),
+                          DataColumn(label: Text('CHECK IN')),
+                          DataColumn(label: Text('CHECK OUT')),
+                          DataColumn(label: Text('ACTION')),
                         ],
                         rows: (() {
                           final filteredCache = _guestCache.where((item) {
-                            if (_selectedStatus == 'Semua') return true;
-                            if (_selectedStatus == 'Aktif') return item.stayCompletedNotifiedAt == null;
-                            if (_selectedStatus == 'Keluar') return item.stayCompletedNotifiedAt != null;
+                            if (_selectedStatus == 'All') return true;
+                            if (_selectedStatus == 'Active') return item.stayCompletedNotifiedAt == null;
+                            if (_selectedStatus == 'Checked Out') return item.stayCompletedNotifiedAt != null;
                             return true;
                           }).toList();
                           return filteredCache.asMap().entries.map((entry) {
@@ -310,7 +310,7 @@ class _GuestListViewState extends State<_GuestListView> {
                                     IconButton(
                                       onPressed: () => _showGuestDetail(context, row),
                                       icon: Icon(Icons.visibility_outlined, color: Theme.of(context).colorScheme.primary),
-                                      tooltip: 'Detail Tamu',
+                                      tooltip: 'Guest Details',
                                       visualDensity: VisualDensity.compact,
                                     ),
                                     if (row.stayCompletedNotifiedAt == null) ...[
@@ -318,7 +318,7 @@ class _GuestListViewState extends State<_GuestListView> {
                                       IconButton(
                                         onPressed: () => _confirmCheckout(context, row),
                                         icon: Icon(Icons.logout_rounded, color: Theme.of(context).colorScheme.error),
-                                        tooltip: 'Checkout Tamu',
+                                        tooltip: 'Check Out Guest',
                                         visualDensity: VisualDensity.compact,
                                       ),
                                     ],
@@ -380,24 +380,24 @@ class _GuestListViewState extends State<_GuestListView> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Detail Tamu', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+              Text('Guest Details', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
-              Text('Nama Tamu: ${item.name}'),
+              Text('Guest Name: ${item.name}'),
               const SizedBox(height: 4),
-              Text('Penghuni: ${item.penghuni}'),
+              Text('Resident: ${item.penghuni}'),
               const SizedBox(height: 4),
-              Text('Kamar: ${item.kamar}'),
+              Text('Room: ${item.kamar}'),
               const SizedBox(height: 4),
-              Text('Hubungan: ${item.relationshipLabel}'),
+              Text('Relationship: ${item.relationshipLabel}'),
               const SizedBox(height: 4),
               Text('Check In: ${_formatDateTime(item.checkInAt)}'),
               const SizedBox(height: 4),
               Text('Check Out: ${_formatDateTime(item.checkOutAt)}'),
               const SizedBox(height: 4),
-              Text('Status: ${item.stayCompletedNotifiedAt == null ? 'Aktif' : 'Telah Keluar'}'),
+              Text('Status: ${item.stayCompletedNotifiedAt == null ? 'Active' : 'Checked Out'}'),
               const SizedBox(height: 16),
               if (item.identityImageUrl != null && item.identityImageUrl!.isNotEmpty) ...[
-                Text('Foto Identitas:', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+                Text('Identity Photo:', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
@@ -418,7 +418,7 @@ class _GuestListViewState extends State<_GuestListView> {
                 alignment: Alignment.centerRight,
                 child: FilledButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Tutup'),
+                  child: const Text('Close'),
                 ),
               ),
             ],
@@ -431,10 +431,10 @@ class _GuestListViewState extends State<_GuestListView> {
   void _confirmCheckout(BuildContext context, GuestItem item) async {
     final confirmed = await AppDialog.show(
       context,
-      title: 'Checkout Tamu',
-      message: 'Tandai tamu "${item.name}" dari penghuni "${item.penghuni}" sebagai telah keluar?',
-      confirmLabel: 'Ya, Checkout',
-      cancelLabel: 'Batal',
+      title: 'Check Out Guest',
+      message: 'Mark guest "${item.name}" of resident "${item.penghuni}" as checked out?',
+      confirmLabel: 'Yes, Check Out',
+      cancelLabel: 'Cancel',
       type: AppDialogType.warning,
     );
     if (confirmed == true && context.mounted) {
@@ -490,7 +490,7 @@ class _AdminGuestDialog extends StatefulWidget {
   State<_AdminGuestDialog> createState() => _AdminGuestDialogState();
 }
 
-/// Representasi satu entry tamu dalam form admin
+/// Represents one guest entry in the admin form
 class _AdminGuestFormEntry {
   final TextEditingController nameController;
   String relationship;
@@ -505,7 +505,7 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
   final _formKey = GlobalKey<FormState>();
   final _roomController = TextEditingController();
 
-  // REVISI: List dinamis tamu (maks 3)
+  // REVISION: Dynamic guest list (max 3)
   final List<_AdminGuestFormEntry> _guestEntries = [_AdminGuestFormEntry()];
 
   DateTime? _checkIn;
@@ -520,12 +520,12 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
   static const int _maxGuests = 3;
 
   static const _relationships = [
-    ('parent', 'Orang Tua'),
-    ('sibling', 'Saudara'),
-    ('friend', 'Teman'),
-    ('relative', 'Kerabat'),
-    ('colleague', 'Rekan Kerja'),
-    ('other', 'Lainnya'),
+    ('parent', 'Parent'),
+    ('sibling', 'Sibling'),
+    ('friend', 'Friend'),
+    ('relative', 'Relative'),
+    ('colleague', 'Colleague'),
+    ('other', 'Other'),
   ];
 
   @override
@@ -638,31 +638,31 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedResident == null) {
-      AppSnackbar.showError('Pilih penghuni terlebih dahulu.');
+      AppSnackbar.showError('Select a resident first.');
       return;
     }
     if (_checkIn == null) {
-      AppSnackbar.showError('Pilih tanggal & jam masuk terlebih dahulu.');
+      AppSnackbar.showError('Select the check-in date & time first.');
       return;
     }
     if (_checkOut == null) {
-      AppSnackbar.showError('Pilih tanggal & jam keluar terlebih dahulu.');
+      AppSnackbar.showError('Select the check-out date & time first.');
       return;
     }
     if (!_checkOut!.isAfter(_checkIn!)) {
-      AppSnackbar.showError('Tanggal keluar harus setelah tanggal masuk.');
+      AppSnackbar.showError('The check-out date must be after the check-in date.');
       return;
     }
 
     final scheduleId = int.tryParse(_selectedResident!.id);
     if (scheduleId == null) {
-      AppSnackbar.showError('ID jadwal tidak valid.');
+      AppSnackbar.showError('Invalid schedule ID.');
       return;
     }
 
     setState(() => _isSubmitting = true);
 
-    // REVISI: Kirim array tamu ke BLoC
+    // REVISION: Send the guest array to the BLoC
     final guests = _guestEntries.map((e) => {
       'name': e.nameController.text.trim(),
       'relationship': e.relationship,
@@ -696,13 +696,13 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tambah Tamu',
+                  'Add Guest',
                   style: theme.textTheme.titleLarge
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Daftarkan hingga $_maxGuests tamu sekaligus',
+                  'Register up to $_maxGuests guests at once',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -723,14 +723,14 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
                         ),
                         TextButton(
                           onPressed: _loadResidents,
-                          child: const Text('Coba lagi'),
+                          child: const Text('Try Again'),
                         ),
                       ],
                     ),
                   ),
                 CustomDropdownField<ResidentItem>(
-                  title: 'Nama Penghuni (aktif)',
-                  hint: 'Pilih penghuni aktif',
+                  title: 'Resident Name (active)',
+                  hint: 'Select an active resident',
                   value: _selectedResident,
                   items: _residentOptions
                       .map((row) => DropdownMenuItem(
@@ -740,17 +740,17 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
                       .toList(),
                   onChanged: _isLoadingResidents ? (_) {} : (v) => _setSelectedResident(v),
                   validator: (value) =>
-                      value == null ? 'Pilih penghuni aktif' : null,
+                      value == null ? 'Select an active resident' : null,
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
                   controller: _roomController,
                   enabled: false,
-                  hintText: 'Nomor Kamar',
+                  hintText: 'Room Number',
                 ),
                 const SizedBox(height: 20),
 
-                // ─── Daftar Tamu Dinamis ──────────────────────────────
+                // ─── Dynamic Guest List ──────────────────────────────
                 ..._guestEntries.asMap().entries.map((entry) {
                   final index = entry.key;
                   final guestEntry = entry.value;
@@ -785,7 +785,7 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Tamu ${index + 1}',
+                              'Guest ${index + 1}',
                               style: theme.textTheme.labelLarge?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -797,7 +797,7 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
                                 icon: Icon(Icons.close_rounded,
                                     color: theme.colorScheme.error, size: 18),
                                 visualDensity: VisualDensity.compact,
-                                tooltip: 'Hapus Tamu ${index + 1}',
+                                tooltip: 'Remove Guest ${index + 1}',
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
                               ),
@@ -806,15 +806,15 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
                         const SizedBox(height: 12),
                         CustomTextField(
                           controller: guestEntry.nameController,
-                          hintText: 'Nama Tamu',
+                          hintText: 'Guest Name',
                           validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'Nama tamu tidak boleh kosong'
+                              ? 'Guest name cannot be empty'
                               : null,
                         ),
                         const SizedBox(height: 12),
                         CustomDropdownField<String>(
-                          title: 'Hubungan',
-                          hint: 'Pilih hubungan',
+                          title: 'Relationship',
+                          hint: 'Select a relationship',
                           value: guestEntry.relationship,
                           items: _relationships
                               .map((r) => DropdownMenuItem(
@@ -830,14 +830,14 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
                   );
                 }),
 
-                // Tombol tambah tamu
+                // Add guest button
                 if (_guestEntries.length < _maxGuests)
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: _addGuestEntry,
                       icon: const Icon(Icons.person_add_outlined, size: 18),
-                      label: Text('Tambah Tamu (${_guestEntries.length}/$_maxGuests)'),
+                      label: Text('Add Guest (${_guestEntries.length}/$_maxGuests)'),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -853,20 +853,20 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
                 const SizedBox(height: 16),
 
                 CustomDateTimePickerField(
-                  label: 'Tanggal & Jam Masuk',
+                  label: 'Check-in Date & Time',
                   value: _checkIn != null ? _formatDateTime(_checkIn!) : null,
                   onTap: () => _pickDateTime(isCheckIn: true),
                 ),
                 const SizedBox(height: 12),
                 CustomDateTimePickerField(
-                  label: 'Tanggal & Jam Keluar',
+                  label: 'Check-out Date & Time',
                   value: _checkOut != null ? _formatDateTime(_checkOut!) : null,
                   onTap: () => _pickDateTime(isCheckIn: false),
                 ),
                 const SizedBox(height: 24),
                 if (_residentOptions.isEmpty && !_isLoadingResidents)
                   Text(
-                    'Belum ada penghuni aktif yang bisa dipilih.',
+                    'No active residents available to select.',
                     style: theme.textTheme.bodySmall
                         ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
@@ -877,7 +877,7 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
                       child: BasicButton(
                         type: ButtonType.secondary,
                         onPressed: () => Navigator.of(context).pop(),
-                        label: 'Batal',
+                        label: 'Cancel',
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -885,7 +885,7 @@ class _AdminGuestDialogState extends State<_AdminGuestDialog> {
                       child: BasicButton(
                         isLoading: _isSubmitting,
                         onPressed: _isSubmitting ? null : _submit,
-                        label: 'Simpan (${_guestEntries.length} tamu)',
+                        label: 'Save (${_guestEntries.length} guests)',
                       ),
                     ),
                   ],
@@ -912,7 +912,7 @@ class _NotificationLogDialogState extends State<_NotificationLogDialog> {
   @override
   void initState() {
     super.initState();
-    // Tandai semua notifikasi sebagai sudah dibaca saat dialog dibuka
+    // Mark all notifications as read when the dialog opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<NotificationLogBloc>().add(MarkAllNotificationLogsRead());
@@ -961,7 +961,7 @@ class _NotificationLogDialogState extends State<_NotificationLogDialog> {
                       color: theme.colorScheme.primary, size: 22),
                   const SizedBox(width: 10),
                   Text(
-                    'Log Notifikasi',
+                    'Notification Log',
                     style: theme.textTheme.titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
@@ -983,7 +983,7 @@ class _NotificationLogDialogState extends State<_NotificationLogDialog> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
-                                  '$total notifikasi',
+                                  '$total notifications',
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: const Color(0xFFA794F2),
                                     fontWeight: FontWeight.w600,
@@ -1000,7 +1000,7 @@ class _NotificationLogDialogState extends State<_NotificationLogDialog> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
-                                    '$unread baru',
+                                    '$unread new',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.error,
                                       fontWeight: FontWeight.bold,
@@ -1049,7 +1049,7 @@ class _NotificationLogDialogState extends State<_NotificationLogDialog> {
                                 .read<NotificationLogBloc>()
                                 .add(FetchNotificationLogs()),
                             leadIcon: const Icon(Icons.refresh, size: 18),
-                            label: 'Muat Ulang',
+                            label: 'Reload',
                           ),
                         ],
                       ),
@@ -1069,7 +1069,7 @@ class _NotificationLogDialogState extends State<_NotificationLogDialog> {
                                   size: 48, color: Colors.grey),
                               const SizedBox(height: 12),
                               Text(
-                                'Tidak ada log notifikasi',
+                                'No notification logs',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w500,
@@ -1081,7 +1081,7 @@ class _NotificationLogDialogState extends State<_NotificationLogDialog> {
                                     .read<NotificationLogBloc>()
                                     .add(FetchNotificationLogs()),
                                 icon: const Icon(Icons.refresh, size: 18),
-                                label: const Text('Muat Ulang'),
+                                label: const Text('Reload'),
                                 style: TextButton.styleFrom(
                                   foregroundColor: theme.colorScheme.primary,
                                 ),
@@ -1119,12 +1119,12 @@ class _NotificationLogDialogState extends State<_NotificationLogDialog> {
 
                   return const SizedBox(
                     height: 200,
-                    child: Center(child: Text('Memuat log...')),
+                    child: Center(child: Text('Loading log...')),
                   );
                 },
               ),
             ],
-            // Perbaikan: Kurung tutup ini sebelumnya hilang
+            // Fix: this closing bracket was previously missing
           ),
         ),
       ),
@@ -1271,10 +1271,10 @@ class _NotificationLogTile extends StatelessWidget {
           if (status.toLowerCase().contains('gagal'))
             IconButton(
               onPressed: () {
-                AppSnackbar.showInfo('Fungsi kirim ulang tersedia di menu utama.');
+                AppSnackbar.showInfo('The resend function is available in the main menu.');
               },
               icon: const Icon(Icons.refresh, size: 20, color: Colors.red),
-              tooltip: 'Kirim Ulang',
+              tooltip: 'Resend',
             ),
         ],
       ),

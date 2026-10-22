@@ -62,7 +62,7 @@ class UserManagementView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Manajemen Pengguna',
+                        'User Management',
                         style: theme.textTheme.displaySmall?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: theme.colorScheme.onSurface,
@@ -70,7 +70,7 @@ class UserManagementView extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Kelola anggota tim Anda dan izin akun mereka di sini',
+                        'Manage your team members and their account permissions here',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -85,7 +85,7 @@ class UserManagementView extends StatelessWidget {
                           Icons.person_add_alt_outlined,
                           size: 18,
                         ),
-                        label: const Text('Undang Pengguna'),
+                        label: const Text('Invite User'),
                       ),
                     ],
                   ),
@@ -122,7 +122,7 @@ class UserManagementView extends StatelessWidget {
                     children: [
                       Expanded(
                         child: StatCard(
-                          title: 'Total Pengguna',
+                          title: 'Total Users',
                           count: total.toString(),
                           // icon: const Icon(Icons.people_alt_outlined),
                         ),
@@ -138,7 +138,7 @@ class UserManagementView extends StatelessWidget {
                       const SizedBox(width: 16),
                       Expanded(
                         child: StatCard(
-                          title: 'Penghuni',
+                          title: 'Residents',
                           count: residents.toString(),
                           // icon: const Icon(Icons.home_work_outlined),
                         ),
@@ -146,7 +146,7 @@ class UserManagementView extends StatelessWidget {
                       const SizedBox(width: 16),
                       Expanded(
                         child: StatCard(
-                          title: 'Anggota Baru',
+                          title: 'New Members',
                           count: members.toString(),
                           // icon: const Icon(Icons.person_add_outlined),
                         ),
@@ -161,12 +161,12 @@ class UserManagementView extends StatelessWidget {
               BlocBuilder<UserManagementBloc, UserManagementState>(
                 builder: (context, state) {
                   final columns = [
-                    const TableColumn(label: 'PENGGUNA', flex: 4),
+                    const TableColumn(label: 'USER', flex: 4),
                     const TableColumn(label: 'ROLE', flex: 3),
                     const TableColumn(label: 'STATUS', flex: 2),
-                    const TableColumn(label: 'DIBUAT PADA', flex: 2),
+                    const TableColumn(label: 'CREATED ON', flex: 2),
                     const TableColumn(
-                      label: 'AKSI',
+                      label: 'ACTION',
                       flex: 2,
                       align: TextAlign.center,
                     ),
@@ -225,19 +225,19 @@ class UserManagementView extends StatelessWidget {
                         }).toList();
 
                         return TableCard(
-                          title: 'Data Pengguna',
+                          title: 'User Data',
                           columns: columns,
                           rows: rows,
                           emptyMessage: state is UserManagementLoading
-                              ? 'Sedang memuat...'
-                              : 'Tidak ada data pengguna',
+                              ? 'Loading...'
+                              : 'No user data',
                           actions: Row(
                             children: [
                               SizedBox(
                                 width: 250,
                                 child: TextField(
                                   decoration: InputDecoration(
-                                    hintText: 'Cari pengguna...',
+                                    hintText: 'Search users...',
                                     prefixIcon: const Icon(
                                       Icons.search,
                                       size: 20,
@@ -269,12 +269,12 @@ class UserManagementView extends StatelessWidget {
                   }
 
                   return TableCard(
-                    title: 'Data Pengguna',
+                    title: 'User Data',
                     columns: columns,
                     rows: const [],
                     emptyMessage: state is UserManagementLoading
-                        ? 'Sedang memuat...'
-                        : 'Tidak ada data pengguna',
+                        ? 'Loading...'
+                        : 'No user data',
                   );
                 },
               ),
@@ -289,12 +289,12 @@ class UserManagementView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Hapus Pengguna'),
-        content: Text('Apakah Anda yakin ingin menghapus akun ${user.name}?'),
+        title: const Text('Delete User'),
+        content: Text('Are you sure you want to delete the account of ${user.name}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -304,7 +304,7 @@ class UserManagementView extends StatelessWidget {
               context.read<UserManagementBloc>().add(DeleteUser(user.id));
               Navigator.pop(dialogContext);
             },
-            child: const Text('Hapus'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -331,14 +331,14 @@ class UserManagementView extends StatelessWidget {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (stateContext, setState) => AlertDialog(
-          title: Text(user == null ? 'Undang Pengguna' : 'Edit Pengguna'),
+          title: Text(user == null ? 'Invite User' : 'Edit User'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Nama'),
+                  decoration: const InputDecoration(labelText: 'Name'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -375,7 +375,7 @@ class UserManagementView extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Batal'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -400,7 +400,7 @@ class UserManagementView extends StatelessWidget {
                 }
                 Navigator.pop(dialogContext);
               },
-              child: Text(user == null ? 'Buat' : 'Simpan'),
+              child: Text(user == null ? 'Create' : 'Save'),
             ),
           ],
         ),
@@ -524,7 +524,7 @@ class _StatusChip extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         const Text(
-          'Aktif',
+          'Active',
           style: TextStyle(
             color: Color(0xFF18BF10),
             fontSize: 12,

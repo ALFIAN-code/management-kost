@@ -128,7 +128,7 @@ class DashboardController extends Controller
             if ($activeSchedule && isset($activeSchedule['room'])) {
                 $activeRoomData = [
                     'room_number' => $activeSchedule['room']['number'] ?? '',
-                    'status' => 'Aktif',
+                    'status' => 'Active',
                 ];
             }
         }

@@ -11,8 +11,8 @@ enum JenisPengeluaranTetap: string
     public function label(): string
     {
         return match ($this) {
-            self::LISTRIK => 'Listrik',
-            self::AIR => 'Air',
+            self::LISTRIK => 'Electricity',
+            self::AIR => 'Water',
             self::WIFI => 'WiFi',
         };
     }

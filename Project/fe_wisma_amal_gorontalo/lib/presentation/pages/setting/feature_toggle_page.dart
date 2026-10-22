@@ -35,8 +35,8 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
   final Set<String> _jenisAktif = {};
   static const _allJenis = ['listrik', 'air', 'wifi'];
   static const _jenisLabel = {
-    'listrik': 'Listrik',
-    'air': 'Air',
+    'listrik': 'Electricity',
+    'air': 'Water',
     'wifi': 'WiFi',
   };
 
@@ -74,7 +74,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Modul ${toggle.name} adalah modul inti dan tidak dapat dimatikan.',
+            'Module ${toggle.name} is a core module and cannot be turned off.',
           ),
         ),
       );
@@ -130,12 +130,12 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
         ],
         child: Scaffold(
           // appBar: AppBar(
-          //   title: const Text('Pengaturan Fitur & Modul'),
+          //   title: const Text('Feature & Module Settings'),
           //   backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
           //   foregroundColor: Colors.white,
           // )
           appBar: AppTopBar(
-            title: 'Pengaturan Fitur & Modul',
+            title: 'Feature & Module Settings',
             leading: CustomIconButton(
               backgroundColor: Theme.of(context).colorScheme.primary,
               icon: Icon(
@@ -155,7 +155,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
               } else if (state is FeatureToggleLoaded) {
                 if (state.toggles.isEmpty) {
                   return const Center(
-                    child: Text('Belum ada pengaturan fitur.'),
+                    child: Text('No feature settings yet.'),
                   );
                 }
 
@@ -223,9 +223,9 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                   )
                 : Tooltip(
                     message: !module.isLicensed 
-                        ? 'Fitur ini tidak tersedia dalam paket Anda'
+                        ? 'This feature is not available in your plan'
                         : module.isLocked
-                            ? 'Modul inti tidak dapat dimatikan'
+                            ? 'Core modules cannot be turned off'
                             : '',
                     child: Switch(
                       value: module.isActive,
@@ -251,7 +251,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                     (c) => !c.isLocked,
                   )) ...[
                     _buildChildTile(child, module, state),
-                    // Sub-cards muncul tepat di bawah toggle masing-masing
+                    // Sub-cards appear right below each toggle
                     if (child.key == 'finance_midtrans' &&
                         child.isActive &&
                         module.isActive) ...[
@@ -306,7 +306,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : Tooltip(
-              message: !child.isLicensed ? 'Fitur ini tidak tersedia dalam paket Anda' : '',
+              message: !child.isLicensed ? 'This feature is not available in your plan' : '',
               child: Switch(
                 value: effectiveIsActive,
                 onChanged: (!module.isActive || child.isLocked || !child.isLicensed)
@@ -356,11 +356,11 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
               ),
               leading: Icon(Icons.bolt_outlined, color: warningColor, size: 20),
               title: const Text(
-                'Jenis Utilitas Aktif',
+                'Active Utility Types',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               subtitle: const Text(
-                'Pilih minimal satu jenis utilitas yang akan dipantau setiap bulan.',
+                'Select at least one utility type to be monitored every month.',
                 style: TextStyle(fontSize: 11),
               ),
             ),
@@ -396,7 +396,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Pilih minimal satu jenis utilitas.',
+                                  'Select at least one utility type.',
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: warningColor,
@@ -427,7 +427,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                                 : (selected) {
                                     if (!selected && _jenisAktif.length <= 1) {
                                       _showWarningSnackBar(
-                                        'Minimal satu jenis utilitas harus aktif.',
+                                        'At least one utility type must be active.',
                                       );
                                       return;
                                     }
@@ -514,11 +514,11 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                 size: 20,
               ),
               title: const Text(
-                'Metode Pembayaran Midtrans',
+                'Midtrans Payment Methods',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               subtitle: const Text(
-                'Pilih metode yang tersedia untuk penghuni. Toggle tersimpan otomatis.',
+                'Choose the methods available to residents. Toggles are saved automatically.',
                 style: TextStyle(fontSize: 11),
               ),
             ),
@@ -539,7 +539,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              'Metode pembayaran diperbarui',
+                              'Payment methods updated',
                               style: TextStyle(color: activeColor),
                             ),
                           ],
@@ -563,7 +563,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'Gagal: ${pmState.message}',
+                                'Failed: ${pmState.message}',
                                 style: TextStyle(color: cancelColor),
                               ),
                             ),
@@ -590,7 +590,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                     return Padding(
                       padding: const EdgeInsets.all(8),
                       child: Text(
-                        'Gagal memuat metode: ${pmState.message}',
+                        'Failed to load methods: ${pmState.message}',
                         style: TextStyle(color: cancelColor),
                       ),
                     );
@@ -636,7 +636,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Tidak ada metode yang aktif. Aktifkan minimal satu metode.',
+                                  'No active methods. Enable at least one method.',
                                   style: TextStyle(
                                     fontSize: 11,
                                     height: 1.4,
@@ -693,7 +693,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                                           enabledCount <= 1 &&
                                           method.enabled) {
                                         _showWarningSnackBar(
-                                          'Minimal satu metode harus aktif selama Midtrans dinyalakan.',
+                                          'At least one method must stay active while Midtrans is enabled.',
                                         );
                                         return;
                                       }
@@ -767,11 +767,11 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                 size: 20,
               ),
               title: const Text(
-                'Biaya Transaksi Midtrans',
+                'Midtrans Transaction Fee',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               subtitle: const Text(
-                'Atur siapa yang menanggung biaya transaksi dan besaran tarifnya.',
+                'Set who bears the transaction fee and its rate.',
                 style: TextStyle(fontSize: 11),
               ),
             ),
@@ -792,7 +792,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              'Pengaturan biaya Midtrans disimpan',
+                              'Midtrans fee settings saved',
                               style: TextStyle(color: doneColor),
                             ),
                           ],
@@ -816,7 +816,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'Gagal: ${state.message}',
+                                'Failed: ${state.message}',
                                 style: TextStyle(color: cancelColor),
                               ),
                             ),
@@ -841,7 +841,7 @@ class _FeatureTogglePageState extends State<FeatureTogglePage> {
                   }
                   if (state is MidtransFeeError) {
                     return Text(
-                      'Gagal memuat: ${state.message}',
+                      'Failed to load: ${state.message}',
                       style: TextStyle(color: cancelColor),
                     );
                   }
@@ -989,7 +989,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Biaya ditanggung oleh',
+          'Fee borne by',
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -1003,7 +1003,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
               isDark: isDark,
               label: 'Wisma (Merchant)',
               description:
-                  'Biaya dipotong dari penerimaan wisma. Penghuni bayar sesuai tagihan.',
+                  'The fee is deducted from the wisma revenue. The resident pays according to the invoice.',
               icon: Icons.store_outlined,
               selected: !isCustomer,
               accentColor: primaryColor,
@@ -1014,9 +1014,9 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
             const SizedBox(width: 8),
             _BearerOption(
               isDark: isDark,
-              label: 'Penghuni',
+              label: 'Resident',
               description:
-                  'Biaya ditambahkan ke tagihan penghuni saat checkout.',
+                  'The fee is added to the resident invoice at checkout.',
               icon: Icons.person_outline,
               selected: isCustomer,
               accentColor: warningColor,
@@ -1042,7 +1042,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Biaya akan ditambahkan ke tagihan penghuni saat memilih metode pembayaran online.',
+                    'The fee will be added to the resident invoice when an online payment method is selected.',
                     style: TextStyle(
                       fontSize: 11,
                       color: warningColor,
@@ -1057,7 +1057,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
 
         const SizedBox(height: 16),
         Text(
-          'Tarif Biaya per Metode',
+          'Fee Rate per Method',
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -1092,11 +1092,11 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
                     children: [
                       const TextSpan(
                         text:
-                            'Tarif di bawah sesuai ketentuan resmi Midtrans. ',
+                            'The rates below follow the official Midtrans terms. ',
                       ),
                       TextSpan(
                         text:
-                            'Jangan ubah kecuali ada pembaruan tarif dari Midtrans.',
+                            'Do not change them unless Midtrans updates the rates.',
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           color: textPrimary,
@@ -1146,8 +1146,8 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
                               ),
                               Text(
                                 fee.type == 'flat'
-                                    ? 'Flat per transaksi'
-                                    : 'Persentase dari nominal',
+                                    ? 'Flat per transaction'
+                                    : 'Percentage of the amount',
                                 style: TextStyle(fontSize: 10, color: textHint),
                               ),
                             ],
@@ -1214,7 +1214,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
                   )
                 : const Icon(Icons.save_outlined, size: 16),
             label: Text(
-              isSaving ? 'Menyimpan...' : 'Simpan Tarif',
+              isSaving ? 'Saving...' : 'Save Rates',
               style: const TextStyle(fontSize: 13),
             ),
           ),
@@ -1228,7 +1228,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
             Icon(Icons.calculate_outlined, size: 14, color: textSecondary),
             const SizedBox(width: 6),
             Text(
-              'Simulasi Biaya',
+              'Fee Simulation',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -1239,7 +1239,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
         ),
         const SizedBox(height: 6),
         Text(
-          'Masukkan nominal untuk melihat perkiraan biaya yang ditanggung dan uang yang diterima.',
+          'Enter an amount to see the estimated fee borne and the amount received.',
           style: TextStyle(fontSize: 11, color: textHint, height: 1.4),
         ),
         const SizedBox(height: 8),
@@ -1252,7 +1252,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
             color: textPrimary,
           ),
           decoration: InputDecoration(
-            labelText: 'Nominal Pembayaran',
+            labelText: 'Payment Amount',
             labelStyle: TextStyle(fontSize: 12, color: textSecondary),
             prefixText: 'Rp ',
             prefixStyle: TextStyle(fontSize: 13, color: textSecondary),
@@ -1297,7 +1297,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
     bool isDark,
   ) {
     final fmt = NumberFormat.currency(
-      locale: 'id_ID',
+      locale: 'en_US',
       symbol: 'Rp ',
       decimalDigits: 0,
     );
@@ -1317,7 +1317,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
         ),
         child: Center(
           child: Text(
-            'Masukkan nominal di atas untuk melihat simulasi.',
+            'Enter the amount above to see the simulation.',
             style: TextStyle(fontSize: 11, color: textHint),
           ),
         ),
@@ -1349,7 +1349,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
                 Expanded(
                   flex: 3,
                   child: Text(
-                    'Metode',
+                    'Method',
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -1360,7 +1360,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
                 Expanded(
                   flex: 3,
                   child: Text(
-                    'Biaya',
+                    'Fee',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 10,
@@ -1372,7 +1372,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
                 Expanded(
                   flex: 4,
                   child: Text(
-                    'Dibayar Penghuni',
+                    'Paid by Resident',
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: 10,
@@ -1384,7 +1384,7 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
                 Expanded(
                   flex: 4,
                   child: Text(
-                    'Diterima Wisma',
+                    'Received by Wisma',
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: 10,
@@ -1486,8 +1486,8 @@ class _MidtransFeeSettingBodyState extends State<_MidtransFeeSettingBody> {
                 Expanded(
                   child: Text(
                     isCustomer
-                        ? 'Bearer: Penghuni — biaya ditambahkan ke tagihan. Wisma menerima penuh ${fmt.format(nominal)}.'
-                        : 'Bearer: Wisma — penghuni bayar ${fmt.format(nominal)}, selisih biaya ditanggung wisma.',
+                        ? 'Bearer: Resident — the fee is added to the invoice. Wisma receives the full ${fmt.format(nominal)}.'
+                        : 'Bearer: Wisma — the resident pays ${fmt.format(nominal)}, and Wisma bears the fee difference.',
                     style: TextStyle(fontSize: 9, color: textHint, height: 1.3),
                   ),
                 ),

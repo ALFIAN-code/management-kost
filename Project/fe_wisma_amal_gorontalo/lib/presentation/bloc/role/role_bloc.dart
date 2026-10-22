@@ -123,7 +123,7 @@ class RoleBloc extends Bloc<RoleEvent, RoleState> {
           description: event.description,
           permissions: event.permissions,
         );
-        emit(const RoleActionSuccess("Berhasil membuat peran baru"));
+        emit(const RoleActionSuccess("Successfully created a new role"));
         add(FetchRolesAndPermissions());
       } catch (e) {
         emit(RoleError(e.toString()));
@@ -139,7 +139,7 @@ class RoleBloc extends Bloc<RoleEvent, RoleState> {
           description: event.description,
           permissions: event.permissions,
         );
-        emit(const RoleActionSuccess("Berhasil memperbarui peran"));
+        emit(const RoleActionSuccess("Successfully updated the role"));
         add(FetchRolesAndPermissions());
       } catch (e) {
         emit(RoleError(e.toString()));
@@ -150,7 +150,7 @@ class RoleBloc extends Bloc<RoleEvent, RoleState> {
       emit(RoleLoading());
       try {
         await deleteRoleUseCase(event.id);
-        emit(const RoleActionSuccess("Berhasil menghapus peran"));
+        emit(const RoleActionSuccess("Successfully deleted the role"));
         add(FetchRolesAndPermissions());
       } catch (e) {
         emit(RoleError(e.toString()));

@@ -46,10 +46,10 @@ class PermissionView extends StatelessWidget {
               Icon(Icons.lock_outline, size: 100, color: Colors.red),
               SizedBox(height: 16),
               Text(
-                'Akses Ditolak',
+                'Access Denied',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              Text('Anda tidak memiliki izin untuk melihat halaman ini.'),
+              Text('You do not have permission to view this page.'),
             ],
           ),
         ),
@@ -70,14 +70,14 @@ class PermissionView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Manajemen Izin (Permission)',
+                  'Permission Management',
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 // BasicButton(
                 //   onPressed: canCreate
                 //       ? () => _showPermissionForm(context)
                 //       : null,
-                //   label: 'Tambah Izin',
+                //   label: 'Add Permission',
                 //   leadIcon: Icon(
                 //     Icons.add,
                 //     color: canCreate ? Colors.white : Colors.grey,
@@ -98,17 +98,17 @@ class PermissionView extends StatelessWidget {
                 }
 
                 return TableCard(
-                  title: 'Daftar Permission Sistem',
+                  title: 'System Permission List',
                   columns: const [
-                    TableColumn(label: 'Nama Izin', flex: 2),
+                    TableColumn(label: 'Permission Name', flex: 2),
                     TableColumn(label: 'Target', flex: 1),
-                    TableColumn(label: 'Deskripsi', flex: 3),
+                    TableColumn(label: 'Description', flex: 3),
                   ],
                   rows: state.permissions.map((p) {
                     return [p.name, p.target ?? '-', p.description ?? '-'];
                   }).toList(),
-                  // Note: Karena TableCard Anda saat ini hanya menerima List<String>,
-                  // kita perlu sedikit modifikasi atau membungkus tombol aksi.
+                  // Note: Since TableCard currently only accepts List<String>,
+                  // we need a small modification or to wrap the action buttons.
                 );
               },
             ),
@@ -129,13 +129,13 @@ class PermissionView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(permission == null ? 'Tambah Izin' : 'Edit Izin'),
+        title: Text(permission == null ? 'Add Permission' : 'Edit Permission'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             CustomTextForm(
-              title: 'Nama Izin',
-              hintText: 'misal: manage-users',
+              title: 'Permission Name',
+              hintText: 'e.g. manage-users',
               controller: nameController,
             ),
             const SizedBox(height: 16),
@@ -146,8 +146,8 @@ class PermissionView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             CustomTextForm(
-              title: 'Deskripsi',
-              hintText: 'Penjelasan fungsi izin',
+              title: 'Description',
+              hintText: 'Explanation of the permission function',
               controller: descController,
               maxLines: 3,
             ),
@@ -156,7 +156,7 @@ class PermissionView extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           BasicButton(
             onPressed: () {
@@ -175,7 +175,7 @@ class PermissionView extends StatelessWidget {
               }
               Navigator.pop(dialogContext);
             },
-            label: 'Simpan',
+            label: 'Save',
           ),
         ],
       ),

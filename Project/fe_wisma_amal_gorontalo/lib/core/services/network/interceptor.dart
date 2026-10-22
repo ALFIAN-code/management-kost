@@ -47,7 +47,7 @@ class ApiInterceptor extends Interceptor {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    //handle jika token expired -> lalu hapus token & redirect ke login
+    // handle expired token -> then delete the token & redirect to login
     if (err.response?.statusCode == 401) {
       // Dispatch session expired event to AuthBloc
       serviceLocator<AuthBloc>().add(const SessionExpiredEvent());

@@ -32,7 +32,7 @@ class MaintenanceActionBloc extends Bloc<MaintenanceActionEvent, MaintenanceActi
           images: event.images,
         ),
       );
-      emit(const MaintenanceActionSuccess('Laporan berhasil dibuat.'));
+      emit(const MaintenanceActionSuccess('Report created successfully.'));
     } on AppException catch (e) {
       emit(MaintenanceActionFailure(e.message));
     } catch (e) {
@@ -54,7 +54,7 @@ class MaintenanceActionBloc extends Bloc<MaintenanceActionEvent, MaintenanceActi
           images: event.images,
         ),
       );
-      emit(const MaintenanceActionSuccess('Update progres berhasil.'));
+      emit(const MaintenanceActionSuccess('Progress updated successfully.'));
     } on AppException catch (e) {
       emit(MaintenanceActionFailure(e.message));
     } catch (e) {

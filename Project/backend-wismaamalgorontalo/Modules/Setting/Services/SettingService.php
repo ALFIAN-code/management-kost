@@ -75,7 +75,7 @@ class SettingService implements ConfigProviderInterface
             'wisma_phone' => $this->getSettingValue('wisma_phone', '0811-4300-XXX'),
             'wisma_email' => $this->getSettingValue('wisma_email', 'wismaamal@email.com'),
             'wisma_maps_link' => $this->getSettingValue('wisma_maps_link', 'https://maps.google.com'),
-            'wisma_operational_hours' => $this->getSettingValue('wisma_operational_hours', 'Senin - Sabtu, 08.00 - 17.00 WITA'),
+            'wisma_operational_hours' => $this->getSettingValue('wisma_operational_hours', 'Monday - Saturday, 08.00 - 17.00 WITA'),
             'feature_daily_rental' => $this->isDailyRentalEnabled(),
             'feature_whatsapp_receipt' => $this->isFeatureEnabled('notif_receipt'),
             'feature_whatsapp_pdf_link' => $this->isFeatureEnabled('notif_pdf_link'),

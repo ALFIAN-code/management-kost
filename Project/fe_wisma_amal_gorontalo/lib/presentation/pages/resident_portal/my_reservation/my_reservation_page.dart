@@ -45,7 +45,7 @@ class _MyReservationPageState extends State<MyReservationPage> {
           if (state.cancelStatus == FormzSubmissionStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Gagal membatalkan reservasi'),
+                content: Text(state.errorMessage ?? 'Failed to cancel the reservation'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -53,7 +53,7 @@ class _MyReservationPageState extends State<MyReservationPage> {
           if (state.pembatalanDpStatus == FormzSubmissionStatus.success) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Permintaan pembatalan berhasil diajukan. Menunggu review admin.'),
+                content: Text('Cancellation request submitted successfully. Waiting for admin review.'),
                 backgroundColor: Colors.green,
               ),
             );
@@ -61,7 +61,7 @@ class _MyReservationPageState extends State<MyReservationPage> {
           if (state.pembatalanDpStatus == FormzSubmissionStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Gagal mengajukan pembatalan'),
+                content: Text(state.errorMessage ?? 'Failed to submit the cancellation request'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -69,7 +69,7 @@ class _MyReservationPageState extends State<MyReservationPage> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Reservasi Saya'),
+            title: const Text('My Reservations'),
             actions: [
               IconButton(
                 icon: const Icon(Icons.refresh),
@@ -90,12 +90,12 @@ class _MyReservationPageState extends State<MyReservationPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(state.errorMessage ?? 'Terjadi kesalahan'),
+                      Text(state.errorMessage ?? 'Something went wrong'),
                       const SizedBox(height: 12),
                       TextButton(
                         onPressed: () =>
                             context.read<MyReservationBloc>().add(GetMyReservationsEvent()),
-                        child: const Text('Coba lagi'),
+                        child: const Text('Try again'),
                       ),
                     ],
                   ),
@@ -110,7 +110,7 @@ class _MyReservationPageState extends State<MyReservationPage> {
                       Icon(Icons.inbox_outlined, size: 48, color: Colors.grey),
                       SizedBox(height: 12),
                       Text(
-                        'Belum ada reservasi',
+                        'No reservations yet',
                         style: TextStyle(color: Colors.grey),
                       ),
                     ],
@@ -165,7 +165,7 @@ class _ReservationCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header: ikon + nama kamar + status badge
+            // Header: icon + room name + status badge
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -188,7 +188,7 @@ class _ReservationCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Kamar ${reservation.roomNumber}',
+                        'Room ${reservation.roomNumber}',
                         style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
                       ),
                     ],
@@ -215,7 +215,7 @@ class _ReservationCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Periode sewa
+            // Lease period
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
@@ -229,7 +229,7 @@ class _ReservationCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Mulai',
+                          'Start',
                           style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                         ),
                         const SizedBox(height: 4),
@@ -248,7 +248,7 @@ class _ReservationCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            'Selesai',
+                            'End',
                             style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                           ),
                           const SizedBox(height: 4),
@@ -264,7 +264,7 @@ class _ReservationCard extends StatelessWidget {
               ),
             ),
 
-            // Info jika status terkonfirmasi (pembayaran lunas, menunggu tanggal masuk)
+            // Info when status is confirmed (payment settled, waiting for check-in date)
             if (reservation.status == 'terkonfirmasi') ...[
               const SizedBox(height: 12),
               Container(
@@ -280,7 +280,7 @@ class _ReservationCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Pembayaran dikonfirmasi — Kamar siap pada tanggal masuk.',
+                        'Payment confirmed — the room is ready on the check-in date.',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.blue.shade800,
@@ -293,7 +293,7 @@ class _ReservationCard extends StatelessWidget {
               ),
             ],
 
-            // Info DP jika status dp_terbayar
+            // DP info when status is dp_terbayar
             if (reservation.isDpTerbayar) ...[
               const SizedBox(height: 12),
               Container(
@@ -311,7 +311,7 @@ class _ReservationCard extends StatelessWidget {
                         Icon(Icons.payments_outlined, size: 16, color: Colors.orange.shade700),
                         const SizedBox(width: 8),
                         Text(
-                          'DP Terbayar — Menunggu Pelunasan',
+                          'DP Paid — Awaiting Full Payment',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
@@ -323,13 +323,13 @@ class _ReservationCard extends StatelessWidget {
                     if (reservation.dpAmount != null) ...[
                       const SizedBox(height: 6),
                       Text(
-                        'DP dibayar: Rp ${_fmtNumber(reservation.dpAmount!)}',
+                        'DP paid: Rp ${_fmtNumber(reservation.dpAmount!)}',
                         style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
                       ),
                     ],
                     const SizedBox(height: 4),
                     Text(
-                      'Silakan lunasi sisa pembayaran sebelum tanggal masuk melalui halaman Tagihan.',
+                      'Please settle the remaining payment before the check-in date via the Invoices page.',
                       style: TextStyle(fontSize: 11, color: Colors.orange.shade700, height: 1.4),
                     ),
                   ],
@@ -337,7 +337,7 @@ class _ReservationCard extends StatelessWidget {
               ),
             ],
 
-            // Action button (contextual berdasarkan status)
+            // Action button (contextual based on status)
             if (reservation.status == 'pending' ||
                 reservation.status == 'active' ||
                 reservation.isDpTerbayar ||
@@ -350,7 +350,7 @@ class _ReservationCard extends StatelessWidget {
                     OutlinedButton.icon(
                       onPressed: () => context.router.navigate(const MemberFinanceRoute()),
                       icon: const Icon(Icons.receipt_long_outlined, size: 16),
-                      label: const Text('Lihat Tagihan'),
+                      label: const Text('View Invoices'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.deepPurple,
                         side: const BorderSide(color: Colors.deepPurple),
@@ -362,7 +362,7 @@ class _ReservationCard extends StatelessWidget {
                     OutlinedButton.icon(
                       onPressed: () => context.router.navigate(const MemberFinanceRoute()),
                       icon: const Icon(Icons.receipt_long_outlined, size: 16),
-                      label: const Text('Bayar Pelunasan'),
+                      label: const Text('Pay Full Amount'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.orange,
                         side: const BorderSide(color: Colors.orange),
@@ -377,7 +377,7 @@ class _ReservationCard extends StatelessWidget {
                     OutlinedButton.icon(
                       onPressed: () => _showAjukanPembatalanDialog(context, reservation),
                       icon: const Icon(Icons.cancel_schedule_send_outlined, size: 16),
-                      label: const Text('Ajukan Pembatalan'),
+                      label: const Text('Request Cancellation'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red.shade700,
                         side: BorderSide(color: Colors.red.shade700),
@@ -391,7 +391,7 @@ class _ReservationCard extends StatelessWidget {
                     OutlinedButton.icon(
                       onPressed: () => _confirmCancel(context, reservation),
                       icon: const Icon(Icons.cancel_outlined, size: 16),
-                      label: const Text('Batalkan'),
+                      label: const Text('Cancel'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red,
                         side: const BorderSide(color: Colors.red),
@@ -430,7 +430,7 @@ class _ReservationCard extends StatelessWidget {
                 }
               },
               child: AlertDialog(
-                title: const Text('Ajukan Pembatalan DP'),
+                title: const Text('Request DP Cancellation'),
                 content: SingleChildScrollView(
                   child: Form(
                     key: formKey,
@@ -446,9 +446,9 @@ class _ReservationCard extends StatelessWidget {
                             border: Border.all(color: Colors.amber.shade300),
                           ),
                           child: Text(
-                            'Pengajuan pembatalan akan direview oleh admin. '
-                            'Jika disetujui dan berhak refund (lebih dari 3 hari sebelum tanggal masuk), '
-                            'dana akan ditransfer ke rekening yang tertera.',
+                            'The cancellation request will be reviewed by the admin. '
+                            'If approved and refund-eligible (more than 3 days before the check-in date), '
+                            'the funds will be transferred to the account you provide.',
                             style: TextStyle(fontSize: 12, color: Colors.amber.shade900, height: 1.4),
                           ),
                         ),
@@ -456,33 +456,33 @@ class _ReservationCard extends StatelessWidget {
                         TextFormField(
                           controller: bankCtrl,
                           decoration: const InputDecoration(
-                            labelText: 'Nama Bank',
-                            hintText: 'Contoh: BRI, BCA, Mandiri',
+                            labelText: 'Bank Name',
+                            hintText: 'Example: BRI, BCA, Mandiri',
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           ),
-                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
+                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: noRekCtrl,
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                            labelText: 'Nomor Rekening',
+                            labelText: 'Account Number',
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           ),
-                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
+                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: atasNamaCtrl,
                           decoration: const InputDecoration(
-                            labelText: 'Atas Nama',
+                            labelText: 'Account Holder',
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           ),
-                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
+                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
                         ),
                       ],
                     ),
@@ -491,7 +491,7 @@ class _ReservationCard extends StatelessWidget {
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(dialogContext),
-                    child: const Text('Batal'),
+                    child: const Text('Cancel'),
                   ),
                   BlocBuilder<MyReservationBloc, MyReservationState>(
                     builder: (_, state) {
@@ -521,7 +521,7 @@ class _ReservationCard extends StatelessWidget {
                                 height: 16,
                                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                               )
-                            : const Text('Kirim Pengajuan'),
+                            : const Text('Submit Request'),
                       );
                     },
                   ),
@@ -538,14 +538,14 @@ class _ReservationCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Batalkan Reservasi?'),
+        title: const Text('Cancel Reservation?'),
         content: Text(
-          'Reservasi kamar ${reservation.roomNumber} akan dibatalkan. Tindakan ini tidak bisa diurungkan.',
+          'The reservation for room ${reservation.roomNumber} will be cancelled. This action cannot be undone.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Tidak'),
+            child: const Text('No'),
           ),
           TextButton(
             onPressed: () {
@@ -553,7 +553,7 @@ class _ReservationCard extends StatelessWidget {
               context.read<MyReservationBloc>().add(CancelMyReservationEvent(reservation.id));
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Ya, Batalkan'),
+            child: const Text('Yes, Cancel'),
           ),
         ],
       ),
@@ -582,17 +582,17 @@ class _ReservationCard extends StatelessWidget {
   String _statusLabel(String status) {
     switch (status) {
       case 'active':
-        return 'Aktif';
+        return 'Active';
       case 'pending':
-        return 'Menunggu Pembayaran';
+        return 'Awaiting Payment';
       case 'dp_terbayar':
-        return 'DP Terbayar';
+        return 'DP Paid';
       case 'terkonfirmasi':
-        return 'Terkonfirmasi';
+        return 'Confirmed';
       case 'finished':
-        return 'Selesai';
+        return 'Finished';
       case 'cancelled':
-        return 'Dibatalkan';
+        return 'Cancelled';
       default:
         return status;
     }

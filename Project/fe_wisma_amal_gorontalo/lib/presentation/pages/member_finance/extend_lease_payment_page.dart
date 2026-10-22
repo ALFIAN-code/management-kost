@@ -52,7 +52,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
   Timer? _pollTimer;
 
   final _currencyFormat = NumberFormat.currency(
-    locale: 'id_ID',
+    locale: 'en_US',
     symbol: 'Rp ',
     decimalDigits: 0,
   );
@@ -72,7 +72,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Tidak dapat membuka halaman pembayaran')),
+          const SnackBar(content: Text('Unable to open the payment page')),
         );
       }
     }
@@ -116,12 +116,12 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
         title: Row(children: [
           const Icon(Icons.hourglass_top, color: Colors.orange, size: 28),
           const SizedBox(width: 8),
-          const Text('Pembayaran Diproses'),
+          const Text('Payment Is Being Processed'),
         ]),
         content: const Text(
-          'Konfirmasi pembayaran belum diterima. '
-          'Status akan diperbarui otomatis. '
-          'Pantau di halaman keuangan Anda.',
+          'Payment confirmation has not been received. '
+          'The status will update automatically. '
+          'Track it on your finance page.',
         ),
         actions: [
           ElevatedButton(
@@ -129,7 +129,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
               Navigator.pop(ctx);
               context.router.replaceAll([const MemberFinanceRoute()]);
             },
-            child: const Text('Lihat Status Pembayaran'),
+            child: const Text('View Payment Status'),
           ),
         ],
       ),
@@ -146,7 +146,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
         appBar: _paymentConfirmed
             ? null
             : AppBar(
-                title: Text(widget.pageTitle ?? 'Pembayaran Perpanjangan'),
+                title: Text(widget.pageTitle ?? 'Lease Extension Payment'),
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: _isPolling ? null : () => context.router.maybePop(),
@@ -216,7 +216,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Kode Pembayaran',
+              'Payment Code',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -260,7 +260,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
         _infoBox(
           icon: Icons.qr_code_2,
           color: Colors.indigo,
-          text: 'Scan QR Code berikut menggunakan aplikasi $methodLabel atau kamera ponsel Anda.',
+          text: 'Scan the QR code below using the $methodLabel app or your phone camera.',
         ),
         const SizedBox(height: 20),
         if (qrString != null && qrString.isNotEmpty)
@@ -304,7 +304,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
                   Icon(Icons.qr_code_2, size: 40, color: Colors.grey.shade400),
                   const SizedBox(height: 8),
                   Text(
-                    'QR Code tidak tersedia',
+                    'QR Code not available',
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                     textAlign: TextAlign.center,
                   ),
@@ -326,7 +326,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
                 if (await canLaunchUrl(uri)) await launchUrl(uri);
               },
               icon: const Icon(Icons.open_in_new),
-              label: Text('Buka di $methodLabel'),
+              label: Text('Open in $methodLabel'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -348,7 +348,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
         _infoBox(
           icon: Icons.account_balance,
           color: Colors.blue,
-          text: 'Transfer ke nomor Virtual Account berikut sebelum waktu kadaluarsa.',
+          text: 'Transfer to the Virtual Account number below before it expires.',
         ),
         const SizedBox(height: 16),
         for (final va in vaNumbers)
@@ -375,7 +375,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
         _infoBox(
           icon: Icons.account_balance,
           color: Colors.blue,
-          text: "Bayar melalui Mandiri Livin' atau ATM Mandiri menggunakan kode berikut.",
+          text: "Pay through Mandiri Livin' or a Mandiri ATM using the code below.",
         ),
         const SizedBox(height: 16),
         _codeCard(label: 'Biller Code', value: billerCode),
@@ -397,10 +397,10 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
         _infoBox(
           icon: Icons.store,
           color: Colors.red,
-          text: 'Tunjukkan kode berikut ke kasir $store untuk menyelesaikan pembayaran.',
+          text: 'Show the following code to the $store cashier to complete the payment.',
         ),
         const SizedBox(height: 16),
-        _codeCard(label: 'Kode Pembayaran $store', value: paymentCode),
+        _codeCard(label: '$store Payment Code', value: paymentCode),
         if (expiryTime != null) ...[const SizedBox(height: 12), _expiryChip(expiryTime)],
       ],
     );
@@ -410,7 +410,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
     return _infoBox(
       icon: Icons.payment,
       color: Colors.grey,
-      text: 'Lanjutkan pembayaran dan klik "Saya Sudah Bayar" setelah selesai.',
+      text: 'Continue the payment and tap "I Have Paid" when you are done.',
     );
   }
 
@@ -426,34 +426,34 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Pembayaran via Midtrans',
+              'Payment via Midtrans',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _infoBox(
               icon: Icons.security,
               color: Colors.blue,
-              text: 'Pembayaran diproses secara aman oleh Midtrans. '
-                  'Tersedia berbagai metode seperti QRIS, GoPay, ShopeePay, dan lainnya.',
+              text: 'Payments are processed securely by Midtrans. '
+                  'Various methods are available, such as QRIS, GoPay, ShopeePay, and more.',
             ),
             const SizedBox(height: 20),
-            _instructionStep(1, 'Klik "Bayar Sekarang"',
-                'Anda akan diarahkan ke halaman pembayaran Midtrans di browser.'),
+            _instructionStep(1, 'Tap "Pay Now"',
+                'You will be redirected to the Midtrans payment page in your browser.'),
             const SizedBox(height: 10),
-            _instructionStep(2, 'Pilih Metode Pembayaran',
-                'Pilih metode yang tersedia (QRIS, GoPay, VA Bank, dsb).'),
+            _instructionStep(2, 'Choose a Payment Method',
+                'Pick an available method (QRIS, GoPay, bank VA, etc.).'),
             const SizedBox(height: 10),
-            _instructionStep(3, 'Selesaikan Pembayaran', 'Ikuti instruksi di halaman Midtrans.'),
+            _instructionStep(3, 'Complete the Payment', 'Follow the instructions on the Midtrans page.'),
             const SizedBox(height: 10),
-            _instructionStep(4, 'Kembali ke Aplikasi',
-                'Setelah selesai bayar, kembali dan klik konfirmasi.'),
+            _instructionStep(4, 'Return to the App',
+                'After the payment is done, come back and tap the confirmation.'),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _isPolling ? null : () => _openSnapUrl(snapToken),
                 icon: const Icon(Icons.payment, color: Colors.white),
-                label: const Text('Bayar Sekarang',
+                label: const Text('Pay Now',
                     style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -489,7 +489,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
               child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blue.shade700),
             ),
             const SizedBox(width: 12),
-            Text('Memverifikasi pembayaran…',
+            Text('Verifying payment…',
                 style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.w600)),
           ],
         ),
@@ -501,7 +501,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
       child: ElevatedButton.icon(
         onPressed: _startPolling,
         icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-        label: const Text('Saya Sudah Bayar',
+        label: const Text('I Have Paid',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.green,
@@ -524,18 +524,18 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Ringkasan Perpanjangan',
+              'Extension Summary',
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            _summaryRow('Kamar', widget.roomNumber),
-            _summaryRow('No. Invoice', '#${widget.invoiceId}'),
+            _summaryRow('Room', widget.roomNumber),
+            _summaryRow('Invoice No.', '#${widget.invoiceId}'),
             const Divider(height: 28),
             if (widget.feeBearer == 'customer' && widget.midtransFee > 0) ...[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Tagihan Sewa', style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                  Text('Lease Invoice', style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
                   Text(_currencyFormat.format(widget.baseAmount ?? widget.amount),
                       style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
                 ],
@@ -544,7 +544,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Biaya Transaksi Midtrans',
+                  Text('Midtrans Transaction Fee',
                       style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
                   Text(_currencyFormat.format(widget.midtransFee),
                       style: TextStyle(fontSize: 13, color: Colors.orange.shade700)),
@@ -555,7 +555,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Total Bayar', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('Total Payment', style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   _currencyFormat.format(widget.amount),
                   style: const TextStyle(
@@ -579,7 +579,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
                   Icon(Icons.info_outline, size: 13, color: Colors.orange.shade700),
                   const SizedBox(width: 5),
                   Expanded(child: Text(
-                    'Biaya transaksi Midtrans ditanggung penghuni dan sudah termasuk dalam total di atas.',
+                    'The Midtrans transaction fee is borne by the resident and is already included in the total above.',
                     style: TextStyle(fontSize: 10, color: Colors.orange.shade700, height: 1.3),
                   )),
                 ]),
@@ -627,11 +627,11 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
               child: const Icon(Icons.check_circle, color: Colors.green, size: 56),
             ),
             const SizedBox(height: 24),
-            const Text('Pembayaran Berhasil!',
+            const Text('Payment Successful!',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Text(
-              'Perpanjangan sewa kamar ${widget.roomNumber} telah dikonfirmasi.',
+              'The lease extension for room ${widget.roomNumber} has been confirmed.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
@@ -641,7 +641,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
               child: ElevatedButton.icon(
                 onPressed: () => context.router.replaceAll([const MemberFinanceRoute()]),
                 icon: const Icon(Icons.home, color: Colors.white),
-                label: const Text('Lihat Keuangan Saya',
+                label: const Text('View My Finance',
                     style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -685,11 +685,11 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: vaNumber));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Nomor VA disalin'), duration: Duration(seconds: 2)),
+                const SnackBar(content: Text('VA number copied'), duration: Duration(seconds: 2)),
               );
             },
             icon: const Icon(Icons.copy, color: Colors.blue),
-            tooltip: 'Salin',
+            tooltip: 'Copy',
           ),
         ],
       ),
@@ -722,11 +722,11 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: value));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Kode disalin'), duration: Duration(seconds: 2)),
+                const SnackBar(content: Text('Code copied'), duration: Duration(seconds: 2)),
               );
             },
             icon: const Icon(Icons.copy, color: Colors.blue),
-            tooltip: 'Salin',
+            tooltip: 'Copy',
           ),
         ],
       ),
@@ -738,7 +738,7 @@ class _ExtendLeasePaymentPageState extends State<ExtendLeasePaymentPage> {
       children: [
         const Icon(Icons.schedule, size: 14, color: Colors.orange),
         const SizedBox(width: 6),
-        Text('Berlaku hingga: $expiryTime',
+        Text('Valid until: $expiryTime',
             style: TextStyle(fontSize: 12, color: Colors.orange.shade700)),
       ],
     );

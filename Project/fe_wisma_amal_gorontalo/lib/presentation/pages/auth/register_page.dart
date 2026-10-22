@@ -29,7 +29,7 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Toggle obscure text saat pertama kali
+    // Toggle obscure text on first load
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthBloc>().add(const ToggleObscureTextEvent());
     });
@@ -39,7 +39,7 @@ class RegisterPage extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppbar(
         icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
-        title: 'Kembali',
+        title: 'Back',
       ),
       backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.grey.shade300,
       body: Stack(
@@ -115,7 +115,7 @@ class RegisterPage extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Halaman Register',
+                              'Register Page',
                               style: StyleConstant.customTextStyle.copyWith(
                                 fontSize: 30,
                                 fontWeight: FontWeight.w900,
@@ -124,7 +124,7 @@ class RegisterPage extends StatelessWidget {
                             ),
                             SizedBox(height: 10),
                             Text(
-                              'Daftar akun baru untuk melanjutkan',
+                              'Create a new account to continue',
                               style: StyleConstant.customTextStyle.copyWith(
                                 fontSize: 16,
                                 color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
@@ -141,7 +141,7 @@ class RegisterPage extends StatelessWidget {
                                     isRequired: true,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Username tidak boleh kosong';
+                                        return 'Username is required';
                                       }
 
                                       return null;
@@ -158,12 +158,12 @@ class RegisterPage extends StatelessWidget {
                                     keyboardType: TextInputType.emailAddress,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Email tidak boleh kosong';
+                                        return 'Email is required';
                                       }
                                       if (!RegExp(
                                         r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
                                       ).hasMatch(value)) {
-                                        return 'Format email tidak valid';
+                                        return 'Invalid email format';
                                       }
                                       return null;
                                     },
@@ -193,10 +193,10 @@ class RegisterPage extends StatelessWidget {
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Password tidak boleh kosong';
+                                  return 'Password is required';
                                 }
                                 if (value.length < 6) {
-                                  return 'Password minimal 6 karakter';
+                                  return 'Password must be at least 6 characters';
                                 }
                                 return null;
                               },
@@ -204,7 +204,7 @@ class RegisterPage extends StatelessWidget {
                             SizedBox(height: 20),
                             CustomTextForm(
                               controller: passwordConfirmController,
-                              title: 'Konfirmasi Password',
+                              title: 'Confirm Password',
                               hintText: '***********',
                               isRequired: true,
                               obscureText: state.obscureText,
@@ -222,7 +222,7 @@ class RegisterPage extends StatelessWidget {
                               ),
                               validator: (value) {
                                 if (value != passwordController.text) {
-                                  return 'Password tidak cocok';
+                                  return 'Passwords do not match';
                                 }
                                 return null;
                               },
@@ -232,10 +232,10 @@ class RegisterPage extends StatelessWidget {
                               onPressed: state.status.isInProgress
                                   ? null
                                   : () async {
-                                      // Jalankan validator
+                                      // Run the validator
                                       if (_formKey.currentState?.validate() ??
                                           false) {
-                                        // Kalau valid, kirim event register
+                                        // If valid, dispatch the register event
                                         context.read<AuthBloc>().add(
                                           RegisterEvent(
                                             username: usernameController.text,
@@ -246,9 +246,9 @@ class RegisterPage extends StatelessWidget {
                                           ),
                                         );
                                       } else {
-                                        // Kalau tidak valid, tampilkan snackbar error
+                                        // If not valid, show the error snackbar
                                         AppSnackbar.showError(
-                                          'Periksa kembali data yang kamu masukkan',
+                                          'Please review the data you entered',
                                         );
                                       }
                                     },
@@ -261,7 +261,7 @@ class RegisterPage extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Sudah punya akun?',
+                                  'Already have an account?',
                                   style: StyleConstant.customTextStyle.copyWith(
                                     color: Theme.of(context).colorScheme.onSurface,
                                   ),
@@ -272,7 +272,7 @@ class RegisterPage extends StatelessWidget {
                                       LoginRoute(pendingRoom: pendingRoom),
                                     );
                                   },
-                                  child: Text('Login disini'),
+                                  child: Text('Login here'),
                                 ),
                               ],
                             ),

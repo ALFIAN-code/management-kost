@@ -422,7 +422,7 @@ class FinanceService
 
     /**
      * Get payment status for multiple schedules
-     * Returns an array mapping schedule_id to 'Lunas' or 'Belum Lunas'
+     * Returns an array mapping schedule_id to 'Paid' or 'Unpaid'
      *
      * @param array $scheduleIds
      * @return array
@@ -436,7 +436,7 @@ class FinanceService
             $scheduleInvoices = $invoices->where('schedule_id', $id);
             $hasUnpaid = $scheduleInvoices->where('status', \Modules\Finance\Enums\InvoiceStatus::UNPAID)->count() > 0;
             $hasInvoices = $scheduleInvoices->count() > 0;
-            $statusMap[$id] = ($hasInvoices && ! $hasUnpaid) ? 'Lunas' : 'Belum Lunas';
+            $statusMap[$id] = ($hasInvoices && ! $hasUnpaid) ? 'Paid' : 'Unpaid';
         }
         
         return $statusMap;

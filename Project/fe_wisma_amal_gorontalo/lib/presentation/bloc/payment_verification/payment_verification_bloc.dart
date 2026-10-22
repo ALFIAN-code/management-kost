@@ -50,7 +50,7 @@ class PaymentVerificationBloc extends Bloc<PaymentVerificationEvent, PaymentVeri
           adminNotes: event.adminNotes,
         );
         emit(PaymentVerificationActionSuccess(
-          event.isApproved ? 'Pembayaran berhasil disetujui.' : 'Pembayaran berhasil ditolak.',
+          event.isApproved ? 'Payment approved successfully.' : 'Payment rejected successfully.',
         ));
         add(FetchAllPayments());
       } catch (e) {
@@ -61,7 +61,7 @@ class PaymentVerificationBloc extends Bloc<PaymentVerificationEvent, PaymentVeri
     on<RefundPaymentEvent>((event, emit) async {
       try {
         await refundPaymentUseCase.call(event.paymentId, event.reason);
-        emit(PaymentVerificationActionSuccess('Dana pembayaran berhasil di-refund.'));
+        emit(PaymentVerificationActionSuccess('Payment refunded successfully.'));
         add(FetchAllPayments());
       } catch (e) {
         emit(PaymentVerificationError(e.toString()));

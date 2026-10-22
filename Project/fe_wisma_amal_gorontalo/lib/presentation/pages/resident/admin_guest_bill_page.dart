@@ -52,10 +52,10 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
   bool _hasMore = true;
   List<AdminGuestBillItem> _cache = [];
   Timer? _debounce;
-  String _selectedStatus = 'Semua';
+  String _selectedStatus = 'All';
 
   final _currency = NumberFormat.currency(
-    locale: 'id_ID',
+    locale: 'en_US',
     symbol: 'Rp ',
     decimalDigits: 0,
   );
@@ -123,17 +123,17 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
     final notesController = TextEditingController();
     bool? isApproved;
 
-    // Label metode pembayaran
+    // Payment method label
     String methodLabel;
     switch (item.paymentMethod) {
       case 'cash':
-        methodLabel = 'Tunai';
+        methodLabel = 'Cash';
         break;
       case 'midtrans':
         methodLabel = 'Midtrans';
         break;
       case 'manual':
-        methodLabel = 'Transfer Manual';
+        methodLabel = 'Manual Transfer';
         break;
       default:
         methodLabel = item.paymentMethod ?? '-';
@@ -143,19 +143,19 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('Verifikasi Pembayaran'),
+          title: const Text('Payment Verification'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Tagihan: ${item.billNumber}'),
-              Text('Penghuni: ${item.penghuni}'),
-              Text('Tamu: ${item.guestName}'),
-              Text('Jumlah: ${_currency.format(item.amount)}'),
+              Text('Invoice: ${item.billNumber}'),
+              Text('Resident: ${item.penghuni}'),
+              Text('Guest: ${item.guestName}'),
+              Text('Amount: ${_currency.format(item.amount)}'),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Text('Metode: ', style: theme.textTheme.bodyMedium),
+                  Text('Method: ', style: theme.textTheme.bodyMedium),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
@@ -181,7 +181,7 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
                 TextButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.image_outlined),
-                  label: const Text('Lihat Bukti Bayar'),
+                  label: const Text('View Payment Proof'),
                 ),
               if (item.paymentMethod == 'cash')
                 Container(
@@ -197,7 +197,7 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Pembayaran tunai — pastikan uang sudah diterima sebelum memverifikasi.',
+                          'Cash payment — make sure the money has been received before verifying.',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.amber[900],
                           ),
@@ -209,7 +209,7 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
               const SizedBox(height: 12),
               CustomTextField(
                 controller: notesController,
-                hintText: 'Catatan Admin (opsional)',
+                hintText: 'Admin Notes (optional)',
                 maxLines: 2,
               ),
               const SizedBox(height: 16),
@@ -224,7 +224,7 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
                         Navigator.pop(ctx);
                       },
                       leadIcon: Icon(Icons.close, color: theme.colorScheme.error, size: 18),
-                      label: 'Tolak',
+                      label: 'Reject',
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -236,7 +236,7 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
                         Navigator.pop(ctx);
                       },
                       leadIcon: Icon(Icons.check, color: theme.colorScheme.onPrimary, size: 18),
-                      label: 'Terima',
+                      label: 'Approve',
                     ),
                   ),
                 ],
@@ -291,8 +291,8 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
         body: Column(
           children: [
             AppTopBar(
-              title: 'Tagihan Tamu',
-              breadcrumb: 'Manajemen / Tagihan Tamu',
+              title: 'Guest Invoices',
+              breadcrumb: 'Management / Guest Invoices',
             ),
             Expanded(
               child: BlocBuilder<GuestBillBloc, GuestBillState>(
@@ -303,11 +303,11 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
                   if (state is GuestBillError && _cache.isEmpty) {
                     return EmptyStateWidget(
                       icon: Icons.error_outline,
-                      title: 'Gagal Memuat Data',
+                      title: 'Failed to Load Data',
                       subtitle: state.message,
                       action: BasicButton(
                         onPressed: _reload,
-                        label: 'Coba Lagi',
+                        label: 'Try Again',
                       ),
                     );
                   }
@@ -321,11 +321,11 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
                         // Search Bar
                         SearchAndFilterBar(
                           searchController: _searchController,
-                          searchHint: 'Cari penghuni, tamu...',
+                          searchHint: 'Search resident, guest...',
                           onSearchChanged: _onSearch,
                           dropdownFilter: DropdownButton<String>(
                             value: _selectedStatus,
-                            items: ['Semua', 'Unpaid', 'Pending', 'Verified', 'Paid', 'Rejected', 'Failed']
+                            items: ['All', 'Unpaid', 'Pending', 'Verified', 'Paid', 'Rejected', 'Failed']
                                 .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                                 .toList(),
                             onChanged: (v) {
@@ -346,17 +346,17 @@ class _AdminGuestBillViewState extends State<_AdminGuestBillView> {
                         AppDataTable(
                           columns: const [
                             DataColumn(label: Text('NO')),
-                            DataColumn(label: Text('NO TAGIHAN')),
-                            DataColumn(label: Text('PENGHUNI')),
-                            DataColumn(label: Text('NAMA TAMU')),
-                            DataColumn(label: Text('JUMLAH')),
-                            DataColumn(label: Text('METODE')),
+                            DataColumn(label: Text('INVOICE NO.')),
+                            DataColumn(label: Text('RESIDENT')),
+                            DataColumn(label: Text('GUEST NAME')),
+                            DataColumn(label: Text('AMOUNT')),
+                            DataColumn(label: Text('METHOD')),
                             DataColumn(label: Text('STATUS')),
-                            DataColumn(label: Text('AKSI')),
+                            DataColumn(label: Text('ACTION')),
                           ],
                           rows: (() {
                             final filteredCache = _cache.where((item) {
-                              if (_selectedStatus == 'Semua') return true;
+                              if (_selectedStatus == 'All') return true;
                               return item.status.toLowerCase() == _selectedStatus.toLowerCase();
                             }).toList();
                             return filteredCache.asMap().entries.map((entry) {

@@ -49,13 +49,13 @@ class _DashboardViewState extends State<DashboardView> {
           }
 
           if (state is DashboardError) {
-            return Center(child: Text('Gagal memuat data: ${state.message}'));
+            return Center(child: Text('Failed to load data: ${state.message}'));
           }
 
           if (state is AdminDashboardLoaded) {
             final data = state.dashboard;
             final formatCurrency = NumberFormat.currency(
-              locale: 'id_ID',
+              locale: 'en_US',
               symbol: 'Rp ',
               decimalDigits: 0,
             );
@@ -63,9 +63,9 @@ class _DashboardViewState extends State<DashboardView> {
             // Helper to safely format amounts
             String formatAmount(double val) {
               if (val >= 1000000000)
-                return 'Rp ${(val / 1000000000).toStringAsFixed(1)}M';
+                return 'Rp ${(val / 1000000000).toStringAsFixed(1)}B';
               if (val >= 1000000)
-                return 'Rp ${(val / 1000000).toStringAsFixed(1)}Jt';
+                return 'Rp ${(val / 1000000).toStringAsFixed(1)}M';
               return formatCurrency.format(val);
             }
 
@@ -103,7 +103,7 @@ class _DashboardViewState extends State<DashboardView> {
                                 children: [
                                   HeroBentoCard(
                                     adminName:
-                                        'Admin', // Idealnya diambil dari session/auth
+                                        'Admin', // Ideally taken from session/auth
                                     occupancyRate: data.totalRooms == 0
                                         ? 0
                                         : data.occupiedRooms / data.totalRooms,
@@ -114,10 +114,10 @@ class _DashboardViewState extends State<DashboardView> {
                                     children: [
                                       Expanded(
                                         child: AlertBentoCard(
-                                          title: 'Total Penghuni',
+                                          title: 'Total Residents',
                                           count: data.totalResidents,
                                           description:
-                                              'Jumlah penghuni aktif di sistem.',
+                                              'Number of active residents in the system.',
                                           icon: Icons.people_alt_rounded,
                                           color: Colors.blueAccent,
                                         ),
@@ -125,10 +125,10 @@ class _DashboardViewState extends State<DashboardView> {
                                       const SizedBox(width: 24),
                                       Expanded(
                                         child: AlertBentoCard(
-                                          title: 'Aktivitas Terbaru',
+                                          title: 'Recent Activity',
                                           count: data.recentActivities.length,
                                           description:
-                                              'Jumlah transaksi terakhir bulan ini.',
+                                              'Number of transactions in the last month.',
                                           icon: Icons.receipt_long_rounded,
                                           color: Colors.orange,
                                         ),
@@ -148,18 +148,18 @@ class _DashboardViewState extends State<DashboardView> {
                                     children: [
                                       Expanded(
                                         child: StatBentoCard(
-                                          title: 'Kamar Tersedia',
+                                          title: 'Available Rooms',
                                           value: data.emptyRooms.toString(),
                                           icon: Icons.meeting_room_rounded,
                                           iconColor: Colors.teal,
                                           subtitle:
-                                              'Dari ${data.totalRooms} Total',
+                                              'Of ${data.totalRooms} Total',
                                         ),
                                       ),
                                       const SizedBox(width: 24),
                                       Expanded(
                                         child: StatBentoCard(
-                                          title: 'Kamar Terisi',
+                                          title: 'Occupied Rooms',
                                           value: data.occupiedRooms.toString(),
                                           icon: Icons.bed_rounded,
                                           iconColor: Colors.blueAccent,
@@ -172,7 +172,7 @@ class _DashboardViewState extends State<DashboardView> {
                                     children: [
                                       Expanded(
                                         child: StatBentoCard(
-                                          title: 'Pendapatan Bulan Ini',
+                                          title: 'Monthly Income',
                                           value: formatAmount(
                                             data.monthlyIncome,
                                           ),
@@ -204,7 +204,7 @@ class _DashboardViewState extends State<DashboardView> {
                               children: [
                                 Expanded(
                                   child: StatBentoCard(
-                                    title: 'Kamar Tersedia',
+                                    title: 'Available Rooms',
                                     value: data.emptyRooms.toString(),
                                     icon: Icons.meeting_room_rounded,
                                     iconColor: Colors.teal,
@@ -213,7 +213,7 @@ class _DashboardViewState extends State<DashboardView> {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: StatBentoCard(
-                                    title: 'Kamar Terisi',
+                                    title: 'Occupied Rooms',
                                     value: data.occupiedRooms.toString(),
                                     icon: Icons.bed_rounded,
                                     iconColor: Colors.blueAccent,
@@ -223,16 +223,17 @@ class _DashboardViewState extends State<DashboardView> {
                             ),
                             const SizedBox(height: 20),
                             StatBentoCard(
-                              title: 'Pendapatan Bulan Ini',
+                              title: 'Monthly Income',
                               value: formatAmount(data.monthlyIncome),
                               icon: Icons.account_balance_wallet_rounded,
                               iconColor: Colors.green,
                             ),
                             const SizedBox(height: 20),
                             AlertBentoCard(
-                              title: 'Total Penghuni',
+                              title: 'Total Residents',
                               count: data.totalResidents,
-                              description: 'Jumlah penghuni aktif di sistem.',
+                              description:
+                                  'Number of active residents in the system.',
                               icon: Icons.people_alt_rounded,
                               color: Colors.blueAccent,
                             ),
@@ -241,7 +242,7 @@ class _DashboardViewState extends State<DashboardView> {
                               title: 'Aktivitas Terbaru',
                               count: data.recentActivities.length,
                               description:
-                                  'Jumlah transaksi terakhir bulan ini.',
+                                  'Number of transactions in the last month.',
                               icon: Icons.receipt_long_rounded,
                               color: Colors.orange,
                             ),
@@ -252,7 +253,7 @@ class _DashboardViewState extends State<DashboardView> {
 
                       // QUICK ACTIONS GRID
                       Text(
-                        'Aksi Cepat',
+                        'Quick Actions',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -265,7 +266,7 @@ class _DashboardViewState extends State<DashboardView> {
                             return Column(
                               children: [
                                 QuickActionBento(
-                                  label: 'Tambah Penghuni',
+                                  label: 'Add Resident',
                                   icon: Icons.person_add_alt_1_rounded,
                                   color: Colors.blue,
                                   onTap: () {
@@ -276,7 +277,7 @@ class _DashboardViewState extends State<DashboardView> {
                                 ),
                                 const SizedBox(height: 16),
                                 QuickActionBento(
-                                  label: 'Daftar Tagihan',
+                                  label: 'Invoice List',
                                   icon: Icons.request_quote_rounded,
                                   color: Colors.purple,
                                   onTap: () {
@@ -287,7 +288,7 @@ class _DashboardViewState extends State<DashboardView> {
                                 ),
                                 const SizedBox(height: 16),
                                 QuickActionBento(
-                                  label: 'Catat Pengeluaran',
+                                  label: 'Record Expense',
                                   icon: Icons.payments_rounded,
                                   color: Colors.green,
                                   onTap: () {
@@ -303,7 +304,7 @@ class _DashboardViewState extends State<DashboardView> {
                             children: [
                               Expanded(
                                 child: QuickActionBento(
-                                  label: 'Tambah Penghuni',
+                                  label: 'Add Resident',
                                   icon: Icons.person_add_alt_1_rounded,
                                   color: Colors.blue,
                                   onTap: () {
@@ -316,7 +317,7 @@ class _DashboardViewState extends State<DashboardView> {
                               const SizedBox(width: 16),
                               Expanded(
                                 child: QuickActionBento(
-                                  label: 'Daftar Tagihan',
+                                  label: 'Invoice List',
                                   icon: Icons.request_quote_rounded,
                                   color: Colors.purple,
                                   onTap: () {
@@ -329,7 +330,7 @@ class _DashboardViewState extends State<DashboardView> {
                               const SizedBox(width: 16),
                               Expanded(
                                 child: QuickActionBento(
-                                  label: 'Catat Pengeluaran',
+                                  label: 'Record Expense',
                                   icon: Icons.payments_rounded,
                                   color: Colors.green,
                                   onTap: () {
@@ -352,7 +353,7 @@ class _DashboardViewState extends State<DashboardView> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Laporan Kerusakan Terbaru',
+                              'Recent Damage Reports',
                               style: Theme.of(context).textTheme.titleLarge
                                   ?.copyWith(fontWeight: FontWeight.w600),
                             ),
@@ -362,7 +363,7 @@ class _DashboardViewState extends State<DashboardView> {
                                   const MaintenanceReportListRoute(),
                                 );
                               },
-                              child: const Text('Lihat Semua'),
+                              child: const Text('View All'),
                             ),
                           ],
                         ),
@@ -372,12 +373,12 @@ class _DashboardViewState extends State<DashboardView> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(24),
                             child: TableCard(
-                              title: 'Keluhan Masuk',
+                              title: 'Incoming Complaints',
                               columns: const [
-                                TableColumn(label: 'Judul', flex: 2),
-                                TableColumn(label: 'Kamar'),
-                                TableColumn(label: 'Pelapor'),
-                                TableColumn(label: 'Tanggal'),
+                                TableColumn(label: 'Title', flex: 2),
+                                TableColumn(label: 'Room'),
+                                TableColumn(label: 'Reporter'),
+                                TableColumn(label: 'Date'),
                                 TableColumn(label: 'Status'),
                               ],
                               rows: data.recentDamageReports!
@@ -432,7 +433,7 @@ class _DashboardViewState extends State<DashboardView> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              'Agenda Pemeliharaan Pekan Ini',
+                                              'This Week\'s Maintenance Schedule',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleMedium
@@ -500,7 +501,7 @@ class _DashboardViewState extends State<DashboardView> {
                                                             .start,
                                                     children: [
                                                       Text(
-                                                        'Teknisi: ${schedule.technicianName}',
+                                                        'Technician: ${schedule.technicianName}',
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodyMedium
@@ -511,7 +512,7 @@ class _DashboardViewState extends State<DashboardView> {
                                                             ),
                                                       ),
                                                       Text(
-                                                        'Lokasi: ${schedule.location} • ${schedule.type}',
+                                                        'Location: ${schedule.location} • ${schedule.type}',
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodySmall
@@ -568,7 +569,7 @@ class _DashboardViewState extends State<DashboardView> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              'Status Inventaris',
+                                              'Inventory Status',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleMedium
@@ -604,7 +605,7 @@ class _DashboardViewState extends State<DashboardView> {
                                                         ),
                                                   ),
                                                   Text(
-                                                    'Total Barang',
+                                                    'Total Items',
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .bodyMedium
@@ -645,7 +646,7 @@ class _DashboardViewState extends State<DashboardView> {
                                                         ),
                                                   ),
                                                   Text(
-                                                    'Rusak',
+                                                    'Broken',
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .bodyMedium
@@ -700,12 +701,12 @@ class _DashboardViewState extends State<DashboardView> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(24),
                           child: TableCard(
-                            title: 'Transaksi Terbaru',
+                            title: 'Recent Transactions',
                             columns: const [
-                              TableColumn(label: 'Tipe', flex: 2),
-                              TableColumn(label: 'Kamar'),
-                              TableColumn(label: 'Penyewa'),
-                              TableColumn(label: 'Tanggal'),
+                              TableColumn(label: 'Type', flex: 2),
+                              TableColumn(label: 'Room'),
+                              TableColumn(label: 'Tenant'),
+                              TableColumn(label: 'Date'),
                               TableColumn(label: 'Status'),
                             ],
                             rows: data.recentActivities

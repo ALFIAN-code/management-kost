@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="dfd0-svg" viewBox="0 0 1200 1000" width="1200" height="1000" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+         
+
+        <marker id="arr-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"></path>
+        </marker>
+        <marker id="arr-red" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"></path>
+        </marker>
+      </defs>
+
+      <text x="40" y="45" class="title-text">DFD LEVEL 0 (DIAGRAM KONTEKS)</text>
+
+      <g transform="translate(790, 25)">
+        <line x1="0" y1="12" x2="60" y2="12" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arr-blue)"></line>
+        <text x="75" y="16" class="legend-text">Input Data</text>
+        <line x1="0" y1="36" x2="60" y2="36" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arr-red)"></line>
+        <text x="75" y="40" class="legend-text">Output Info</text>
+      </g>
+
+       
+      <g id="proc-context">
+        <circle cx="600" cy="500" r="155" fill="#f8fafc" stroke="#334155" stroke-width="3"></circle>
+        <line x1="472" y1="420" x2="728" y2="420" stroke="#cbd5e1" stroke-width="1.8"></line>
+        <text x="600" y="400" class="proc-no">0.0</text>
+        <text x="600" y="455" class="proc-title">SISTEM INFORMASI MANAJEMEN</text>
+        <text x="600" y="478" class="proc-title">RUMAH KOST MULTI-GEDUNG</text>
+        <text x="600" y="501" class="proc-title">(Modular Monolith NestJS)</text>
+        <text x="600" y="528" class="proc-sub">9 Modul Terenkapsulasi · 13 Tabel</text>
+      </g>
+
+       
+      <g id="ent-pemilik" transform="translate(40, 150)">
+        <rect width="190" height="75" rx="6" fill="#f1f5f9" stroke="#334155" stroke-width="2"></rect>
+        <text x="95" y="35" class="entity-title">Pemilik Properti</text>
+        <text x="95" y="55" class="entity-role">(Owner / Eksekutif)</text>
+      </g>
+      <g id="ent-pengelola" transform="translate(40, 450)">
+        <rect width="190" height="75" rx="6" fill="#f1f5f9" stroke="#334155" stroke-width="2"></rect>
+        <text x="95" y="35" class="entity-title">Pengelola Gedung</text>
+        <text x="95" y="55" class="entity-role">(Admin Operasional)</text>
+      </g>
+      <g id="ent-penghuni" transform="translate(40, 750)">
+        <rect width="190" height="75" rx="6" fill="#f1f5f9" stroke="#334155" stroke-width="2"></rect>
+        <text x="95" y="35" class="entity-title">Penghuni Properti</text>
+        <text x="95" y="55" class="entity-role">(&amp; Calon Penghuni)</text>
+      </g>
+
+       
+      <g id="ent-keycloak" transform="translate(970, 140)">
+        <rect width="190" height="75" rx="6" fill="#f1f5f9" stroke="#334155" stroke-width="2"></rect>
+        <text x="95" y="35" class="entity-title">Keycloak</text>
+        <text x="95" y="55" class="entity-role">Identity Provider (OIDC)</text>
+      </g>
+      <g id="ent-midtrans" transform="translate(970, 350)">
+        <rect width="190" height="75" rx="6" fill="#f1f5f9" stroke="#334155" stroke-width="2"></rect>
+        <text x="95" y="35" class="entity-title">Midtrans</text>
+        <text x="95" y="55" class="entity-role">Payment Gateway (SNAP)</text>
+      </g>
+      <g id="ent-wa" transform="translate(970, 560)">
+        <rect width="190" height="75" rx="6" fill="#f1f5f9" stroke="#334155" stroke-width="2"></rect>
+        <text x="95" y="35" class="entity-title">WhatsApp Gateway</text>
+        <text x="95" y="55" class="entity-role">Fonnte / Open-WA</text>
+      </g>
+      <g id="ent-ai" transform="translate(970, 770)">
+        <rect width="190" height="75" rx="6" fill="#f1f5f9" stroke="#334155" stroke-width="2"></rect>
+        <text x="95" y="35" class="entity-title">Model Bahasa AI</text>
+        <text x="95" y="55" class="entity-role">(MCP Host / LLM)</text>
+      </g>
+
+       
+      <path d="M 230 170 L 490 170 L 490 391" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"></path>
+      <text x="360" y="160" class="flow-label">Data Gedung, Kebijakan Sewa &amp; Peran</text>
+
+      <path d="M 520 367 L 520 205 L 230 205" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arr-red)"></path>
+      <text x="375" y="220" class="flow-label">Ringkasan Okupansi &amp; Arus Kas</text>
+
+      <path d="M 230 470 L 448 470" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"></path>
+      <text x="345" y="460" class="flow-label">Data Kamar &amp; Verifikasi Sewa</text>
+
+      <path d="M 448 530 L 230 530" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arr-red)"></path>
+      <text x="345" y="548" class="flow-label">Notifikasi &amp; Pengingat Jatuh Tempo</text>
+
+      <path d="M 230 770 L 490 770 L 490 609" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"></path>
+      <text x="360" y="760" class="flow-label">Pengajuan Sewa &amp; Aduan Kerusakan</text>
+
+      <path d="M 520 633 L 520 805 L 230 805" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arr-red)"></path>
+      <text x="375" y="822" class="flow-label">Konfirmasi Sewa &amp; Bukti Pembayaran</text>
+
+       
+      <path d="M 970 170 L 690 170 L 690 374" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"></path>
+      <text x="830" y="160" class="flow-label">Kunci JWKS &amp; Metadata Klien</text>
+
+      <path d="M 730 416 L 730 205 L 970 205" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arr-red)"></path>
+      <text x="850" y="220" class="flow-label">Pencabutan Sesi (Logout)</text>
+
+      <path d="M 743 440 L 800 440 L 800 370 L 970 370" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arr-red)"></path>
+      <text x="885" y="360" class="flow-label">Permintaan Token SNAP</text>
+
+      <path d="M 970 405 L 810 405 L 810 480 L 754 480" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"></path>
+      <text x="885" y="425" class="flow-label">Webhook Settlement</text>
+
+      <path d="M 754 520 L 850 520 L 850 580 L 970 580" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arr-red)"></path>
+      <text x="885" y="570" class="flow-label">Payload Pesan Tagihan</text>
+
+      <path d="M 970 615 L 820 615 L 820 565 L 741 565" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"></path>
+      <text x="885" y="632" class="flow-label">Status Pengiriman Pesan</text>
+
+      <path d="M 970 790 L 760 790 L 760 600 L 718 600" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"></path>
+      <text x="865" y="780" class="flow-label">Panggilan Tool Baca (MCP)</text>
+
+      <path d="M 640 650 L 640 825 L 970 825" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arr-red)"></path>
+      <text x="805" y="845" class="flow-label">Data Agregat Faktual (JSON)</text>
+    </svg>

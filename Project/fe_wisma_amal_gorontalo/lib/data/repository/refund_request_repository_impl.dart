@@ -21,7 +21,7 @@ class RefundRequestRepositoryImpl implements RefundRequestRepository {
     double adminFee = 0,
     String adminNotes = '',
   }) async {
-    // proofPath tidak digunakan di impl ini; proof file dihandle di bloc
+    // proofPath is not used in this implementation; the proof file is handled in the bloc
     final model = await datasource.prosesRefund(
       id: id,
       proof: null,

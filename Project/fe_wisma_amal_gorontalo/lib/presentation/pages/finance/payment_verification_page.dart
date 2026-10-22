@@ -30,27 +30,27 @@ class PaymentVerificationPage extends StatefulWidget {
 class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
   late PaymentVerificationBloc _bloc;
 
-  // Filter — tabel pending
+  // Filter — pending table
   String _searchPending = '';
   final TextEditingController _searchPendingCtrl = TextEditingController();
   int _pagePending = 1;
 
-  // Filter — tabel semua pembayaran
+  // Filter — all payments table
   String _searchAll = '';
-  String _statusFilter = 'Semua';
-  String _methodFilter = 'Semua';
+  String _statusFilter = 'All';
+  String _methodFilter = 'All';
   int? _filterYear;
   int? _filterMonth;
   final TextEditingController _searchAllCtrl = TextEditingController();
   int _pageAll = 1;
 
   static const int _perPage = 10;
-  static const _statusOptions = ['Semua', 'Menunggu', 'Disetujui', 'Ditolak', 'Refund'];
-  static const _methodOptions = ['Semua', 'Manual', 'Midtrans'];
+  static const _statusOptions = ['All', 'Pending', 'Approved', 'Rejected', 'Refund'];
+  static const _methodOptions = ['All', 'Manual', 'Midtrans'];
 
   static final _currencyFmt =
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
-  static final _dateFmt = DateFormat('dd MMM yyyy, HH:mm', 'id_ID');
+      NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0);
+  static final _dateFmt = DateFormat('dd MMM yyyy, HH:mm', 'en_US');
 
   String formatRupiah(double v) => _currencyFmt.format(v);
 
@@ -59,7 +59,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
     return dt != null ? _dateFmt.format(dt) : '-';
   }
 
-  String _methodLabel(String m) => m == 'midtrans' ? 'Midtrans / QRIS' : 'Transfer Manual';
+  String _methodLabel(String m) => m == 'midtrans' ? 'Midtrans / QRIS' : 'Manual Transfer';
   IconData _methodIcon(String m) => m == 'midtrans' ? Icons.qr_code : Icons.account_balance;
   Color _methodColor(String m, bool isDark) => m == 'midtrans'
       ? (isDark ? AppColorsDark.primary : AppColorsLight.primary)
@@ -67,12 +67,12 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
 
   String _statusLabel(String s) {
     switch (s.toLowerCase()) {
-      case 'pending':    return 'Menunggu';
-      case 'verified':   return 'Disetujui';
-      case 'rejected':   return 'Ditolak';
+      case 'pending':    return 'Pending';
+      case 'verified':   return 'Approved';
+      case 'rejected':   return 'Rejected';
       case 'refunded':   return 'Refund';
-      case 'paid':       return 'Disetujui';
-      case 'failed':     return 'Gagal';
+      case 'paid':       return 'Approved';
+      case 'failed':     return 'Failed';
       default:           return s;
     }
   }
@@ -146,8 +146,8 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
           final dt = DateTime.tryParse(p.paymentDate);
           if (dt == null || dt.month != _filterMonth) return false;
         }
-        if (_statusFilter != 'Semua' && _statusLabel(p.status) != _statusFilter) return false;
-        if (_methodFilter != 'Semua') {
+        if (_statusFilter != 'All' && _statusLabel(p.status) != _statusFilter) return false;
+        if (_methodFilter != 'All') {
           final isManual = p.paymentMethod != 'midtrans';
           if (_methodFilter == 'Manual' && !isManual) return false;
           if (_methodFilter == 'Midtrans' && isManual) return false;
@@ -224,7 +224,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
           ),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Verifikasi Pembayaran', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Verify Payment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Text(
               payment.invoiceNumber ?? 'ID #${payment.id}',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.normal),
@@ -245,13 +245,13 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                 child: Column(children: [
                   Row(children: [
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('Penghuni', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                      Text('Resident', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       Text(payment.residentName ?? '-', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                       if (payment.roomNumber != null)
-                        Text('Kamar ${payment.roomNumber}', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                        Text('Room ${payment.roomNumber}', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
                     ])),
                     Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                      Text('Nominal', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                      Text('Amount', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       Text(formatRupiah(payment.amount), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       Text(
                         _methodLabel(payment.paymentMethod),
@@ -264,7 +264,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                     Row(children: [
                       Icon(Icons.label_outline, size: 13, color: Colors.grey.shade400),
                       const SizedBox(width: 6),
-                      Text('Jenis Tagihan:', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                      Text('Invoice Type:', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
                       const SizedBox(width: 6),
                       _invoiceTypeBadge(payment.invoiceType),
                     ]),
@@ -274,26 +274,26 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                     Row(children: [
                       Icon(Icons.tag, size: 13, color: Colors.grey.shade400),
                       const SizedBox(width: 4),
-                      Text('ID Transaksi: ${payment.transactionId}',
+                      Text('Transaction ID: ${payment.transactionId}',
                           style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
                     ]),
                   ],
                 ]),
               ),
               const SizedBox(height: 14),
-              const Text('Bukti Transfer:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+              const Text('Transfer Proof:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
               const SizedBox(height: 8),
               _proofImage(payment),
               const SizedBox(height: 14),
-              Text('Catatan Penolakan', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700)),
+              Text('Rejection Note', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700)),
               const SizedBox(height: 2),
-              Text('Wajib diisi jika pembayaran ditolak', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+              Text('Required if the payment is rejected', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
               const SizedBox(height: 8),
               TextField(
                 controller: notesCtrl,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  hintText: 'Contoh: Bukti transfer buram, nominal tidak sesuai...',
+                  hintText: 'Example: Transfer proof is blurry, the amount does not match...',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
                   enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
                   contentPadding: const EdgeInsets.all(12),
@@ -303,10 +303,10 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Tutup')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
           OutlinedButton.icon(
             icon: Icon(Icons.close, size: 16, color: Colors.red.shade600),
-            label: Text('Tolak', style: TextStyle(color: Colors.red.shade600)),
+            label: Text('Reject', style: TextStyle(color: Colors.red.shade600)),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: Colors.red.shade300),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -314,7 +314,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
             onPressed: () {
               if (notesCtrl.text.trim().isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Catatan wajib diisi jika menolak!'),
+                  content: Text('A note is required when rejecting!'),
                   backgroundColor: Colors.red,
                 ));
                 return;
@@ -325,7 +325,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
           ),
           FilledButton.icon(
             icon: const Icon(Icons.check, size: 16),
-            label: const Text('Setujui'),
+            label: const Text('Approve'),
             style: FilledButton.styleFrom(
               backgroundColor: Colors.green.shade600,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -357,7 +357,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
           ),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Detail Pembayaran', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Payment Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Text(
               _statusLabel(payment.status),
               style: TextStyle(fontSize: 12, color: _statusColor(payment.status, isDark), fontWeight: FontWeight.w600),
@@ -378,10 +378,10 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                 child: Column(children: [
                   Row(children: [
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('Penghuni', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                      Text('Resident', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       Text(payment.residentName ?? '-', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                       if (payment.roomNumber != null)
-                        Text('Kamar ${payment.roomNumber}', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                        Text('Room ${payment.roomNumber}', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
                       if (payment.invoiceNumber != null) ...[
                         const SizedBox(height: 2),
                         Row(children: [
@@ -394,7 +394,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                       ],
                     ])),
                     Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                      Text('Nominal', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                      Text('Amount', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       Text(formatRupiah(payment.amount), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       Text(
                         _methodLabel(payment.paymentMethod),
@@ -405,12 +405,12 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                   const Divider(height: 16),
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('Tanggal Pembayaran', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                      Text('Payment Date', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       Text(formatDate(payment.paymentDate), style: const TextStyle(fontSize: 12)),
                     ]),
                     if (payment.updatedAt != null)
                       Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                        Text('Tanggal Diproses', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                        Text('Processed Date', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                         Text(formatDate(payment.updatedAt!), style: const TextStyle(fontSize: 12)),
                       ]),
                   ]),
@@ -418,7 +418,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
               ),
               if (payment.adminNotes != null && payment.adminNotes!.isNotEmpty) ...[
                 const SizedBox(height: 14),
-                Text('Catatan Admin', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700)),
+                Text('Admin Note', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700)),
                 const SizedBox(height: 6),
                 Container(
                   width: double.infinity,
@@ -434,14 +434,14 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                 ),
               ],
               const SizedBox(height: 14),
-              const Text('Bukti Transfer:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+              const Text('Transfer Proof:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
               const SizedBox(height: 8),
               _proofImage(payment),
             ]),
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Tutup')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
         ],
       ),
     );
@@ -475,8 +475,8 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
           body: Column(
             children: [
               AppTopBar(
-                title: 'Manajemen Pembayaran',
-                breadcrumb: 'Keuangan / Pembayaran',
+                title: 'Payment Management',
+                breadcrumb: 'Finance / Payments',
                 action: ElevatedButton.icon(
                   onPressed: () => _bloc.add(FetchAllPayments()),
                   icon: const Icon(Icons.refresh, size: 18),
@@ -495,11 +495,11 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                     if (state is PaymentVerificationError) {
                       return EmptyStateWidget(
                         icon: Icons.error_outline,
-                        title: 'Gagal Memuat Data',
+                        title: 'Failed to Load Data',
                         subtitle: state.message,
                         action: ElevatedButton(
                           onPressed: () => _bloc.add(FetchAllPayments()),
-                          child: const Text('Coba Lagi'),
+                          child: const Text('Try Again'),
                         ),
                       );
                     }
@@ -536,24 +536,24 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
 
-                          // ── Ringkasan Statistik ─────────────────────────
+                          // ── Statistics Summary ─────────────────────────
                           IntrinsicHeight(
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Expanded(child: SummaryStatCard(
-                                  label: 'Menunggu Verifikasi',
-                                  value: '$pendingCount Transaksi',
+                                  label: 'Pending Verification',
+                                  value: '$pendingCount Transactions',
                                   icon: Icons.hourglass_top,
                                   iconColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
                                   iconBg: isDark ? AppColorsDark.statusWaitingBg : AppColorsLight.statusWaitingBg,
-                                  trend: 'Perlu tindak lanjut',
+                                  trend: 'Needs follow-up',
                                   trendColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
                                 )),
                                 const SizedBox(width: AppSpacing.lg),
                                 Expanded(child: SummaryStatCard(
-                                  label: 'Disetujui',
-                                  value: '$verifiedCount Transaksi',
+                                  label: 'Approved',
+                                  value: '$verifiedCount Transactions',
                                   icon: Icons.check_circle_outline,
                                   iconColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
                                   iconBg: isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg,
@@ -562,22 +562,22 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                                 )),
                                 const SizedBox(width: AppSpacing.lg),
                                 Expanded(child: SummaryStatCard(
-                                  label: 'Ditolak / Gagal',
-                                  value: '$rejectedCount Transaksi',
+                                  label: 'Rejected / Failed',
+                                  value: '$rejectedCount Transactions',
                                   icon: Icons.cancel_outlined,
                                   iconColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
                                   iconBg: isDark ? AppColorsDark.statusCancelledBg : AppColorsLight.statusCancelledBg,
-                                  trend: 'Perlu perhatian',
+                                  trend: 'Needs attention',
                                   trendColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
                                 )),
                                 const SizedBox(width: AppSpacing.lg),
                                 Expanded(child: SummaryStatCard(
-                                  label: 'Total Transaksi',
-                                  value: '${all.length} Transaksi',
+                                  label: 'Total Transactions',
+                                  value: '${all.length} Transactions',
                                   icon: Icons.receipt_long,
                                   iconColor: isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess,
                                   iconBg: isDark ? AppColorsDark.statusProcessBg : AppColorsLight.statusProcessBg,
-                                  trend: 'Semua status',
+                                  trend: 'All statuses',
                                 )),
                               ],
                             ),
@@ -585,12 +585,12 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                           const SizedBox(height: AppSpacing.xxxl),
 
                           // ══════════════════════════════════════════════
-                          // TABEL ATAS — Menunggu Verifikasi
+                          // TOP TABLE — Pending Verification
                           // ══════════════════════════════════════════════
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              _sectionTitle(context, 'Menunggu Verifikasi', isDark),
+                              _sectionTitle(context, 'Pending Verification', isDark),
                               const Spacer(),
                               SizedBox(
                                 height: 40,
@@ -599,7 +599,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                                   controller: _searchPendingCtrl,
                                   onChanged: (v) => setState(() { _searchPending = v; _pagePending = 1; }),
                                   decoration: InputDecoration(
-                                    hintText: 'Cari nama, kamar, invoice...',
+                                    hintText: 'Search name, room, invoice...',
                                     prefixIcon: const Icon(Icons.search, size: 18),
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -617,7 +617,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                           _buildPaginationRow(
                             shown: pagedPending.length,
                             total: filteredPending.length,
-                            label: 'transaksi pending',
+                            label: 'pending transactions',
                             currentPage: pagePending,
                             totalPages: totalPagesPending,
                             onPageChanged: (p) => setState(() => _pagePending = p),
@@ -626,27 +626,27 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                           const SizedBox(height: AppSpacing.xxxl),
 
                           // ══════════════════════════════════════════════
-                          // TABEL BAWAH — Semua Pembayaran
+                          // BOTTOM TABLE — All Payments
                           // ══════════════════════════════════════════════
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              _sectionTitle(context, 'Semua Pembayaran', isDark),
+                              _sectionTitle(context, 'All Payments', isDark),
                               const Spacer(),
                               _FilterDropdown<int?>(
-                                hint: 'Tahun',
+                                hint: 'Year',
                                 value: _filterYear,
                                 items: [null, ...years],
-                                labelBuilder: (v) => v == null ? 'Semua Tahun' : '$v',
+                                labelBuilder: (v) => v == null ? 'All Years' : '$v',
                                 onChanged: (v) => setState(() { _filterYear = v; _filterMonth = null; _pageAll = 1; }),
                                 isDark: isDark,
                               ),
                               const SizedBox(width: AppSpacing.sm),
                               _FilterDropdown<int?>(
-                                hint: 'Bulan',
+                                hint: 'Month',
                                 value: _filterMonth,
                                 items: [null, ...List.generate(12, (i) => i + 1)],
-                                labelBuilder: (v) => v == null ? 'Semua Bulan' : DateFormat('MMMM', 'id_ID').format(DateTime(0, v)),
+                                labelBuilder: (v) => v == null ? 'All Months' : DateFormat('MMMM', 'en_US').format(DateTime(0, v)),
                                 onChanged: (v) => setState(() { _filterMonth = v; _pageAll = 1; }),
                                 isDark: isDark,
                               ),
@@ -655,7 +655,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                                 IconButton(
                                   onPressed: () => setState(() { _filterYear = null; _filterMonth = null; _pageAll = 1; }),
                                   icon: const Icon(Icons.close_rounded, size: 16),
-                                  tooltip: 'Reset filter tanggal',
+                                  tooltip: 'Reset date filter',
                                   style: IconButton.styleFrom(
                                     foregroundColor: Colors.grey.shade500,
                                     visualDensity: VisualDensity.compact,
@@ -675,7 +675,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                                   controller: _searchAllCtrl,
                                   onChanged: (v) => setState(() { _searchAll = v; _pageAll = 1; }),
                                   decoration: InputDecoration(
-                                    hintText: 'Cari nama penghuni, kamar, nomor invoice, ID transaksi...',
+                                    hintText: 'Search resident name, room, invoice number, transaction ID...',
                                     prefixIcon: const Icon(Icons.search, size: 18),
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -689,7 +689,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
 
                           // Method + Status chips
                           Row(children: [
-                            _chipGroupLabel('Metode:', isDark),
+                            _chipGroupLabel('Method:', isDark),
                             const SizedBox(width: AppSpacing.sm),
                             ..._methodOptions.map((opt) => _FilterChip(
                               label: opt,
@@ -715,7 +715,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
                           _buildPaginationRow(
                             shown: pagedAll.length,
                             total: filteredAll.length,
-                            label: 'transaksi',
+                            label: 'transactions',
                             currentPage: pageAll,
                             totalPages: totalPagesAll,
                             onPageChanged: (p) => setState(() => _pageAll = p),
@@ -745,8 +745,8 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
     if (rows.isEmpty) {
       return _emptyTable(
         _searchPending.isEmpty
-            ? 'Tidak ada pembayaran yang menunggu verifikasi.\nSemua pembayaran sudah diproses!'
-            : 'Tidak ada hasil untuk "$_searchPending".',
+            ? 'No payments awaiting verification.\nAll payments have been processed!'
+            : 'No results for "$_searchPending".',
         isDark,
       );
     }
@@ -755,11 +755,11 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
       dataRowMinHeight: 64,
       dataRowMaxHeight: double.infinity,
       columns: const [
-        DataColumn(label: Text('Penghuni & Tagihan')),
-        DataColumn(label: Text('Metode')),
-        DataColumn(label: Text('Nominal'), numeric: true),
-        DataColumn(label: Text('Tanggal Upload')),
-        DataColumn(label: Text('Aksi')),
+        DataColumn(label: Text('Resident & Invoice')),
+        DataColumn(label: Text('Method')),
+        DataColumn(label: Text('Amount'), numeric: true),
+        DataColumn(label: Text('Upload Date')),
+        DataColumn(label: Text('Action')),
       ],
       rows: rows.map((p) => DataRow(cells: [
         DataCell(_colPenghuni(p, isDark)),
@@ -793,8 +793,8 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
     if (rows.isEmpty) {
       return _emptyTable(
         _searchAll.isEmpty
-            ? 'Tidak ada pembayaran pada kategori ini.'
-            : 'Tidak ada hasil untuk "$_searchAll".',
+            ? 'No payments in this category.'
+            : 'No results for "$_searchAll".',
         isDark,
       );
     }
@@ -803,12 +803,12 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
       dataRowMinHeight: 64,
       dataRowMaxHeight: double.infinity,
       columns: const [
-        DataColumn(label: Text('Penghuni & Tagihan')),
-        DataColumn(label: Text('Metode')),
-        DataColumn(label: Text('Nominal'), numeric: true),
-        DataColumn(label: Text('Tanggal')),
+        DataColumn(label: Text('Resident & Invoice')),
+        DataColumn(label: Text('Method')),
+        DataColumn(label: Text('Amount'), numeric: true),
+        DataColumn(label: Text('Date')),
         DataColumn(label: Text('Status')),
-        DataColumn(label: Text('Aksi')),
+        DataColumn(label: Text('Action')),
       ],
       rows: rows.map((p) => DataRow(cells: [
         DataCell(_colPenghuni(p, isDark)),
@@ -880,7 +880,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         child: Row(children: [
           Text(
-            'Menampilkan $shown dari $total $label',
+            'Showing $shown of $total $label',
             style: TextStyle(
               fontSize: 13,
               color: isDark ? AppColorsDark.textHint : AppColorsLight.textHint,
@@ -923,14 +923,14 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
               errorBuilder: (_, __, ___) => Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.broken_image_outlined, size: 40, color: Colors.grey.shade400),
                 const SizedBox(height: 8),
-                Text('Gambar tidak dapat dimuat', style: TextStyle(color: Colors.grey.shade500)),
+                Text('Image could not be loaded', style: TextStyle(color: Colors.grey.shade500)),
               ])),
             ),
           )
         : Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
             Icon(Icons.image_not_supported_outlined, size: 40, color: Colors.grey.shade400),
             const SizedBox(height: 8),
-            Text('Tidak ada bukti transfer', style: TextStyle(color: Colors.grey.shade500)),
+            Text('No transfer proof', style: TextStyle(color: Colors.grey.shade500)),
           ])),
   );
 
@@ -938,10 +938,10 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
     if (type == null) return const SizedBox.shrink();
     final (label, color) = switch (type) {
       'dp'        => ('DP', Colors.amber.shade700),
-      'pelunasan' => ('Pelunasan', Colors.teal.shade700),
-      'sewa'      => ('Sewa Penuh', Colors.indigo.shade600),
-      'extension' => ('Perpanjangan', Colors.blue.shade700),
-      'fine'      => ('Denda', Colors.red.shade700),
+      'pelunasan' => ('Full Payment', Colors.teal.shade700),
+      'sewa'      => ('Full Lease', Colors.indigo.shade600),
+      'extension' => ('Extension', Colors.blue.shade700),
+      'fine'      => ('Fine', Colors.red.shade700),
       _           => (type, Colors.grey.shade600),
     };
     return Container(
@@ -975,7 +975,7 @@ class _PaymentVerificationPageState extends State<PaymentVerificationPage> {
         if (p.roomNumber != null) ...[
           Icon(Icons.meeting_room_outlined, size: 12, color: isDark ? AppColorsDark.textHint : AppColorsLight.textHint),
           const SizedBox(width: 3),
-          Text('Kamar ${p.roomNumber}', style: TextStyle(fontSize: 12, color: isDark ? AppColorsDark.textSecondary : AppColorsLight.textSecondary)),
+          Text('Room ${p.roomNumber}', style: TextStyle(fontSize: 12, color: isDark ? AppColorsDark.textSecondary : AppColorsLight.textSecondary)),
           const SizedBox(width: 8),
         ],
         if (p.invoiceNumber != null) ...[

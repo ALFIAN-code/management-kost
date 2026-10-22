@@ -164,14 +164,14 @@ class NotificationMonitoringCubit extends Cubit<NotificationMonitoringState> {
       final done = Set<int>.from(state.resendingIds)..remove(logId);
       emit(state.copyWith(
         resendingIds: done,
-        successMessage: "Notifikasi berhasil dikirim ulang.",
+        successMessage: "Notification resent successfully.",
       ));
       await _fetchLogs();
     } catch (e) {
       final done = Set<int>.from(state.resendingIds)..remove(logId);
       emit(state.copyWith(
         resendingIds: done,
-        errorMessage: "Gagal mengirim ulang: ${e.toString()}",
+        errorMessage: "Failed to resend: ${e.toString()}",
       ));
     }
   }
@@ -186,13 +186,13 @@ class NotificationMonitoringCubit extends Cubit<NotificationMonitoringState> {
       await _sendCustom(userId: userId, targetPhone: targetPhone, message: message);
       emit(state.copyWith(
         isSending: false,
-        successMessage: "Notifikasi berhasil dikirim.",
+        successMessage: "Notification sent successfully.",
       ));
       await load();
     } catch (e) {
       emit(state.copyWith(
         isSending: false,
-        errorMessage: "Gagal mengirim notifikasi: ${e.toString()}",
+        errorMessage: "Failed to send notification: ${e.toString()}",
       ));
     }
   }

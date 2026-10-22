@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arsitektur Sistem Terpadu - Sistem Manajemen Rumah Kost Multi-Gedung</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #1a1b26; margin: 0; padding: 24px 20px 40px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .header { text-align: center; margin-bottom: 16px; color: #fff; }
+  .header h1 { margin: 0 0 4px; font-size: 24px; font-weight: 600; }
+  .header p { margin: 0; font-size: 13px; color: #94a3b8; }
+  .toolbar { margin-bottom: 20px; display: flex; gap: 10px; }
+  button { padding: 8px 16px; background-color: #0d6efd; color: #fff; border: none;
+    border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; }
+  button:hover { background-color: #0b5ed7; }
+  #canvas-container { background-color: #16161e; border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.5); padding: 24px; overflow: auto; max-width: 100%; }
+  svg { display: block; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>Arsitektur Sistem Terpadu — Manajemen Rumah Kost Multi-Gedung</h1>
+    <p>Empat lapis: antarmuka Flutter Web, backend Modular Monolith NestJS, data PostgreSQL, integrasi eksternal</p>
+  </div>
+  <div class="toolbar">
+    <button id="btn-svg">Download SVG</button>
+    <button id="btn-png">Download PNG (2x)</button>
+  </div>
+  <div id="canvas-container"></div>
+
+<script>
+const W = 1400, H = 1010;
+const C = {
+  bg: '#16161e', line: '#8da0b8',
+  client: { bg: '#e0f2fe', stroke: '#0ea5e9', t1: '#0369a1', t2: '#475569' },
+  adapter: { bg: '#f3e8ff', stroke: '#8b5cf6', t1: '#6d28d9', t2: '#475569' },
+  ext: { bg: '#fef08a', stroke: '#ca8a04', t1: '#713f12', t2: '#854d0e' },
+  core: { bg: 'rgb(225,245,238)', stroke: 'rgb(15,110,86)', t1: 'rgb(8,80,65)', t2: 'rgb(15,110,86)' },
+  biz: { bg: 'rgb(250,236,231)', stroke: 'rgb(153,60,29)', t1: 'rgb(113,43,19)', t2: 'rgb(153,60,29)' },
+  db: { bg: '#ecfeff', stroke: '#06b6d4', t1: '#0e7490', t2: '#0e7490' },
+  panel: '#1b1c28', panelStroke: '#3b3f55', muted: '#94a3b8'
+};
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.createElementNS(NS, 'svg');
+svg.setAttribute('width', W); svg.setAttribute('height', H);
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+svg.setAttribute('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif');
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  (parent || svg).appendChild(e);
+  return e;
+}
+function text(parent, x, y, str, o = {}) {
+  const t = el('text', {
+    x, y, 'text-anchor': o.anchor || 'middle', 'dominant-baseline': o.baseline || 'central',
+    fill: o.fill || '#fff', 'font-size': o.size || 12, 'font-weight': o.weight || 400
+  }, parent);
+  t.textContent = str;
+  return t;
+}
+function box(parent, x, y, w, h, title, sub, s, rx = 8) {
+  const g = el('g', {}, parent);
+  el('rect', { x, y, width: w, height: h, rx, fill: s.bg, stroke: s.stroke, 'stroke-width': 1.5 }, g);
+  text(g, x + w / 2, y + h / 2 - (sub ? 9 : 0), title, { size: 14, weight: 600, fill: s.t1 });
+  if (sub) text(g, x + w / 2, y + h / 2 + 12, sub, { size: 11.5, fill: s.t2 });
+  return g;
+}
+function panel(parent, x, y, w, h, o = {}) {
+  el('rect', { x, y, width: w, height: h, rx: 14, fill: o.fill || C.panel,
+    stroke: o.stroke || C.panelStroke, 'stroke-width': o.sw || 1.5,
+    'stroke-dasharray': o.dashed ? '6,5' : '' }, parent);
+}
+function link(parent, d, o = {}) {
+  const p = el('path', { d, fill: 'none', stroke: o.stroke || C.line, 'stroke-width': 1.6,
+    'stroke-linejoin': 'round' }, parent);
+  if (o.dashed) p.setAttribute('stroke-dasharray', '6,5');
+  if (o.noEnd !== true) p.setAttribute('marker-end', 'url(#arrow)');
+  return p;
+}
+function lbl(parent, x, y, str, anchor = 'start') {
+  text(parent, x, y, str, { size: 11.5, fill: C.muted, anchor });
+}
+function card(parent, x, y, w, h, id, title, sub, s) {
+  const g = el('g', {}, parent);
+  el('rect', { x, y, width: w, height: h, rx: 8, fill: s.bg, stroke: s.stroke, 'stroke-width': 1.5 }, g);
+  el('circle', { cx: x + 22, cy: y + h / 2, r: 13, fill: s.stroke }, g);
+  text(g, x + 22, y + h / 2, id, { size: 10.5, weight: 700 });
+  text(g, x + 44, y + h / 2 - 8, title, { size: 13, weight: 600, fill: s.t1, anchor: 'start' });
+  text(g, x + 44, y + h / 2 + 10, sub, { size: 11, fill: s.t2, anchor: 'start' });
+  return g;
+}
+
+// ===== definisi =====
+const defs = el('defs', {});
+const marker = el('marker', { id: 'arrow', viewBox: '0 0 10 10', refX: '8', refY: '5',
+  markerWidth: '7', markerHeight: '7', orient: 'auto-start-reverse' }, defs);
+el('path', { d: 'M 1 1 L 9 5 L 1 9 Z', fill: C.line }, marker);
+
+const back = el('g', {}), lines = el('g', {}), nodes = el('g', {});
+svg.appendChild(back); svg.appendChild(lines); svg.appendChild(nodes);
+
+// ===== 1. KLIEN =====
+text(nodes, W / 2, 26, 'LAPIS ANTMUKA — FLUTTER WEB (CLEAN ARCHITECTURE)', { size: 12, weight: 700, fill: '#cbd5e1' });
+box(nodes, 90, 44, 280, 60, 'Dasbor Pemilik', 'Ringkasan lintas gedung', C.client, 12);
+box(nodes, 400, 44, 280, 60, 'Dasbor Pengelola', 'Alokasi, sewa, tiket', C.client, 12);
+box(nodes, 710, 44, 280, 60, 'Portal Penghuni', 'Kamar, tagihan, komplain', C.client, 12);
+box(nodes, 1020, 44, 280, 60, 'Tab Asisten AI', 'Kueri baca lewat MCP', C.client, 12);
+
+// ===== 2. ADAPTER & IDENTITAS =====
+text(nodes, 95, 158, 'LAPIS ADAPTER — IDENTITAS, KONTRAK API, DAN PROTOKOL AI', { size: 12, weight: 700, fill: '#cbd5e1', anchor: 'start' });
+box(nodes, 90, 172, 280, 58, 'Keycloak OIDC', 'Penerbit token JWT, JWKS', C.ext);
+box(nodes, 400, 172, 280, 58, 'REST API NestJS', 'Envelope + DTO + Swagger', C.adapter);
+box(nodes, 710, 172, 280, 58, 'MCP Server', 'JSON-RPC 2.0, read-only', C.adapter);
+box(nodes, 1020, 172, 280, 58, 'Klien MCP', 'Model bahasa AI', C.ext);
+
+link(lines, 'M 230 104 V 172');
+lbl(lines, 238, 134, 'login OIDC');
+link(lines, 'M 370 201 H 400', { dashed: true });
+link(lines, 'M 540 104 V 172');
+link(lines, 'M 850 104 V 172', { dashed: true });
+lbl(lines, 858, 134, 'tool call baca');
+link(lines, 'M 1160 201 H 990', { dashed: true });
+lbl(lines, 1075, 190, 'data JSON');
+
+// ===== 3. MONOLIT =====
+panel(back, 90, 278, 1210, 388, { fill: '#151b2b', stroke: '#4c5a7a', sw: 2 });
+text(nodes, 100, 302, 'BACKEND MODULAR MONOLITH — NESTJS, 9 MODUL TERENKAPSULASI', { size: 13, weight: 700, fill: '#e2e8f0', anchor: 'start' });
+
+const COL = [250, 460, 670, 880, 1090], CW = 190, CH = 56;
+const tiers = [
+  { y: 326, name: 'INFRASTRUCTURE', color: '#7dd3fc', items: [['M1', 'Auth', 'users, user_profiles', C.core, 0]] },
+  { y: 402, name: 'CORE', color: '#6ee7b7', items: [['M2', 'Building', 'buildings, settings', C.core, 0], ['M3', 'Room', 'rooms, harga', C.core, 1], ['M4', 'Lease', 'leases, alokasi', C.core, 2]] },
+  { y: 478, name: 'BUSINESS', color: '#fdba74', items: [['O1', 'Finance', 'invoices, payments', C.biz, 0], ['O2', 'Maintenance', 'damage_reports', C.biz, 1], ['O3', 'Guest', 'guests, buku tamu', C.biz, 2], ['O4', 'Inventory', 'inventories', C.biz, 3], ['O5', 'Notification', 'notification_logs', C.biz, 4]] }
+];
+tiers.forEach(t => {
+  text(nodes, 108, t.y + CH / 2, t.name, { size: 11, weight: 700, fill: t.color, anchor: 'start' });
+  t.items.forEach(it => card(nodes, COL[it[4]], t.y, CW, CH, it[0], it[1], it[2], it[3]));
+});
+
+panel(back, 250, 562, 1030, 84, { fill: '#1e2333', stroke: '#5b6a8f', dashed: true });
+text(nodes, 265, 586, 'MODULE GATEWAY', { size: 12, weight: 700, fill: '#e2e8f0', anchor: 'start' });
+text(nodes, 265, 608, 'Pembacaan lintas modul (query gateway)', { size: 11.5, fill: C.muted, anchor: 'start' });
+text(nodes, 265, 628, 'Mutasi antar modul (event bus) dan penjaga tenant building_id', { size: 11.5, fill: C.muted, anchor: 'start' });
+
+link(lines, 'M 540 230 V 278');
+link(lines, 'M 850 230 V 278', { dashed: true });
+lbl(lines, 858, 252, 'baca agregat');
+link(lines, 'M 230 230 V 254 H 540', { dashed: true });
+lbl(lines, 240, 242, 'identitas & peran');
+
+// ===== 4. OUTBOUND ADAPTER =====
+text(nodes, 95, 700, 'ADAPTER KELUAR — PEMISAHAN LOGIKA BISNIS DARI VENDOR', { size: 12, weight: 700, fill: '#cbd5e1', anchor: 'start' });
+box(nodes, 250, 712, 300, 56, 'MidtransAdapter', 'PaymentGatewayContract', C.adapter);
+box(nodes, 600, 712, 300, 56, 'Channel Adapter', 'Fonnte / SMTP', C.adapter);
+box(nodes, 960, 712, 320, 56, 'Docker Compose', 'api, db, keycloak, mcp', C.adapter);
+
+link(lines, 'M 400 666 V 712');
+lbl(lines, 408, 684, 'PaymentGatewayContract');
+link(lines, 'M 750 666 V 712');
+lbl(lines, 758, 684, 'Notification channel');
+
+box(nodes, 250, 808, 300, 52, 'Midtrans API', 'VA / QRIS / webhook', C.ext);
+box(nodes, 600, 808, 300, 52, 'WhatsApp Gateway', 'Provider notifikasi', C.ext);
+link(lines, 'M 400 768 V 808', { dashed: true });
+link(lines, 'M 750 768 V 808', { dashed: true });
+
+// ===== 5. BASIS DATA =====
+const dbX = 250, dbY = 888, dbW = 870, dbH = 100, ry = 16;
+const db = el('g', {}, nodes);
+el('path', { d: `M ${dbX} ${dbY + ry} L ${dbX} ${dbY + dbH - ry} A ${dbW / 2} ${ry} 0 0 0 ${dbX + dbW} ${dbY + dbH - ry} L ${dbX + dbW} ${dbY + ry} Z`,
+  fill: C.db.bg, stroke: C.db.stroke, 'stroke-width': 1.5 }, db);
+el('ellipse', { cx: dbX + dbW / 2, cy: dbY + ry, rx: dbW / 2, ry, fill: C.db.bg, stroke: C.db.stroke, 'stroke-width': 1.5 }, db);
+text(db, dbX + dbW / 2, dbY + 54, 'PostgreSQL', { size: 16, weight: 600, fill: C.db.t1 });
+text(db, dbX + dbW / 2, dbY + 76, '13 tabel domain, penyaring building_id, nol FK lintas modul', { size: 12, fill: C.db.t2 });
+
+link(lines, 'M 765 666 V 888');
+lbl(lines, 772, 876, 'query dengan filter tenant');
+link(lines, 'M 1090 666 V 888', { dashed: true });
+lbl(lines, 1098, 684, 'hanya dua FK fisik');
+
+// ===== LEGENDA =====
+panel(back, 40, 866, 190, 130, { stroke: C.panelStroke });
+text(back, 55, 884, 'Legenda', { size: 12, weight: 700, fill: '#e2e8f0', anchor: 'start' });
+el('rect', { x: 55, y: 900, width: 22, height: 13, rx: 3, fill: C.core.bg, stroke: C.core.stroke, 'stroke-width': 1.3 }, back);
+text(back, 85, 907, 'Modul inti', { size: 11.5, fill: C.muted, anchor: 'start' });
+el('rect', { x: 55, y: 922, width: 22, height: 13, rx: 3, fill: C.biz.bg, stroke: C.biz.stroke, 'stroke-width': 1.3 }, back);
+text(back, 85, 929, 'Modul bisnis', { size: 11.5, fill: C.muted, anchor: 'start' });
+el('rect', { x: 55, y: 944, width: 22, height: 13, rx: 3, fill: C.ext.bg, stroke: C.ext.stroke, 'stroke-width': 1.3 }, back);
+text(back, 85, 951, 'Sistem eksternal', { size: 11.5, fill: C.muted, anchor: 'start' });
+el('rect', { x: 55, y: 966, width: 22, height: 13, rx: 3, fill: C.adapter.bg, stroke: C.adapter.stroke, 'stroke-width': 1.3 }, back);
+text(back, 85, 973, 'Adapter', { size: 11.5, fill: C.muted, anchor: 'start' });
+
+document.getElementById('canvas-container').appendChild(svg);
+
+document.getElementById('btn-svg').addEventListener('click', () => {
+  const src = new XMLSerializer().serializeToString(svg);
+  const blob = new Blob([src], { type: 'image/svg+xml;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'arsitektur_terpadu.svg';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+});
+document.getElementById('btn-png').addEventListener('click', () => {
+  const src = new XMLSerializer().serializeToString(svg);
+  const scale = 2;
+  const canvas = document.createElement('canvas');
+  canvas.width = W * scale; canvas.height = H * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = C.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png'); a.download = 'arsitektur_terpadu.png';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  };
+  img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(src)));
+});
+</script>
+</body>
+</html>

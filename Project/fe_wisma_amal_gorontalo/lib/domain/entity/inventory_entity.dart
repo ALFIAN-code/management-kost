@@ -10,13 +10,13 @@ enum InventoryCondition {
   String get displayName {
     switch (this) {
       case InventoryCondition.baik:
-        return 'Baik';
+        return 'Good';
       case InventoryCondition.cukup:
-        return 'Cukup';
+        return 'Fair';
       case InventoryCondition.rusakRingan:
-        return 'Rusak Ringan';
+        return 'Minor Damage';
       case InventoryCondition.rusakBerat:
-        return 'Rusak Berat';
+        return 'Major Damage';
     }
   }
 

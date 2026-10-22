@@ -92,7 +92,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           phoneNumber: event.phoneNumber,
         );
         emit(ProfileLoaded(user));
-        emit(const ProfileActionSuccess("Profil berhasil diperbarui"));
+        emit(const ProfileActionSuccess("Profile updated successfully"));
       } catch (e) {
         emit(ProfileError(e.toString()));
       }
@@ -106,7 +106,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           newPassword: event.newPassword,
           confirmPassword: event.confirmPassword,
         );
-        emit(const ProfileActionSuccess("Password berhasil diubah"));
+        emit(const ProfileActionSuccess("Password changed successfully"));
         add(FetchProfile());
       } catch (e) {
         emit(ProfileError(e.toString()));

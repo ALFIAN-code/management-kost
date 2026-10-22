@@ -22,8 +22,8 @@ class IdentityFormBloc extends Bloc<IdentityFormEvent, IdentityFormState> {
     try {
       emit(state.copyWith(loadStatus: FormzSubmissionStatus.inProgress));
 
-      // TODO: ambil data dari API (future)
-      // sekarang dummy saja
+      // TODO: fetch data from API (future)
+      // for now dummy data only
 
       emit(state.copyWith(
         loadStatus: FormzSubmissionStatus.success,
@@ -71,11 +71,11 @@ class IdentityFormBloc extends Bloc<IdentityFormEvent, IdentityFormState> {
       print(event.gender);
       print(event.status);
 
-      // TODO: kirim ke backend
+      // TODO: send to backend
 
       emit(state.copyWith(
         submitStatus: FormzSubmissionStatus.success,
-        successMessage: 'Berhasil menyimpan data',
+        successMessage: 'Data saved successfully',
       ));
     } catch (e) {
       emit(state.copyWith(

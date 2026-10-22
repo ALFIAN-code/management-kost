@@ -102,7 +102,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                           TextFormField(
                             controller: _nameController,
                             decoration: const InputDecoration(
-                              labelText: 'Nama Lengkap',
+                              labelText: 'Full Name',
                               prefixIcon: Icon(Icons.person_outline),
                             ),
                             validator: (v) => v == null || v.isEmpty ? 'Nama tidak boleh kosong' : null,
@@ -114,7 +114,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                               labelText: 'Email',
                               prefixIcon: Icon(Icons.email_outlined),
                             ),
-                            validator: (v) => v == null || v.isEmpty ? 'Email tidak boleh kosong' : null,
+                            validator: (v) => v == null || v.isEmpty ? 'Email is required' : null,
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
@@ -140,7 +140,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 ));
                           }
                         },
-                        child: const Text('Simpan Perubahan'),
+                        child: const Text('Save Changes'),
                       ),
                     ),
                   ],

@@ -20,7 +20,7 @@ import 'package:frontend/presentation/widget/core/snackbar/app_snackbar.dart';
 
 enum FormMode { add, edit }
 
-// wrapper add room
+// add room wrapper
 @RoutePage(name: 'AddRoomRoute')
 class AddRoomPage extends StatelessWidget {
   const AddRoomPage({super.key});
@@ -40,7 +40,7 @@ class AddRoomPage extends StatelessWidget {
   }
 }
 
-// wrapper edit room
+// edit room wrapper
 @RoutePage(name: 'EditRoomRoute')
 class EditRoomPage extends StatelessWidget {
   const EditRoomPage({super.key, @PathParam('id') required this.roomId});
@@ -144,12 +144,12 @@ class _FormRoomViewState extends State<FormRoomView> {
         if (state.submitStatus.isSuccess) {
           AppSnackbar.showSuccess(
             widget.formMode == FormMode.add
-                ? 'Kamar berhasil ditambahkan'
-                : 'Kamar berhasil diperbarui',
+                ? 'Room successfully added'
+                : 'Room successfully updated',
           );
           context.router.pop(true);
         } else if (state.submitStatus.isFailure) {
-          AppSnackbar.showError(state.errorMessage ?? 'Gagal menyimpan data kamar');
+          AppSnackbar.showError(state.errorMessage ?? 'Failed to save room data');
         }
       },
       builder: (context, state) {
@@ -170,19 +170,19 @@ class _FormRoomViewState extends State<FormRoomView> {
         return Scaffold(
           appBar: CustomAppbar(
             icon: const Icon(Icons.arrow_back),
-            title: 'Kembali',
+            title: 'Back',
           ),
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: SingleChildScrollView(
               child: BasicCard(
                 title: widget.formMode == FormMode.add
-                    ? 'Tambah Kamar'
-                    : 'Edit Kamar',
+                    ? 'Add Room'
+                    : 'Edit Room',
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Gambar Kamar'),
+                    Text('Room Images'),
                     SizedBox(height: 10),
                     SizedBox(
                       height: 300,
@@ -248,7 +248,7 @@ class _FormRoomViewState extends State<FormRoomView> {
                                   ),
                                 ),
                                 SizedBox(height: 10),
-                                Text('Tambah Gambar'),
+                                Text('Add Image'),
                               ],
                             ),
                           ),
@@ -268,21 +268,21 @@ class _FormRoomViewState extends State<FormRoomView> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CustomTextForm(
-                                    title: 'Nama Kamar',
-                                    hintText: 'Masukkan nama kamar',
+                                    title: 'Room Name',
+                                    hintText: 'Enter the room name',
                                     controller: titleController,
                                     isRequired: true,
                                     validator: (v) {
                                       if (v == null || v.trim().isEmpty) {
-                                        return 'Nama kamar wajib diisi';
+                                        return 'Room name is required';
                                       }
                                       return null;
                                     },
                                   ),
                                   SizedBox(height: 30),
                                   CustomTextForm(
-                                    title: 'Nomor Kamar',
-                                    hintText: 'Masukkan nomor kamar',
+                                    title: 'Room Number',
+                                    hintText: 'Enter the room number',
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
                                       FilteringTextInputFormatter.digitsOnly,
@@ -293,8 +293,8 @@ class _FormRoomViewState extends State<FormRoomView> {
                                   ),
                                   SizedBox(height: 30),
                                   CustomTextForm(
-                                    title: 'Harga Kamar',
-                                    hintText: 'Masukkan harga kamar',
+                                    title: 'Room Price',
+                                    hintText: 'Enter the room price',
                                     keyboardType: TextInputType.number,
                                     controller: priceController,
                                     isRequired: true,
@@ -307,13 +307,13 @@ class _FormRoomViewState extends State<FormRoomView> {
                                       //   priceController.text.trim(),
                                       // );
                                       if (v == null || v.trim().isEmpty) {
-                                        return 'Harga kamar wajib diisi';
+                                        return 'Room price is required';
                                       }
                                       final p = ThousandsFormatter.parse(
                                         v.trim(),
                                       );
                                       if (p == null || p <= 0) {
-                                        return 'Harga kamar harus lebih besar dari 0';
+                                        return 'Room price must be greater than 0';
                                       }
                                       return null;
                                     },
@@ -332,7 +332,7 @@ class _FormRoomViewState extends State<FormRoomView> {
                                   // ),
                                   SizedBox(height: 30),
                                   Text(
-                                    'Fasilitas',
+                                    'Facilities',
                                     style: Theme.of(
                                       context,
                                     ).textTheme.titleMedium,
@@ -367,7 +367,7 @@ class _FormRoomViewState extends State<FormRoomView> {
                                                 if (state.facilities.isEmpty) {
                                                   setState(() {
                                                     _facilitiesError =
-                                                        'Silahkan tambahkan setidaknya satu fasilitas';
+                                                        'Please add at least one facility';
                                                   });
                                                 } else if (_facilitiesError !=
                                                     null) {
@@ -397,10 +397,10 @@ class _FormRoomViewState extends State<FormRoomView> {
                                                 .isEmpty) {
                                               setState(() {
                                                 _facilitiesError =
-                                                    'Silahkan masukkan fasilitas';
+                                                    'Please enter a facility';
                                               });
                                               AppSnackbar.showError(
-                                                'Silahkan masukkan fasilitas',
+                                                'Please enter a facility',
                                               );
                                               return;
                                             }
@@ -420,14 +420,14 @@ class _FormRoomViewState extends State<FormRoomView> {
                                   ),
                                   SizedBox(height: 30),
                                   CustomTextForm(
-                                    title: 'Deskripsi Kamar',
-                                    hintText: 'Masukkan deskripsi kamar',
+                                    title: 'Room Description',
+                                    hintText: 'Enter the room description',
                                     maxLines: 10,
                                     controller: descriptionController,
                                     isRequired: true,
                                     validator: (v) {
                                       if (v == null || v.trim().isEmpty) {
-                                        return 'Deskripsi kamar wajib diisi';
+                                        return 'Room description is required';
                                       }
                                       return null;
                                     },
@@ -440,7 +440,7 @@ class _FormRoomViewState extends State<FormRoomView> {
                                           false;
                                       if (!valid) {
                                         AppSnackbar.showError(
-                                          'Silahkan perbaiki kesalahan pada formulir',
+                                          'Please fix the errors in the form',
                                         );
                                         return;
                                       }
@@ -448,10 +448,10 @@ class _FormRoomViewState extends State<FormRoomView> {
                                       if (state.facilities.isEmpty) {
                                         setState(() {
                                           _facilitiesError =
-                                              'Silahkan tambahkan setidaknya satu fasilitas';
+                                              'Please add at least one facility';
                                         });
                                         AppSnackbar.showError(
-                                          'Silahkan tambahkan setidaknya satu fasilitas',
+                                          'Please add at least one facility',
                                         );
                                         return;
                                       }
@@ -487,8 +487,8 @@ class _FormRoomViewState extends State<FormRoomView> {
                                       );
                                     },
                                     label: widget.formMode == FormMode.add
-                                        ? 'Tambah Kamar'
-                                        : 'Simpan Perubahan',
+                                        ? 'Add Room'
+                                        : 'Save Changes',
                                   ),
                                 ],
                               ),

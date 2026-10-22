@@ -105,19 +105,19 @@ class _InventoryFormViewState extends State<_InventoryFormView> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Hapus Inventaris'),
-        content: const Text('Apakah Anda yakin ingin menghapus barang ini? Data yang terhapus tidak dapat dikembalikan.'),
+        title: const Text('Delete Inventory'),
+        content: const Text('Are you sure you want to delete this item? Deleted data cannot be restored.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               context.read<InventoryActionBloc>().add(DeleteInventoryEvent(widget.inventoryData!.id!));
             },
-            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -165,7 +165,7 @@ class _InventoryFormViewState extends State<_InventoryFormView> {
                     ),
                     const SizedBox(width: 16),
                     Text(
-                      widget.isEditMode ? 'Edit Inventaris' : 'Tambah Inventaris',
+                      widget.isEditMode ? 'Edit Inventory' : 'Add Inventory',
                       style: theme.textTheme.headlineLarge,
                     ),
                     const Spacer(),
@@ -178,7 +178,7 @@ class _InventoryFormViewState extends State<_InventoryFormView> {
                         ),
                         onPressed: _handleDelete,
                         icon: const Icon(Icons.delete_outline, size: 18),
-                        label: const Text('Hapus'),
+                        label: const Text('Delete'),
                       ),
                   ],
                 ),
@@ -204,7 +204,7 @@ class _InventoryFormViewState extends State<_InventoryFormView> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              'Informasi Inventaris',
+                              'Inventory Information',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -213,20 +213,20 @@ class _InventoryFormViewState extends State<_InventoryFormView> {
                         ),
                         const SizedBox(height: 24),
 
-                        // Row 1: Nama & Jumlah
+                        // Row 1: Name & Quantity
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               flex: 3,
                               child: CustomTextForm(
-                                title: 'Nama Barang',
-                                hintText: 'Masukkan nama barang',
+                                title: 'Item Name',
+                                hintText: 'Enter item name',
                                 isRequired: true,
                                 controller: _namaController,
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Nama barang wajib diisi';
+                                    return 'Item name is required';
                                   }
                                   return null;
                                 },
@@ -236,7 +236,7 @@ class _InventoryFormViewState extends State<_InventoryFormView> {
                             Expanded(
                               flex: 1,
                               child: CustomTextForm(
-                                title: 'Jumlah',
+                                title: 'Quantity',
                                 hintText: '0',
                                 isRequired: true,
                                 keyboardType: TextInputType.number,
@@ -246,10 +246,10 @@ class _InventoryFormViewState extends State<_InventoryFormView> {
                                 ],
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Wajib diisi';
+                                    return 'Required';
                                   }
                                   if (int.tryParse(value) == null) {
-                                    return 'Angka tidak valid';
+                                    return 'Invalid number';
                                   }
                                   return null;
                                 },
@@ -259,37 +259,37 @@ class _InventoryFormViewState extends State<_InventoryFormView> {
                         ),
                         const SizedBox(height: 20),
 
-                        // Row 2: Keterangan
+                        // Row 2: Description
                         CustomTextForm(
-                          title: 'Keterangan',
-                          hintText: 'Masukkan keterangan barang (opsional)',
+                          title: 'Description',
+                          hintText: 'Enter item description (optional)',
                           controller: _keteranganController,
                           maxLines: 3,
                         ),
                         const SizedBox(height: 20),
 
-                        // Row 3: Kondisi & Harga Beli
+                        // Row 3: Condition & Purchase Price
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               child: _DropdownField(
-                                title: 'Kondisi',
+                                title: 'Condition',
                                 isRequired: true,
-                                hint: 'Pilih kondisi',
+                                hint: 'Select condition',
                                 value: _selectedKondisi,
                                 items: InventoryCondition.displayNames,
                                 onChanged: (v) =>
                                     setState(() => _selectedKondisi = v),
                                 validator: (v) =>
-                                    v == null ? 'Kondisi wajib dipilih' : null,
+                                    v == null ? 'Condition is required' : null,
                               ),
                             ),
                             const SizedBox(width: 20),
                             Expanded(
                               child: CustomTextForm(
-                                title: 'Total Harga Beli (Rp)',
-                                hintText: 'Total biaya pembelian',
+                                title: 'Total Purchase Price (Rp)',
+                                hintText: 'Total purchase cost',
                                 keyboardType: TextInputType.number,
                                 controller: _hargaBeliController,
                                 inputFormatters: [
@@ -313,7 +313,7 @@ class _InventoryFormViewState extends State<_InventoryFormView> {
                                   height: 44,
                                   child: BasicButton(
                                     type: ButtonType.secondary,
-                                    label: 'Batal',
+                                    label: 'Cancel',
                                     onPressed: isLoading ? null : () => context.router.maybePop(),
                                   ),
                                 ),
@@ -322,7 +322,7 @@ class _InventoryFormViewState extends State<_InventoryFormView> {
                                   width: 140,
                                   height: 44,
                                   child: BasicButton(
-                                    label: widget.isEditMode ? 'Simpan' : 'Tambah',
+                                    label: widget.isEditMode ? 'Save' : 'Add',
                                     onPressed: isLoading ? null : _handleSubmit,
                                   ),
                                 ),

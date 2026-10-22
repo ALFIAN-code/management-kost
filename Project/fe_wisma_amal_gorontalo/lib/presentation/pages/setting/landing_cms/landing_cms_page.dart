@@ -153,7 +153,7 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
           ),
           validator: isRequired
               ? (v) => (v == null || v.trim().isEmpty)
-                    ? 'Field ini wajib diisi'
+                    ? 'This field is required'
                     : null
               : null,
         ),
@@ -348,14 +348,14 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
         final shouldLeave = await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
-            title: const Text('Perubahan belum disimpan'),
+            title: const Text('Unsaved Changes'),
             content: const Text(
-              'Anda memiliki perubahan yang belum disimpan. '
-              'Yakin ingin meninggalkan halaman ini?',
+              'You have unsaved changes. '
+              'Are you sure you want to leave this page?',
             ),
             actions: [
               TextButton(
-                child: const Text('Tetap di sini'),
+                child: const Text('Stay here'),
                 onPressed: () => Navigator.pop(context, false),
               ),
               ElevatedButton(
@@ -363,7 +363,7 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                   backgroundColor: c.statusCancelled,
                 ),
                 child: const Text(
-                  'Tinggalkan',
+                  'Leave',
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () => Navigator.pop(context, true),
@@ -402,10 +402,10 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                 _initialSelectedRoomIds = List.from(_selectedRoomIds);
                 setState(() => _hasUnsavedChanges = false);
                 AppSnackbar.showSuccess(
-                  'Pengaturan landing page berhasil disimpan.',
+                  'Landing page settings saved successfully.',
                 );
               } else if (state is SettingError) {
-                AppSnackbar.showError('Gagal menyimpan. Coba lagi.');
+                AppSnackbar.showError('Failed to save. Please try again.');
               } else if (state is SettingLoaded && !_isInit) {
                 _headerTitleController.text =
                     state.entity.getString('landing_header_title') ?? '';
@@ -464,7 +464,7 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                               Row(
                                 children: [
                                   Text(
-                                    'Pengaturan Landing Page',
+                                    'Landing Page Settings',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineMedium
@@ -501,7 +501,7 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                                           ),
                                           const SizedBox(width: 5),
                                           Text(
-                                            'Belum Disimpan',
+                                            'Unsaved',
                                             style: TextStyle(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w600,
@@ -515,7 +515,7 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                               ),
                               const SizedBox(height: AppSpacing.xs),
                               Text(
-                                'Kelola konten yang ditampilkan pada halaman publik kost Anda.',
+                                'Manage the content displayed on your dormitory public page.',
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(color: c.textSecondary),
                               ),
@@ -538,7 +538,7 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                           ),
                           icon: const Icon(Icons.public, size: 16),
                           label: const Text(
-                            'Lihat Landing Page',
+                            'View Landing Page',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -578,8 +578,8 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                               : const Icon(Icons.save_outlined, size: 16),
                           label: Text(
                             state is SettingLoading
-                                ? 'Menyimpan...'
-                                : 'Simpan Perubahan',
+                                ? 'Saving...'
+                                : 'Save Changes',
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -604,24 +604,24 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                             iconBg: c.primaryLight,
                             title: 'Hero Section',
                             subtitle:
-                                'Teks utama yang pertama dilihat pengunjung.',
+                                'The main text visitors see first.',
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 _buildLabeledField(
-                                  label: 'Judul Utama',
+                                  label: 'Main Title',
                                   isRequired: true,
                                   controller: _headerTitleController,
                                   hintText:
-                                      'Misal: Kos Nyaman & Aman di Gorontalo',
+                                      'Example: Comfortable & Safe Dormitory in Gorontalo',
                                   maxLength: 80,
                                 ),
                                 const SizedBox(height: AppSpacing.lg),
                                 _buildLabeledField(
-                                  label: 'Sub-judul',
+                                  label: 'Subtitle',
                                   controller: _headerSubtitleController,
                                   hintText:
-                                      'Nikmati fasilitas lengkap dengan harga terjangkau...',
+                                      'Enjoy complete facilities at an affordable price...',
                                   maxLength: 160,
                                   maxLines: 3,
                                 ),
@@ -633,8 +633,8 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                             icon: Icons.star_outline_rounded,
                             iconColor: const Color(0xFF7C3AED),
                             iconBg: const Color(0xFFF5F3FF),
-                            title: 'Fasilitas Utama',
-                            subtitle: 'Nilai jual utama kost Anda.',
+                            title: 'Main Facilities',
+                            subtitle: 'The main selling points of your dormitory.',
                             child: FasilitasChipInput(
                               initialValues: _fasilitas,
                               onChanged: (updated) {
@@ -650,9 +650,9 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                             icon: Icons.hotel_outlined,
                             iconColor: const Color(0xFF0891B2),
                             iconBg: const Color(0xFFECFEFF),
-                            title: 'Kamar Unggulan',
+                            title: 'Featured Rooms',
                             subtitle:
-                                'Pilih kamar yang ditampilkan di halaman depan.',
+                                'Choose the rooms shown on the front page.',
                             expandChild: isWide,
                             child: BlocBuilder<RoomBloc, RoomState>(
                               builder: (context, roomState) {
@@ -666,7 +666,7 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                                 } else if (roomState.status ==
                                     FormzSubmissionStatus.failure) {
                                   return Text(
-                                    'Gagal memuat kamar: ${roomState.errorMessage}',
+                                    'Failed to load rooms: ${roomState.errorMessage}',
                                   );
                                 }
 
@@ -695,7 +695,7 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                                           size: 18,
                                           color: c.textHint,
                                         ),
-                                        hintText: 'Cari nama kamar...',
+                                        hintText: 'Search room name...',
                                         hintStyle: TextStyle(
                                           color: c.textHint,
                                           fontSize: 13,
@@ -743,8 +743,8 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                                         child: Center(
                                           child: Text(
                                             _kamarSearch.isEmpty
-                                                ? 'Belum ada data kamar'
-                                                : 'Tidak ada kamar yang cocok',
+                                                ? 'No room data yet'
+                                                : 'No matching rooms',
                                             style: TextStyle(
                                               color: c.textSecondary,
                                             ),
@@ -862,8 +862,8 @@ class _LandingCmsPageState extends State<LandingCmsPage> {
                                           const SizedBox(width: AppSpacing.sm),
                                           Text(
                                             _selectedRoomIds.isEmpty
-                                                ? 'Belum ada kamar dipilih'
-                                                : '${_selectedRoomIds.length} kamar dipilih untuk ditampilkan',
+                                                ? 'No rooms selected'
+                                                : '${_selectedRoomIds.length} rooms selected to be displayed',
                                             style: TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500,

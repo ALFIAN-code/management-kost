@@ -24,10 +24,10 @@ abstract class FinanceRepository {
   Future<ExpenseEntity> updateExpense(ExpenseEntity expense);
   Future<void> deleteExpense(int id);
 
-  //verifikasi pembayaran
+  // payment verification
   Future<bool> verifyPayment(int paymentId, bool isApproved, String? adminNotes);
 
-  //refund pembayaran
+  // payment refund
   Future<bool> refundPayment(int paymentId, String reason);
 
   // Member Finance
@@ -55,7 +55,7 @@ abstract class FinanceRepository {
   Future<List<MidtransMethodEntity>> getAvailablePaymentMethods();
   Future<MidtransMonitoringEntity> getMidtransMonitoring();
 
-  // Fine (Denda)
+  // Fine
   Future<List<FineEntity>> getMyFines({String? status});
   Future<PaymentEntity> payFines(
     List<int> fineIds,

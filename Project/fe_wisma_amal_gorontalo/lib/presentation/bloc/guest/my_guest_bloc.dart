@@ -15,7 +15,7 @@ abstract class MyGuestEvent {}
 class FetchMyGuests extends MyGuestEvent {}
 
 class CreateMyGuest extends MyGuestEvent {
-  final List<Map<String, dynamic>> guests; // <-- REVISI: Menggunakan array tamu
+  final List<Map<String, dynamic>> guests; // <-- REVISION: Using guest array
   final List<Uint8List> identityImages;
   final List<String> identityImageNames;
   final String checkInAt;
@@ -46,7 +46,7 @@ class PayGuestBillManual extends MyGuestEvent {
   });
 }
 
-class PayGuestBillCash extends MyGuestEvent { // <-- REVISI: Event pembayaran tunai
+class PayGuestBillCash extends MyGuestEvent { // <-- REVISION: Cash payment event
   final int guestId;
   PayGuestBillCash(this.guestId);
 }
@@ -124,7 +124,7 @@ class MyGuestBloc extends Bloc<MyGuestEvent, MyGuestState> {
     on<CreateMyGuest>(_onCreate);
     on<DeleteMyGuest>(_onDelete);
     on<PayGuestBillManual>(_onPayManual);
-    on<PayGuestBillCash>(_onPayCash); // <-- REVISI: Daftarkan event pembayaran tunai
+    on<PayGuestBillCash>(_onPayCash); // <-- REVISION: Register the cash payment event
     on<PayGuestBillMidtrans>(_onPayMidtrans);
     on<CheckoutMyGuest>(_onCheckout);
     on<ExtendMyGuest>(_onExtend);
@@ -133,7 +133,7 @@ class MyGuestBloc extends Bloc<MyGuestEvent, MyGuestState> {
   Future<void> _onExtend(ExtendMyGuest event, Emitter<MyGuestState> emit) async {
     try {
       await extendMyGuestUseCase(event.id, event.newCheckOutAt);
-      emit(MyGuestActionSuccess('Masa inap tamu berhasil diperpanjang.'));
+      emit(MyGuestActionSuccess('Guest stay period successfully extended.'));
       final guests = await getMyGuestsUseCase();
       emit(MyGuestLoaded(guests));
     } catch (e) {
@@ -144,7 +144,7 @@ class MyGuestBloc extends Bloc<MyGuestEvent, MyGuestState> {
   Future<void> _onCheckout(CheckoutMyGuest event, Emitter<MyGuestState> emit) async {
     try {
       await checkoutMyGuestUseCase(event.id);
-      emit(MyGuestActionSuccess('Tamu berhasil ditandai keluar.'));
+      emit(MyGuestActionSuccess('Guest successfully checked out.'));
       final guests = await getMyGuestsUseCase();
       emit(MyGuestLoaded(guests));
     } catch (e) {
@@ -166,13 +166,13 @@ class MyGuestBloc extends Bloc<MyGuestEvent, MyGuestState> {
       CreateMyGuest event, Emitter<MyGuestState> emit) async {
     try {
       await createGuestUseCase(
-        guests: event.guests, // <-- REVISI: Pass array ke UseCase
+        guests: event.guests, // <-- REVISION: Pass array to UseCase
         identityImages: event.identityImages,
         identityImageNames: event.identityImageNames,
         checkInAt: event.checkInAt,
         checkOutAt: event.checkOutAt,
       );
-      emit(MyGuestActionSuccess('Data tamu berhasil ditambahkan.'));
+      emit(MyGuestActionSuccess('Guest data successfully added.'));
       
       final guests = await getMyGuestsUseCase();
       emit(MyGuestLoaded(guests));
@@ -185,7 +185,7 @@ class MyGuestBloc extends Bloc<MyGuestEvent, MyGuestState> {
       DeleteMyGuest event, Emitter<MyGuestState> emit) async {
     try {
       await deleteGuestUseCase(event.id);
-      emit(MyGuestActionSuccess('Data tamu berhasil dihapus.'));
+      emit(MyGuestActionSuccess('Guest data successfully deleted.'));
       final guests = await getMyGuestsUseCase();
       emit(MyGuestLoaded(guests));
     } catch (e) {
@@ -202,7 +202,7 @@ class MyGuestBloc extends Bloc<MyGuestEvent, MyGuestState> {
         proofBytes: event.proofBytes,
         proofName: event.proofName,
       );
-      emit(MyGuestActionSuccess('Bukti pembayaran berhasil dikirim. Menunggu verifikasi admin.'));
+      emit(MyGuestActionSuccess('Payment proof successfully sent. Waiting for admin verification.'));
       final guests = await getMyGuestsUseCase();
       emit(MyGuestLoaded(guests));
     } catch (e) {
@@ -210,14 +210,14 @@ class MyGuestBloc extends Bloc<MyGuestEvent, MyGuestState> {
     }
   }
 
-  Future<void> _onPayCash( // <-- REVISI: Method khusus pembayaran tunai
+  Future<void> _onPayCash( // <-- REVISION: Dedicated cash payment method
       PayGuestBillCash event, Emitter<MyGuestState> emit) async {
     try {
       await payGuestBillUseCase(
         guestId: event.guestId,
         paymentMethod: 'cash',
       );
-      emit(MyGuestActionSuccess('Pembayaran tunai diajukan. Silakan serahkan uang kepada pengelola.'));
+      emit(MyGuestActionSuccess('Cash payment submitted. Please hand the money to the caretaker.'));
       final guests = await getMyGuestsUseCase();
       emit(MyGuestLoaded(guests));
     } catch (e) {
@@ -235,10 +235,10 @@ class MyGuestBloc extends Bloc<MyGuestEvent, MyGuestState> {
       if (bill.snapToken != null) {
         emit(MyGuestMidtransInitiated(
           snapToken: bill.snapToken!,
-          message: 'Halaman pembayaran siap dibuka.',
+          message: 'Payment page is ready to open.',
         ));
       } else {
-        emit(MyGuestActionError('Gagal mendapatkan token pembayaran Midtrans.'));
+        emit(MyGuestActionError('Failed to get the Midtrans payment token.'));
       }
       final guests = await getMyGuestsUseCase();
       emit(MyGuestLoaded(guests));

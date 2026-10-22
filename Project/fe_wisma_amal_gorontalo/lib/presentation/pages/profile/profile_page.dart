@@ -33,7 +33,7 @@ class ProfileView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Detail Akun',
+              'Account Details',
               style: theme.textTheme.displaySmall?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -124,13 +124,13 @@ class ProfileView extends StatelessWidget {
                             _buildInfoRow(
                               context,
                               Icons.phone_outlined,
-                              'Nomor Telepon',
+                              'Phone Number',
                               user.phoneNumber ?? '-',
                             ),
                             _buildInfoRow(
                               context,
                               Icons.calendar_today_outlined,
-                              'Bergabung Sejak',
+                              'Joined Since',
                               user.createdAt?.split('T').first ?? '-',
                             ),
                           ],
@@ -144,7 +144,7 @@ class ProfileView extends StatelessWidget {
                               onPressed: () =>
                                   context.router.push(const EditProfileRoute()),
                               icon: const Icon(Icons.edit_outlined),
-                              label: const Text('Edit Profil'),
+                              label: const Text('Edit Profile'),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -154,7 +154,7 @@ class ProfileView extends StatelessWidget {
                                 const ChangePasswordRoute(),
                               ),
                               icon: const Icon(Icons.lock_outline),
-                              label: const Text('Ganti Password'),
+                              label: const Text('Change Password'),
                             ),
                           ),
                         ],

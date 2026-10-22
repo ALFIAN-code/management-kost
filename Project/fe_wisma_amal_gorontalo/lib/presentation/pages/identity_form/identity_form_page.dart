@@ -74,7 +74,7 @@ class _IdentityFormViewState extends State<IdentityFormView> {
     return BlocConsumer<CompleteProfileBloc, CompleteProfileState>(
       listener: (context, state) {
         if (state is CompleteProfileSuccess) {
-          AppSnackbar.showSuccess('Biodata berhasil disimpan');
+          AppSnackbar.showSuccess('Profile saved successfully');
           context.router.pop();
         }
 
@@ -88,7 +88,7 @@ class _IdentityFormViewState extends State<IdentityFormView> {
         return Scaffold(
           appBar: CustomAppbar(
             icon: const Icon(Icons.arrow_back),
-            title: 'Kembali',
+            title: 'Back',
           ),
 
           body: Padding(
@@ -96,7 +96,7 @@ class _IdentityFormViewState extends State<IdentityFormView> {
 
             child: SingleChildScrollView(
               child: BasicCard(
-                title: 'Form Biodata Penghuni',
+                title: 'Resident Profile Form',
 
                 child: Form(
                   key: _formKey,
@@ -106,7 +106,7 @@ class _IdentityFormViewState extends State<IdentityFormView> {
 
                     children: [
                       Text(
-                        'Upload Foto KTP',
+                        'Upload ID Card Photo',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
 
@@ -116,7 +116,7 @@ class _IdentityFormViewState extends State<IdentityFormView> {
                         children: [
                           Expanded(
                             child: Text(
-                              _ktpPhoto?.name ?? 'Belum ada file dipilih',
+                              _ktpPhoto?.name ?? 'No file selected',
                             ),
                           ),
 
@@ -130,14 +130,14 @@ class _IdentityFormViewState extends State<IdentityFormView> {
                       const SizedBox(height: 30),
 
                       CustomTextForm(
-                        title: 'Nomor KTP',
-                        hintText: 'Masukkan nomor KTP',
+                        title: 'ID Card Number',
+                        hintText: 'Enter ID card number',
                         controller: _idCardController,
                         isRequired: true,
 
                         validator: (v) {
                           if (v == null || v.trim().isEmpty) {
-                            return 'Nomor KTP wajib diisi';
+                            return 'ID card number is required';
                           }
 
                           return null;
@@ -147,15 +147,15 @@ class _IdentityFormViewState extends State<IdentityFormView> {
                       const SizedBox(height: 30),
 
                       CustomTextForm(
-                        title: 'Nomor Telepon',
-                        hintText: 'Masukkan nomor telepon',
+                        title: 'Phone Number',
+                        hintText: 'Enter phone number',
                         controller: _phoneController,
                         isRequired: true,
                         keyboardType: TextInputType.phone,
 
                         validator: (v) {
                           if (v == null || v.trim().isEmpty) {
-                            return 'Nomor telepon wajib diisi';
+                            return 'Phone number is required';
                           }
 
                           return null;
@@ -165,7 +165,7 @@ class _IdentityFormViewState extends State<IdentityFormView> {
                       const SizedBox(height: 30),
 
                       Text(
-                        'Jenis Kelamin',
+                        'Gender',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
 
@@ -178,17 +178,17 @@ class _IdentityFormViewState extends State<IdentityFormView> {
                           border: OutlineInputBorder(),
                         ),
 
-                        hint: const Text('Pilih jenis kelamin'),
+                        hint: const Text('Select gender'),
 
                         items: const [
                           DropdownMenuItem(
                             value: 'male',
-                            child: Text('Laki-laki'),
+                            child: Text('Male'),
                           ),
 
                           DropdownMenuItem(
                             value: 'female',
-                            child: Text('Perempuan'),
+                            child: Text('Female'),
                           ),
                         ],
 
@@ -200,7 +200,7 @@ class _IdentityFormViewState extends State<IdentityFormView> {
 
                         validator: (v) {
                           if (v == null) {
-                            return 'Jenis kelamin wajib dipilih';
+                            return 'Gender is required';
                           }
 
                           return null;
@@ -210,23 +210,23 @@ class _IdentityFormViewState extends State<IdentityFormView> {
                       const SizedBox(height: 30),
 
                       CustomTextForm(
-                        title: 'Pekerjaan',
-                        hintText: 'Masukkan pekerjaan',
+                        title: 'Occupation',
+                        hintText: 'Enter occupation',
                         controller: _jobController,
                       ),
 
                       const SizedBox(height: 30),
 
                       CustomTextForm(
-                        title: 'Alamat KTP',
-                        hintText: 'Masukkan alamat sesuai KTP',
+                        title: 'Address on ID',
+                        hintText: 'Enter the address as stated on your ID',
                         controller: _addressController,
                         isRequired: true,
                         maxLines: 3,
 
                         validator: (v) {
                           if (v == null || v.trim().isEmpty) {
-                            return 'Alamat wajib diisi';
+                            return 'Address is required';
                           }
 
                           return null;
@@ -236,16 +236,16 @@ class _IdentityFormViewState extends State<IdentityFormView> {
                       const SizedBox(height: 30),
 
                       CustomTextForm(
-                        title: 'Nama Kontak Darurat',
-                        hintText: 'Masukkan nama kontak darurat',
+                        title: 'Emergency Contact Name',
+                        hintText: 'Enter emergency contact name',
                         controller: _emergencyNameController,
                       ),
 
                       const SizedBox(height: 30),
 
                       CustomTextForm(
-                        title: 'Nomor Kontak Darurat',
-                        hintText: 'Masukkan nomor kontak darurat',
+                        title: 'Emergency Contact Number',
+                        hintText: 'Enter emergency contact number',
                         controller: _emergencyPhoneController,
                         keyboardType: TextInputType.phone,
                       ),
@@ -259,7 +259,7 @@ class _IdentityFormViewState extends State<IdentityFormView> {
                           width: 220,
 
                           child: BasicButton(
-                            label: 'Simpan Biodata',
+                            label: 'Save Profile',
 
                             isLoading: isLoading,
 
@@ -269,7 +269,7 @@ class _IdentityFormViewState extends State<IdentityFormView> {
 
                               if (!valid) {
                                 AppSnackbar.showError(
-                                  'Lengkapi data terlebih dahulu',
+                                  'Please complete the data first',
                                 );
 
                                 return;

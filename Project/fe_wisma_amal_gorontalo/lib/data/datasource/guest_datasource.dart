@@ -46,7 +46,7 @@ class GuestDatasource {
     }
   }
 
-  // REVISI: Mendukung pendaftaran multi-tamu (maks 3) dalam satu request
+  // REVISION: Supports multi-guest registration (max 3) in a single request
   Future<List<MyGuestItem>> createGuest({
     required List<Map<String, dynamic>> guests,
     required List<Uint8List> identityImages,
@@ -80,7 +80,7 @@ class GuestDatasource {
             .map((e) => MyGuestItem.fromJson(e as Map<String, dynamic>))
             .toList();
       }
-      // Fallback: jika backend mengembalikan single object
+      // Fallback: if the backend returns a single object
       if (payload is Map<String, dynamic>) {
         return [MyGuestItem.fromJson(payload)];
       }
@@ -90,7 +90,7 @@ class GuestDatasource {
     }
   }
 
-  // REVISI: Mendukung pendaftaran multi-tamu oleh admin
+  // REVISION: Supports multi-guest registration by the admin
   Future<List<GuestItem>> createAdminGuest({
     required int scheduleId,
     required List<Map<String, dynamic>> guests,
@@ -113,7 +113,7 @@ class GuestDatasource {
             .map((e) => GuestItem.fromJson(e as Map<String, dynamic>))
             .toList();
       }
-      // Fallback: jika backend mengembalikan single object
+      // Fallback: if the backend returns a single object
       if (payload is Map<String, dynamic>) {
         return [GuestItem.fromJson(payload)];
       }

@@ -2,7 +2,7 @@
 
 > 1 halaman. Update tiap sesi bimbingan/revisi.
 
-**Terakhir diupdate:** 2026-10-18
+**Terakhir diupdate:** 2026-10-21
 **Fase:** **Penyelarasan Naskah BAB 1–3 (Rewrite NestJS & Generalisasi Domain)**
 
 **Progress:** 80% PA naskah (BAB 1 selesai draf ulang natural, persiapan BAB 2 & 3).
@@ -25,6 +25,11 @@
 
 - ✅ **ADR-007 & ADR-011 Ditetapkan**: Keputusan rewrite 13 tabel bulanan, transisi ke NestJS, platform web-first, dan generalisasi domain kost dicatat di `Docs/03_logs/DECISIONS.md`.
 - ✅ **BAB 1 Naskah Diperbarui**: Ditulis ulang dengan gaya bahasa natural Indonesia, bebas dari istilah kaku dan dependensi wisma tunggal.
+- ✅ **BAB 3 Rekonstruksi Desain Sistem Selesai**: Naskah ditulis ulang berfokus murni pada perancangan sistem sesuai struktur proposal PENS (Arsitektur Terpadu 4 lapis, 9 Modul 3-Tier, Flutter Web Clean Architecture, 9 Alur Proses Bisnis, Use Case, DFD Level 0 & 1, Activity Diagram, ERD 13 Tabel & Kamus Data, serta Mockup Antarmuka). Detail teknis non-desain (endpoint mentah, docker-compose, JSON schema) telah dipangkas dan diarsipkan ke `DRAFT_v1_2026-10-21.md`.
+- ✅ **Diagram BAB 3 terintegrasi**: 15 diagram aktif (HTML & Mermaid PNG) tertanam secara otomatis via `figures_to_images.py`, dengan 6 placeholder untuk diagram visual yang belum dibuat.
+- 🟡 **Cakupan fitur**: F02 peran kustom, F11 pengeluaran operasional, dan F13 pemeliharaan rutin berkala belum memiliki tabel pada skema 13 tabel dan ditandai sebagai perluasan skema.
+- ✅ **Pipeline docx**: `PA/docs/modules/build-docx.sh` merender seluruh diagram (Mermaid dan HTML) menjadi PNG lalu menyisipkannya ke naskah sebelum konversi. `template_pens.docx` belum ada, sehingga style bawaan Pandoc masih dipakai.
+- 🟡 **Blocker sitasi**: `[36]` dan `[41]` dipakai di BAB 2 tetapi tidak ada di daftar pustaka; urutan kemunculan di BAB 1 masih mulai dari `[2]`.
 
 ## Roadmap Perancangan & Implementasi Baru
 

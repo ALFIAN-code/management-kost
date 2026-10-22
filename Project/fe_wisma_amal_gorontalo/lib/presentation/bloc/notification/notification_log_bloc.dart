@@ -70,11 +70,11 @@ class NotificationLogBloc extends Bloc<NotificationLogEvent, NotificationLogStat
   ) async {
     try {
       await markAllNotificationLogsReadUseCase();
-      // Setelah mark-all-read, refresh log agar is_read terupdate di UI
+      // After mark-all-read, refresh the log so is_read is updated in the UI
       final data = await getNotificationLogsUseCase();
       emit(NotificationLogLoaded(data));
     } catch (_) {
-      // Gagal mark as read tidak perlu menampilkan error ke user
+      // Failing to mark as read does not need to show an error to the user
     }
   }
 }

@@ -37,7 +37,7 @@ class CustomDateTimePickerField extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    value ?? 'Pilih Tanggal & Jam',
+                    value ?? 'Select Date & Time',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: value != null
                           ? theme.colorScheme.onSurface

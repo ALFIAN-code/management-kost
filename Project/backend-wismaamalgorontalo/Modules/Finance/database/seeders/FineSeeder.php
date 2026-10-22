@@ -27,7 +27,7 @@ class FineSeeder extends Seeder
         $users = User::whereHas('roles', fn ($q) => $q->whereIn('name', ['member', 'resident']))->get();
 
         if ($users->isEmpty()) {
-            $this->command->warn('Tidak ada user dengan role member/resident. Jalankan UserSeeder terlebih dahulu.');
+            $this->command->warn('No users with the member or resident role. Run UserSeeder first.');
 
             return;
         }
@@ -35,16 +35,16 @@ class FineSeeder extends Seeder
         $now = Carbon::now();
 
         $templates = [
-            ['reason' => 'Membuat keributan pada malam hari (di atas pukul 22.00)', 'amount' => 50_000],
-            ['reason' => 'Membawa tamu menginap tanpa izin pengelola', 'amount' => 100_000],
-            ['reason' => 'Membuang sampah sembarangan di area koridor', 'amount' => 25_000],
-            ['reason' => 'Terlambat mengembalikan kunci cadangan', 'amount' => 30_000],
-            ['reason' => 'Merokok di dalam kamar (zona bebas rokok)', 'amount' => 150_000],
-            ['reason' => 'Merusak fasilitas kamar mandi (keran dirusak)', 'amount' => 200_000],
-            ['reason' => 'Menggunakan listrik melebihi batas (memasak di kamar)', 'amount' => 75_000],
-            ['reason' => 'Tidak menghadiri rapat penghuni tanpa pemberitahuan', 'amount' => 20_000],
-            ['reason' => 'Membawa hewan peliharaan ke dalam kamar', 'amount' => 100_000],
-            ['reason' => 'Menggantung baju di area yang dilarang (balkon utama)', 'amount' => 15_000],
+            ['reason' => 'Making noise at night (after 22.00)', 'amount' => 50_000],
+            ['reason' => 'Staying over a guest without permission from the manager', 'amount' => 100_000],
+            ['reason' => 'Littering in the corridor area', 'amount' => 25_000],
+            ['reason' => 'Returning the spare key late', 'amount' => 30_000],
+            ['reason' => 'Smoking inside the room (non-smoking zone)', 'amount' => 150_000],
+            ['reason' => 'Damaging bathroom facilities (the faucet is damaged)', 'amount' => 200_000],
+            ['reason' => 'Exceeding the electricity limit (cooking in the room)', 'amount' => 75_000],
+            ['reason' => 'Missing the resident meeting without notice', 'amount' => 20_000],
+            ['reason' => 'Bringing pets into the room', 'amount' => 100_000],
+            ['reason' => 'Hanging laundry in a prohibited area (the main balcony)', 'amount' => 15_000],
         ];
 
         $seq = 1;
@@ -68,7 +68,7 @@ class FineSeeder extends Seeder
                 'reason' => $template['reason'],
                 'status' => $status->value,
                 'waive_reason' => $status === FineStatus::WAIVED
-                    ? 'Penghuni sudah meminta maaf secara langsung dan berjanji tidak mengulangi.'
+                    ? 'The resident apologized in person and promised not to repeat it.'
                     : null,
                 'paid_at' => $status === FineStatus::PAID ? $createdAt->copy()->addDays(rand(1, 5)) : null,
                 'created_at' => $createdAt,
@@ -116,6 +116,6 @@ class FineSeeder extends Seeder
         }
 
         $count = Fine::count();
-        $this->command->info("FineSeeder selesai: {$count} data denda berhasil dibuat.");
+        $this->command->info("FineSeeder finished: {$count} fine records created successfully.");
     }
 }

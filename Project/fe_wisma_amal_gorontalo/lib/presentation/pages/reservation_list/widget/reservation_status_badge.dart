@@ -28,12 +28,12 @@ class ReservationStatusBadge extends StatelessWidget {
 
   String _getStatusLabel() {
     switch (status.toLowerCase()) {
-      case 'active':         return 'Aktif';
-      case 'pending':        return 'Menunggu';
-      case 'dp_terbayar':   return 'DP Terbayar';
-      case 'terkonfirmasi': return 'Terkonfirmasi';
-      case 'cancelled':      return 'Dibatalkan';
-      case 'finished':       return 'Selesai';
+      case 'active':         return 'Active';
+      case 'pending':        return 'Pending';
+      case 'dp_terbayar':   return 'DP Paid';
+      case 'terkonfirmasi': return 'Confirmed';
+      case 'cancelled':      return 'Cancelled';
+      case 'finished':       return 'Finished';
       default:               return status;
     }
   }

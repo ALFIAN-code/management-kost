@@ -26,7 +26,7 @@ class FineEligibleUserEntity {
     if (activeRoomNumber == null) return '';
     final title = activeRoomTitle != null && activeRoomTitle!.isNotEmpty
         ? activeRoomTitle!
-        : 'Kamar $activeRoomNumber';
+        : 'Room $activeRoomNumber';
     return '$title (No. $activeRoomNumber)';
   }
 }

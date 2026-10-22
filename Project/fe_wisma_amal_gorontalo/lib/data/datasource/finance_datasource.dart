@@ -52,7 +52,7 @@ abstract class FinanceRemoteDatasource {
   Future<List<MidtransMethodEntity>> getAvailablePaymentMethods();
   Future<MidtransMonitoringModel> getMidtransMonitoring();
 
-  // Fine (Denda)
+  // Fine
   Future<List<FineModel>> getMyFines({String? status});
   Future<PaymentModel> payFines(
     List<int> fineIds,
@@ -87,7 +87,7 @@ class FinanceRemoteDatasourceImpl implements FinanceRemoteDatasource {
   @override
   Future<List<InvoiceModel>> getInvoices() async {
     try {
-      // per_page=200 agar semua tagihan terambil untuk client-side pagination
+      // per_page=200 so all invoices are fetched for client-side pagination
       final response = await _dioClient.get('/finance/invoices', queryParams: {'per_page': 200});
       final List<dynamic> data = response.data['data'] ?? [];
       return data.map((json) => InvoiceModel.fromJson(json)).toList();
@@ -185,7 +185,7 @@ class FinanceRemoteDatasourceImpl implements FinanceRemoteDatasource {
 
   @override
   Future<List<ExpenseModel>> getExpenses() async {
-    // per_page=200 agar semua data pengeluaran terambil sekaligus (max 200)
+    // per_page=200 so all expense data is fetched at once (max 200)
     final response = await _dioClient.get('/finance/expenses', queryParams: {'per_page': 200});
     final List<dynamic> data = response.data['data'] ?? [];
     return data.map((json) => ExpenseModel.fromJson(json)).toList();

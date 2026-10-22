@@ -42,7 +42,7 @@ class FineCubit extends Cubit<FineState> {
     try {
       final fine = await _createFine.execute(tenantUserId: tenantUserId, amount: amount, reason: reason);
       final updated = [fine, ...current];
-      emit(FineOperationSuccess('Denda berhasil dibuat dan notifikasi telah dikirim.', List.from(updated)));
+      emit(FineOperationSuccess('Fine created successfully and the notification has been sent.', List.from(updated)));
     } catch (e) {
       emit(FineError(e.toString()));
     }
@@ -53,7 +53,7 @@ class FineCubit extends Cubit<FineState> {
       final updated = await _waiveFine.execute(fineId, waiveReason);
       if (state is FineLoaded) {
         final updatedList = (state as FineLoaded).fines.map((f) => f.id == fineId ? updated : f).toList();
-        emit(FineOperationSuccess('Denda berhasil dimaafkan.', updatedList));
+        emit(FineOperationSuccess('Fine waived successfully.', updatedList));
       }
     } catch (e) {
       emit(FineError(e.toString()));
@@ -65,7 +65,7 @@ class FineCubit extends Cubit<FineState> {
       final updated = await _cancelFine.execute(fineId);
       if (state is FineLoaded) {
         final updatedList = (state as FineLoaded).fines.map((f) => f.id == fineId ? updated : f).toList();
-        emit(FineOperationSuccess('Denda berhasil dibatalkan.', updatedList));
+        emit(FineOperationSuccess('Fine cancelled successfully.', updatedList));
       }
     } catch (e) {
       emit(FineError(e.toString()));

@@ -1,9 +1,9 @@
 class MidtransMethodEntity {
   final String code;
   final String label;
-  final bool enabled;     // admin: aktif di setting
-  final bool available;   // user: tidak sedang maintenance
-  final bool maintenance; // user: sedang maintenance
+  final bool enabled;     // admin: active in settings
+  final bool available;   // user: not under maintenance
+  final bool maintenance; // user: under maintenance
 
   const MidtransMethodEntity({
     required this.code,

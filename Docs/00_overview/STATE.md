@@ -2,7 +2,7 @@
 
 > Ringkasan 1 halaman untuk AI & manusia agar cepat paham konteks tanpa baca semua `docs/`. Update tiap sesi (bagian dari `AGENTS.md:3` checklist). Maks 400 kata.
 
-**Terakhir diupdate:** 2026-10-18
+**Terakhir diupdate:** 2026-10-21
 **Fase:** **REWRITE TOTAL (ADR-007, ADR-011)** — Generalisasi Domain Kost Multi-Gedung, Backend NestJS, Frontend Web-First (Flutter Web).
 **Progress keseluruhan:** 80% PA naskah (penyelarasan BAB 1–3 ke arsitektur NestJS & generalisasi kost), 40% Project/kode (persiapan scaffolding repo NestJS).
 
@@ -21,12 +21,16 @@
 - ✅ ADR-007 (Rewrite Total Kost Bulanan 13 Tabel) disahkan di `Docs/03_logs/DECISIONS.md`.
 - ✅ ADR-011 (Generalisasi Domain, Backend NestJS, Platform Web-First) disahkan di `Docs/03_logs/DECISIONS.md`.
 - ✅ Draft BAB 1 diselaraskan dengan gaya penulisan natural Indonesia (bebas kata kaku/AI-isms).
+- ✅ **BAB 3 Rekonstruksi Desain Sistem Selesai**: Naskah ditulis ulang berfokus murni pada desain sistem & diagram fungsional (Arsitektur Terpadu, 9 Alur Bisnis, DFD Level 0 & 1, ERD 13 Tabel, Mockup Antarmuka) sesuai proposal acuan. Kode endpoint mentah & konfigurasi kontainer diarsipkan ke `DRAFT_v1_2026-10-21.md`.
+- ✅ **Environment produksi aktif & terbarukan** — stack Laravel 11 + MySQL 8 + Flutter Web ter-deploy di server `ALLVVNT` (`100.92.12.28`) via Docker Compose, diekspos Cloudflare Tunnel di `wismaamal.allvvnt.my.id` (frontend) dan `api-wismaamal.allvvnt.my.id` (API + Swagger `/docs/api`). Seluruh UI frontend dan seed data backend telah diterjemahkan ke Bahasa Inggris, serta CanvasKit di-host lokal (`--no-web-resources-cdn`) untuk kelancaran rendering di Safari tanpa CDN eksternal.
+- 🟡 **Blocker sitasi** masih terbuka: `[36]`, `[41]`, dan urutan kemunculan `[1]`.
 
 ## Roadmap Kerja Terkini
 
 1. 🟡 **Fase Naskah:** Sinkronisasi BAB 1 (selesai draf), revisi BAB 2 & 3 mengikuti arsitektur NestJS 13 tabel dan Flutter Web.
 2. ⚪ **Fase Desain Teknis:** Finalisasi spesifikasi kontrak endpoint REST API & skema event bus NestJS.
 3. ⚪ **Fase Implementasi:** Scaffolding basis kode backend baru berbasis NestJS modular & Flutter Web.
+4. 🟡 **Operasionalisasi:** Menulis panduan deploy repeatable di `Docs/`, memperbaiki letak workflow CI ke root repo, dan mengisi kredensial Midtrans.
 
 
 ## Blocker / Keputusan Pending

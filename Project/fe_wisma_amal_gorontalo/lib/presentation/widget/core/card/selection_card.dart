@@ -4,11 +4,11 @@ import 'package:frontend/core/theme/app_spacing.dart';
 import 'package:frontend/core/theme/app_theme.dart';
 import 'package:frontend/presentation/widget/core/hover/hover_tap.dart';
 
-/// Reusable card untuk pilihan radio-style.
+/// Reusable card for radio-style choices.
 ///
-/// Dua layout tersedia:
-/// - [SelectionCard.vertical]   — judul + subtitle + valueLabel menumpuk
-/// - [SelectionCard.horizontal] — icon di kiri, teks di tengah
+/// Two layouts available:
+/// - [SelectionCard.vertical]   — title + subtitle + valueLabel stacked
+/// - [SelectionCard.horizontal] — icon on the left, text in the middle
 class SelectionCard extends StatelessWidget {
   const SelectionCard._({
     super.key,
@@ -26,7 +26,7 @@ class SelectionCard extends StatelessWidget {
     required _SelectionLayout layout,
   }) : _layout = layout;
 
-  /// Vertical layout: judul + subtitle + valueLabel menumpuk.
+  /// Vertical layout: title + subtitle + valueLabel stacked.
   factory SelectionCard.vertical({
     Key? key,
     required String title,
@@ -54,7 +54,7 @@ class SelectionCard extends StatelessWidget {
     );
   }
 
-  /// Horizontal layout: icon di kiri, teks di tengah, radio di kanan.
+  /// Horizontal layout: icon on the left, text in the middle, radio on the right.
   factory SelectionCard.horizontal({
     Key? key,
     required String title,
@@ -87,19 +87,19 @@ class SelectionCard extends StatelessWidget {
   final VoidCallback onTap;
   final String? subtitle;
 
-  /// Vertical only: harga / jumlah yang ditampilkan besar di bawah.
+  /// Vertical only: price / quantity displayed large at the bottom.
   final String? valueLabel;
 
-  /// Horizontal only: ikon di kiri.
+  /// Horizontal only: icon on the left.
   final IconData? icon;
 
-  /// Horizontal only: warna ikon (default primary).
+  /// Horizontal only: icon color (defaults to primary).
   final Color? iconColor;
 
-  /// Override warna accent (border, radio, valueLabel) dari primary.
+  /// Overrides the accent color (border, radio, valueLabel) from primary.
   final Color? accentColor;
 
-  /// Vertical only: chip opsional di pojok kanan atas.
+  /// Vertical only: optional chip in the top-right corner.
   final Widget? badge;
 
   final double? minWidth;
@@ -111,7 +111,7 @@ class SelectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = AppTheme.isDark(context);
 
-    // ── Warna tokens ──────────────────────────────────────────────────────────
+    // ── Color tokens ──────────────────────────────────────────────────────────
     final primary = isDark ? AppColorsDark.primary : AppColorsLight.primary;
     final primaryLight =
         isDark ? AppColorsDark.surfaceVariant : AppColorsLight.primaryLight;

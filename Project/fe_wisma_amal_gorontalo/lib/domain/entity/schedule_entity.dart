@@ -6,8 +6,10 @@ class ScheduleEntity extends Equatable {
   final int? id;
   final String technicianName;
   final String location;
-  final String type; // pembersihan | perawatan
-  final String subtype; // rutin | deep_cleaning | darurat | perbaikan | maintenance
+  final String type; // pembersihan | perawatan (cleaning | maintenance)
+  // subtype: rutin | deep_cleaning | darurat | perbaikan | maintenance
+  // (routine | deep cleaning | emergency | repair | maintenance)
+  final String subtype;
   final String status; // in_progress | done | cancelled
   final String? notes;
   final DateTime startTime;

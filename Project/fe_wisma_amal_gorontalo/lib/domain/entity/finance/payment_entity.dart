@@ -17,7 +17,9 @@ class PaymentEntity {
   final String? residentName;
   final String? roomNumber;
   final String? updatedAt;
-  final String? invoiceType; // 'sewa' | 'dp' | 'pelunasan' | 'extension' | 'fine'
+  // 'sewa' | 'dp' | 'pelunasan' | 'extension' | 'fine'
+  // (lease | down payment | full payment | extension | fine)
+  final String? invoiceType;
 
   PaymentEntity({
     required this.id,

@@ -9,7 +9,7 @@ sequenceDiagram
   Admin->>Maint: Buat Agenda Pemeliharaan Rutin (nama_kegiatan, frekuensi_bulan, target_tanggal)
   Maint->>Maint: Simpan Agenda Servis Berkala (status: 'scheduled')
 
-  Note over Maint: Sistem Melakukan Pemantauan Tanggal Rutin
+  Note over Maint: Sistem Melakukan Pemantauan Tanggal Rutin\nCakupan F13 memerlukan tabel jadwal perawatan di luar skema 13 tabel
   opt Tanggal Servis Mendekati (H-7)
     Maint->>Admin: Tampilkan Notifikasi Pengingat Agenda Servis di Dashboard
   end

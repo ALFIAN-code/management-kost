@@ -33,8 +33,8 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
   late InvoiceBloc _bloc;
 
   String _searchQuery = '';
-  String _statusFilter = 'Semua';
-  String _typeFilter = 'Semua';
+  String _statusFilter = 'All';
+  String _typeFilter = 'All';
   int? _filterYear;
   int? _filterMonth;
   final TextEditingController _searchCtrl = TextEditingController();
@@ -42,11 +42,11 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
   int _currentPage = 1;
   static const int _perPage = 10;
 
-  static const _statusOptions = ['Semua', 'Belum Bayar', 'Lunas', 'Dibatalkan'];
-  static const _typeOptions   = ['Semua', 'Sewa', 'DP', 'Pelunasan', 'Perpanjangan', 'Denda'];
+  static const _statusOptions = ['All', 'Unpaid', 'Paid', 'Cancelled'];
+  static const _typeOptions   = ['All', 'Lease', 'DP', 'Full Payment', 'Extension', 'Fine'];
 
-  static final _currencyFmt = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
-  static final _dateFmt     = DateFormat('dd MMM yyyy', 'id_ID');
+  static final _currencyFmt = NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0);
+  static final _dateFmt     = DateFormat('dd MMM yyyy', 'en_US');
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
   String _formatPeriod(InvoiceEntity inv) {
     if (inv.periodStart == null && inv.periodEnd == null) {
       return inv.createdAt != null
-          ? DateFormat('MMMM yyyy', 'id_ID').format(inv.createdAt!)
+          ? DateFormat('MMMM yyyy', 'en_US').format(inv.createdAt!)
           : '-';
     }
     final start = inv.periodStart != null
@@ -85,21 +85,21 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
 
   String _statusLabel(String s) {
     switch (s.toLowerCase()) {
-      case 'paid':      return 'Lunas';
-      case 'unpaid':    return 'Belum Bayar';
-      case 'cancelled': return 'Dibatalkan';
+      case 'paid':      return 'Paid';
+      case 'unpaid':    return 'Unpaid';
+      case 'cancelled': return 'Cancelled';
       default:          return s;
     }
   }
 
   String _typeLabel(String? t) {
     switch (t) {
-      case 'sewa':      return 'Sewa';
+      case 'sewa':      return 'Lease';
       case 'dp':        return 'DP';
-      case 'pelunasan': return 'Pelunasan';
-      case 'extension': return 'Perpanjangan';
-      case 'fine':      return 'Denda';
-      default:          return 'Lainnya';
+      case 'pelunasan': return 'Full Payment';
+      case 'extension': return 'Extension';
+      case 'fine':      return 'Fine';
+      default:          return 'Other';
     }
   }
 
@@ -148,8 +148,8 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
     return all.where((inv) {
       if (_filterYear  != null && inv.createdAt?.year  != _filterYear)  return false;
       if (_filterMonth != null && inv.createdAt?.month != _filterMonth) return false;
-      if (_statusFilter != 'Semua' && _statusLabel(inv.status) != _statusFilter) return false;
-      if (_typeFilter   != 'Semua' && _typeLabel(inv.type)     != _typeFilter)   return false;
+      if (_statusFilter != 'All' && _statusLabel(inv.status) != _statusFilter) return false;
+      if (_typeFilter   != 'All' && _typeLabel(inv.type)     != _typeFilter)   return false;
       if (_searchQuery.isNotEmpty) {
         final q = _searchQuery.toLowerCase();
         if (!(inv.invoiceNumber.toLowerCase().contains(q) ||
@@ -174,14 +174,14 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
     try {
       final ds = serviceLocator<FinanceRemoteDatasource>();
       final url = await ds.getInvoicePrintLink(invoiceId);
-      if (url.isEmpty) throw Exception('URL kosong');
+      if (url.isEmpty) throw Exception('Empty URL');
       if (!await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication)) {
-        throw Exception('Tidak dapat membuka browser');
+        throw Exception('Cannot open the browser');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal membuka cetak: $e'), backgroundColor: Colors.red.shade700),
+          SnackBar(content: Text('Failed to open the print view: $e'), backgroundColor: Colors.red.shade700),
         );
       }
     }
@@ -205,7 +205,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
           ),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Detail Tagihan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Invoice Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Text(inv.invoiceNumber, style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.normal)),
           ])),
         ]),
@@ -223,13 +223,13 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                 child: Column(children: [
                   Row(children: [
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('Penghuni', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                      Text('Resident', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       Text(inv.residentName ?? '-', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                       if (inv.roomNumber != null)
-                        Text('Kamar ${inv.roomNumber}', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                        Text('Room ${inv.roomNumber}', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
                     ])),
                     Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                      Text('Nominal', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                      Text('Amount', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       Text(formatRupiah(inv.amount), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       if (inv.type != null) ...[
                         const SizedBox(height: 4),
@@ -240,11 +240,11 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                   const Divider(height: 20),
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('Periode', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                      Text('Period', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       Text(_formatPeriod(inv), style: const TextStyle(fontSize: 12)),
                     ]),
                     Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                      Text('Jatuh Tempo', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                      Text('Due Date', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                       Text(
                         formatDate(inv.dueDate),
                         style: TextStyle(
@@ -255,7 +255,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                       ),
                       if (_isOverdue(inv))
                         Text(
-                          '${DateTime.now().difference(inv.dueDate).inDays} hari lalu',
+                          '${DateTime.now().difference(inv.dueDate).inDays} days ago',
                           style: TextStyle(fontSize: 10, color: Colors.red.shade400),
                         ),
                     ]),
@@ -269,7 +269,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                     ]),
                     if (inv.createdAt != null)
                       Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                        Text('Tanggal Dibuat', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                        Text('Created Date', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
                         Text(formatDate(inv.createdAt!), style: const TextStyle(fontSize: 12)),
                       ]),
                   ]),
@@ -279,10 +279,10 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Tutup')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
           FilledButton.icon(
             icon: const Icon(Icons.print_outlined, size: 16),
-            label: const Text('Cetak PDF'),
+            label: const Text('Print PDF'),
             style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
             onPressed: () { Navigator.pop(ctx); _printPdf(inv.id); },
           ),
@@ -314,10 +314,10 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
     if (type == null) return const SizedBox.shrink();
     final (label, color) = switch (type) {
       'dp'        => ('DP', Colors.amber.shade700),
-      'pelunasan' => ('Pelunasan', Colors.teal.shade700),
-      'sewa'      => ('Sewa Penuh', Colors.indigo.shade600),
-      'extension' => ('Perpanjangan', Colors.blue.shade700),
-      'fine'      => ('Denda', Colors.red.shade700),
+      'pelunasan' => ('Full Payment', Colors.teal.shade700),
+      'sewa'      => ('Full Lease', Colors.indigo.shade600),
+      'extension' => ('Extension', Colors.blue.shade700),
+      'fine'      => ('Fine', Colors.red.shade700),
       _           => (type, Colors.grey.shade600),
     };
     return Container(
@@ -340,7 +340,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
     const SizedBox(width: 12),
     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
-        inv.residentName ?? 'Penghuni tidak diketahui',
+        inv.residentName ?? 'Unknown resident',
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         overflow: TextOverflow.ellipsis,
       ),
@@ -348,7 +348,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
         if (inv.roomNumber != null) ...[
           Icon(Icons.meeting_room_outlined, size: 12, color: isDark ? AppColorsDark.textHint : AppColorsLight.textHint),
           const SizedBox(width: 3),
-          Text('Kamar ${inv.roomNumber}', style: TextStyle(fontSize: 12, color: isDark ? AppColorsDark.textSecondary : AppColorsLight.textSecondary)),
+          Text('Room ${inv.roomNumber}', style: TextStyle(fontSize: 12, color: isDark ? AppColorsDark.textSecondary : AppColorsLight.textSecondary)),
           const SizedBox(width: 8),
         ],
         Icon(Icons.receipt_outlined, size: 12, color: isDark ? AppColorsDark.textHint : AppColorsLight.textHint),
@@ -360,7 +360,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
         ],
       ]),
       if (_isOverdue(inv))
-        Text('Sudah Jatuh Tempo', style: TextStyle(fontSize: 11, color: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled, fontWeight: FontWeight.w600)),
+        Text('Overdue', style: TextStyle(fontSize: 11, color: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled, fontWeight: FontWeight.w600)),
     ])),
   ]);
 
@@ -392,7 +392,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
     child: Row(children: [
       Text(
-        'Menampilkan $shown dari $total tagihan',
+        'Showing $shown of $total invoices',
         style: TextStyle(fontSize: 13, color: isDark ? AppColorsDark.textHint : AppColorsLight.textHint),
       ),
       const Spacer(),
@@ -413,8 +413,8 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
         backgroundColor: bgColor,
         body: Column(children: [
           AppTopBar(
-            title: 'Daftar Tagihan',
-            breadcrumb: 'Keuangan / Tagihan',
+            title: 'Invoice List',
+            breadcrumb: 'Finance / Invoices',
             action: ElevatedButton.icon(
               onPressed: () => _bloc.add(FetchInvoices()),
               icon: const Icon(Icons.refresh, size: 18),
@@ -428,9 +428,9 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                 if (state is InvoiceError) {
                   return EmptyStateWidget(
                     icon: Icons.error_outline,
-                    title: 'Gagal Memuat Data',
+                    title: 'Failed to Load Data',
                     subtitle: state.message,
-                    action: ElevatedButton(onPressed: () => _bloc.add(FetchInvoices()), child: const Text('Coba Lagi')),
+                    action: ElevatedButton(onPressed: () => _bloc.add(FetchInvoices()), child: const Text('Try Again')),
                   );
                 }
                 if (state is! InvoiceLoaded) return const SizedBox.shrink();
@@ -454,17 +454,17 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                     IntrinsicHeight(
                       child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                         Expanded(child: SummaryStatCard(
-                          label: 'Total Tagihan',
-                          value: '${all.length} Tagihan',
+                          label: 'Total Invoices',
+                          value: '${all.length} Invoices',
                           icon: Icons.receipt_long,
                           iconColor: isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess,
                           iconBg:    isDark ? AppColorsDark.statusProcessBg : AppColorsLight.statusProcessBg,
-                          trend: 'Semua periode',
+                          trend: 'All periods',
                         )),
                         const SizedBox(width: AppSpacing.lg),
                         Expanded(child: SummaryStatCard(
-                          label: 'Sudah Lunas',
-                          value: '${paid.length} Tagihan',
+                          label: 'Paid',
+                          value: '${paid.length} Invoices',
                           icon: Icons.check_circle_outline,
                           iconColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
                           iconBg:    isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg,
@@ -473,8 +473,8 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                         )),
                         const SizedBox(width: AppSpacing.lg),
                         Expanded(child: SummaryStatCard(
-                          label: 'Belum Dibayar',
-                          value: '${unpaid.length} Tagihan',
+                          label: 'Unpaid',
+                          value: '${unpaid.length} Invoices',
                           icon: Icons.schedule,
                           iconColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
                           iconBg:    isDark ? AppColorsDark.statusWaitingBg : AppColorsLight.statusWaitingBg,
@@ -483,12 +483,12 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                         )),
                         const SizedBox(width: AppSpacing.lg),
                         Expanded(child: SummaryStatCard(
-                          label: 'Sudah Jatuh Tempo',
-                          value: '${overdue.length} Tagihan',
+                          label: 'Overdue',
+                          value: '${overdue.length} Invoices',
                           icon: Icons.warning_amber_rounded,
                           iconColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
                           iconBg:    isDark ? AppColorsDark.statusCancelledBg : AppColorsLight.statusCancelledBg,
-                          trend: 'Perlu tindak lanjut',
+                          trend: 'Needs follow-up',
                           trendColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
                         )),
                       ]),
@@ -497,22 +497,22 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
 
                     // ── Section title + date filter ────────────────────────────
                     Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                      _sectionTitle('Data Tagihan', isDark),
+                      _sectionTitle('Invoice Data', isDark),
                       const Spacer(),
                       _FilterDropdown<int?>(
-                        hint: 'Tahun',
+                        hint: 'Year',
                         value: _filterYear,
                         items: [null, ...years],
-                        labelBuilder: (v) => v == null ? 'Semua Tahun' : '$v',
+                        labelBuilder: (v) => v == null ? 'All Years' : '$v',
                         onChanged: (v) => setState(() { _filterYear = v; _filterMonth = null; _currentPage = 1; }),
                         isDark: isDark,
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       _FilterDropdown<int?>(
-                        hint: 'Bulan',
+                        hint: 'Month',
                         value: _filterMonth,
                         items: [null, ...List.generate(12, (i) => i + 1)],
-                        labelBuilder: (v) => v == null ? 'Semua Bulan' : DateFormat('MMMM', 'id_ID').format(DateTime(0, v)),
+                        labelBuilder: (v) => v == null ? 'All Months' : DateFormat('MMMM', 'en_US').format(DateTime(0, v)),
                         onChanged: (v) => setState(() { _filterMonth = v; _currentPage = 1; }),
                         isDark: isDark,
                       ),
@@ -521,7 +521,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                         IconButton(
                           onPressed: () => setState(() { _filterYear = null; _filterMonth = null; _currentPage = 1; }),
                           icon: const Icon(Icons.close_rounded, size: 16),
-                          tooltip: 'Reset filter tanggal',
+                          tooltip: 'Reset date filter',
                           style: IconButton.styleFrom(foregroundColor: Colors.grey.shade500, visualDensity: VisualDensity.compact),
                         ),
                       ],
@@ -535,7 +535,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                         controller: _searchCtrl,
                         onChanged: (v) => setState(() { _searchQuery = v; _currentPage = 1; }),
                         decoration: InputDecoration(
-                          hintText: 'Cari nomor tagihan, nama penghuni, atau kamar...',
+                          hintText: 'Search invoice number, resident name, or room...',
                           prefixIcon: const Icon(Icons.search, size: 18),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -559,7 +559,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                           onTap: () => setState(() { _statusFilter = opt; _currentPage = 1; }),
                         )),
                         const SizedBox(width: AppSpacing.lg),
-                        _chipGroupLabel('Jenis:', isDark),
+                        _chipGroupLabel('Type:', isDark),
                         const SizedBox(width: AppSpacing.sm),
                         ..._typeOptions.map((opt) => _FilterChip(
                           label: opt,
@@ -575,8 +575,8 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                     if (paged.isEmpty)
                       _emptyTable(
                         _searchQuery.isNotEmpty
-                            ? 'Tidak ada hasil untuk "$_searchQuery".'
-                            : 'Tidak ada tagihan pada kategori ini.',
+                            ? 'No results for "$_searchQuery".'
+                            : 'No invoices in this category.',
                         isDark,
                       )
                     else
@@ -584,12 +584,12 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                         dataRowMinHeight: 64,
                         dataRowMaxHeight: double.infinity,
                         columns: const [
-                          DataColumn(label: Text('Penghuni & Tagihan')),
-                          DataColumn(label: Text('Periode')),
-                          DataColumn(label: Text('Nominal'), numeric: true),
-                          DataColumn(label: Text('Jatuh Tempo')),
+                          DataColumn(label: Text('Resident & Invoice')),
+                          DataColumn(label: Text('Period')),
+                          DataColumn(label: Text('Amount'), numeric: true),
+                          DataColumn(label: Text('Due Date')),
                           DataColumn(label: Text('Status')),
-                          DataColumn(label: Text('Aksi')),
+                          DataColumn(label: Text('Action')),
                         ],
                         rows: paged.map((inv) {
                           final overdueSingle = _isOverdue(inv);
@@ -616,7 +616,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                                 ),
                                 if (overdueSingle)
                                   Text(
-                                    '${DateTime.now().difference(inv.dueDate).inDays} hari lalu',
+                                    '${DateTime.now().difference(inv.dueDate).inDays} days ago',
                                     style: TextStyle(fontSize: 11, color: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled),
                                   ),
                               ],
@@ -635,7 +635,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                               ),
                               const SizedBox(width: 8),
                               Tooltip(
-                                message: 'Cetak Nota PDF',
+                                message: 'Print Invoice PDF',
                                 child: IconButton(
                                   icon: Icon(Icons.print_outlined, size: 18, color: isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess),
                                   splashRadius: 20,

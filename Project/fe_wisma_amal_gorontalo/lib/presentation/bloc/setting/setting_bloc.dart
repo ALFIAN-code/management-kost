@@ -26,7 +26,7 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
       if (e is DioException) {
         emit(SettingError(e.response?.data['message'] ?? e.message));
       } else {
-        emit(SettingError('Terjadi kesalahan yang tidak terduga: ${e.toString()}'));
+        emit(SettingError('An unexpected error occurred: ${e.toString()}'));
       }
     }
   }
@@ -40,7 +40,7 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
       if (e is DioException) {
         emit(SettingError(e.response?.data['message'] ?? e.message));
       } else {
-        emit(SettingError('Gagal memperbarui pengaturan: ${e.toString()}'));
+        emit(SettingError('Failed to update settings: ${e.toString()}'));
       }
     }
   }

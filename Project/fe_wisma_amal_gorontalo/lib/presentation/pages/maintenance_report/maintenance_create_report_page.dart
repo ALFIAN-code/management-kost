@@ -139,11 +139,11 @@ class _CreateReportViewState extends State<_CreateReportView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Buat Laporan Kerusakan',
+                        'Create Damage Report',
                         style: theme.textTheme.headlineLarge,
                       ),
                       Text(
-                        'Laporkan kerusakan yang Anda temukan',
+                        'Report the damage you found',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -169,22 +169,22 @@ class _CreateReportViewState extends State<_CreateReportView> {
                             children: [
                               _SectionTitle(
                                 icon: Icons.info_outline_rounded,
-                                label: 'Informasi Kerusakan',
+                                label: 'Damage Information',
                               ),
                               const SizedBox(height: 20),
 
                               // Title
                               CustomTextForm(
-                                title: 'Judul Kerusakan',
-                                hintText: 'contoh: AC kamar tidak berfungsi',
+                                title: 'Damage Title',
+                                hintText: 'e.g. room air conditioner is not working',
                                 isRequired: true,
                                 controller: _titleController,
                                 validator: (v) {
                                   if (v == null || v.trim().isEmpty) {
-                                    return 'Judul wajib diisi';
+                                    return 'Title is required';
                                   }
                                   if (v.trim().length < 5) {
-                                    return 'Judul minimal 5 karakter';
+                                    return 'Title must be at least 5 characters';
                                   }
                                   return null;
                                 },
@@ -200,7 +200,7 @@ class _CreateReportViewState extends State<_CreateReportView> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Kamar',
+                                          'Room',
                                           style: theme.textTheme.titleSmall?.copyWith(
                                             fontWeight: FontWeight.w600,
                                             color: theme.colorScheme.onSurface,
@@ -212,7 +212,7 @@ class _CreateReportViewState extends State<_CreateReportView> {
                                             return DropdownButtonFormField<int>(
                                               value: _selectedRoomId,
                                               decoration: InputDecoration(
-                                                hintText: 'Pilih Kamar',
+                                                hintText: 'Select Room',
                                                 filled: true,
                                                 fillColor: theme.colorScheme.surface,
                                                 border: OutlineInputBorder(
@@ -232,7 +232,7 @@ class _CreateReportViewState extends State<_CreateReportView> {
                                               items: state.rooms.map((room) {
                                                 return DropdownMenuItem<int>(
                                                   value: room.id,
-                                                  child: Text(room.number ?? 'Kamar ${room.id}'),
+                                                  child: Text(room.number ?? 'Room ${room.id}'),
                                                 );
                                               }).toList(),
                                               onChanged: (val) {
@@ -250,7 +250,7 @@ class _CreateReportViewState extends State<_CreateReportView> {
                                   Expanded(
                                     child: CustomTextForm(
                                       title: 'Area / Spot',
-                                      hintText: 'Lorong Lt. 2',
+                                      hintText: '2nd Floor Corridor',
                                       controller: _locationController,
                                     ),
                                   ),
@@ -260,18 +260,18 @@ class _CreateReportViewState extends State<_CreateReportView> {
 
                               // Description
                               CustomTextForm(
-                                title: 'Deskripsi Kerusakan',
+                                title: 'Damage Description',
                                 hintText:
-                                    'Jelaskan kerusakan secara detail agar lebih mudah ditangani...',
+                                    'Describe the damage in detail so it is easier to handle...',
                                 isRequired: true,
                                 controller: _descriptionController,
                                 maxLines: 5,
                                 validator: (v) {
                                   if (v == null || v.trim().isEmpty) {
-                                    return 'Deskripsi wajib diisi';
+                                    return 'Description is required';
                                   }
                                   if (v.trim().length < 10) {
-                                    return 'Deskripsi minimal 10 karakter';
+                                    return 'Description must be at least 10 characters';
                                   }
                                   return null;
                                 },
@@ -290,7 +290,7 @@ class _CreateReportViewState extends State<_CreateReportView> {
                                 children: [
                                   _SectionTitle(
                                     icon: Icons.photo_library_outlined,
-                                    label: 'Foto Bukti Kerusakan',
+                                    label: 'Damage Proof Photos',
                                   ),
                                   const Spacer(),
                                   Text(
@@ -308,7 +308,7 @@ class _CreateReportViewState extends State<_CreateReportView> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Tambahkan foto untuk memperjelas kondisi kerusakan (opsional, maks. 6 foto)',
+                                'Add photos to clarify the damage (optional, max. 6 photos)',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
@@ -350,7 +350,7 @@ class _CreateReportViewState extends State<_CreateReportView> {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'Laporan akan segera diproses oleh tim pengelola. Periksa status laporan Anda secara berkala.',
+                                  'The report will be processed promptly by the management team. Check your report status regularly.',
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: Colors.blue.shade700,
                                     height: 1.5,
@@ -378,7 +378,7 @@ class _CreateReportViewState extends State<_CreateReportView> {
                                   height: 44,
                                   child: BasicButton(
                                     type: ButtonType.secondary,
-                                    label: 'Batal',
+                                    label: 'Cancel',
                                     onPressed: isLoading
                                         ? null
                                         : () => context.router.maybePop(),
@@ -389,7 +389,7 @@ class _CreateReportViewState extends State<_CreateReportView> {
                                   width: 170,
                                   height: 44,
                                   child: BasicButton(
-                                    label: 'Kirim Laporan',
+                                    label: 'Submit Report',
                                     isLoading: isLoading,
                                     onPressed: isLoading
                                         ? null
@@ -547,7 +547,7 @@ class _AddPhotoButton extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              'Tambah Foto',
+              'Add Photo',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w500,

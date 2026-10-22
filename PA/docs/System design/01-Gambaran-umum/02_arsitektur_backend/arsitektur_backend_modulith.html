@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arsitektur Backend - Modular Monolith</title>
+    <title>Arsitektur Backend - Modular Monolith NestJS</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -80,8 +80,8 @@
 <body>
 
     <div class="header">
-        <h1>Arsitektur Sistem Backend (Modular Monolith)</h1>
-        <p>Modul dipasang ke Module Gateway seperti komponen plug-and-play</p>
+        <h1>Arsitektur Sistem Backend (Modular Monolith NestJS)</h1>
+        <p>Sembilan modul terenkapsulasi pada @Module(), komunikasi lewat Module Gateway dan Event Bus</p>
     </div>
 
     <div class="toolbar">
@@ -113,24 +113,23 @@
         };
 
         const coreModules = [
-            ['M1', 'User & Access', 'SSO, RBAC, Keycloak Sync'],
-            ['M2', 'Property & Building', 'Tenant, scoping gedung'],
-            ['M3', 'Room Management', 'Master kamar, aset fisik'],
-            ['M4', 'Occupancy & Schedule', 'Linimasa sewa, row lock'],
-            ['M5', 'Occupancy Dashboard', 'KPI lintas gedung']
+            ['M1', 'Auth', 'users, user_profiles'],
+            ['M2', 'Building', 'buildings, building_settings'],
+            ['M3', 'Room', 'rooms, status dan harga'],
+            ['M4', 'Lease', 'leases, alokasi bulanan']
         ];
         const optModules = [
-            ['O1', 'Finance & Billing', 'Invoice, Midtrans, refund'],
-            ['O2', 'Maintenance', 'Tiket kerusakan, teknisi'],
-            ['O3', 'Asset & Inventory', 'Aset dan checklist'],
-            ['O4', 'Guest Logging', 'Buku tamu, biaya inap'],
-            ['O5', 'Notification', 'WhatsApp, in-app, audit']
+            ['O1', 'Finance', 'invoices, payments, fines'],
+            ['O2', 'Maintenance', 'damage_reports, tiket'],
+            ['O3', 'Guest', 'guests, buku tamu'],
+            ['O4', 'Inventory', 'inventories, aset'],
+            ['O5', 'Notification', 'notification_logs, WhatsApp']
         ];
         const gatewayItems = [
-            ['Query gateway', 'Baca, cek isActive'],
-            ['Event bus', 'Operasi tulis'],
+            ['Query gateway', 'Baca lintas modul'],
+            ['Event bus', 'Mutasi antar modul'],
             ['Module registry', 'Status modul aktif'],
-            ['Tenant scope', 'Scope building_id']
+            ['Tenant scope', 'Filter building_id']
         ];
 
         function el(tag, attrs) {
@@ -229,14 +228,14 @@
             const leftX = 100, rightX = 840, cardW = 300, cardH = 52, rowGap = 64, rowY0 = 380;
 
             // ---------- 1. KLIEN ----------
-            box(nodes, 530, 36, 180, 50, 'Flutter App', '(Mobile client)', C.client, 25);
+            box(nodes, 530, 36, 180, 50, 'Flutter Web', '(3 dasbor peran)', C.client, 25);
             box(nodes, 810, 36, 180, 50, 'AI Assistant', '(LLM Client)', C.client, 25);
 
             // ---------- 2. ADAPTER ----------
             container(back, 230, 124, 780, 98, { dashed: true });
             text(back, 994, 141, 'Interface adapters / gateways', { size: 12, fill: C.laneText, anchor: 'end' });
-            box(nodes, 250, 160, 180, 50, 'Keycloak IAM', 'External SSO', C.ext);
-            box(nodes, 530, 160, 180, 50, 'REST API', 'Sanctum / Guard', C.adapter);
+            box(nodes, 250, 160, 180, 50, 'Keycloak IAM', 'OpenID Connect', C.ext);
+            box(nodes, 530, 160, 180, 50, 'REST API', 'NestJS Guard, JWT', C.adapter);
             box(nodes, 810, 160, 180, 50, 'MCP Server', 'JSON-RPC Adapter', C.adapter);
 
             link(lines, 'M620 86 V160');
@@ -248,7 +247,7 @@
 
             // adapter -> gateway
             link(lines, 'M340 210 V290 H540 V330', { dashed: true });
-            label(lines, 348, 258, 'sync user');
+            label(lines, 348, 258, 'verifikasi JWT');
             link(lines, 'M620 210 V330');
             label(lines, 628, 270, 'read & write');
             link(lines, 'M900 210 V290 H700 V330', { dashed: true });
@@ -263,19 +262,25 @@
 
             // ---------- 4. GRUP TIER ----------
             container(back, 70, 340, 360, 368, { fill: 'rgba(15,110,86,0.10)', stroke: 'rgb(15,110,86)', dashed: true });
-            text(back, 90, 358, 'Tier core, always-on', { size: 13, weight: 600, fill: '#5fd0b0', anchor: 'start' });
+            text(back, 90, 358, 'Tier inti (infrastruktur & domain core)', { size: 13, weight: 600, fill: '#5fd0b0', anchor: 'start' });
             container(back, 810, 340, 360, 368, { fill: 'rgba(153,60,29,0.12)', stroke: 'rgb(153,60,29)', dashed: true });
-            text(back, 830, 358, 'Tier opsional, bisa di-toggle', { size: 13, weight: 600, fill: '#f0997b', anchor: 'start' });
+            text(back, 830, 358, 'Tier bisnis, fitur opsional per gedung', { size: 13, weight: 600, fill: '#f0997b', anchor: 'start' });
 
             // socket dulu, lalu plug, lalu kartu modul
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 4; i++) {
                 const cy = rowY0 + i * rowGap + cardH / 2;
                 socket(nodes, GX, cy);
-                socket(nodes, GR, cy);
             }
             for (let i = 0; i < 5; i++) {
                 const cy = rowY0 + i * rowGap + cardH / 2;
+                socket(nodes, GR, cy);
+            }
+            for (let i = 0; i < 4; i++) {
+                const cy = rowY0 + i * rowGap + cardH / 2;
                 plug(nodes, GX, leftX + cardW, cy, C.core);
+            }
+            for (let i = 0; i < 5; i++) {
+                const cy = rowY0 + i * rowGap + cardH / 2;
                 plug(nodes, GR, rightX, cy, C.optional);
             }
             coreModules.forEach((m, i) => moduleCard(nodes, leftX, rowY0 + i * rowGap, cardW, cardH, m[0], m[1], m[2], C.core, false));
@@ -294,13 +299,13 @@
             link(lines, 'M715 862 V912', { dashed: true });
             box(nodes, 440, 912, 170, 52, 'Midtrans API', 'Payment Gateway', C.ext);
             box(nodes, 630, 912, 170, 52, 'WhatsApp / Email', 'Provider notifikasi', C.ext);
-            text(back, 620, 990, 'Ganti provider: tambah adapter + ubah .env, kode modul tidak berubah', { size: 12, fill: C.laneText });
+            text(back, 620, 990, 'Ganti provider: tambah adapter + ubah konfigurasi, kode modul tidak berubah', { size: 12, fill: C.laneText });
 
             // ---------- 6. DATABASE ----------
             link(lines, 'M330 708 V1016', { both: true });
-            label(lines, 338, 760, 'schema core');
+            label(lines, 338, 760, 'tabel inti');
             link(lines, 'M910 708 V1016', { both: true });
-            label(lines, 918, 760, 'schema opsional');
+            label(lines, 918, 760, 'tabel bisnis');
 
             const dbX = 300, dbY = 1020, dbW = 640, dbH = 100, ry = 14;
             const db = el('g', {});
@@ -309,8 +314,8 @@
                 fill: C.db.bg, stroke: C.db.stroke, 'stroke-width': 1.5
             }));
             db.appendChild(el('ellipse', { cx: dbX + dbW / 2, cy: dbY + ry, rx: dbW / 2, ry, fill: C.db.bg, stroke: C.db.stroke, 'stroke-width': 1.5 }));
-            text(db, dbX + dbW / 2, dbY + 52, 'MySQL Database', { size: 16, weight: 600, fill: '#0e7490' });
-            text(db, dbX + dbW / 2, dbY + 74, 'Logical schema separation per module', { size: 12, fill: C.db.t2 });
+            text(db, dbX + dbW / 2, dbY + 52, 'PostgreSQL', { size: 16, weight: 600, fill: '#0e7490' });
+            text(db, dbX + dbW / 2, dbY + 74, '13 tabel domain, penyaring building_id, nol FK lintas modul', { size: 12, fill: C.db.t2 });
             nodes.appendChild(db);
 
             // ---------- 7. LEGENDA ----------

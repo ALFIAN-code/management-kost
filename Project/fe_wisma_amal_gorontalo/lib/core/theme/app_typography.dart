@@ -5,7 +5,7 @@ class AppTypography {
   const AppTypography._();
 
   // ==================== DISPLAY ====================
-  // Untuk judul halaman utama seperti "Dashboard"
+  // For main page titles like "Dashboard"
   static const TextStyle displayLarge = TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.w700,
@@ -43,7 +43,7 @@ class AppTypography {
   );
 
   // ==================== HEADLINE ====================
-  // Untuk section headers seperti "Jadwal Perawatan", "Laporan kerusakan"
+  // For section headers like "Maintenance Schedule", "Damage Report"
   static const TextStyle headlineLarge = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w700,
@@ -99,7 +99,7 @@ class AppTypography {
   );
 
   // ==================== TITLE ====================
-  // Untuk card titles, dialog titles
+  // For card titles, dialog titles
   static const TextStyle titleLarge = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w600,
@@ -155,7 +155,7 @@ class AppTypography {
   );
 
   // ==================== BODY ====================
-  // Untuk konten utama, paragraphs, deskripsi
+  // For main content, paragraphs, descriptions
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
@@ -211,7 +211,7 @@ class AppTypography {
   );
 
   // ==================== LABEL ====================
-  // Untuk buttons, chips, tabs, table headers
+  // For buttons, chips, tabs, table headers
   static const TextStyle labelLarge = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
@@ -276,9 +276,9 @@ class AppTypography {
   );
 
   // ==================== SPECIALIZED ====================
-  // Untuk kebutuhan khusus dari mockup
+  // For specific mockup needs
 
-  // Untuk angka besar di stats cards (10, 3, dll)
+  // For large numbers in stats cards (10, 3, etc.)
   static const TextStyle statsNumber = TextStyle(
     fontSize: 48,
     fontWeight: FontWeight.w700,
@@ -297,7 +297,7 @@ class AppTypography {
     fontFamily: 'Inter',
   );
 
-  // Untuk label di stats cards ("Laporan Kerusakan", etc)
+  // For labels in stats cards ("Damage Report", etc.)
   static const TextStyle statsLabel = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w500,
@@ -316,7 +316,7 @@ class AppTypography {
     fontFamily: 'Inter',
   );
 
-  // Untuk table headers
+  // For table headers
   static const TextStyle tableHeader = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w600,
@@ -335,7 +335,7 @@ class AppTypography {
     fontFamily: 'Inter',
   );
 
-  // Untuk table cells
+  // For table cells
   static const TextStyle tableCell = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,
@@ -354,7 +354,7 @@ class AppTypography {
     fontFamily: 'Inter',
   );
 
-  // Untuk menu sidebar
+  // For sidebar menu
   static const TextStyle menuItem = TextStyle(
     fontSize: 15,
     fontWeight: FontWeight.w500,
@@ -391,7 +391,7 @@ class AppTypography {
     fontFamily: 'Inter',
   );
 
-  // Untuk caption/timestamp seperti "20-05-2025 05.50 WIB"
+  // For caption/timestamp like "20-05-2025 05.50 WIB"
   static const TextStyle caption = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
@@ -410,7 +410,7 @@ class AppTypography {
     fontFamily: 'Inter',
   );
 
-  // Untuk nama user di card seperti "susi susanti"
+  // For user name in card like "susi susanti"
   static const TextStyle userName = TextStyle(
     fontSize: 15,
     fontWeight: FontWeight.w600,
@@ -429,7 +429,7 @@ class AppTypography {
     fontFamily: 'Inter',
   );
 
-  // Untuk detail info seperti "kamar 201"
+  // For info details like "room 201"
   static const TextStyle infoDetail = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w400,

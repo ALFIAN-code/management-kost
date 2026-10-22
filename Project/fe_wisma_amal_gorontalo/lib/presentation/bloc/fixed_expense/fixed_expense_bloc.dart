@@ -29,7 +29,7 @@ class FixedExpenseBloc extends Bloc<FixedExpenseEvent, FixedExpenseState> {
   Future<void> _onFetch(FetchFixedExpenses event, Emitter<FixedExpenseState> emit) async {
     emit(FixedExpenseLoading());
     try {
-      // Auto-generate entri bulan ini terlebih dahulu (idempotent)
+      // Auto-generate this month's entries first (idempotent)
       await generateFixedExpenses.execute();
 
       final entries = await getFixedExpenses.execute(
@@ -56,7 +56,7 @@ class FixedExpenseBloc extends Bloc<FixedExpenseEvent, FixedExpenseState> {
   Future<void> _onUpdate(UpdateFixedExpense event, Emitter<FixedExpenseState> emit) async {
     try {
       await updateFixedExpense.execute(event.id, event.amount, event.notes);
-      emit(FixedExpenseOperationSuccess('Pengeluaran tetap berhasil diperbarui.'));
+      emit(FixedExpenseOperationSuccess('Fixed expense updated successfully.'));
     } catch (e) {
       emit(FixedExpenseError(_errorMessage(e)));
     }
@@ -66,7 +66,7 @@ class FixedExpenseBloc extends Bloc<FixedExpenseEvent, FixedExpenseState> {
     try {
       await generateFixedExpenses.execute(bulan: event.bulan, tahun: event.tahun);
     } catch (_) {
-      // silent — generate bersifat optional/idempotent
+      // silent — generate is optional/idempotent
     }
   }
 

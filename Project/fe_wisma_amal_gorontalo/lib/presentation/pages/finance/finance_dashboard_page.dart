@@ -51,31 +51,32 @@ class _FinanceDashboardPageState extends State<FinanceDashboardPage> {
   int? _selectedMonth = DateTime.now().month;
 
   static final _currencyFmt =
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
-  static final _dateFmt = DateFormat('d MMM yyyy', 'id_ID');
+      NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0);
+  static final _dateFmt = DateFormat('d MMM yyyy', 'en_US');
 
   String _formatRupiah(double amount) => _currencyFmt.format(amount);
 
   String _compact(double value) {
     if (value >= 1000000000) {
-      return '${(value / 1000000000).toStringAsFixed(1)}M';
+      return '${(value / 1000000000).toStringAsFixed(1)}B';
     } else if (value >= 1000000) {
       final v = value / 1000000;
-      return '${v % 1 == 0 ? v.toInt() : v.toStringAsFixed(1)}jt';
+      return '${v % 1 == 0 ? v.toInt() : v.toStringAsFixed(1)}M';
     } else if (value >= 1000) {
       final v = value / 1000;
-      return '${v % 1 == 0 ? v.toInt() : v.toStringAsFixed(0)}rb';
+      return '${v % 1 == 0 ? v.toInt() : v.toStringAsFixed(0)}K';
     }
     return value.toInt().toString();
   }
 
   String get _periodLabel {
     if (_selectedYear != null && _selectedMonth != null) {
-      return 'Bulan ${DateFormat('MMMM yyyy', 'id_ID').format(DateTime(_selectedYear!, _selectedMonth!))}';
+      return DateFormat('MMMM yyyy', 'en_US')
+          .format(DateTime(_selectedYear!, _selectedMonth!));
     } else if (_selectedYear != null) {
-      return 'Tahun $_selectedYear';
+      return 'Year $_selectedYear';
     }
-    return 'Semua Periode';
+    return 'All Periods';
   }
 
   @override
@@ -112,8 +113,8 @@ class _FinanceDashboardPageState extends State<FinanceDashboardPage> {
         body: Column(
           children: [
             AppTopBar(
-              title: 'Dashboard Keuangan',
-              breadcrumb: 'Keuangan / Dashboard',
+              title: 'Finance Dashboard',
+              breadcrumb: 'Finance / Dashboard',
               action: ElevatedButton.icon(
                 onPressed: _applyFilter,
                 icon: const Icon(Icons.refresh, size: 18),
@@ -129,12 +130,12 @@ class _FinanceDashboardPageState extends State<FinanceDashboardPage> {
                   if (state is FinanceDashboardError) {
                     return EmptyStateWidget(
                       icon: Icons.error_outline_rounded,
-                      title: 'Gagal memuat data',
+                      title: 'Failed to load data',
                       subtitle: state.message,
                       action: ElevatedButton.icon(
                         onPressed: _applyFilter,
                         icon: const Icon(Icons.refresh_rounded, size: 18),
-                        label: const Text('Coba Lagi'),
+                        label: const Text('Try Again'),
                       ),
                     );
                   }
@@ -355,23 +356,23 @@ class _DashboardContent extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _sectionTitle(context, 'Ringkasan Keuangan', isDark),
+            _sectionTitle(context, 'Financial Summary', isDark),
             const Spacer(),
             _DashboardFilterDropdown<int?>(
-              hint: 'Semua Tahun',
+              hint: 'All Years',
               value: selectedYear,
               items: [null, ...List.generate(6, (i) => DateTime.now().year - i)],
-              labelBuilder: (v) => v == null ? 'Semua Tahun' : '$v',
+              labelBuilder: (v) => v == null ? 'All Years' : '$v',
               onChanged: onYearChanged,
             ),
             const SizedBox(width: AppSpacing.sm),
             _DashboardFilterDropdown<int?>(
-              hint: 'Semua Bulan',
+              hint: 'All Months',
               value: selectedMonth,
               items: [null, ...List.generate(12, (i) => i + 1)],
               labelBuilder: (v) => v == null
-                  ? 'Semua Bulan'
-                  : DateFormat('MMMM', 'id_ID').format(DateTime(0, v)),
+                  ? 'All Months'
+                  : DateFormat('MMMM', 'en_US').format(DateTime(0, v)),
               onChanged: onMonthChanged,
             ),
             if (!_isDefaultPeriod) ...[
@@ -397,14 +398,14 @@ class _DashboardContent extends StatelessWidget {
         const SizedBox(height: AppSpacing.xxxl),
 
         // ── Revenue Chart ─────────────────────────────────────────────────
-        _sectionTitle(context, 'Pendapatan 6 Bulan Terakhir', isDark),
+        _sectionTitle(context, 'Revenue Last 6 Months', isDark),
         const SizedBox(height: AppSpacing.lg),
         _RevenueChart(chartData: revenueChart, compact: compact)
             .animate().fadeIn(delay: 100.ms, duration: 300.ms),
         const SizedBox(height: AppSpacing.xxxl),
 
         // ── Due Invoices ──────────────────────────────────────────────────
-        _sectionTitle(context, 'Tagihan Jatuh Tempo', isDark),
+        _sectionTitle(context, 'Due Invoices', isDark),
         const SizedBox(height: AppSpacing.lg),
         _DueInvoicesTable(
           invoices: dueInvoices,
@@ -415,7 +416,7 @@ class _DashboardContent extends StatelessWidget {
         const SizedBox(height: AppSpacing.xxxl),
 
         // ── Pending Payments ──────────────────────────────────────────────
-        _sectionTitle(context, 'Pembayaran Perlu Konfirmasi', isDark),
+        _sectionTitle(context, 'Payments Awaiting Confirmation', isDark),
         const SizedBox(height: AppSpacing.lg),
         _PendingPaymentsTable(
           payments: pendingPayments,
@@ -445,8 +446,8 @@ class _KpiGrid extends StatelessWidget {
   final String periodLabel;
 
   static const _bulanNames = [
-    '', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-    'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des',
+    '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
 
   @override
@@ -484,7 +485,7 @@ class _KpiGrid extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(child: SummaryStatCard(
-                    label: 'Total Pendapatan',
+                    label: 'Total Revenue',
                     value: formatRupiah(kpi.totalRevenue),
                     icon: Icons.account_balance_wallet_rounded,
                     iconColor: isDark ? AppColorsDark.conditionGood : AppColorsLight.conditionGood,
@@ -493,7 +494,7 @@ class _KpiGrid extends StatelessWidget {
                   )),
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(child: SummaryStatCard(
-                    label: 'Total Pengeluaran',
+                    label: 'Total Expenses',
                     value: formatRupiah(kpi.totalExpense),
                     icon: Icons.trending_down_rounded,
                     iconColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
@@ -502,18 +503,18 @@ class _KpiGrid extends StatelessWidget {
                   )),
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(child: SummaryStatCard(
-                    label: 'Laba Bersih',
+                    label: 'Net Profit',
                     value: formatRupiah(kpi.netProfit),
                     icon: isProfit ? Icons.trending_up_rounded : Icons.trending_down_rounded,
                     iconColor: profitIconColor,
                     iconBg: profitIconBg,
-                    trend: isProfit ? 'Surplus' : 'Defisit',
+                    trend: isProfit ? 'Surplus' : 'Deficit',
                     trendColor: profitIconColor,
                     valueColor: profitIconColor,
                   )),
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(child: SummaryStatCard(
-                    label: 'Tagihan Belum Bayar',
+                    label: 'Unpaid Invoices',
                     value: formatRupiah(kpi.dueInvoicesTotal),
                     icon: Icons.money_off_rounded,
                     iconColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
@@ -530,16 +531,16 @@ class _KpiGrid extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(child: SummaryStatCard(
-                    label: 'Jatuh Tempo',
-                    value: '${kpi.dueInvoicesCount} Tagihan',
+                    label: 'Due',
+                    value: '${kpi.dueInvoicesCount} Invoices',
                     icon: Icons.receipt_long_rounded,
                     iconColor: isDark ? AppColorsDark.conditionFair : AppColorsLight.conditionFair,
                     iconBg: isDark ? AppColorsDark.statusWaitingBg : AppColorsLight.statusWaitingBg,
                   )),
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(child: SummaryStatCard(
-                    label: 'Perlu Konfirmasi',
-                    value: '${kpi.pendingPaymentsCount} Transaksi',
+                    label: 'Awaiting Confirmation',
+                    value: '${kpi.pendingPaymentsCount} Transactions',
                     icon: Icons.hourglass_top_rounded,
                     iconColor: isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess,
                     iconBg: isDark ? AppColorsDark.statusProcessBg : AppColorsLight.statusProcessBg,
@@ -571,7 +572,7 @@ class _KpiGrid extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(child: SummaryStatCard(
-                    label: 'Total Terkumpul (Midtrans)',
+                    label: 'Total Collected (Midtrans)',
                     value: isLoading ? '–' : (midtrans != null ? formatRupiah(midtrans.totalSettlement) : '–'),
                     icon: Icons.account_balance_wallet_rounded,
                     iconColor: isDark ? AppColorsDark.conditionGood : AppColorsLight.conditionGood,
@@ -584,7 +585,7 @@ class _KpiGrid extends StatelessWidget {
                   Expanded(child: SummaryStatCard(
                     label: bulanLabel.isNotEmpty && midtrans != null
                         ? 'Settlement $bulanLabel ${midtrans.tahun}'
-                        : 'Settlement Bulan Ini',
+                        : 'Settlement This Month',
                     value: isLoading
                         ? '–'
                         : (midtrans != null && bulanLabel.isNotEmpty
@@ -626,7 +627,7 @@ class _RevenueChart extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
         child: Center(
           child: Text(
-            'Belum ada data pendapatan.',
+            'No revenue data yet.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -648,8 +649,8 @@ class _RevenueChart extends StatelessWidget {
             runSpacing: 6,
             children: [
               _ChartLegendDot(color: _kColorRevenue, label: 'Total'),
-              _ChartLegendDot(color: _kColorMonthly, label: 'Sewa Bulanan'),
-              _ChartLegendDot(color: _kColorDaily, label: 'Sewa Harian'),
+              _ChartLegendDot(color: _kColorMonthly, label: 'Monthly Lease'),
+              _ChartLegendDot(color: _kColorDaily, label: 'Daily Lease'),
             ],
           ),
           const SizedBox(height: 16),
@@ -719,9 +720,9 @@ class _RevenueBar extends StatelessWidget {
         : (ratio * chartHeight).clamp(4.0, chartHeight);
 
     return Tooltip(
-      message: 'Total: ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(data.total)}'
-          '\nBulanan: ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(data.monthlyRentTotal)}'
-          '\nHarian: ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(data.dailyRentTotal)}',
+      message: 'Total: ${NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0).format(data.total)}'
+          '\nMonthly: ${NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0).format(data.monthlyRentTotal)}'
+          '\nDaily: ${NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0).format(data.dailyRentTotal)}',
       preferBelow: false,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -813,7 +814,7 @@ class _DueInvoicesTable extends StatelessWidget {
           ),
         ),
         child: Text(
-          'Tidak ada tagihan yang jatuh tempo. Semua lancar!',
+          'No invoices are due. All clear!',
           style: TextStyle(
             color: isDark ? AppColorsDark.textSecondary : AppColorsLight.textSecondary,
           ),
@@ -823,10 +824,10 @@ class _DueInvoicesTable extends StatelessWidget {
 
     return AppDataTable(
       columns: const [
-        DataColumn(label: Text('No Tagihan')),
-        DataColumn(label: Text('Jumlah')),
-        DataColumn(label: Text('Jatuh Tempo')),
-        DataColumn(label: Text('Aksi')),
+        DataColumn(label: Text('Invoice No.')),
+        DataColumn(label: Text('Amount')),
+        DataColumn(label: Text('Due Date')),
+        DataColumn(label: Text('Action')),
       ],
       rows: invoices.map((inv) {
         final isOverdue = inv.dueDate.isBefore(DateTime.now());
@@ -880,7 +881,7 @@ class _RemindButton extends StatelessWidget {
       onPressed: () {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Pengingat untuk $invoiceNumber akan segera hadir.'),
+            content: Text('A reminder for $invoiceNumber will be sent soon.'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -893,7 +894,7 @@ class _RemindButton extends StatelessWidget {
         textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      child: const Text('Ingatkan'),
+      child: const Text('Remind'),
     );
   }
 }
@@ -925,7 +926,7 @@ class _PendingPaymentsTable extends StatelessWidget {
           ),
         ),
         child: Text(
-          'Belum ada pembayaran yang menunggu konfirmasi.',
+          'No payments awaiting confirmation.',
           style: TextStyle(
             color: isDark ? AppColorsDark.textSecondary : AppColorsLight.textSecondary,
           ),
@@ -935,10 +936,10 @@ class _PendingPaymentsTable extends StatelessWidget {
 
     return AppDataTable(
       columns: const [
-        DataColumn(label: Text('ID Transaksi')),
+        DataColumn(label: Text('Transaction ID')),
         DataColumn(label: Text('Invoice')),
-        DataColumn(label: Text('Metode')),
-        DataColumn(label: Text('Jumlah')),
+        DataColumn(label: Text('Method')),
+        DataColumn(label: Text('Amount')),
         DataColumn(label: Text('Status')),
       ],
       rows: payments.map((p) => DataRow(cells: [

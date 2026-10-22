@@ -26,7 +26,7 @@ class FinanceDatabaseSeeder extends Seeder
         $schedules = Schedule::with('room')->where('type', 'sewa')->get();
 
         if ($schedules->isEmpty()) {
-            $this->command->warn('Tidak ada data schedule sewa. Jalankan DummyDataSeeder terlebih dahulu.');
+            $this->command->warn('No lease schedule data found. Run DummyDataSeeder first.');
 
             return;
         }
@@ -194,7 +194,7 @@ class FinanceDatabaseSeeder extends Seeder
                 [
                     'payment_method' => 'manual',
                     'payment_proof_path' => 'proofs/bukti_blur.jpg',
-                    'admin_notes' => 'Bukti transfer tidak terbaca / buram. Mohon upload ulang bukti yang lebih jelas.',
+                    'admin_notes' => 'The transfer proof is unreadable or blurry. Please upload a clearer proof.',
                     'created_at' => $rejectedAt,
                     'updated_at' => $rejectedAt->copy()->addHours(1),
                 ]
@@ -216,32 +216,32 @@ class FinanceDatabaseSeeder extends Seeder
          */
         $expenseTemplates = [
             // ── UTILITAS ──────────────────────────────────────────────────
-            ['title' => 'Tagihan Listrik PLN', 'min' => 850_000,  'max' => 1_200_000, 'freq' => 'monthly', 'desc' => 'Pembayaran tagihan listrik PLN untuk seluruh area wisma.'],
-            ['title' => 'Tagihan Air PDAM',    'min' => 180_000,  'max' => 320_000,   'freq' => 'monthly', 'desc' => 'Pembayaran tagihan air PDAM bulan berjalan.'],
-            ['title' => 'Biaya Internet Indihome', 'min' => 350_000, 'max' => 350_000, 'freq' => 'monthly', 'desc' => 'Berlangganan internet IndiHome 50 Mbps untuk fasilitas bersama.'],
+            ['title' => 'PLN Electricity Bill', 'min' => 850_000,  'max' => 1_200_000, 'freq' => 'monthly', 'desc' => 'Payment of the PLN electricity bill for the entire boarding house area.'],
+            ['title' => 'PDAM Water Bill',    'min' => 180_000,  'max' => 320_000,   'freq' => 'monthly', 'desc' => 'Payment of the PDAM water bill for the current month.'],
+            ['title' => 'IndiHome Internet Cost', 'min' => 350_000, 'max' => 350_000, 'freq' => 'monthly', 'desc' => 'Subscription to the 50 Mbps IndiHome internet for common facilities.'],
 
             // ── PERAWATAN & PERBAIKAN ──────────────────────────────────────
-            ['title' => 'Servis AC Kamar',          'min' => 150_000, 'max' => 350_000, 'freq' => 'occasional', 'desc' => 'Servis dan isi freon AC di beberapa kamar.'],
-            ['title' => 'Perbaikan Keran Bocor',     'min' => 75_000,  'max' => 200_000, 'freq' => 'occasional', 'desc' => 'Biaya tukang dan material untuk perbaikan keran bocor di kamar mandi.'],
-            ['title' => 'Penggantian Lampu & Fitting', 'min' => 50_000, 'max' => 150_000, 'freq' => 'occasional', 'desc' => 'Pembelian lampu LED dan fitting untuk menggantikan yang rusak.'],
-            ['title' => 'Perbaikan Kunci Pintu Kamar', 'min' => 80_000, 'max' => 180_000, 'freq' => 'occasional', 'desc' => 'Biaya tukang kunci untuk perbaikan atau penggantian kunci pintu.'],
-            ['title' => 'Cat Dinding & Material',     'min' => 300_000, 'max' => 800_000, 'freq' => 'rare', 'desc' => 'Pengecatan ulang dinding kamar atau area koridor yang mulai kusam.'],
+            ['title' => 'Room AC Servicing',          'min' => 150_000, 'max' => 350_000, 'freq' => 'occasional', 'desc' => 'Servicing and freon refilling of the AC units in several rooms.'],
+            ['title' => 'Leaking Faucet Repair',     'min' => 75_000,  'max' => 200_000, 'freq' => 'occasional', 'desc' => 'Repairman fees and materials for fixing a leaking faucet in the bathroom.'],
+            ['title' => 'Lamp and Fitting Replacement', 'min' => 50_000, 'max' => 150_000, 'freq' => 'occasional', 'desc' => 'Purchase of LED lamps and fittings to replace the broken ones.'],
+            ['title' => 'Room Door Lock Repair', 'min' => 80_000, 'max' => 180_000, 'freq' => 'occasional', 'desc' => 'Locksmith fees for repairing or replacing door locks.'],
+            ['title' => 'Wall Painting & Materials',     'min' => 300_000, 'max' => 800_000, 'freq' => 'rare', 'desc' => 'Repainting the room walls or corridor areas that have started to fade.'],
 
             // ── KEBERSIHAN ─────────────────────────────────────────────────
-            ['title' => 'Perlengkapan Kebersihan', 'min' => 120_000, 'max' => 250_000, 'freq' => 'bimonthly', 'desc' => 'Pembelian sabun, cairan pembersih, sapu, dan perlengkapan kebersihan lainnya.'],
-            ['title' => 'Upah Petugas Kebersihan',  'min' => 400_000, 'max' => 600_000, 'freq' => 'monthly',  'desc' => 'Honorarium petugas kebersihan harian untuk area umum.'],
-            ['title' => 'Pewangi Ruangan & Kamar Mandi', 'min' => 50_000, 'max' => 120_000, 'freq' => 'bimonthly', 'desc' => 'Pengharum ruangan dan kamar mandi untuk kenyamanan penghuni.'],
+            ['title' => 'Cleaning Supplies', 'min' => 120_000, 'max' => 250_000, 'freq' => 'bimonthly', 'desc' => 'Purchase of soap, cleaning liquid, brooms, and other cleaning supplies.'],
+            ['title' => 'Cleaning Staff Wages',  'min' => 400_000, 'max' => 600_000, 'freq' => 'monthly',  'desc' => 'Daily honorarium for the cleaning staff in charge of the common areas.'],
+            ['title' => 'Room & Bathroom Air Freshener', 'min' => 50_000, 'max' => 120_000, 'freq' => 'bimonthly', 'desc' => 'Air fresheners for the rooms and bathrooms for resident comfort.'],
 
             // ── PERLENGKAPAN & INVENTARIS ──────────────────────────────────
-            ['title' => 'Pembelian Bantal & Guling', 'min' => 200_000, 'max' => 500_000, 'freq' => 'rare', 'desc' => 'Penggantian bantal dan guling yang sudah tidak layak pakai.'],
-            ['title' => 'Penambahan Rak Handuk Kamar Mandi', 'min' => 90_000, 'max' => 220_000, 'freq' => 'rare', 'desc' => 'Pemasangan rak handuk baru di beberapa kamar mandi.'],
-            ['title' => 'Pembelian Sabun Cuci Umum', 'min' => 35_000,  'max' => 80_000,  'freq' => 'bimonthly', 'desc' => 'Sabun cuci untuk area laundry/cuci bersama.'],
+            ['title' => 'Pillow & Bolster Purchase', 'min' => 200_000, 'max' => 500_000, 'freq' => 'rare', 'desc' => 'Replacement of the pillows and bolsters that are no longer fit for use.'],
+            ['title' => 'Additional Bathroom Towel Rack', 'min' => 90_000, 'max' => 220_000, 'freq' => 'rare', 'desc' => 'Installation of new towel racks in several bathrooms.'],
+            ['title' => 'Shared Laundry Detergent Purchase', 'min' => 35_000,  'max' => 80_000,  'freq' => 'bimonthly', 'desc' => 'Detergent for the shared laundry area.'],
 
             // ── ADMINISTRASI & LAIN-LAIN ───────────────────────────────────
-            ['title' => 'Biaya ATK & Administrasi', 'min' => 30_000,  'max' => 100_000, 'freq' => 'monthly',   'desc' => 'Pembelian alat tulis kantor dan kebutuhan administrasi.'],
-            ['title' => 'Snack & Konsumsi Rapat',   'min' => 80_000,  'max' => 200_000, 'freq' => 'occasional', 'desc' => 'Konsumsi rapat bulanan pengelola wisma.'],
-            ['title' => 'Biaya Parkir & Transportasi', 'min' => 20_000, 'max' => 75_000, 'freq' => 'monthly', 'desc' => 'Biaya transportasi untuk keperluan operasional wisma.'],
-            ['title' => 'Iuran Keamanan Lingkungan', 'min' => 100_000, 'max' => 100_000, 'freq' => 'monthly', 'desc' => 'Iuran keamanan warga untuk keamanan lingkungan wisma.'],
+            ['title' => 'Office Supplies & Administration Cost', 'min' => 30_000,  'max' => 100_000, 'freq' => 'monthly',   'desc' => 'Purchase of office stationery and administrative needs.'],
+            ['title' => 'Snacks & Meeting Refreshments',   'min' => 80_000,  'max' => 200_000, 'freq' => 'occasional', 'desc' => 'Refreshments for the monthly boarding house management meeting.'],
+            ['title' => 'Parking & Transportation Cost', 'min' => 20_000, 'max' => 75_000, 'freq' => 'monthly', 'desc' => 'Transportation costs for the boarding house operations.'],
+            ['title' => 'Neighborhood Security Fee', 'min' => 100_000, 'max' => 100_000, 'freq' => 'monthly', 'desc' => 'Residents security dues for the security of the boarding house area.'],
         ];
 
         $expenseSeq = 1;

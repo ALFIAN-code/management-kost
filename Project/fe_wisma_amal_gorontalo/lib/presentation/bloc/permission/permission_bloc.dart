@@ -42,7 +42,7 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionState> {
         ),
       );
     } on AppException catch (e) {
-      AppSnackbar.showError('Gagal memuat izin: ${e.message}');
+      AppSnackbar.showError('Failed to load permissions: ${e.message}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -69,12 +69,12 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionState> {
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.success,
-          successMessage: "Berhasil menambah izin",
+          successMessage: "Permission added successfully",
         ),
       );
-      add(GetPermissionsEvent()); // Refresh data setelah tambah
+      add(GetPermissionsEvent()); // Refresh data after add
     } on AppException catch (e) {
-      AppSnackbar.showError('Gagal menambah izin: ${e.message}');
+      AppSnackbar.showError('Failed to add permission: ${e.message}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -101,12 +101,12 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionState> {
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.success,
-          successMessage: "Berhasil memperbarui izin",
+          successMessage: "Permission updated successfully",
         ),
       );
-      add(GetPermissionsEvent()); // Refresh data setelah update
+      add(GetPermissionsEvent()); // Refresh data after update
     } on AppException catch (e) {
-      AppSnackbar.showError('Gagal memperbarui izin: ${e.message}');
+      AppSnackbar.showError('Failed to update permission: ${e.message}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -134,13 +134,13 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionState> {
         emit(
           state.copyWith(
             status: FormzSubmissionStatus.success,
-            successMessage: "Berhasil menghapus izin",
+            successMessage: "Permission deleted successfully",
           ),
         );
-        add(GetPermissionsEvent()); // Refresh data setelah hapus
+        add(GetPermissionsEvent()); // Refresh data after delete
       }
     } on AppException catch (e) {
-      AppSnackbar.showError('Gagal menghapus izin: ${e.message}');
+      AppSnackbar.showError('Failed to delete permission: ${e.message}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,

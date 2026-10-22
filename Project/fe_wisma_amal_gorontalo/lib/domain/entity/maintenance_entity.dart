@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// ─── Tipe Perawatan ───
+// ─── Maintenance Type ───
 
 enum MaintenanceType {
   pembersihan,
@@ -9,17 +9,19 @@ enum MaintenanceType {
   String get displayName {
     switch (this) {
       case MaintenanceType.pembersihan:
-        return 'Pembersihan';
+        return 'Cleaning';
       case MaintenanceType.perawatan:
-        return 'Perawatan';
+        return 'Maintenance';
     }
   }
 
   static MaintenanceType fromString(String value) {
     switch (value.toLowerCase()) {
       case 'pembersihan':
+      case 'cleaning':
         return MaintenanceType.pembersihan;
       case 'perawatan':
+      case 'maintenance':
         return MaintenanceType.perawatan;
       default:
         throw ArgumentError('Invalid maintenance type: $value');
@@ -30,7 +32,7 @@ enum MaintenanceType {
       MaintenanceType.values.map((e) => e.displayName).toList();
 }
 
-// ─── Subtipe Perawatan ───
+// ─── Maintenance Subtype ───
 
 enum MaintenanceSubtype {
   rutin,
@@ -42,27 +44,30 @@ enum MaintenanceSubtype {
   String get displayName {
     switch (this) {
       case MaintenanceSubtype.rutin:
-        return 'Rutin';
+        return 'Routine';
       case MaintenanceSubtype.deepCleaning:
         return 'Deep Cleaning';
       case MaintenanceSubtype.darurat:
-        return 'Darurat';
+        return 'Emergency';
       case MaintenanceSubtype.perbaikan:
-        return 'Perbaikan';
+        return 'Repair';
       case MaintenanceSubtype.maintenance:
-        return 'Maintanance';
+        return 'Maintenance';
     }
   }
 
   static MaintenanceSubtype fromString(String value) {
     switch (value.toLowerCase()) {
       case 'rutin':
+      case 'routine':
         return MaintenanceSubtype.rutin;
       case 'deep cleaning':
         return MaintenanceSubtype.deepCleaning;
       case 'darurat':
+      case 'emergency':
         return MaintenanceSubtype.darurat;
       case 'perbaikan':
+      case 'repair':
         return MaintenanceSubtype.perbaikan;
       case 'maintanance':
       case 'maintenance':
@@ -76,7 +81,7 @@ enum MaintenanceSubtype {
       MaintenanceSubtype.values.map((e) => e.displayName).toList();
 }
 
-// ─── Status Perawatan ───
+// ─── Maintenance Status ───
 
 enum MaintenanceStatus {
   inProgress,
@@ -168,22 +173,22 @@ class MaintenanceEntity {
     );
   }
 
-  /// Helper untuk format tanggal ke string tampilan
+  /// Helper to format a date into a display string
   static String formatDateTime(DateTime? dt) {
     if (dt == null) return '-';
     const months = [
-      'Januari',
-      'Februari',
-      'Maret',
+      'January',
+      'February',
+      'March',
       'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
+      'May',
+      'June',
+      'July',
+      'August',
       'September',
-      'Oktober',
+      'October',
       'November',
-      'Desember',
+      'December',
     ];
     final d = dt.day;
     final m = months[dt.month - 1];
@@ -193,7 +198,7 @@ class MaintenanceEntity {
     return '$d $m $y $h:$min';
   }
 
-  /// Minggu ke-berapa dalam bulan (1-based)
+  /// Which week of the month (1-based)
   static int weekOfMonth(DateTime dt) {
     final firstDay = DateTime(dt.year, dt.month, 1);
     return ((dt.day + firstDay.weekday - 1) / 7).ceil();
@@ -217,9 +222,9 @@ class MaintenanceEntity {
       id: map['id'] as int?,
       namaTeknisi: map['nama_teknisi'] as String? ?? '',
       ruangan: map['ruangan'] as String? ?? '',
-      tipe: MaintenanceType.fromString(map['tipe'] as String? ?? 'Pembersihan'),
+      tipe: MaintenanceType.fromString(map['tipe'] as String? ?? 'Cleaning'),
       subtipe: MaintenanceSubtype.fromString(
-        map['subtipe'] as String? ?? 'Rutin',
+        map['subtipe'] as String? ?? 'Routine',
       ),
       waktuMulai:
           DateTime.tryParse(map['waktu_mulai'] as String? ?? '') ??
@@ -273,5 +278,5 @@ class MaintenanceEntity {
 
   @override
   String toString() =>
-      'MaintenanceEntity(id: $id, teknisi: $namaTeknisi, ruangan: $ruangan, tipe: ${tipe.displayName}, status: ${status.displayName})';
+      'MaintenanceEntity(id: $id, technician: $namaTeknisi, room: $ruangan, type: ${tipe.displayName}, status: ${status.displayName})';
 }

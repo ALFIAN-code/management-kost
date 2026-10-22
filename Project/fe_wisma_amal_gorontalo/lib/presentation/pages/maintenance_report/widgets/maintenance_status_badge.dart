@@ -58,13 +58,13 @@ class MaintenanceStatusBadge extends StatelessWidget {
   String get _label {
     switch (status) {
       case MaintenanceStatus.pending:
-        return 'Menunggu';
+        return 'Pending';
       case MaintenanceStatus.inProgress:
-        return 'Dalam Proses';
+        return 'In Progress';
       case MaintenanceStatus.completed:
-        return 'Selesai';
+        return 'Completed';
       case MaintenanceStatus.cancelled:
-        return 'Dibatalkan';
+        return 'Cancelled';
     }
   }
 }

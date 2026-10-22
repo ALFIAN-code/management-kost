@@ -121,9 +121,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final isValid = await checkSessionUseCase(NoParams());
       if (!isValid) {
         add(const LogoutEvent());
-        AppSnackbar.showError('Sesi telah berakhir. Silakan login kembali.');
+        AppSnackbar.showError('Your session has expired. Please sign in again.');
       } else {
-        // Refresh permissions setiap kali session dicek (setiap 5 menit)
+        // Refresh permissions every time the session is checked (every 5 minutes)
         add(const GetPermissionsEvent());
       }
     } on AppException catch (e) {
@@ -140,8 +140,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     print('Initializing login status...');
     final status = await isLoggedInUseCase(NoParams());
 
-    // Endpoint permission bisa diakses tanpa atau dengan token,
-    // jadi aman untuk selalu refresh di awal.
+    // The permission endpoint can be accessed with or without a token,
+    // so it is safe to always refresh at the start.
     try {
       await getPermissionsUseCase(NoParams());
     } catch (e) {
@@ -203,11 +203,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             isLoggedIn: true,
             userInfo: result,
             status: FormzSubmissionStatus.success,
-            successMessage: 'Login berhasil!',
+            successMessage: 'Login successful!',
           ),
         );
       }
-      AppSnackbar.showSuccess('Login berhasil!');
+      AppSnackbar.showSuccess('Login successful!');
     } on AppException catch (e) {
       emit(
         state.copyWith(
@@ -215,7 +215,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           errorMessage: e.message,
         ),
       );
-      AppSnackbar.showError('Gagal login: ${e.message}');
+      AppSnackbar.showError('Login failed: ${e.message}');
     } catch (e) {
       emit(
         state.copyWith(
@@ -223,7 +223,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           errorMessage: e.toString(),
         ),
       );
-      AppSnackbar.showError('Gagal login: ${e.toString()}');
+      AppSnackbar.showError('Login failed: ${e.toString()}');
     }
   }
 
@@ -255,13 +255,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             isLoggedIn: true,
             userInfo: result,
             status: FormzSubmissionStatus.success,
-            successMessage: 'Register berhasil!',
+            successMessage: 'Register successful!',
           ),
         );
       }
-      AppSnackbar.showSuccess('Register berhasil!');
+      AppSnackbar.showSuccess('Register successful!');
     } on AppException catch (e) {
-      AppSnackbar.showError('Gagal register: ${e.message}');
+      AppSnackbar.showError('Register failed: ${e.message}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -269,7 +269,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (e) {
-      AppSnackbar.showError('Gagal register: ${e.toString()}');
+      AppSnackbar.showError('Register failed: ${e.toString()}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -290,7 +290,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } on AppException catch (e) {
-      AppSnackbar.showError('Gagal logout: ${e.message}');
+      AppSnackbar.showError('Logout failed: ${e.message}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -299,7 +299,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (e) {
-      AppSnackbar.showError('Gagal logout: ${e.toString()}');
+      AppSnackbar.showError('Logout failed: ${e.toString()}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -336,7 +336,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // Update permissions as guest
       await getPermissionsUseCase(NoParams());
       
-      AppSnackbar.showError('Sesi sudah habis. Silakan login kembali.');
+      AppSnackbar.showError('Your session has expired. Please sign in again.');
     } catch (e) {
       print('Error during session expiration handling: $e');
     }
@@ -361,7 +361,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(userInfo: userInfo));
     } on AppException catch (e) {
       AppSnackbar.showError(
-        'gagal mendapatkan informasi pengguna: ${e.message}',
+        'Failed to get user information: ${e.message}',
       );
       emit(
         state.copyWith(
@@ -372,7 +372,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     } catch (e) {
       AppSnackbar.showError(
-        'gagal mendapatkan informasi pengguna: ${e.toString()}',
+        'Failed to get user information: ${e.toString()}',
       );
       emit(
         state.copyWith(

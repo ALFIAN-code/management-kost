@@ -241,6 +241,6 @@ class RolePermissionSeeder extends Seeder
         $member->syncPermissions($memberPermissions);
         $resident->syncPermissions($residentPermissions);
 
-        $this->command->info('Relasi Role dan Permission berhasil disinkronkan!');
+        $this->command->info('Role and Permission relations have been synced successfully!');
     }
 }

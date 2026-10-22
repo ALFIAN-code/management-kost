@@ -36,7 +36,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
   late final MemberFinanceBloc _bloc;
 
   final currencyFormat = NumberFormat.currency(
-    locale: 'id_ID',
+    locale: 'en_US',
     symbol: 'Rp ',
     decimalDigits: 0,
   );
@@ -61,7 +61,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal membuka halaman pembayaran')),
+          const SnackBar(content: Text('Failed to open the payment page')),
         );
       }
     }
@@ -86,7 +86,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                   content: Row(children: [
                     Icon(Icons.check_circle_outline, color: doneColor, size: 18),
                     const SizedBox(width: AppSpacing.sm),
-                    const Expanded(child: Text('Bukti pembayaran berhasil diunggah. Menunggu verifikasi admin.')),
+                    const Expanded(child: Text('Payment proof uploaded successfully. Waiting for admin verification.')),
                   ]),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
@@ -101,7 +101,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                 content: Row(children: [
                   Icon(Icons.check_circle_outline, color: doneColor, size: 18),
                   const SizedBox(width: AppSpacing.sm),
-                  const Text('Permintaan perpanjangan sewa berhasil dikirim'),
+                  const Text('Lease extension request sent successfully'),
                 ]),
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
@@ -115,7 +115,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                 content: Row(children: [
                   Icon(Icons.error_outline, color: cancelColor, size: 18),
                   const SizedBox(width: AppSpacing.sm),
-                  Expanded(child: Text(state.errorMessage ?? 'Terjadi kesalahan')),
+                  Expanded(child: Text(state.errorMessage ?? 'Something went wrong')),
                 ]),
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
@@ -128,8 +128,8 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
           body: Column(
             children: [
               AppTopBar(
-                title: 'Keuangan Saya',
-                breadcrumb: 'Keuangan / Ringkasan',
+                title: 'My Finance',
+                breadcrumb: 'Finance / Summary',
                 action: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -147,7 +147,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                               isMidtransEnabled: state.isMidtransEnabled,
                             )),
                             icon: const Icon(Icons.add_circle_outline, size: 18),
-                            label: const Text('Perpanjang Sewa'),
+                            label: const Text('Extend Lease'),
                           ),
                         );
                       },
@@ -175,15 +175,15 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                     if (state.status == MemberFinanceStatus.failure && state.summary == null) {
                       return EmptyStateWidget(
                         icon: Icons.error_outline,
-                        title: 'Gagal Memuat Data',
-                        subtitle: state.errorMessage ?? 'Terjadi kesalahan',
+                        title: 'Failed to Load Data',
+                        subtitle: state.errorMessage ?? 'Something went wrong',
                         action: ElevatedButton(
                           onPressed: () {
                             _bloc.add(FetchMemberFinanceSummary());
                             _bloc.add(FetchMemberInvoices());
                             _bloc.add(FetchMemberPayments());
                           },
-                          child: const Text('Coba Lagi'),
+                          child: const Text('Try Again'),
                         ),
                       );
                     }
@@ -204,7 +204,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                         children: [
                           if (state.summary?.residentName != null) ...[
                             Text(
-                              'Halo, ${state.summary!.residentName}',
+                              'Hello, ${state.summary!.residentName}',
                               style: TextStyle(fontSize: 14, color: textSecondary),
                             ).animate().fadeIn(duration: 300.ms),
                             const SizedBox(height: AppSpacing.xxl),
@@ -379,8 +379,8 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
         ? (isDark ? AppColorsDark.statusWaitingBg : AppColorsLight.statusWaitingBg)
         : (isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg);
     final billTrend = unpaidCount > 0
-        ? '$unpaidCount tagihan belum dibayar'
-        : 'Semua tagihan lunas';
+        ? '$unpaidCount unpaid invoices'
+        : 'All invoices paid';
     final billTrendColor = unpaid > 0
         ? (isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting)
         : (isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone);
@@ -391,12 +391,12 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
         if (leases.isEmpty) ...[
           Expanded(
             child: SummaryStatCard(
-              label: 'KAMAR AKTIF',
+              label: 'ACTIVE ROOM',
               value: '—',
               icon: Icons.home_outlined,
               iconColor: isDark ? AppColorsDark.textHint : AppColorsLight.textHint,
               iconBg: isDark ? AppColorsDark.surfaceVariant : AppColorsLight.surfaceVariant,
-              trend: 'Belum ada sewa berjalan',
+              trend: 'No active lease',
               trendColor: isDark ? AppColorsDark.textHint : AppColorsLight.textHint,
             ),
           ),
@@ -410,8 +410,8 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
           ),
         Expanded(
           child: SummaryStatCard(
-            label: 'Tagihan Belum Dibayar',
-            value: unpaid > 0 ? currencyFormat.format(unpaid) : 'Lunas',
+            label: 'Unpaid Invoices',
+            value: unpaid > 0 ? currencyFormat.format(unpaid) : 'Paid',
             icon: Icons.account_balance_wallet_outlined,
             iconColor: billIconColor,
             iconBg: billIconBg,
@@ -428,7 +428,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
     final now = DateTime.now();
     final endDate = lease.endDate as DateTime;
     final daysLeft = endDate.difference(now).inDays;
-    final endDateStr = DateFormat('dd MMM yyyy').format(endDate);
+    final endDateStr = DateFormat('dd MMM', 'en_US').format(endDate);
 
     final Color iconColor;
     final Color iconBg;
@@ -468,7 +468,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Row 1: icon + kamar + perpanjang
+          // Row 1: icon + room + extend
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -480,7 +480,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Text(
-                  'Kamar ${lease.roomNumber}',
+                  'Room ${lease.roomNumber}',
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: textPrimaryColor),
                 ),
               ]),
@@ -500,7 +500,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Tooltip(
-                  message: 'Perpanjang Sewa',
+                  message: 'Extend Lease',
                   child: GestureDetector(
                     onTap: () => context.router.push(ExtendLeaseRoute(
                       leaseId: lease.id as int,
@@ -515,7 +515,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
-          // Days remaining — ditampilkan besar
+          // Days remaining — displayed large
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
@@ -526,14 +526,14 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
               ),
               const SizedBox(width: 5),
               Text(
-                daysLeft < 0 ? 'hari terlambat' : 'hari tersisa',
+                daysLeft < 0 ? 'days overdue' : 'days left',
                 style: TextStyle(fontSize: 13, color: trendColor, fontWeight: FontWeight.w600),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'Berakhir: $endDateStr',
+            'Ends: $endDateStr',
             style: TextStyle(fontSize: 12, color: textSecondaryColor),
           ),
         ],
@@ -543,9 +543,9 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
 
   String _rentalTypeLabel(String type) {
     switch (type.toLowerCase()) {
-      case 'monthly':  return 'Bulanan';
+      case 'monthly':  return 'Monthly';
       case 'semester': return 'Per Semester';
-      case 'annual':   return 'Tahunan';
+      case 'annual':   return 'Yearly';
       default:         return type;
     }
   }
@@ -576,11 +576,11 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
         const SizedBox(width: AppSpacing.md),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(
-            '$count Tagihan Telah Jatuh Tempo',
+            '$count Overdue Invoices',
             style: TextStyle(fontWeight: FontWeight.w700, color: color, fontSize: 14),
           ),
           Text(
-            'Total: ${currencyFormat.format(total)} — Harap segera lakukan pembayaran',
+            'Total: ${currencyFormat.format(total)} — Please make the payment as soon as possible',
             style: TextStyle(fontSize: 12, color: color.withValues(alpha: 0.85)),
           ),
         ])),
@@ -641,8 +641,8 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
           const SizedBox(width: 8),
           Text(
             unpaidInvoices.isEmpty
-                ? 'Tagihan Belum Dibayar'
-                : 'Tagihan Belum Dibayar (${unpaidInvoices.length})',
+                ? 'Unpaid Invoices'
+                : 'Unpaid Invoices (${unpaidInvoices.length})',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: textPrimary),
           ),
         ]),
@@ -652,15 +652,15 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
           isEmpty: unpaidInvoices.isEmpty,
           isDark: isDark,
           emptyIcon: Icons.check_circle_outline,
-          emptyTitle: 'Semua Tagihan Lunas',
-          emptySubtitle: 'Tidak ada tagihan yang perlu dibayar saat ini.',
+          emptyTitle: 'All Invoices Paid',
+          emptySubtitle: 'There are no invoices to pay right now.',
           minRowHeight: 64,
           columns: const [
-            DataColumn(label: Text('No. Invoice / Kamar')),
-            DataColumn(label: Text('Jenis')),
-            DataColumn(label: Text('Jatuh Tempo')),
-            DataColumn(label: Text('Jumlah')),
-            DataColumn(label: Text('Aksi')),
+            DataColumn(label: Text('Invoice No. / Room')),
+            DataColumn(label: Text('Type')),
+            DataColumn(label: Text('Due Date')),
+            DataColumn(label: Text('Amount')),
+            DataColumn(label: Text('Action')),
           ],
           rows: unpaidInvoices.map((invoice) {
               final pendingMidtrans = pendingMidtransMap[invoice.id];
@@ -678,7 +678,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                   children: [
                     Text(invoice.invoiceNumber, style: TextStyle(fontWeight: FontWeight.w600, color: textPrimary)),
                     Text(
-                      invoice.roomNumber != null ? 'Kamar ${invoice.roomNumber}' : '—',
+                      invoice.roomNumber != null ? 'Room ${invoice.roomNumber}' : '—',
                       style: TextStyle(fontSize: 11, color: textHint),
                     ),
                   ],
@@ -693,10 +693,10 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                             Row(mainAxisSize: MainAxisSize.min, children: [
                               Icon(Icons.timer_outlined, size: 11, color: waitingColor),
                               const SizedBox(width: 3),
-                              Text('Batas bayar', style: TextStyle(fontSize: 11, color: waitingColor)),
+                              Text('Payment deadline', style: TextStyle(fontSize: 11, color: waitingColor)),
                             ]),
                             Text(
-                              DateFormat('dd MMM yyyy, HH:mm').format(expiryDt),
+                              DateFormat('dd MMM', 'en_US').format(expiryDt),
                               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: waitingColor),
                             ),
                           ],
@@ -706,7 +706,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              DateFormat('dd MMM yyyy').format(invoice.dueDate),
+                              DateFormat('dd MMM', 'en_US').format(invoice.dueDate),
                               style: TextStyle(
                                 color: isOverdue && !hasPendingPayment ? overdueColor : null,
                                 fontWeight: isOverdue && !hasPendingPayment ? FontWeight.w600 : null,
@@ -720,7 +720,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                               ),
                             ),
                             if (isOverdue && !hasPendingPayment)
-                              Text('Terlambat $daysOverdue hari', style: TextStyle(fontSize: 11, color: overdueColor)),
+                              Text('$daysOverdue days overdue', style: TextStyle(fontSize: 11, color: overdueColor)),
                           ],
                         ),
                 ),
@@ -748,7 +748,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
                                 textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                               ),
-                              child: const Text('Bayar'),
+                              child: const Text('Pay'),
                             ),
                 ),
               ]);
@@ -777,8 +777,8 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
           const SizedBox(width: 8),
           Text(
             state.payments.isEmpty
-                ? 'Riwayat Pembayaran'
-                : 'Riwayat Pembayaran (${state.payments.length})',
+                ? 'Payment History'
+                : 'Payment History (${state.payments.length})',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: textPrimary),
           ),
         ]),
@@ -788,19 +788,19 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
           isEmpty: state.payments.isEmpty,
           isDark: isDark,
           emptyIcon: Icons.history_outlined,
-          emptyTitle: 'Belum Ada Riwayat',
-          emptySubtitle: 'Riwayat pembayaran Anda akan muncul di sini.',
+          emptyTitle: 'No History Yet',
+          emptySubtitle: 'Your payment history will appear here.',
           minRowHeight: 60,
           columns: const [
-            DataColumn(label: Text('No. Invoice')),
-            DataColumn(label: Text('Kamar')),
-            DataColumn(label: Text('Jumlah')),
+            DataColumn(label: Text('Invoice No.')),
+            DataColumn(label: Text('Room')),
+            DataColumn(label: Text('Amount')),
             DataColumn(label: Text('Status')),
-            DataColumn(label: Text('Aksi')),
+            DataColumn(label: Text('Action')),
           ],
           rows: state.payments.map((payment) {
-              final dateStr = DateFormat('dd MMM yyyy').format(DateTime.parse(payment.paymentDate));
-              final methodLabel = payment.paymentMethod == 'midtrans' ? 'Midtrans' : 'Transfer Manual';
+              final dateStr = DateFormat('dd MMM', 'en_US').format(DateTime.parse(payment.paymentDate));
+              final methodLabel = payment.paymentMethod == 'midtrans' ? 'Midtrans' : 'Manual Transfer';
 
               return DataRow(cells: [
                 DataCell(Column(
@@ -824,7 +824,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                     foregroundColor: textSecondary,
                     textStyle: const TextStyle(fontSize: 13),
                   ),
-                  child: const Text('Detail'),
+                  child: const Text('Details'),
                 )),
               ]);
             }).toList(),
@@ -852,7 +852,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
         paymentData: pendingMidtrans.paymentData,
       )),
       icon: const Icon(Icons.arrow_forward_rounded, size: 14),
-      label: const Text('Lanjutkan'),
+      label: const Text('Continue'),
       style: ElevatedButton.styleFrom(
         backgroundColor: bg,
         foregroundColor: Colors.white,
@@ -879,25 +879,25 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
       color = Colors.orange.shade700;
       bg = Colors.orange.shade50;
       border = Colors.orange.shade200;
-      label = 'Uang Muka (DP)';
+      label = 'Down Payment (DP)';
       icon = Icons.payments_outlined;
     } else if (isPelunasan) {
       color = Colors.teal.shade700;
       bg = Colors.teal.shade50;
       border = Colors.teal.shade200;
-      label = 'Pelunasan';
+      label = 'Full Payment';
       icon = Icons.task_alt_outlined;
     } else if (isExtension) {
       color = isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess;
       bg = isDark ? AppColorsDark.statusProcessBg : AppColorsLight.statusProcessBg;
       border = isDark ? AppColorsDark.statusProcessBorder : AppColorsLight.statusProcessBorder;
-      label = 'Perpanjang';
+      label = 'Extension';
       icon = Icons.update_rounded;
     } else {
       color = isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone;
       bg = isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg;
       border = isDark ? AppColorsDark.statusDoneBorder : AppColorsLight.statusDoneBorder;
-      label = 'Sewa Bulanan';
+      label = 'Monthly Lease';
       icon = Icons.home_outlined;
     }
 
@@ -922,11 +922,11 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
   static String _statusLabel(String status) {
     switch (status.toLowerCase()) {
       case 'paid':
-      case 'verified':   return 'BERHASIL';
-      case 'pending':    return 'MENUNGGU';
-      case 'rejected':   return 'DITOLAK';
-      case 'failed':     return 'GAGAL';
-      case 'refunded':   return 'DIKEMBALIKAN';
+      case 'verified':   return 'SUCCESS';
+      case 'pending':    return 'PENDING';
+      case 'rejected':   return 'REJECTED';
+      case 'failed':     return 'FAILED';
+      case 'refunded':   return 'REFUNDED';
       default:           return status.toUpperCase();
     }
   }
@@ -1053,7 +1053,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
 
     String formatDateTime(String d) {
       final dt = DateTime.tryParse(d);
-      return dt != null ? DateFormat('dd MMM yyyy, HH:mm').format(dt) : '-';
+      return dt != null ? DateFormat('dd MMM', 'en_US').format(dt) : '-';
     }
 
     showDialog(
@@ -1076,7 +1076,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Detail Pembayaran',
+                    'Payment Details',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary),
                   ),
                   Text(
@@ -1118,7 +1118,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                                 ),
                                 if (payment.roomNumber != null) ...[
                                   const SizedBox(height: 2),
-                                  Text('Kamar ${payment.roomNumber}', style: TextStyle(fontSize: 12, color: textSecondary)),
+                                  Text('Room ${payment.roomNumber}', style: TextStyle(fontSize: 12, color: textSecondary)),
                                 ],
                               ],
                             ),
@@ -1126,13 +1126,13 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('Nominal', style: TextStyle(fontSize: 11, color: textHint)),
+                              Text('Amount', style: TextStyle(fontSize: 11, color: textHint)),
                               Text(
                                 currencyFormat.format(payment.amount),
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary),
                               ),
                               Text(
-                                payment.paymentMethod == 'midtrans' ? 'Midtrans / QRIS' : 'Transfer Manual',
+                                payment.paymentMethod == 'midtrans' ? 'Midtrans / QRIS' : 'Manual Transfer',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
@@ -1150,7 +1150,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Tanggal Pembayaran', style: TextStyle(fontSize: 11, color: textHint)),
+                              Text('Payment Date', style: TextStyle(fontSize: 11, color: textHint)),
                               Text(formatDateTime(payment.paymentDate), style: TextStyle(fontSize: 12, color: textPrimary)),
                             ],
                           ),
@@ -1158,7 +1158,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text('Tanggal Diproses', style: TextStyle(fontSize: 11, color: textHint)),
+                                Text('Processed Date', style: TextStyle(fontSize: 11, color: textHint)),
                                 Text(formatDateTime(payment.updatedAt!), style: TextStyle(fontSize: 12, color: textPrimary)),
                               ],
                             ),
@@ -1171,7 +1171,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                             Icon(Icons.tag, size: 13, color: textHint),
                             const SizedBox(width: 4),
                             Text(
-                              'ID Transaksi: ${payment.transactionId}',
+                              'Transaction ID: ${payment.transactionId}',
                               style: TextStyle(fontSize: 12, color: textSecondary),
                             ),
                           ],
@@ -1183,7 +1183,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
 
                 if (payment.adminNotes != null && (payment.adminNotes as String).isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.md),
-                  Text('Catatan Admin', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textSecondary)),
+                  Text('Admin Notes', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textSecondary)),
                   const SizedBox(height: AppSpacing.sm),
                   Container(
                     width: double.infinity,
@@ -1198,7 +1198,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                 ],
 
                 const SizedBox(height: AppSpacing.md),
-                Text('Bukti Transfer:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: textPrimary)),
+                Text('Transfer Proof:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: textPrimary)),
                 const SizedBox(height: AppSpacing.sm),
                 Container(
                   height: 260,
@@ -1222,7 +1222,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                                 children: [
                                   Icon(Icons.broken_image_outlined, size: 40, color: textHint),
                                   const SizedBox(height: AppSpacing.sm),
-                                  Text('Gambar tidak dapat dimuat', style: TextStyle(color: textSecondary)),
+                                  Text('Image could not be loaded', style: TextStyle(color: textSecondary)),
                                 ],
                               ),
                             ),
@@ -1236,8 +1236,8 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
                               const SizedBox(height: AppSpacing.sm),
                               Text(
                                 payment.paymentMethod == 'midtrans'
-                                    ? 'Pembayaran dilakukan via Midtrans'
-                                    : 'Tidak ada bukti transfer',
+                                    ? 'Payment was made via Midtrans'
+                                    : 'No transfer proof',
                                 style: TextStyle(color: textSecondary),
                               ),
                             ],
@@ -1251,7 +1251,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Tutup'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -1259,7 +1259,7 @@ class _MemberFinancePageState extends State<MemberFinancePage> {
   }
 }
 
-// ── Manual Payment Dialog dengan countdown timer ──────────────────────────────
+// ── Manual Payment Dialog with countdown timer ──────────────────────────────
 
 class _ManualPaymentDialog extends StatefulWidget {
   const _ManualPaymentDialog({
@@ -1338,7 +1338,7 @@ class _ManualPaymentDialogState extends State<_ManualPaymentDialog> {
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
       title: Row(
         children: [
-          Expanded(child: const Text('Upload Bukti Transfer')),
+          Expanded(child: const Text('Upload Transfer Proof')),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
@@ -1370,12 +1370,12 @@ class _ManualPaymentDialogState extends State<_ManualPaymentDialog> {
           children: [
             if (widget.bankAccounts.isEmpty)
               Text(
-                'Hubungi pengelola wisma untuk informasi rekening transfer.',
+                'Contact the dormitory management for transfer account details.',
                 style: TextStyle(fontSize: 13, color: textSecondary),
               )
             else ...[
               Text(
-                'Silakan transfer ke salah satu rekening berikut:',
+                'Please transfer to one of the following accounts:',
                 style: TextStyle(fontSize: 13, color: textSecondary),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -1405,7 +1405,7 @@ class _ManualPaymentDialogState extends State<_ManualPaymentDialog> {
                               letterSpacing: 1.5,
                               fontWeight: FontWeight.w700,
                               color: textPrimary)),
-                      Text('a.n. ${account.accountHolder}',
+                      Text('a/c ${account.accountHolder}',
                           style:
                               TextStyle(fontSize: 12, color: textHint)),
                       if (account.paymentInstructions != null &&
@@ -1423,7 +1423,7 @@ class _ManualPaymentDialogState extends State<_ManualPaymentDialog> {
             const SizedBox(height: AppSpacing.sm),
             if (_selectedFile != null) ...[
               Text(
-                'File terpilih: ${_selectedFile!.name}',
+                'Selected file: ${_selectedFile!.name}',
                 style: TextStyle(fontSize: 12, color: doneColor),
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -1440,8 +1440,8 @@ class _ManualPaymentDialogState extends State<_ManualPaymentDialog> {
                     },
               icon: const Icon(Icons.image),
               label: Text(_selectedFile == null
-                  ? 'Pilih Gambar Bukti'
-                  : 'Ganti Gambar'),
+                  ? 'Choose Proof Image'
+                  : 'Replace Image'),
             ),
           ],
         ),
@@ -1449,7 +1449,7 @@ class _ManualPaymentDialogState extends State<_ManualPaymentDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Batal'),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: (_selectedFile == null || _timerExpired)
@@ -1463,7 +1463,7 @@ class _ManualPaymentDialogState extends State<_ManualPaymentDialog> {
                   ));
                   Navigator.pop(context);
                 },
-          child: const Text('Kirim Bukti'),
+          child: const Text('Submit Proof'),
         ),
       ],
     );

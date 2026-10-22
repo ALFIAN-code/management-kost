@@ -38,15 +38,15 @@ enum RoomStatusEnum {
   String get displayName {
     switch (this) {
       case RoomStatusEnum.available:
-        return 'Tersedia';
+        return 'Available';
       case RoomStatusEnum.reserved:
-        return 'Dipesan';
+        return 'Reserved';
       case RoomStatusEnum.occupied:
-        return 'Terisi';
+        return 'Occupied';
       case RoomStatusEnum.maintenance:
-        return 'Perbaikan';
+        return 'Under Repair';
       case RoomStatusEnum.unknown:
-        return 'Tidak Diketahui';
+        return 'Unknown';
     }
   }
 

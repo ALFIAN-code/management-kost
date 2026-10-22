@@ -28,22 +28,22 @@ class _MidtransMethod {
 }
 
 const Map<String, _MidtransMethod> _kMidtransMethods = {
-  'qris':       _MidtransMethod('QRIS',                   'Scan QR dari semua e-wallet & bank',  Icons.qr_code),
-  'gopay':      _MidtransMethod('GoPay',                  'Bayar dengan saldo GoPay',            Icons.account_balance_wallet),
-  'shopeepay':  _MidtransMethod('ShopeePay',              'Bayar dengan saldo ShopeePay',        Icons.shopping_bag),
-  'dana':       _MidtransMethod('DANA',                   'Bayar dengan saldo DANA',             Icons.account_balance_wallet),
-  'linkaja':    _MidtransMethod('LinkAja',                'Bayar dengan LinkAja',                Icons.account_balance_wallet),
-  'ovo':        _MidtransMethod('OVO',                    'Bayar dengan saldo OVO',              Icons.account_balance_wallet),
-  'bca_va':     _MidtransMethod('BCA Virtual Account',   'Transfer via ATM / m-BCA',            Icons.account_balance),
-  'bni_va':     _MidtransMethod('BNI Virtual Account',   'Transfer via ATM / BNI Mobile',       Icons.account_balance),
-  'bri_va':     _MidtransMethod('BRI Virtual Account',   'Transfer via ATM / BRImo',            Icons.account_balance),
-  'mandiri_va': _MidtransMethod('Mandiri Virtual Account','Transfer via Mandiri Livin\'',        Icons.account_balance),
-  'echannel':   _MidtransMethod('Mandiri Bill',           'Bayar via Mandiri Livin\'',           Icons.account_balance),
-  'permata_va': _MidtransMethod('Permata Virtual Account','Transfer via ATM Permata',            Icons.account_balance),
-  'other_va':   _MidtransMethod('Virtual Account',       'Transfer via bank lain',              Icons.account_balance),
-  'alfamart':   _MidtransMethod('Alfamart',               'Bayar di kasir Alfamart',             Icons.store),
-  'indomaret':  _MidtransMethod('Indomaret',              'Bayar di kasir Indomaret',            Icons.store),
-  'credit_card':_MidtransMethod('Kartu Kredit/Debit',    'Visa, Mastercard, JCB',               Icons.credit_card),
+  'qris':       _MidtransMethod('QRIS',                   'Scan QR from all e-wallets & banks',    Icons.qr_code),
+  'gopay':      _MidtransMethod('GoPay',                  'Pay with your GoPay balance',           Icons.account_balance_wallet),
+  'shopeepay':  _MidtransMethod('ShopeePay',              'Pay with your ShopeePay balance',       Icons.shopping_bag),
+  'dana':       _MidtransMethod('DANA',                   'Pay with your DANA balance',            Icons.account_balance_wallet),
+  'linkaja':    _MidtransMethod('LinkAja',                'Pay with LinkAja',                      Icons.account_balance_wallet),
+  'ovo':        _MidtransMethod('OVO',                    'Pay with your OVO balance',             Icons.account_balance_wallet),
+  'bca_va':     _MidtransMethod('BCA Virtual Account',   'Transfer via ATM / m-BCA',              Icons.account_balance),
+  'bni_va':     _MidtransMethod('BNI Virtual Account',   'Transfer via ATM / BNI Mobile',         Icons.account_balance),
+  'bri_va':     _MidtransMethod('BRI Virtual Account',   'Transfer via ATM / BRImo',              Icons.account_balance),
+  'mandiri_va': _MidtransMethod('Mandiri Virtual Account','Transfer via Mandiri Livin\'',          Icons.account_balance),
+  'echannel':   _MidtransMethod('Mandiri Bill',           'Pay via Mandiri Livin\'',                Icons.account_balance),
+  'permata_va': _MidtransMethod('Permata Virtual Account','Transfer via ATM Permata',              Icons.account_balance),
+  'other_va':   _MidtransMethod('Virtual Account',       'Transfer via other banks',              Icons.account_balance),
+  'alfamart':   _MidtransMethod('Alfamart',               'Pay at the Alfamart counter',           Icons.store),
+  'indomaret':  _MidtransMethod('Indomaret',              'Pay at the Indomaret counter',          Icons.store),
+  'credit_card':_MidtransMethod('Credit/Debit Card',     'Visa, Mastercard, JCB',                 Icons.credit_card),
 };
 
 @RoutePage()
@@ -66,13 +66,13 @@ class ExtendLeasePage extends StatefulWidget {
 }
 
 class _ExtendLeasePageState extends State<ExtendLeasePage> {
-  // Step 1: pilih durasi + metode
+  // Step 1: pick duration + payment method
   int _duration = 1;
   String _paymentMethod = 'manual';
   String? _selectedMidtransMethod;
   bool _isInitiating = false;
 
-  // Step 2 (manual only): upload bukti
+  // Step 2 (manual only): upload payment proof
   int _step = 1;
   int? _invoiceId;
   double? _invoiceAmount;
@@ -80,7 +80,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
   String? _proofName;
   List<BankAccountEntity> _bankAccounts = [];
 
-  // Countdown (dari server payment_expires_at)
+  // Countdown (from server payment_expires_at)
   Timer? _countdownTimer;
   int _remainingSeconds = 0;
   bool _timerExpired = false;
@@ -123,7 +123,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Waktu pembayaran habis. Invoice dibatalkan otomatis. Silakan ulangi.'),
+        content: Text('Payment time expired. The invoice was cancelled automatically. Please try again.'),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
         duration: Duration(seconds: 4),
@@ -230,7 +230,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
       child: BlocListener<MemberFinanceBloc, MemberFinanceState>(
         listener: (context, state) {
           if (state.status == MemberFinanceStatus.paymentSuccess) {
-            // Navigasi ke halaman pembayaran dengan data yang sudah ada
+            // Navigate to the payment page with the existing data
             context.router.push(ExtendLeasePaymentRoute(
               invoiceId:    state.paymentInvoiceId ?? 0,
               roomNumber:   widget.roomNumber,
@@ -242,13 +242,13 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
               paymentData:  state.paymentData,
             ));
           } else if (state.status == MemberFinanceStatus.extensionSuccess) {
-            // Manual yang tidak perlu halaman pembayaran (sudah selesai langsung)
+            // Manual flow that does not need the payment page (completes immediately)
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(children: [
                   Icon(Icons.check_circle_outline, color: doneColor, size: 18),
                   const SizedBox(width: AppSpacing.sm),
-                  const Text('Perpanjangan sewa berhasil diproses'),
+                  const Text('Lease extension processed successfully'),
                 ]),
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
@@ -264,7 +264,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                 content: Row(children: [
                   Icon(Icons.error_outline, color: cancelColor, size: 18),
                   const SizedBox(width: AppSpacing.sm),
-                  Expanded(child: Text(state.errorMessage ?? 'Terjadi kesalahan')),
+                  Expanded(child: Text(state.errorMessage ?? 'Something went wrong')),
                 ]),
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
@@ -287,12 +287,12 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                     icon: const Icon(Icons.arrow_back),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  Text('Perpanjang Sewa',
+                  Text('Extend Lease',
                       style: Theme.of(context).textTheme.headlineLarge),
                 ]),
                 const SizedBox(height: AppSpacing.xxl),
 
-                // ── Info sewa aktif ───────────────────────────────────────
+                // ── Active lease info ───────────────────────────────────────
                 _buildLeaseInfoCard(
                   surfaceColor: surfaceColor,
                   borderColor: borderColor,
@@ -306,7 +306,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                 const SizedBox(height: AppSpacing.xl),
 
                 if (_step == 1) ...[
-                  // ── Durasi + preview tanggal ────────────────────────────
+                  // ── Duration + date preview ────────────────────────────
                   _buildDurationCard(
                     surfaceColor: surfaceColor,
                     borderColor: borderColor,
@@ -318,7 +318,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                   ),
                   const SizedBox(height: AppSpacing.xl),
 
-                  // ── Metode pembayaran ───────────────────────────────────
+                  // ── Payment method ───────────────────────────────────
                   _buildPaymentMethodCard(
                     surfaceColor: surfaceColor,
                     surfaceVariant: surfaceVariant,
@@ -331,7 +331,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                   ),
                   const SizedBox(height: AppSpacing.xxl),
 
-                  // ── Tombol step 1 ───────────────────────────────────────
+                  // ── Step 1 button ───────────────────────────────────────
                   if (_paymentMethod == 'manual') ...[
                     SizedBox(
                       width: double.infinity,
@@ -344,7 +344,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                                     strokeWidth: 2, color: Colors.white),
                               )
                             : const Icon(Icons.arrow_forward, size: 18),
-                        label: Text(_isInitiating ? 'Memproses…' : 'Lanjutkan ke Upload Bukti'),
+                        label: Text(_isInitiating ? 'Processing…' : 'Continue to Upload Proof'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
                           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
@@ -356,8 +356,8 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                       builder: (context, state) {
                         final isLoading = state.status == MemberFinanceStatus.loading;
                         final label = _selectedMidtransMethod != null
-                            ? 'Bayar dengan ${_kMidtransMethods[_selectedMidtransMethod]?.label ?? _selectedMidtransMethod!.toUpperCase()}'
-                            : 'Lanjutkan ke Pembayaran';
+                            ? 'Pay with ${_kMidtransMethods[_selectedMidtransMethod]?.label ?? _selectedMidtransMethod!.toUpperCase()}'
+                            : 'Continue to Payment';
                         return SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
@@ -378,7 +378,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                                         strokeWidth: 2, color: Colors.white),
                                   )
                                 : const Icon(Icons.payment_outlined, size: 18),
-                            label: Text(isLoading ? 'Memproses…' : label),
+                            label: Text(isLoading ? 'Processing…' : label),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
                               textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
@@ -389,7 +389,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                     ),
                   ],
                 ] else ...[
-                  // ── STEP 2: Upload bukti dengan countdown ───────────────
+                  // ── STEP 2: Upload proof with countdown ───────────────
                   _buildCountdownBanner(context),
                   const SizedBox(height: AppSpacing.md),
                   _buildStep2UploadCard(
@@ -425,7 +425,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                                       strokeWidth: 2, color: Colors.white),
                                 )
                               : const Icon(Icons.send_outlined, size: 18),
-                          label: Text(isLoading ? 'Mengirim…' : 'Kirim Bukti Pembayaran'),
+                          label: Text(isLoading ? 'Sending…' : 'Submit Payment Proof'),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
                             textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
@@ -444,7 +444,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
     );
   }
 
-  // ── Info sewa aktif ───────────────────────────────────────────────────────
+  // ── Active lease info ───────────────────────────────────────────────────────
 
   Widget _buildLeaseInfoCard({
     required Color surfaceColor,
@@ -468,7 +468,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('SEWA AKTIF',
+          Text('ACTIVE LEASE',
               style: TextStyle(
                   fontSize: 11, fontWeight: FontWeight.w700,
                   color: textHint, letterSpacing: 0.8)),
@@ -486,7 +486,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
             Expanded(child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Kamar ${widget.roomNumber}',
+                Text('Room ${widget.roomNumber}',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700,
                         color: textPrimary)),
                 const SizedBox(height: 4),
@@ -494,7 +494,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                   Icon(Icons.calendar_today_outlined, size: 13, color: textHint),
                   const SizedBox(width: 4),
                   Text(
-                    'Berakhir: ${DateFormat('dd MMMM yyyy').format(widget.currentEndDate)}',
+                    'Ends: ${DateFormat('dd MMMM', 'en_US').format(widget.currentEndDate)}',
                     style: TextStyle(fontSize: 13, color: textSecondary),
                   ),
                 ]),
@@ -507,9 +507,9 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                     border: Border.all(color: leaseStatusColor.withValues(alpha: 0.3)),
                   ),
                   child: Text(
-                    daysLeft < 0 ? 'Sudah berakhir'
-                        : daysLeft == 0 ? 'Berakhir hari ini'
-                        : 'Sisa $daysLeft hari',
+                    daysLeft < 0 ? 'Ended'
+                        : daysLeft == 0 ? 'Ends today'
+                        : '$daysLeft days left',
                     style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600,
                         color: leaseStatusColor),
                   ),
@@ -522,7 +522,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
     );
   }
 
-  // ── Durasi ────────────────────────────────────────────────────────────────
+  // ── Duration ────────────────────────────────────────────────────────────────
 
   Widget _buildDurationCard({
     required Color surfaceColor,
@@ -545,18 +545,18 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('DURASI PERPANJANGAN',
+          Text('EXTENSION DURATION',
               style: TextStyle(
                   fontSize: 11, fontWeight: FontWeight.w700,
                   color: textHint, letterSpacing: 0.8)),
           const SizedBox(height: AppSpacing.md),
-          Text('Pilih berapa bulan Anda ingin memperpanjang masa sewa.',
+          Text('Choose how many months you want to extend the lease.',
               style: TextStyle(fontSize: 13, color: textSecondary)),
           const SizedBox(height: AppSpacing.lg),
           DropdownButtonFormField<int>(
             initialValue: _duration,
             items: List.generate(12, (i) => i + 1)
-                .map((m) => DropdownMenuItem(value: m, child: Text('$m Bulan')))
+                .map((m) => DropdownMenuItem(value: m, child: Text('$m Months')))
                 .toList(),
             onChanged: (val) => setState(() => _duration = val ?? 1),
             decoration: InputDecoration(
@@ -586,9 +586,9 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
               ),
               const SizedBox(width: AppSpacing.md),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Tanggal berakhir baru',
+                Text('New end date',
                     style: TextStyle(fontSize: 11, color: doneColor.withValues(alpha: 0.8))),
-                Text(DateFormat('dd MMMM yyyy').format(newEndDate),
+                Text(DateFormat('dd MMMM', 'en_US').format(newEndDate),
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700,
                         color: doneColor)),
               ]),
@@ -599,7 +599,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
     );
   }
 
-  // ── Metode pembayaran ─────────────────────────────────────────────────────
+  // ── Payment method ─────────────────────────────────────────────────────────
 
   Widget _buildPaymentMethodCard({
     required Color surfaceColor,
@@ -623,19 +623,19 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('METODE PEMBAYARAN',
+          Text('PAYMENT METHOD',
               style: TextStyle(
                   fontSize: 11, fontWeight: FontWeight.w700,
                   color: textHint, letterSpacing: 0.8)),
           const SizedBox(height: AppSpacing.lg),
 
-          // Pilihan transfer bank (manual)
+          // Manual bank transfer option
           _PaymentMethodTile(
             value: 'manual',
             groupValue: _paymentMethod,
             icon: Icons.account_balance_outlined,
-            label: 'Transfer Bank',
-            description: 'Upload bukti transfer ke rekening wisma',
+            label: 'Bank Transfer',
+            description: 'Upload transfer proof to the dormitory account',
             isDark: AppTheme.isDark(context),
             onChanged: (v) => setState(() => _paymentMethod = v),
           ),
@@ -647,7 +647,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
               groupValue: _paymentMethod,
               icon: Icons.payment_outlined,
               label: 'Midtrans',
-              description: 'Bayar online via QRIS, GoPay, VA Bank, dll.',
+              description: 'Pay online via QRIS, GoPay, bank VA, etc.',
               isDark: AppTheme.isDark(context),
               onChanged: (v) => setState(() {
                 _paymentMethod = v;
@@ -659,15 +659,15 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
 
           const SizedBox(height: AppSpacing.xl),
 
-          // ── Detail sesuai metode ──────────────────────────────────────
+          // ── Details per method ──────────────────────────────────────
           if (_paymentMethod == 'manual') ...[
             // Countdown timer
             _buildCountdownBanner(context),
             const SizedBox(height: AppSpacing.md),
 
-            // Info rekening
+            // Account information
             if (_bankAccounts.isNotEmpty) ...[
-              Text('Transfer ke salah satu rekening berikut:',
+              Text('Transfer to one of the following accounts:',
                   style: TextStyle(fontSize: 12, color: textSecondary)),
               const SizedBox(height: AppSpacing.sm),
               ..._bankAccounts.map((account) => Padding(
@@ -686,7 +686,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                     const SizedBox(height: 2),
                     Text(account.accountNumber,
                         style: TextStyle(fontSize: 16, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: textPrimary)),
-                    Text('a.n. ${account.accountHolder}',
+                    Text('a/c ${account.accountHolder}',
                         style: TextStyle(fontSize: 12, color: textHint)),
                     if (account.paymentInstructions != null && account.paymentInstructions!.isNotEmpty) ...[
                       const SizedBox(height: AppSpacing.sm),
@@ -699,7 +699,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
               const SizedBox(height: AppSpacing.sm),
             ],
 
-            // Upload bukti
+            // Upload proof
             GestureDetector(
               onTap: _pickFile,
               child: Container(
@@ -728,8 +728,8 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                     children: [
                       Text(
                         _proofBytes != null
-                            ? 'Bukti transfer dipilih'
-                            : 'Upload Bukti Transfer',
+                            ? 'Transfer proof selected'
+                            : 'Upload Transfer Proof',
                         style: TextStyle(
                           fontSize: 14, fontWeight: FontWeight.w600,
                           color: _proofBytes != null ? doneColor : textPrimary,
@@ -740,7 +740,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                             style: TextStyle(fontSize: 11, color: textSecondary),
                             maxLines: 1, overflow: TextOverflow.ellipsis)
                       else
-                        Text('Tap untuk memilih gambar (JPG/PNG)',
+                        Text('Tap to select an image (JPG/PNG)',
                             style: TextStyle(fontSize: 11, color: textHint)),
                     ],
                   )),
@@ -750,14 +750,14 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
               ),
             ),
           ] else ...[
-            // ── Grid pilihan metode Midtrans ──────────────────────────
-            Text('Pilih metode pembayaran Midtrans',
+            // ── Midtrans method grid ──────────────────────────
+            Text('Choose a Midtrans payment method',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
                     color: textPrimary)),
             const SizedBox(height: 4),
             Text(
-              'Kosongkan pilihan untuk diarahkan ke halaman Midtrans '
-              'dengan semua metode tersedia.',
+              'Leave it empty to be redirected to the Midtrans page '
+              'with all methods available.',
               style: TextStyle(fontSize: 11, color: textHint),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -862,12 +862,12 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('INFORMASI TRANSFER',
+          Text('TRANSFER INFORMATION',
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
                   color: textHint, letterSpacing: 0.8)),
           const SizedBox(height: AppSpacing.md),
           if (_bankAccounts.isNotEmpty) ...[
-            Text('Transfer ke salah satu rekening berikut:',
+            Text('Transfer to one of the following accounts:',
                 style: TextStyle(fontSize: 12, color: textSecondary)),
             const SizedBox(height: AppSpacing.sm),
             ..._bankAccounts.map((account) => Padding(
@@ -885,7 +885,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: textPrimary)),
                   Text(account.accountNumber,
                       style: TextStyle(fontSize: 16, letterSpacing: 1.2, fontWeight: FontWeight.w700, color: textPrimary)),
-                  Text('a.n. ${account.accountHolder}',
+                  Text('a/c ${account.accountHolder}',
                       style: TextStyle(fontSize: 12, color: textHint)),
                   if (account.paymentInstructions != null && account.paymentInstructions!.isNotEmpty) ...[
                     const SizedBox(height: AppSpacing.sm),
@@ -909,7 +909,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Jumlah Transfer:',
+                  Text('Transfer Amount:',
                       style: TextStyle(fontWeight: FontWeight.w600, color: textPrimary)),
                   Text(
                     'Rp ${_invoiceAmount!.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
@@ -920,7 +920,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
             ),
             const SizedBox(height: AppSpacing.md),
           ],
-          Text('UPLOAD BUKTI TRANSFER',
+          Text('UPLOAD TRANSFER PROOF',
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
                   color: textHint, letterSpacing: 0.8)),
           const SizedBox(height: AppSpacing.sm),
@@ -951,7 +951,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _proofBytes != null ? 'Bukti transfer dipilih' : 'Upload Bukti Transfer',
+                      _proofBytes != null ? 'Transfer proof selected' : 'Upload Transfer Proof',
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,
                           color: _proofBytes != null ? doneColor : textPrimary),
                     ),
@@ -960,7 +960,7 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
                           style: TextStyle(fontSize: 11, color: textSecondary),
                           maxLines: 1, overflow: TextOverflow.ellipsis)
                     else
-                      Text('Tap untuk memilih gambar (JPG/PNG)',
+                      Text('Tap to select an image (JPG/PNG)',
                           style: TextStyle(fontSize: 11, color: textHint)),
                   ],
                 )),
@@ -996,8 +996,8 @@ class _ExtendLeasePageState extends State<ExtendLeasePage> {
           Expanded(
             child: Text(
               _timerExpired
-                  ? 'Waktu pembayaran habis'
-                  : 'Selesaikan dalam $_timerLabel',
+                  ? 'Payment time expired'
+                  : 'Complete within $_timerLabel',
               style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

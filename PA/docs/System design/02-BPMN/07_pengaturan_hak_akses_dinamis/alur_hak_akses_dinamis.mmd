@@ -5,7 +5,7 @@ flowchart TD
     Choice -->|Pakai Peran Standar| DefaultRole[Pilih Peran Bawaan:\nOwner / Pengelola / Penghuni]
     Choice -->|Buat Peran Baru| NewRoleForm[Klik 'Tambah Peran Baru']
 
-    NewRoleForm --> InputName[Input Nama Peran Baru\nMisal: 'Wali Asrama' / 'Teknisi Servis']
+    NewRoleForm --> InputName[Input Nama Peran Baru\nMisal: 'Wali Asrama' / 'Teknisi Servis'\nCakupan F02 memerlukan tabel peran di luar skema 13 tabel]
     InputName --> ChecklistPerm[Centang Izin yang Diberikan\nContoh: room:read, maintenance:update]
     ChecklistPerm --> SaveRole[Simpan Peran Kustom ke Database]
 

@@ -123,11 +123,11 @@ class _DetailView extends StatelessWidget {
         children: [
           BlocBuilder<MaintenanceDetailBloc, MaintenanceDetailState>(
             builder: (context, state) {
-              String title = 'Detail Laporan';
+              String title = 'Report Details';
               Widget? action;
               if (state is MaintenanceDetailLoaded) {
                 title =
-                    'Laporan #${state.request.id.toString().length > 8 ? state.request.id.toString().substring(0, 8).toUpperCase() : state.request.id.toString().toUpperCase()}';
+                    'Report #${state.request.id.toString().length > 8 ? state.request.id.toString().substring(0, 8).toUpperCase() : state.request.id.toString().toUpperCase()}';
                 action = StatusBadge(
                   status: _statusLabel(state.request.status),
                 );
@@ -135,12 +135,12 @@ class _DetailView extends StatelessWidget {
 
               return AppTopBar(
                 title: title,
-                breadcrumb: 'Operasional / Laporan Kerusakan / Detail',
+                breadcrumb: 'Operations / Damage Reports / Detail',
                 action: action,
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back, size: 20),
                   onPressed: () => context.router.maybePop(),
-                  tooltip: 'Kembali',
+                  tooltip: 'Back',
                 ),
               );
             },
@@ -166,7 +166,7 @@ class _DetailView extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         const Text(
-                          'Gagal memuat detail',
+                          'Failed to load details',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -196,15 +196,15 @@ class _DetailView extends StatelessWidget {
   String _statusLabel(dynamic status) {
     switch (status.value) {
       case 'pending':
-        return 'Menunggu';
+        return 'Pending';
       case 'in_progress':
-        return 'Dalam Proses';
+        return 'In Progress';
       case 'completed':
-        return 'Selesai';
+        return 'Completed';
       case 'cancelled':
-        return 'Dibatalkan';
+        return 'Cancelled';
       default:
-        return 'Semua';
+        return 'All';
     }
   }
 }
@@ -292,7 +292,7 @@ class _DetailContent extends StatelessWidget {
     final borderColor = isDark
         ? AppColorsDark.borderLight
         : AppColorsLight.borderLight;
-    final dateFormat = DateFormat('dd MMMM yyyy, HH:mm', 'id_ID');
+    final dateFormat = DateFormat('dd MMMM yyyy, HH:mm', 'en_US');
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xxxl),
@@ -318,7 +318,7 @@ class _DetailContent extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.md),
               const Text(
-                'Informasi Laporan',
+                'Report Information',
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
               ),
             ],
@@ -340,7 +340,7 @@ class _DetailContent extends StatelessWidget {
               if (request.room != null)
                 _MetaItem(
                   icon: Icons.meeting_room_outlined,
-                  label: 'Kamar ${request.room!.number}',
+                  label: 'Room ${request.room!.number}',
                 ),
               if (request.location != null && request.location!.isNotEmpty)
                 _MetaItem(
@@ -359,7 +359,7 @@ class _DetailContent extends StatelessWidget {
           Divider(color: borderColor),
           const SizedBox(height: AppSpacing.xl),
           const Text(
-            'Deskripsi Kerusakan',
+            'Damage Description',
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -375,7 +375,7 @@ class _DetailContent extends StatelessWidget {
           if (request.images.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.xxxl),
             const Text(
-              'Foto Lampiran',
+              'Attached Photos',
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -479,7 +479,7 @@ class _DetailContent extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.md),
               const Text(
-                'Riwayat Penanganan',
+                'Handling History',
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
               ),
             ],
@@ -498,7 +498,7 @@ class _DetailContent extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Text(
-                    'Belum ada update progres',
+                    'No progress updates yet',
                     style: TextStyle(
                       color: isDark
                           ? AppColorsDark.textSecondary
@@ -553,7 +553,7 @@ class _MaintenanceTimeline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = AppTheme.isDark(context);
-    final dateFormat = DateFormat('dd MMM yyyy, HH:mm', 'id_ID');
+    final dateFormat = DateFormat('dd MMM yyyy, HH:mm', 'en_US');
 
     return Column(
       children: List.generate(items.length, (index) {
@@ -708,13 +708,13 @@ class _MaintenanceTimeline extends StatelessWidget {
   String _statusLabel(MaintenanceStatus status) {
     switch (status) {
       case MaintenanceStatus.pending:
-        return 'Menunggu';
+        return 'Pending';
       case MaintenanceStatus.inProgress:
-        return 'Dalam Proses';
+        return 'In Progress';
       case MaintenanceStatus.completed:
-        return 'Selesai';
+        return 'Completed';
       case MaintenanceStatus.cancelled:
-        return 'Dibatalkan';
+        return 'Cancelled';
     }
   }
 }
@@ -735,10 +735,10 @@ class _AdminReplyFormState extends State<_AdminReplyForm> {
 
   final _statusOptions = ['pending', 'in_progress', 'completed', 'cancelled'];
   final _statusLabels = {
-    'pending': 'Menunggu',
-    'in_progress': 'Dalam Proses',
-    'completed': 'Selesai',
-    'cancelled': 'Dibatalkan',
+    'pending': 'Pending',
+    'in_progress': 'In Progress',
+    'completed': 'Completed',
+    'cancelled': 'Cancelled',
   };
 
   Future<void> _pickImages() async {
@@ -816,7 +816,7 @@ class _AdminReplyFormState extends State<_AdminReplyForm> {
                 ),
                 const SizedBox(width: AppSpacing.md),
                 const Text(
-                  'Tambah Update Progres',
+                  'Add Progress Update',
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
               ],
@@ -824,7 +824,7 @@ class _AdminReplyFormState extends State<_AdminReplyForm> {
             const SizedBox(height: AppSpacing.xl),
 
             const Text(
-              'Perbarui Status (opsional)',
+              'Update Status (optional)',
               style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -873,13 +873,13 @@ class _AdminReplyFormState extends State<_AdminReplyForm> {
             const SizedBox(height: AppSpacing.xl),
 
             CustomTextForm(
-              title: 'Catatan Update',
-              hintText: 'Masukkan progres terbaru...',
+              title: 'Update Note',
+              hintText: 'Enter the latest progress...',
               isRequired: true,
               controller: _descriptionController,
               maxLines: 4,
               validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
+                  (v == null || v.trim().isEmpty) ? 'Is required' : null,
             ),
             const SizedBox(height: AppSpacing.xl),
 
@@ -940,7 +940,7 @@ class _AdminReplyFormState extends State<_AdminReplyForm> {
               OutlinedButton.icon(
                 onPressed: _pickImages,
                 icon: const Icon(Icons.attach_file, size: 16),
-                label: const Text('Lampirkan Foto'),
+                label: const Text('Attach Photos'),
               ),
 
             const SizedBox(height: AppSpacing.xxxl),
@@ -965,7 +965,7 @@ class _AdminReplyFormState extends State<_AdminReplyForm> {
                               ),
                             )
                           : const Icon(Icons.send, size: 16),
-                      label: Text(isLoading ? 'Mengirim...' : 'Kirim Update'),
+                      label: Text(isLoading ? 'Sending...' : 'Submit Update'),
                     ),
                   ],
                 );

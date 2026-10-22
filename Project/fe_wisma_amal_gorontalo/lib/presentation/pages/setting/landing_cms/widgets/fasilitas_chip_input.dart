@@ -65,7 +65,7 @@ class _FasilitasChipInputState extends State<FasilitasChipInput> {
         Row(
           children: [
             Text(
-              'Fasilitas',
+              'Facilities',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
@@ -117,7 +117,7 @@ class _FasilitasChipInputState extends State<FasilitasChipInput> {
                   focusNode: _focusNode,
                   style: TextStyle(fontSize: 14, color: c.textPrimary),
                   decoration: InputDecoration(
-                    hintText: 'Contoh: WiFi Cepat, Parkir Luas...',
+                    hintText: 'Example: Fast WiFi, Wide Parking...',
                     hintStyle: TextStyle(color: c.textHint, fontSize: 13),
                     filled: true,
                     fillColor: c.surfaceVariant,
@@ -164,7 +164,7 @@ class _FasilitasChipInputState extends State<FasilitasChipInput> {
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          'Ketik nama fasilitas lalu tekan Enter atau klik +',
+          'Type a facility name then press Enter or click +',
           style: TextStyle(fontSize: 11, color: c.textHint),
         ),
       ],

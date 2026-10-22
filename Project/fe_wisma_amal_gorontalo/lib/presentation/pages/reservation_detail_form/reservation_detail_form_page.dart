@@ -118,7 +118,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
 
         if (state.status == FormzSubmissionStatus.success) {
           AppSnackbar.showSuccess(
-            'Pemesanan berhasil dibuat. Silakan selesaikan pembayaran.',
+            'Booking created successfully. Please complete the payment.',
           );
           if (state.paymentMethod == 'tunai') {
             context.router.replace(
@@ -134,7 +134,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
             );
           }
         } else if (state.status == FormzSubmissionStatus.failure) {
-          final error = state.errorMessage ?? 'Gagal membuat pemesanan';
+          final error = state.errorMessage ?? 'Failed to create the booking';
           AppSnackbar.showError(error);
 
           if (error.toLowerCase().contains('profil') ||
@@ -174,12 +174,12 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
             body: Column(
               children: [
                 AppTopBar(
-                  title: 'Detail Reservasi',
-                  breadcrumb: 'Reservasi / Detail',
+                  title: 'Reservation Details',
+                  breadcrumb: 'Reservations / Details',
                   leading: IconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () => context.router.pop(),
-                    tooltip: 'Kembali',
+                    tooltip: 'Back',
                   ),
                 ),
                 Expanded(child: _buildSkeleton(isDark)),
@@ -195,12 +195,12 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
           body: Column(
             children: [
               AppTopBar(
-                title: 'Detail Reservasi',
-                breadcrumb: 'Reservasi / Detail',
+                title: 'Reservation Details',
+                breadcrumb: 'Reservations / Details',
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () => context.router.pop(),
-                  tooltip: 'Kembali',
+                  tooltip: 'Back',
                 ),
               ),
               Expanded(
@@ -215,9 +215,9 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              /// KAMAR YANG DIPILIH
+                              /// SELECTED ROOM
                               AppSectionCard(
-                                title: 'Kamar yang dipilih',
+                                title: 'Selected room',
                                 icon: Icons.bed_outlined,
                                 child: Container(
                                   width: double.infinity,
@@ -257,7 +257,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                       ),
                                       const SizedBox(height: AppSpacing.sm),
                                       Text(
-                                        'Bulanan: ${room.priceFormatted} | Tahunan: Rp ${NumberFormat.decimalPattern('id').format((room.price * 12).toInt()).replaceAll(',', '.')}',
+                                        'Monthly: ${room.priceFormatted} | Yearly: Rp ${NumberFormat.decimalPattern('id').format((room.price * 12).toInt()).replaceAll(',', '.')}',
                                         style: TextStyle(
                                           color: primaryColor,
                                           fontWeight: FontWeight.w500,
@@ -270,19 +270,19 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
 
                               const SizedBox(height: AppSpacing.xxl),
 
-                              /// JENIS SEWA
+                              /// LEASE TYPE
                               AppSectionCard(
-                                title: 'Pilih Jenis Sewa',
+                                title: 'Select Lease Type',
                                 icon: Icons.date_range_outlined,
                                 child: Wrap(
                                   spacing: AppSpacing.lg,
                                   runSpacing: AppSpacing.lg,
                                   children: [
                                     SelectionCard.vertical(
-                                      title: 'Sewa Bulanan',
-                                      subtitle: 'Hemat jangka pendek',
+                                      title: 'Monthly Lease',
+                                      subtitle: 'More affordable for short stays',
                                       valueLabel:
-                                          '${room.priceFormatted} / bulan',
+                                          '${room.priceFormatted} / month',
                                       selected: state.rentType == 'Bulanan',
                                       onTap: () => context
                                           .read<ReservationDetailFormBloc>()
@@ -293,11 +293,11 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                       maxWidth: 358,
                                     ),
                                     SelectionCard.vertical(
-                                      title: 'Sewa Tahunan',
+                                      title: 'Yearly Lease',
                                       subtitle:
-                                          'Lebih hemat untuk jangka panjang',
+                                          'More affordable for long stays',
                                       valueLabel:
-                                          'Rp ${NumberFormat.decimalPattern('id').format((room.price * 12).toInt()).replaceAll(',', '.')} / tahun',
+                                          'Rp ${NumberFormat.decimalPattern('id').format((room.price * 12).toInt()).replaceAll(',', '.')} / year',
                                       selected: state.rentType == 'Tahunan',
                                       onTap: () => context
                                           .read<ReservationDetailFormBloc>()
@@ -307,7 +307,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                       minWidth: 260,
                                       maxWidth: 358,
                                     ),
-                                    // Daily logic (dipertahankan)
+                                    // Daily logic (preserved)
                                     if (state.isDailyRentalEnabled &&
                                         room.priceDaily > 0)
                                       const SizedBox.shrink(),
@@ -317,9 +317,9 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
 
                               const SizedBox(height: AppSpacing.xxl),
 
-                              /// DETAIL SEWA
+                              /// LEASE DETAILS
                               AppSectionCard(
-                                title: 'Detail Sewa',
+                                title: 'Lease Details',
                                 icon: Icons.calendar_month_outlined,
                                 child: Column(
                                   children: [
@@ -342,8 +342,8 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                             ),
                                             child: AbsorbPointer(
                                               child: CustomTextForm(
-                                                title: 'Tanggal Mulai',
-                                                hintText: 'Pilih tanggal',
+                                                title: 'Start Date',
+                                                hintText: 'Select a date',
                                                 controller:
                                                     _startDateController,
                                                 isRequired: true,
@@ -361,12 +361,12 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                           Expanded(
                                             child: CustomTextForm(
                                               title: state.rentType == 'Bulanan'
-                                                  ? 'Jumlah Bulan'
-                                                  : 'Jumlah Tahun',
+                                                  ? 'Number of Months'
+                                                  : 'Number of Years',
                                               hintText:
                                                   state.rentType == 'Bulanan'
-                                                  ? 'Berapa bulan?'
-                                                  : 'Berapa tahun?',
+                                                  ? 'How many months?'
+                                                  : 'How many years?',
                                               keyboardType:
                                                   TextInputType.number,
                                               initialValue:
@@ -394,7 +394,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                         state.rentType == 'Tahunan') ...[
                                       const SizedBox(height: AppSpacing.lg),
                                       CustomTextForm(
-                                        title: 'Estimasi Tanggal Selesai',
+                                        title: 'Estimated End Date',
                                         hintText: '-',
                                         controller: _endDateController,
                                         enabled: false,
@@ -407,17 +407,17 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
 
                               const SizedBox(height: AppSpacing.xxl),
 
-                              /// SKEMA PEMBAYARAN — hanya muncul jika start_date > H+7
+                              /// PAYMENT SCHEME — only shown if start_date > H+7
                               if (state.isDpAvailable) ...[
                                 AppSectionCard(
-                                  title: 'Skema Pembayaran',
+                                  title: 'Payment Scheme',
                                   icon: Icons.account_balance_outlined,
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Tanggal mulai lebih dari 7 hari ke depan. Anda bisa memilih membayar DP (uang muka 50%) sekarang dan melunasi sisa sebelum tanggal masuk.',
+                                        'The start date is more than 7 days away. You can choose to pay the down payment (50% upfront) now and settle the remainder before the check-in date.',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: textSecondary,
@@ -430,9 +430,9 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                         runSpacing: AppSpacing.lg,
                                         children: [
                                           SelectionCard.vertical(
-                                            title: 'Bayar Penuh',
+                                            title: 'Full Payment',
                                             subtitle:
-                                                'Lunasi semua biaya sekarang',
+                                                'Pay all costs now',
                                             valueLabel:
                                                 'Rp ${NumberFormat.decimalPattern('id').format(state.totalPrice).replaceAll(',', '.')}',
                                             selected:
@@ -450,9 +450,9 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                             maxWidth: 320,
                                           ),
                                           SelectionCard.vertical(
-                                            title: 'DP (Uang Muka)',
+                                            title: 'Down Payment (DP)',
                                             subtitle:
-                                                'Bayar 50% sekarang, lunasi sebelum tanggal masuk',
+                                                'Pay 50% now, settle the rest before check-in',
                                             valueLabel:
                                                 'Rp ${NumberFormat.decimalPattern('id').format(state.dpAmount.toInt()).replaceAll(',', '.')}',
                                             selected:
@@ -474,7 +474,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                       ),
                                       if (state.paymentScheme == 'dp') ...[
                                         const SizedBox(height: AppSpacing.md),
-                                        // ── Banner DP (design system tokens) ──
+                                        // ── DP banner (design system tokens) ──
                                         Container(
                                           padding: const EdgeInsets.all(
                                             AppSpacing.md,
@@ -502,7 +502,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                               ),
                                               Expanded(
                                                 child: Text(
-                                                  'DP harus dibayar dalam 15 menit setelah pemesanan. Sisa pembayaran wajib dilunasi sebelum tanggal masuk.',
+                                                  'The down payment must be paid within 15 minutes after booking. The remaining payment must be settled before the check-in date.',
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     color: statusWaiting,
@@ -520,9 +520,9 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                 const SizedBox(height: AppSpacing.xxl),
                               ],
 
-                              /// METODE PEMBAYARAN
+                              /// PAYMENT METHOD
                               AppSectionCard(
-                                title: 'Metode Pembayaran',
+                                title: 'Payment Method',
                                 icon: Icons.payment_outlined,
                                 child: Column(
                                   children: [
@@ -532,7 +532,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                       children: [
                                         if (state.isMidtransEnabled)
                                           SelectionCard.horizontal(
-                                            title: 'Pembayaran Online',
+                                            title: 'Online Payment',
                                             subtitle: _midtransSubtitle(
                                               state.midtransPaymentMethods,
                                             ),
@@ -552,9 +552,9 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                             maxWidth: 358,
                                           ),
                                         SelectionCard.horizontal(
-                                          title: 'Pembayaran Manual',
+                                          title: 'Manual Payment',
                                           subtitle:
-                                              'Transfer atau Cash dengan Bukti',
+                                              'Transfer or cash with proof',
                                           icon: Icons.payments,
                                           selected:
                                               state.paymentMethod == 'tunai',
@@ -576,7 +576,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                       Align(
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          'Pilih Metode Pembayaran',
+                                          'Select Payment Method',
                                           style: TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 14,
@@ -588,7 +588,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                       Align(
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          'Metode yang Anda pilih akan dibuka di halaman pembayaran Midtrans.',
+                                          'The method you select will open on the Midtrans payment page.',
                                           style: TextStyle(
                                             fontSize: 11,
                                             color: textSecondary,
@@ -597,7 +597,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                       ),
                                       const SizedBox(height: AppSpacing.md),
 
-                                      // ── Semua metode maintenance ──────────
+                                      // ── All methods in maintenance ──────────
                                       if (state.midtransPaymentMethods
                                               .isNotEmpty &&
                                           state.midtransPaymentMethods.every(
@@ -634,7 +634,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      'Semua metode pembayaran online sedang maintenance',
+                                                      'All online payment methods are under maintenance',
                                                       style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -646,7 +646,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                                       height: AppSpacing.xs,
                                                     ),
                                                     Text(
-                                                      'Tidak ada metode yang tersedia saat ini. Silakan gunakan Pembayaran Manual atau coba lagi nanti.',
+                                                      'No method is currently available. Please use Manual Payment or try again later.',
                                                       style: TextStyle(
                                                         fontSize: 12,
                                                         color: statusWaiting,
@@ -667,7 +667,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                                             ),
                                                           ),
                                                       child: Text(
-                                                        'Beralih ke Pembayaran Manual →',
+                                                        'Switch to Manual Payment →',
                                                         style: TextStyle(
                                                           fontSize: 12,
                                                           fontWeight:
@@ -687,7 +687,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                         const SizedBox(height: AppSpacing.md),
                                       ],
 
-                                      // ── Tidak ada metode ──────────────────
+                                      // ── No method available ──────────────────
                                       if (state
                                           .midtransPaymentMethods.isEmpty) ...[
                                         Container(
@@ -717,7 +717,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                               ),
                                               Expanded(
                                                 child: Text(
-                                                  'Tidak ada metode pembayaran online yang aktif. Hubungi pengelola atau gunakan Pembayaran Manual.',
+                                                  'No online payment method is active. Contact the caretaker or use Manual Payment.',
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     color: textSecondary,
@@ -771,7 +771,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                     ] else if (state.paymentMethod ==
                                         'tunai') ...[
                                       const SizedBox(height: AppSpacing.lg),
-                                      // ── Banner Pembayaran Manual ────────────
+                                      // ── Manual payment banner ────────────
                                       Container(
                                         padding: const EdgeInsets.all(
                                           AppSpacing.lg,
@@ -801,7 +801,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    'Pembayaran Manual',
+                                                    'Manual Payment',
                                                     style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -813,7 +813,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                                     height: AppSpacing.xs,
                                                   ),
                                                   Text(
-                                                    'Lakukan transfer bank atau bayar cash, lalu unggah bukti pembayaran di langkah berikutnya.',
+                                                    'Make a bank transfer or pay in cash, then upload the payment proof in the next step.',
                                                     style: TextStyle(
                                                       fontSize: 12,
                                                       color: statusWaiting,
@@ -848,14 +848,14 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                         flex: 1,
                         child: Column(
                           children: [
-                            // ── Ringkasan Biaya ─────────────────────────────
+                            // ── Cost Summary ─────────────────────────────
                             AppSectionCard(
-                              title: 'Ringkasan Biaya',
+                              title: 'Cost Summary',
                               icon: Icons.receipt_long_outlined,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Baris nama kamar + durasi
+                                  // Room name + duration row
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -867,7 +867,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                       ),
                                       Text(
                                         '${state.duration} '
-                                        '${state.rentType == 'Bulanan' ? 'Bulan' : state.rentType == 'Tahunan' ? 'Tahun' : 'Hari'}',
+                                        '${state.rentType == 'Bulanan' ? 'Month' : state.rentType == 'Tahunan' ? 'Year' : 'Day'}',
                                         style:
                                             TextStyle(color: textSecondary),
                                       ),
@@ -875,14 +875,14 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                   ),
                                   const SizedBox(height: AppSpacing.sm),
 
-                                  // Baris harga per periode
+                                  // Price per period row
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'Harga / '
-                                        '${state.rentType == 'Bulanan' ? 'bulan' : state.rentType == 'Tahunan' ? 'tahun' : 'hari'}',
+                                        'Price / '
+                                        '${state.rentType == 'Bulanan' ? 'month' : state.rentType == 'Tahunan' ? 'year' : 'day'}',
                                         style:
                                             TextStyle(color: textSecondary),
                                       ),
@@ -906,13 +906,13 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                   ),
                                   const SizedBox(height: AppSpacing.sm),
 
-                                  // Baris Total Biaya
+                                  // Total cost row
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'Total Biaya',
+                                        'Total Cost',
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           color: textPrimary,
@@ -933,13 +933,13 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                     Container(height: 1, color: borderColor),
                                     const SizedBox(height: AppSpacing.xs),
 
-                                    // Baris DP sekarang
+                                    // Current down payment row
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          'Bayar Sekarang (DP)',
+                                          'Pay Now (DP)',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: textPrimary,
@@ -956,13 +956,13 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                                     ),
                                     const SizedBox(height: AppSpacing.xs),
 
-                                    // Baris pelunasan
+                                    // Remaining payment row
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          'Pelunasan (sebelum tanggal masuk)',
+                                          'Remaining payment (before check-in date)',
                                           style: TextStyle(
                                             fontSize: 11,
                                             color: textSecondary,
@@ -984,11 +984,11 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
 
                             const SizedBox(height: AppSpacing.xl),
 
-                            // ── Tombol Pesan Kamar ──────────────────────────
+                            // ── Book room button ──────────────────────────
                             SizedBox(
                               width: double.infinity,
                               child: BasicButton(
-                                label: 'Pesan Kamar',
+                                label: 'Book Room',
                                 isLoading: state.status ==
                                     FormzSubmissionStatus.inProgress,
                                 onPressed: () {
@@ -999,9 +999,9 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
 
                             const SizedBox(height: AppSpacing.sm),
 
-                            // ── Catatan bawah ────────────────────────────────
+                            // ── Note below ────────────────────────────────
                             Text(
-                              'Setelah submit, Anda akan diarahkan untuk melakukan pembayaran',
+                              'After submitting, you will be redirected to make the payment',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: textSecondary,
@@ -1088,26 +1088,26 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
     final state = context.read<ReservationDetailFormBloc>().state;
     final authState = context.read<AuthBloc>().state;
 
-    // 1. Pengecekan Login
+    // 1. Login check
     if (!authState.isLoggedIn) {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Login Diperlukan'),
+          title: const Text('Login Required'),
           content: const Text(
-            'Untuk memesan kamar, Anda perlu login atau membuat akun terlebih dahulu.',
+            'To book a room, you need to sign in or create an account first.',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Nanti Saja'),
+              child: const Text('Not Now'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(ctx);
                 context.router.push(LoginRoute(pendingRoom: state.room));
               },
-              child: const Text('Login Sekarang'),
+              child: const Text('Sign In Now'),
             ),
           ],
         ),
@@ -1115,29 +1115,29 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
       return;
     }
 
-    // 2. Pengecekan Tanggal Mulai
+    // 2. Start date check
     if (state.startDate == null) {
-      AppSnackbar.showError('Pilih tanggal mulai terlebih dahulu');
+      AppSnackbar.showError('Select a start date first');
       return;
     }
 
-    // 3. Pengecekan ketersediaan metode Midtrans
+    // 3. Midtrans method availability check
     if (state.paymentMethod == 'online') {
       final methods = state.midtransPaymentMethods;
       if (methods.isEmpty || methods.every((m) => !m.available)) {
         AppSnackbar.showError(
           methods.isEmpty
-              ? 'Tidak ada metode pembayaran online yang aktif. Gunakan Pembayaran Manual.'
-              : 'Semua metode pembayaran online sedang maintenance. Gunakan Pembayaran Manual.',
+              ? 'No online payment method is active. Use Manual Payment.'
+              : 'All online payment methods are under maintenance. Use Manual Payment.',
         );
         return;
       }
     }
 
-    // 4. Pengecekan Profil
+    // 4. Profile check
     if (!state.isProfileComplete) {
       AppSnackbar.showInfo(
-        'Silakan lengkapi biodata Anda (NIK, nomor telepon, dan alamat KTP) sebelum melanjutkan pemesanan.',
+        'Please complete your personal data (national ID number, phone number, and ID card address) before continuing the booking.',
       );
       context.router.push(const CompleteProfileRoute()).then((_) {
         if (context.mounted) {
@@ -1162,18 +1162,18 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Konfirmasi Pesanan'),
+        title: const Text('Confirm Booking'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Apakah Anda yakin ingin melakukan pemesanan kamar ini?',
+              'Are you sure you want to book this room?',
             ),
             const SizedBox(height: AppSpacing.lg),
-            _infoRow('Kamar', state.room?.title ?? '-'),
+            _infoRow('Room', state.room?.title ?? '-'),
             _infoRow(
-              'Mulai',
+              'Start',
               DateFormat('dd/MM/yyyy').format(state.startDate!),
             ),
             _infoRow(
@@ -1181,15 +1181,15 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
               'Rp ${NumberFormat.decimalPattern('id').format(state.totalPrice).replaceAll(',', '.')}',
             ),
             if (state.paymentScheme == 'dp') ...[
-              _infoRow('Skema', 'DP (Uang Muka 50%)'),
+              _infoRow('Payment Scheme', 'DP (50% Down Payment)'),
               _infoRow(
-                'Bayar Sekarang',
+                'Pay Now',
                 'Rp ${NumberFormat.decimalPattern('id').format(state.dpAmount.toInt()).replaceAll(',', '.')}',
               ),
             ] else
-              _infoRow('Skema', 'Bayar Penuh'),
+              _infoRow('Payment Scheme', 'Full Payment'),
             _infoRow(
-              'Metode',
+              'Method',
               state.paymentMethod == 'online'
                   ? (state.selectedMidtransMethod != null
                         ? 'Online · ${_kMidtransMethodMap[state.selectedMidtransMethod]?.name ?? state.selectedMidtransMethod!.toUpperCase()}'
@@ -1206,7 +1206,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
                   border: Border.all(color: statusWaitingBorder),
                 ),
                 child: Text(
-                  'DP harus dibayar dalam 15 menit. Sisa pembayaran wajib dilunasi sebelum tanggal masuk.',
+                  'The down payment must be paid within 15 minutes. The remaining payment must be settled before the check-in date.',
                   style: TextStyle(
                     fontSize: 11,
                     color: statusWaiting,
@@ -1220,7 +1220,7 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1231,8 +1231,8 @@ class _ReservationDetailFormViewState extends State<ReservationDetailFormView> {
             },
             child: Text(
               state.paymentScheme == 'dp'
-                  ? 'Ya, Bayar DP Sekarang'
-                  : 'Ya, Pesan Sekarang',
+                  ? 'Yes, Pay DP Now'
+                  : 'Yes, Book Now',
             ),
           ),
         ],
@@ -1272,32 +1272,32 @@ class _MidtransMethodInfo {
 const Map<String, _MidtransMethodInfo> _kMidtransMethodMap = {
   'qris': _MidtransMethodInfo(
     'QRIS',
-    'Scan QR dari semua e-wallet & bank',
+    'Scan QR from all e-wallets & banks',
     Icons.qr_code,
   ),
   'gopay': _MidtransMethodInfo(
     'GoPay',
-    'Bayar dengan saldo GoPay',
+    'Pay with your GoPay balance',
     Icons.account_balance_wallet,
   ),
   'shopeepay': _MidtransMethodInfo(
     'ShopeePay',
-    'Bayar dengan saldo ShopeePay',
+    'Pay with your ShopeePay balance',
     Icons.shopping_bag,
   ),
   'dana': _MidtransMethodInfo(
     'DANA',
-    'Bayar dengan saldo DANA',
+    'Pay with your DANA balance',
     Icons.account_balance_wallet,
   ),
   'linkaja': _MidtransMethodInfo(
     'LinkAja',
-    'Bayar dengan LinkAja',
+    'Pay with your LinkAja balance',
     Icons.account_balance_wallet,
   ),
   'ovo': _MidtransMethodInfo(
     'OVO',
-    'Bayar dengan saldo OVO',
+    'Pay with your OVO balance',
     Icons.account_balance_wallet,
   ),
   'bca_va': _MidtransMethodInfo(
@@ -1332,41 +1332,41 @@ const Map<String, _MidtransMethodInfo> _kMidtransMethodMap = {
   ),
   'other_va': _MidtransMethodInfo(
     'Virtual Account',
-    'Transfer via bank lain',
+    'Transfer via another bank',
     Icons.account_balance,
   ),
   'alfamart': _MidtransMethodInfo(
     'Alfamart',
-    'Bayar di kasir Alfamart',
+    'Pay at the Alfamart counter',
     Icons.store,
   ),
   'indomaret': _MidtransMethodInfo(
     'Indomaret',
-    'Bayar di kasir Indomaret',
+    'Pay at the Indomaret counter',
     Icons.store,
   ),
   'credit_card': _MidtransMethodInfo(
-    'Kartu Kredit/Debit',
+    'Credit/Debit Card',
     'Visa, Mastercard, JCB',
     Icons.credit_card,
   ),
   'akulaku': _MidtransMethodInfo(
     'Akulaku',
-    'Cicilan 0% via Akulaku',
+    '0% installments via Akulaku',
     Icons.credit_card,
   ),
   'kredivo': _MidtransMethodInfo(
     'Kredivo',
-    'Cicilan via Kredivo',
+    'Installments via Kredivo',
     Icons.credit_card,
   ),
 };
 
-/// Subtitle dinamis berdasarkan metode yang tersedia
+/// Dynamic subtitle based on the available methods
 String _midtransSubtitle(List<MidtransMethodEntity> methods) {
-  if (methods.isEmpty) return 'Tidak ada metode aktif';
+  if (methods.isEmpty) return 'No active method';
   final available = methods.where((m) => !m.maintenance).toList();
-  if (available.isEmpty) return 'Semua metode sedang maintenance';
+  if (available.isEmpty) return 'All methods are under maintenance';
   final names = available
       .map(
         (m) => m.label.isNotEmpty
@@ -1376,11 +1376,11 @@ String _midtransSubtitle(List<MidtransMethodEntity> methods) {
       .take(3)
       .join(', ');
   return available.length > 3
-      ? '$names, +${available.length - 3} lainnya'
+      ? '$names, +${available.length - 3} more'
       : names;
 }
 
-/// Kartu metode pembayaran Midtrans — list-tile style, tinggi tetap 72px
+/// Midtrans payment method card — list-tile style, fixed 72px height
 Widget _midtransMethodCard({
   required MidtransMethodEntity method,
   required bool selected,
@@ -1393,7 +1393,7 @@ Widget _midtransMethodCard({
           _kMidtransMethodMap[method.code] ??
           _MidtransMethodInfo(
             method.code.toUpperCase(),
-            'Metode Midtrans',
+            'Midtrans method',
             Icons.payment,
           );
       final displayName = method.label.isNotEmpty ? method.label : info.name;
@@ -1457,7 +1457,7 @@ Widget _midtransMethodCard({
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Ikon
+                  // Icon
                   Container(
                     width: 40,
                     height: 40,
@@ -1472,7 +1472,7 @@ Widget _midtransMethodCard({
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  // Nama + deskripsi
+                  // Name + description
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1492,7 +1492,7 @@ Widget _midtransMethodCard({
                         const SizedBox(height: 2),
                         if (isMaintenance)
                           Text(
-                            'Sedang Maintenance',
+                            'Under Maintenance',
                             style: TextStyle(
                               fontSize: 10.5,
                               height: 1.2,

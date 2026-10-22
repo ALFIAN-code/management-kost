@@ -33,7 +33,7 @@ class AppPagination extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Menampilkan $startItem - $endItem dari ${meta.total} data',
+                'Showing $startItem - $endItem of ${meta.total} records',
                 style: TextStyle(
                   color: isDark
                       ? AppColorsDark.textSecondary
@@ -76,7 +76,7 @@ class AppPagination extends StatelessWidget {
                     ) {
                       return DropdownMenuItem<int>(
                         value: value,
-                        child: Text('$value / halaman'),
+                        child: Text('$value / page'),
                       );
                     }).toList(),
                   ),
@@ -91,16 +91,16 @@ class AppPagination extends StatelessWidget {
                     ? () => onChanged(meta.currentPage - 1, meta.perPage)
                     : null,
                 // icon: const Icon(Icons.chevron_left, size: 18),
-                // label: const Text('Sebelumnya'),
+                // label: const Text('Previous'),
                 child: Row(
                   children: [
                     const Icon(Icons.chevron_left, size: 18),
-                    const Text('Sebelumnya'),
+                    const Text('Previous'),
                   ],
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
-              Text('Halaman ${meta.currentPage} dari ${meta.lastPage}'),
+              Text('Page ${meta.currentPage} of ${meta.lastPage}'),
               const SizedBox(width: AppSpacing.md),
               TextButton(
                 onPressed: meta.currentPage < meta.lastPage
@@ -108,7 +108,7 @@ class AppPagination extends StatelessWidget {
                     : null,
                 child: Row(
                   children: [
-                    const Text('Selanjutnya'),
+                    const Text('Next'),
                     const Icon(Icons.chevron_right, size: 18),
                   ],
                 ),

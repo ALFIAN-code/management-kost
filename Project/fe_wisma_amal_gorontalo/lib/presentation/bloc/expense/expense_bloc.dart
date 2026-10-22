@@ -33,8 +33,8 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       emit(ExpenseLoading());
       try {
         await createExpenseUseCase.execute(event.expense);
-        emit(const ExpenseOperationSuccess("Pengeluaran berhasil ditambahkan"));
-        // add(FetchExpenses()); <-- Dihapus, dipindahkan ke UI
+        emit(const ExpenseOperationSuccess("Expense added successfully"));
+        // add(FetchExpenses()); <-- Removed, moved to UI
       } catch (e) {
         emit(ExpenseError(e.toString()));
       }
@@ -44,7 +44,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       emit(ExpenseLoading());
       try {
         await updateExpenseUseCase.execute(event.expense);
-        emit(const ExpenseOperationSuccess("Pengeluaran berhasil diperbarui"));
+        emit(const ExpenseOperationSuccess("Expense updated successfully"));
       } catch (e) {
         emit(ExpenseError(e.toString()));
       }
@@ -54,7 +54,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       emit(ExpenseLoading());
       try {
         await deleteExpenseUseCase.execute(event.id);
-        emit(const ExpenseOperationSuccess("Pengeluaran berhasil dihapus"));
+        emit(const ExpenseOperationSuccess("Expense deleted successfully"));
       } catch (e) {
         emit(ExpenseError(e.toString()));
       }

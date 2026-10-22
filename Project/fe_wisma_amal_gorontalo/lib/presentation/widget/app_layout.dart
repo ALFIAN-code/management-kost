@@ -34,7 +34,7 @@ class _AppLayoutPageState extends State<AppLayoutPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Refresh permissions otomatis saat app dibuka kembali dari background
+    // Refresh permissions automatically when the app is reopened from the background
     if (state == AppLifecycleState.resumed && mounted) {
       context.read<AuthBloc>().add(const GetPermissionsEvent());
     }
@@ -73,7 +73,7 @@ class _AppLayoutPageState extends State<AppLayoutPage>
         listenWhen: (previous, current) =>
             previous.isLoggedIn == true && current.isLoggedIn == false,
         listener: (context, state) {
-          // Ketika logout, pastikan kembali ke root publik (RoomRoute)
+          // On logout, make sure to return to the public root (RoomRoute)
           context.router.replaceAll([
             const AppLayoutRoute(children: [RoomRoute()]),
           ]);
@@ -97,7 +97,7 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                     // ─── Dashboard ─────────────────────────────────────
                     if (context.can(PermissionKeys.viewDashboard))
                       SidebarItem(
-                        label: 'Dashboard Admin',
+                        label: 'Admin Dashboard',
                         icon: Icons.dashboard,
                         page: DashboardRoute(),
                         hasAccess: true,
@@ -105,80 +105,80 @@ class _AppLayoutPageState extends State<AppLayoutPage>
 
                     if (context.can(PermissionKeys.viewResidentDashboard))
                       SidebarItem(
-                        label: 'Dashboard Penghuni',
+                        label: 'Resident Dashboard',
                         icon: Icons.dashboard_customize_outlined,
                         page: const ResidentDashboardRoute(),
                         hasAccess: true,
                       ),
 
-                    // ─── Autentikasi Sistem (Permission & Role) ────────
+                    // ─── System Authentication (Permission & Role) ────────
                     if (context.can(PermissionKeys.viewPermission) ||
                         context.can(PermissionKeys.viewRole))
                       SidebarItem(
-                        label: 'Autentikasi Sistem',
+                        label: 'System Authentication',
                         icon: Icons.security,
                         hasAccess: true,
                         children: [
                           if (context.can(PermissionKeys.viewPermission))
                             SidebarItem(
-                              label: 'Izin',
+                              label: 'Permissions',
                               icon: Icons.check_circle_outline,
                               page: const PermissionRoute(),
                             ),
                           if (context.can(PermissionKeys.viewRole))
                             SidebarItem(
-                              label: 'Peran',
+                              label: 'Roles',
                               icon: Icons.security,
                               page: RoleManagementRoute(),
                             ),
                         ],
                       ),
 
-                    // ─── Manajemen Akun ────────────────────────────────
+                    // ─── Account Management ────────────────────────────────
                     if (context.can(PermissionKeys.viewUser))
                       SidebarItem(
-                        label: 'Manajemen Akun',
+                        label: 'Account Management',
                         icon: Icons.manage_accounts,
                         page: const UserManagementRoute(),
                         hasAccess: true,
                       ),
 
-                    // ─── Manajemen Penghuni (Admin) ────────────────────
-                    // Tampil jika memiliki salah satu permission pengelolaan penghuni/tamu
+                    // ─── Resident Management (Admin) ────────────────────
+                    // Shown if the user has any resident/guest management permission
                     if (context.can(PermissionKeys.viewResident) ||
                         (context.can(PermissionKeys.viewGuest) &&
                             context.isFeatureEnabled('guest')) ||
                         (context.can(PermissionKeys.viewGuestBill) &&
                             context.isFeatureEnabled('guest')))
                       SidebarItem(
-                        label: 'Manajemen Penghuni',
+                        label: 'Resident Management',
                         icon: Icons.admin_panel_settings,
                         hasAccess: true,
                         children: [
                           if (context.can(PermissionKeys.viewResident))
                             SidebarItem(
-                              label: 'Daftar Penghuni',
+                              label: 'Resident List',
                               icon: Icons.people,
                               page: const ResidentRoute(),
                             ),
                           if (context.can(PermissionKeys.viewGuest) &&
                               context.isFeatureEnabled('guest'))
                             SidebarItem(
-                              label: 'Daftar Tamu',
+                              label: 'Guest List',
                               icon: Icons.groups,
                               page: const GuestListRoute(),
                             ),
                           if (context.can(PermissionKeys.viewGuestBill) &&
                               context.isFeatureEnabled('guest'))
                             SidebarItem(
-                              label: 'Tagihan Tamu',
+                              label: 'Guest Invoices',
                               icon: Icons.receipt_long_outlined,
                               page: const AdminGuestBillRoute(),
                             ),
                         ],
                       ),
 
-                    // ─── Kamar & Reservasi (Admin) ─────────────────────
+                    // ─── Rooms & Reservations (Admin) ─────────────────────
                     if (!isGuest &&
                         !isResident &&
                         !isMember &&
@@ -189,20 +189,20 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                                     context.can(PermissionKeys.approveLease)) &&
                                 context.isFeatureEnabled('schedule'))))
                       SidebarItem(
-                        label: 'Kamar & Reservasi',
+                        label: 'Rooms & Reservations',
                         icon: Icons.room,
                         hasAccess: true,
                         children: [
                           if (context.can(PermissionKeys.viewRooms) &&
                               context.isFeatureEnabled('room'))
                             SidebarItem(
-                              label: 'Kamar',
+                              label: 'Rooms',
                               icon: Icons.meeting_room,
                               page: RoomRoute(),
                             ),
                           if (context.isFeatureEnabled('schedule'))
                             SidebarItem(
-                              label: 'Jadwal Kamar',
+                              label: 'Room Schedule',
                               icon: Icons.calendar_month_outlined,
                               page: const RoomScheduleRoute(),
                             ),
@@ -210,14 +210,14 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                                   context.can(PermissionKeys.approveLease)) &&
                               context.isFeatureEnabled('schedule'))
                             SidebarItem(
-                              label: 'Reservasi',
+                              label: 'Reservations',
                               icon: Icons.book_online,
                               page: const ReservationRoute(),
                             ),
                         ],
                       ),
 
-                    // ─── Keuangan (Admin) ──────────────────────────────
+                    // ─── Finance (Admin) ──────────────────────────────
                     if (context.isFeatureEnabled('finance') &&
                         ((context.can(PermissionKeys.financeDashboardView) &&
                                 context.isFeatureEnabled(
@@ -236,7 +236,7 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                             (context.can(PermissionKeys.financeFineView) &&
                                 context.isFeatureEnabled('finance_fine'))))
                       SidebarItem(
-                        label: 'Keuangan',
+                        label: 'Finance',
                         icon: Icons.monetization_on,
                         hasAccess: true,
                         children: [
@@ -254,14 +254,14 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                                 PermissionKeys.financeFixedExpenseView,
                               ))
                             SidebarItem(
-                              label: 'Pengeluaran',
+                              label: 'Expenses',
                               icon: Icons.receipt_long,
                               page: const ExpenseListRoute(),
                             ),
                           if (context.can(PermissionKeys.financeInvoiceView) &&
                               context.isFeatureEnabled('finance_invoice'))
                             SidebarItem(
-                              label: 'Daftar Tagihan',
+                              label: 'Invoice List',
                               icon: Icons.description_outlined,
                               page: const InvoiceListRoute(),
                             ),
@@ -270,7 +270,7 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                               ) &&
                               context.isFeatureEnabled('finance_invoice'))
                             SidebarItem(
-                              label: 'Manajemen Pembayaran',
+                              label: 'Payment Management',
                               icon: Icons.payments_outlined,
                               page: const PaymentVerificationRoute(),
                             ),
@@ -279,21 +279,21 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                               ) &&
                               context.isFeatureEnabled('finance_invoice'))
                             SidebarItem(
-                              label: 'Permintaan Refund',
+                              label: 'Refund Requests',
                               icon: Icons.currency_exchange_outlined,
                               page: const RefundRequestRoute(),
                             ),
                           if (context.can(PermissionKeys.financeFineView) &&
                               context.isFeatureEnabled('finance_fine'))
                             SidebarItem(
-                              label: 'Manajemen Denda',
+                              label: 'Fine Management',
                               icon: Icons.gavel_outlined,
                               page: const FineManagementRoute(),
                             ),
                         ],
                       ),
 
-                    // ─── Inventaris & Pemeliharaan (Admin) ────────────
+                    // ─── Inventory & Maintenance (Admin) ────────────
                     if (!isResident &&
                         !isMember &&
                         ((context.can(PermissionKeys.viewInventory) &&
@@ -305,28 +305,28 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                             (context.can(PermissionKeys.viewDamageReport) &&
                                 context.isFeatureEnabled('damage_report'))))
                       SidebarItem(
-                        label: 'Inventaris & Pemeliharaan',
+                        label: 'Inventory & Maintenance',
                         icon: Icons.inventory,
                         hasAccess: true,
                         children: [
                           if (context.can(PermissionKeys.viewInventory) &&
                               context.isFeatureEnabled('inventory'))
                             SidebarItem(
-                              label: 'Inventaris',
+                              label: 'Inventory',
                               icon: Icons.inventory,
                               page: const InventoryRoute(),
                             ),
                           if (context.can(PermissionKeys.viewMaintenance) &&
                               context.isFeatureEnabled('maintenance_schedule'))
                             SidebarItem(
-                              label: 'Pemeliharaan',
+                              label: 'Maintenance',
                               icon: Icons.build,
                               page: const MaintananceRoute(),
                             ),
                           if (context.can(PermissionKeys.viewDamageReport) &&
                               context.isFeatureEnabled('damage_report'))
                             SidebarItem(
-                              label: 'Laporan Kerusakan',
+                              label: 'Damage Reports',
                               icon: Icons.report_problem_outlined,
                               page: const MaintenanceReportListRoute(),
                             ),
@@ -334,52 +334,52 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                       ),
 
                     // ══════════════════════════════════════════════════
-                    // Area untuk pengguna terdaftar (Member & Resident)
+                    // Area for registered users (Member & Resident)
                     // ══════════════════════════════════════════════════
 
-                    // ─── Kamar (Member, Resident, Guest) ──────────────
+                    // ─── Rooms (Member, Resident, Guest) ──────────────
                     if ((isGuest || isMember || isResident) &&
                         context.isFeatureEnabled('room'))
                       SidebarItem(
-                        label: 'Kamar',
+                        label: 'Rooms',
                         icon: Icons.meeting_room,
                         page: RoomRoute(),
                       ),
 
-                    // ─── Reservasi (Pengunjung belum login) ────────────
+                    // ─── Reservations (Visitors not logged in) ────────────
                     // if (isGuest)
                     //   SidebarItem(
-                    //     label: 'Reservasi',
+                    //     label: 'Reservations',
                     //     icon: Icons.book_online,
                     //     page: const ReservationRoute(),
                     //   ),
 
-                    // ─── Area Member (pengguna terdaftar, belum punya kamar) ──
+                    // ─── Member Area (registered users without a room) ──
                     if (isMember) ...[
                       if ((context.can(PermissionKeys.applyLease) ||
                               context.can(PermissionKeys.viewLease)) &&
                           context.isFeatureEnabled('schedule'))
                         SidebarItem(
-                          label: 'Reservasi Saya',
+                          label: 'My Reservations',
                           icon: Icons.book_online_outlined,
                           page: const MyReservationRoute(),
                         ),
                       if (context.can(PermissionKeys.financeMeSummaryView) &&
                           context.isFeatureEnabled('finance'))
                         SidebarItem(
-                          label: 'Keuangan Saya',
+                          label: 'My Finance',
                           icon: Icons.account_balance_wallet_outlined,
                           page: const MemberFinanceRoute(),
                         ),
                       if (context.isFeatureEnabled('guest'))
                         SidebarItem(
-                          label: 'Tamu Saya',
+                          label: 'My Guests',
                           icon: Icons.people_alt_outlined,
                           page: const MyGuestRoute(),
                         ),
                     ],
 
-                    // ─── Area Penghuni (resident aktif) ────────────────
+                    // ─── Resident Area (active resident) ────────────────
                     if (isResident &&
                         ((context.can(PermissionKeys.financeMeSummaryView) &&
                                 context.isFeatureEnabled('finance')) ||
@@ -399,7 +399,7 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                                   'maintenance_schedule',
                                 ))))
                       SidebarItem(
-                        label: 'Area Penghuni',
+                        label: 'Resident Area',
                         icon: Icons.home_work_outlined,
                         hasAccess: true,
                         children: [
@@ -408,7 +408,7 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                               ) &&
                               context.isFeatureEnabled('finance'))
                             SidebarItem(
-                              label: 'Keuangan Saya',
+                              label: 'My Finance',
                               icon: Icons.account_balance_wallet_outlined,
                               page: const MemberFinanceRoute(),
                             ),
@@ -416,7 +416,7 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                                   context.can(PermissionKeys.viewLease)) &&
                               context.isFeatureEnabled('schedule'))
                             SidebarItem(
-                              label: 'Reservasi Saya',
+                              label: 'My Reservations',
                               icon: Icons.book_online_outlined,
                               page: const MyReservationRoute(),
                             ),
@@ -425,45 +425,45 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                                   context.can(PermissionKeys.payGuestBill)) &&
                               context.isFeatureEnabled('guest'))
                             SidebarItem(
-                              label: 'Tamu Saya',
+                              label: 'My Guests',
                               icon: Icons.people_alt_outlined,
                               page: const MyGuestRoute(),
                             ),
                           if (context.can(PermissionKeys.createDamageReport) &&
                               context.isFeatureEnabled('damage_report'))
                             SidebarItem(
-                              label: 'Lapor Kerusakan',
+                              label: 'Report Damage',
                               icon: Icons.report_problem_outlined,
                               page: const MaintenanceCreateReportRoute(),
                             ),
                           if (context.can(PermissionKeys.viewMyDamageReport) &&
                               context.isFeatureEnabled('damage_report'))
                             SidebarItem(
-                              label: 'Status Laporan',
+                              label: 'Report Status',
                               icon: Icons.track_changes_outlined,
                               page: const MaintenanceReportListRoute(),
                             ),
                           if (context.can(PermissionKeys.viewMaintenance) &&
                               context.isFeatureEnabled('maintenance_schedule'))
                             SidebarItem(
-                              label: 'Jadwal Pemeliharaan',
+                              label: 'Maintenance Schedule',
                               icon: Icons.calendar_today_outlined,
                               page: const MaintananceRoute(),
                             ),
                         ],
                       ),
 
-                    // ─── Sistem & Akun ────────────────────────────
+                    // ─── System & Account ────────────────────────────
                     if (context.can(PermissionKeys.settingView) ||
                         state.isLoggedIn)
                       SidebarItem(
-                        label: 'Sistem & Akun',
+                        label: 'System & Account',
                         icon: Icons.settings_applications,
                         hasAccess: true,
                         children: [
                           if (context.can(PermissionKeys.settingView))
                             SidebarItem(
-                              label: 'Pengaturan',
+                              label: 'Settings',
                               icon: Icons.settings,
                               page: const SettingRoute(),
                             ),
@@ -478,7 +478,7 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                               context.can(PermissionKeys.notificationLogView) &&
                               context.isFeatureEnabled('notification'))
                             SidebarItem(
-                              label: 'Monitoring Notifikasi',
+                              label: 'Notification Monitoring',
                               icon: Icons.notifications_outlined,
                               page: const NotificationMonitoringRoute(),
                             ),
@@ -487,13 +487,13 @@ class _AppLayoutPageState extends State<AppLayoutPage>
                                 PermissionKeys.completeResidentProfile,
                               ))
                             SidebarItem(
-                              label: 'Lengkapi Profil',
+                              label: 'Complete Profile',
                               icon: Icons.assignment_ind_outlined,
                               page: const CompleteProfileRoute(),
                             ),
                           if (state.isLoggedIn)
                             SidebarItem(
-                              label: 'Profil Saya',
+                              label: 'My Profile',
                               icon: Icons.person_outline,
                               page: const ProfileRoute(),
                             ),

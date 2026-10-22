@@ -24,8 +24,8 @@ class RoomSchedulePage extends StatefulWidget {
 }
 
 class _RoomSchedulePageState extends State<RoomSchedulePage> {
-  String? _selectedRoom = 'Semua Kamar';
-  String? _selectedStatus = 'Semua Status';
+  String? _selectedRoom = 'All Rooms';
+  String? _selectedStatus = 'All Statuses';
   DateTime _currentMonth = DateTime.now();
 
   @override
@@ -40,8 +40,8 @@ class _RoomSchedulePageState extends State<RoomSchedulePage> {
         body: Column(
           children: [
             AppTopBar(
-              title: 'Jadwal Kamar',
-              breadcrumb: 'Kamar & Reservasi / Jadwal Kamar',
+              title: 'Room Schedule',
+              breadcrumb: 'Rooms & Reservations / Room Schedule',
             ),
             
             Expanded(
@@ -84,7 +84,7 @@ class _RoomSchedulePageState extends State<RoomSchedulePage> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'Jadwal Kamar - ${DateFormat('MMMM yyyy').format(_currentMonth)}',
+                                        'Room Schedule - ${DateFormat('MMMM', 'en_US').format(_currentMonth)}',
                                         style: theme.textTheme.titleLarge?.copyWith(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -110,7 +110,7 @@ class _RoomSchedulePageState extends State<RoomSchedulePage> {
                                           children: [
                                             Row(
                                               children: [
-                                                // Dropdown Filter Kamar
+                                                // Room Filter Dropdown
                                                 Container(
                                                   height: 40,
                                                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -122,7 +122,7 @@ class _RoomSchedulePageState extends State<RoomSchedulePage> {
                                                     child: DropdownButton<String>(
                                                       value: _selectedRoom,
                                                       items: [
-                                                        'Semua Kamar',
+                                                        'All Rooms',
                                                         ...state.schedules.map((e) => e.number),
                                                       ].map((e) => DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(fontSize: 14)))).toList(),
                                                       onChanged: (v) => setState(() => _selectedRoom = v),
@@ -130,7 +130,7 @@ class _RoomSchedulePageState extends State<RoomSchedulePage> {
                                                   ),
                                                 ),
                                                 const SizedBox(width: AppSpacing.lg),
-                                                // Dropdown Filter Status
+                                                // Status Filter Dropdown
                                                 Container(
                                                   height: 40,
                                                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -142,10 +142,10 @@ class _RoomSchedulePageState extends State<RoomSchedulePage> {
                                                     child: DropdownButton<String>(
                                                       value: _selectedStatus,
                                                       items: [
-                                                        'Semua Status',
-                                                        'Menunggu',
-                                                        'Aktif',
-                                                        'Selesai',
+                                                        'All Statuses',
+                                                        'Pending',
+                                                        'Active',
+                                                        'Completed',
                                                       ].map((e) => DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(fontSize: 14)))).toList(),
                                                       onChanged: (v) => setState(() => _selectedStatus = v),
                                                     ),
@@ -162,7 +162,7 @@ class _RoomSchedulePageState extends State<RoomSchedulePage> {
                                       SizedBox(
                                         width: 250,
                                         child: SummaryStatCard(
-                                          label: 'Total Sewa Aktif',
+                                          label: 'Total Active Leases',
                                           value: _calculateTotalBookings(filteredRooms).toString(),
                                           icon: Icons.calendar_month_outlined,
                                           iconColor: isDark ? AppColorsDark.primary : AppColorsLight.primary,
@@ -174,7 +174,7 @@ class _RoomSchedulePageState extends State<RoomSchedulePage> {
                                   const SizedBox(height: AppSpacing.xxxl),
                                   RoomAvailabilityGrid(
                                     daysInMonth: DateTime(_currentMonth.year, _currentMonth.month + 1, 0).day,
-                                    monthYear: DateFormat('MMMM yyyy').format(_currentMonth),
+                                    monthYear: DateFormat('MMMM', 'en_US').format(_currentMonth),
                                     rooms: gridData,
                                   ),
                                 ],
@@ -197,18 +197,18 @@ class _RoomSchedulePageState extends State<RoomSchedulePage> {
 
   List<RoomScheduleEntity> _getFilteredRooms(List<RoomScheduleEntity> rooms) {
     return rooms.where((room) {
-      if (_selectedRoom != 'Semua Kamar' && room.number != _selectedRoom) {
+      if (_selectedRoom != 'All Rooms' && room.number != _selectedRoom) {
         return false;
       }
-      if (_selectedStatus != 'Semua Status') {
+      if (_selectedStatus != 'All Statuses') {
         final hasMatchingStatus = room.schedules.any((schedule) {
           final status = schedule.status.toLowerCase();
           switch (_selectedStatus) {
-            case 'Menunggu':
+            case 'Pending':
               return status == 'pending' || status == 'dp_terbayar' || status == 'terkonfirmasi';
-            case 'Aktif':
+            case 'Active':
               return status == 'active';
-            case 'Selesai':
+            case 'Completed':
               return status == 'finished';
             default:
               return true;
@@ -312,7 +312,7 @@ class _MonthNavigator extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              DateFormat('MMMM yyyy').format(currentMonth),
+              DateFormat('MMMM', 'en_US').format(currentMonth),
               style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w500,
               ),
@@ -353,19 +353,19 @@ class _StatusLegend extends StatelessWidget {
           _LegendItem(
             color: isDark ? AppColorsDark.statusWaitingBg : AppColorsLight.statusWaitingBg,
             borderColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
-            label: 'Menunggu'
+            label: 'Pending'
           ),
           const SizedBox(width: 32),
           _LegendItem(
             color: isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg,
             borderColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
-            label: 'Aktif'
+            label: 'Active'
           ),
           const SizedBox(width: 32),
           _LegendItem(
             color: isDark ? AppColorsDark.statusProcessBg : AppColorsLight.statusProcessBg,
             borderColor: isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess,
-            label: 'Selesai'
+            label: 'Completed'
           ),
         ],
       ),

@@ -75,7 +75,7 @@ class ProfileUserPage extends StatelessWidget {
             String ktpPhotoUrl = '';
             if (completeProfileState is CompleteProfileLoaded) {
               final p = completeProfileState.profile;
-              gender = p.gender == 'male' ? 'Laki-laki' : (p.gender == 'female' ? 'Perempuan' : p.gender);
+              gender = p.gender == 'male' ? 'Male' : (p.gender == 'female' ? 'Female' : p.gender);
               job = p.job ?? '-';
               ktpPhotoUrl = p.ktpPhotoUrl ?? '';
               if (phone == '-') phone = p.phoneNumber; // fallback
@@ -87,7 +87,7 @@ class ProfileUserPage extends StatelessWidget {
             String endDate = '-';
             String startDate = '-';
             String paymentStatus = '-';
-            String residentStatus = 'Aktif'; // Default for logged in users
+            String residentStatus = 'Active'; // Default for logged in users
             if (myReservationState.status == FormzSubmissionStatus.success &&
                 myReservationState.reservations.isNotEmpty) {
               // Get the most recent active lease
@@ -99,8 +99,8 @@ class ProfileUserPage extends StatelessWidget {
               rentalType = res.rentalType;
               endDate = res.endDate;
               startDate = res.startDate;
-              paymentStatus = res.paymentStatus == 'paid' ? 'Lunas' : (res.paymentStatus == 'unpaid' ? 'Belum Lunas' : res.paymentStatus);
-              residentStatus = res.status == 'active' ? 'Aktif' : res.status;
+              paymentStatus = res.paymentStatus == 'paid' ? 'Paid' : (res.paymentStatus == 'unpaid' ? 'Unpaid' : res.paymentStatus);
+              residentStatus = res.status == 'active' ? 'Active' : res.status;
             }
 
             return SingleChildScrollView(
@@ -108,11 +108,11 @@ class ProfileUserPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // --- JUDUL HALAMAN ---
+                  // --- PAGE TITLE ---
                   Text(
-                    'Profile Penghuni',
+                    'Resident Profile',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                          fontSize: 32, // Disesuaikan proporsinya
+                          fontSize: 32, // Adjusted proportionally
                           fontWeight: FontWeight.w700,
                           height: 1,
                           color: Theme.of(context).colorScheme.onSurface,
@@ -138,7 +138,7 @@ class ProfileUserPage extends StatelessWidget {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              'Data profil belum lengkap. Lengkapi untuk melanjutkan sebagai penyewa.',
+                              'The profile data is incomplete. Complete it to continue as a resident.',
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Theme.of(context).colorScheme.onSurface,
                                     fontWeight: FontWeight.w600,
@@ -159,7 +159,7 @@ class ProfileUserPage extends StatelessWidget {
                                     );
                               }
                             },
-                            label: 'Lengkapi',
+                            label: 'Complete',
                           ),
                         ],
                       ),
@@ -169,7 +169,7 @@ class ProfileUserPage extends StatelessWidget {
                   // --- HEADER PROFILE ---
                   Row(
                     children: [
-                      // Avatar Lingkaran (Diperbesar proporsinya sesuai mockup)
+                      // Circular avatar (enlarged proportionally per the mockup)
                       Container(
                         width: 84,
                         height: 84,
@@ -200,7 +200,7 @@ class ProfileUserPage extends StatelessWidget {
                               ),
                       ),
                       const SizedBox(width: 20),
-                      // Nama dan Kamar
+                      // Name and Room
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -227,9 +227,9 @@ class ProfileUserPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  // --- CARD 1: INFORMASI PRIBADI ---
+                  // --- CARD 1: PERSONAL INFORMATION ---
                   _InfoSectionCard(
-                    title: 'Informasi Pribadi',
+                    title: 'Personal Information',
                     showEditButton: isTenant && !isAdmin,
                     onEditTap: () async {
                       await context.router.push(const CompleteProfileRoute());
@@ -242,30 +242,30 @@ class ProfileUserPage extends StatelessWidget {
                       spacing: 24,    // Jarak horizontal antar kolom
                       runSpacing: 24, // Jarak vertikal antar baris
                       children: [
-                        _InfoItem(label: 'Nama Lengkap', value: name),
-                        _InfoItem(label: 'Nomor Telepon', value: phone),
-                        _InfoItem(label: 'Alamat Email', value: email),
-                        _InfoItem(label: 'Jenis Kelamin', value: gender),
-                        _InfoItem(label: 'Nomor Kamar', value: roomNumber),
+                        _InfoItem(label: 'Full Name', value: name),
+                        _InfoItem(label: 'Phone Number', value: phone),
+                        _InfoItem(label: 'Email Address', value: email),
+                        _InfoItem(label: 'Gender', value: gender),
+                        _InfoItem(label: 'Room Number', value: roomNumber),
                         _InfoItem(label: 'Status', value: job),
                       ],
                     ),
                   ),
                   const SizedBox(height: 24),
 
-                  // --- CARD 2: INFORMASI KONTRAK SEWA ---
+                  // --- CARD 2: LEASE CONTRACT INFORMATION ---
                   _InfoSectionCard(
-                    title: 'Informasi Kontrak Sewa',
+                    title: 'Lease Contract Information',
                     child: Wrap(
                       spacing: 24,
                       runSpacing: 24,
                       children: [
-                        _InfoItem(label: 'Tipe Kamar', value: rentalType),
-                        _InfoItem(label: 'Tanggal Berakhir Kontrak', value: endDate),
-                        _InfoItem(label: 'Harga Sewa', value: '-'), // API doesn't return price in rentals/my
-                        _InfoItem(label: 'Status Penghuni', value: residentStatus),
-                        _InfoItem(label: 'Tanggal Mulai Sewa', value: startDate),
-                        _InfoItem(label: 'Status Pembayaran', value: paymentStatus),
+                        _InfoItem(label: 'Room Type', value: rentalType),
+                        _InfoItem(label: 'Contract End Date', value: endDate),
+                        _InfoItem(label: 'Lease Price', value: '-'), // API doesn't return price in rentals/my
+                        _InfoItem(label: 'Resident Status', value: residentStatus),
+                        _InfoItem(label: 'Lease Start Date', value: startDate),
+                        _InfoItem(label: 'Payment Status', value: paymentStatus),
                       ],
                     ),
                   ),
@@ -280,7 +280,7 @@ class ProfileUserPage extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// PRIVATE WIDGETS (Helper khusus untuk layout card dan teks)
+// PRIVATE WIDGETS (Helpers specific to card layout and text)
 // -----------------------------------------------------------------------------
 
 class _InfoSectionCard extends StatelessWidget {
@@ -301,7 +301,7 @@ class _InfoSectionCard extends StatelessWidget {
     return BasicCard(
       color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.all(32), // Padding diperlebar sesuai mockup
+      padding: const EdgeInsets.all(32), // Padding widened per the mockup
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -355,7 +355,7 @@ class _InfoSectionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 28),
-          child, // Konten Wrap dimuat di sini
+          child, // The Wrap content is loaded here
         ],
       ),
     );
@@ -370,7 +370,7 @@ class _InfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Memberikan lebar tetap agar susunannya mengunci rapi di kiri seperti mockup
+    // Fixed width so the layout stays neatly aligned on the left like the mockup
     return SizedBox(
       width: 320, 
       child: Column(

@@ -59,7 +59,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Text('Ganti Password'),
+          title: const Text('Change Password'),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -74,14 +74,14 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Keamanan Akun',
+                        'Account Security',
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Pastikan password baru Anda kuat dan sulit ditebak.',
+                        'Make sure your new password is strong and hard to guess.',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -91,7 +91,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                         controller: _oldPasswordController,
                         obscureText: _obscureOld,
                         decoration: InputDecoration(
-                          labelText: 'Password Lama',
+                          labelText: 'Old Password',
                           prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -104,7 +104,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                           ),
                         ),
                         validator: (v) => v == null || v.isEmpty
-                            ? 'Password lama wajib diisi'
+                            ? 'Old password is required'
                             : null,
                       ),
                       const SizedBox(height: 16),
@@ -112,7 +112,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                         controller: _newPasswordController,
                         obscureText: _obscureNew,
                         decoration: InputDecoration(
-                          labelText: 'Password Baru',
+                          labelText: 'New Password',
                           prefixIcon: const Icon(Icons.lock_reset),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -126,9 +126,9 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                         ),
                         validator: (v) {
                           if (v == null || v.isEmpty)
-                            return 'Password baru wajib diisi';
+                            return 'New password is required';
                           if (v.length < 8)
-                            return 'Password minimal 8 karakter';
+                            return 'Password must be at least 8 characters';
                           return null;
                         },
                       ),
@@ -137,7 +137,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                         controller: _confirmPasswordController,
                         obscureText: _obscureConfirm,
                         decoration: InputDecoration(
-                          labelText: 'Konfirmasi Password Baru',
+                          labelText: 'Confirm New Password',
                           prefixIcon: const Icon(Icons.check_circle_outline),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -152,7 +152,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                         ),
                         validator: (v) {
                           if (v != _newPasswordController.text)
-                            return 'Konfirmasi password tidak cocok';
+                            return 'Password confirmation does not match';
                           return null;
                         },
                       ),

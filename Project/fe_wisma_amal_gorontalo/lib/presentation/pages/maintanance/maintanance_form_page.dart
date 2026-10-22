@@ -61,24 +61,24 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
 
   // ─── Options ───
   static const _tipeOptions = ['pembersihan', 'perawatan'];
-  static const _tipeLabels = {'pembersihan': 'Pembersihan', 'perawatan': 'Perawatan'};
+  static const _tipeLabels = {'pembersihan': 'Cleaning', 'perawatan': 'Maintenance'};
 
   static const _subtipeOptions = [
     'rutin', 'deep_cleaning', 'darurat', 'perbaikan', 'maintenance',
   ];
   static const _subtipeLabels = {
-    'rutin': 'Rutin',
+    'rutin': 'Routine',
     'deep_cleaning': 'Deep Cleaning',
-    'darurat': 'Darurat',
-    'perbaikan': 'Perbaikan',
+    'darurat': 'Emergency',
+    'perbaikan': 'Repair',
     'maintenance': 'Maintenance',
   };
 
   static const _statusOptions = ['in_progress', 'done', 'cancelled'];
   static const _statusLabels = {
-    'in_progress': 'Dalam Proses',
-    'done': 'Selesai',
-    'cancelled': 'Dibatalkan',
+    'in_progress': 'In Progress',
+    'done': 'Done',
+    'cancelled': 'Cancelled',
   };
 
   @override
@@ -140,7 +140,7 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_waktuMulai == null) {
-      AppSnackbar.showError('Waktu mulai wajib diisi');
+      AppSnackbar.showError('Start time is required');
       return;
     }
 
@@ -168,8 +168,8 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
   }
 
   static String _fmtDt(DateTime? dt) {
-    if (dt == null) return 'Pilih tanggal & waktu';
-    return DateFormat('d MMM yyyy, HH:mm', 'id_ID').format(dt);
+    if (dt == null) return 'Select date & time';
+    return DateFormat('d MMM yyyy, HH:mm', 'en_US').format(dt);
   }
 
   @override
@@ -208,7 +208,7 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
                     ),
                     const SizedBox(width: 16),
                     Text(
-                      widget.isEditMode ? 'Edit Jadwal' : 'Tambah Jadwal',
+                      widget.isEditMode ? 'Edit Schedule' : 'Add Schedule',
                       style: theme.textTheme.headlineLarge,
                     ),
                   ],
@@ -235,7 +235,7 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              'Informasi Jadwal',
+                              'Schedule Information',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -244,30 +244,30 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
                         ),
                         const SizedBox(height: 24),
 
-                        // Row 1: Nama Teknisi & Lokasi
+                        // Row 1: Technician Name & Location
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               child: CustomTextForm(
-                                title: 'Nama Teknisi',
-                                hintText: 'Masukkan nama teknisi',
+                                title: 'Technician Name',
+                                hintText: 'Enter the technician name',
                                 isRequired: true,
                                 controller: _teknisiController,
                                 validator: (v) => v == null || v.trim().isEmpty
-                                    ? 'Nama teknisi wajib diisi'
+                                    ? 'Technician name is required'
                                     : null,
                               ),
                             ),
                             const SizedBox(width: 20),
                             Expanded(
                               child: CustomTextForm(
-                                title: 'Lokasi',
-                                hintText: 'Contoh: Lorong Lt 2, Dapur',
+                                title: 'Location',
+                                hintText: 'Example: Corridor 2nd Floor, Kitchen',
                                 isRequired: true,
                                 controller: _lokasiController,
                                 validator: (v) => v == null || v.trim().isEmpty
-                                    ? 'Lokasi wajib diisi'
+                                    ? 'Location is required'
                                     : null,
                               ),
                             ),
@@ -275,37 +275,37 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
                         ),
                         const SizedBox(height: 20),
 
-                        // Row 2: Tipe, Subtipe, Status
+                        // Row 2: Type, Subtype, Status
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               child: _DropdownField(
-                                title: 'Tipe',
+                                title: 'Type',
                                 isRequired: true,
-                                hint: 'Pilih tipe',
+                                hint: 'Select a type',
                                 value: _selectedTipe,
                                 items: _tipeOptions,
                                 labelOf: (v) => _tipeLabels[v] ?? v,
                                 onChanged: (v) =>
                                     setState(() => _selectedTipe = v),
                                 validator: (v) =>
-                                    v == null ? 'Tipe wajib dipilih' : null,
+                                    v == null ? 'Type is required' : null,
                               ),
                             ),
                             const SizedBox(width: 20),
                             Expanded(
                               child: _DropdownField(
-                                title: 'Subtipe',
+                                title: 'Subtype',
                                 isRequired: true,
-                                hint: 'Pilih subtipe',
+                                hint: 'Select a subtype',
                                 value: _selectedSubtipe,
                                 items: _subtipeOptions,
                                 labelOf: (v) => _subtipeLabels[v] ?? v,
                                 onChanged: (v) =>
                                     setState(() => _selectedSubtipe = v),
                                 validator: (v) =>
-                                    v == null ? 'Subtipe wajib dipilih' : null,
+                                    v == null ? 'Subtype is required' : null,
                               ),
                             ),
                             const SizedBox(width: 20),
@@ -313,27 +313,27 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
                               child: _DropdownField(
                                 title: 'Status',
                                 isRequired: true,
-                                hint: 'Pilih status',
+                                hint: 'Select a status',
                                 value: _selectedStatus,
                                 items: _statusOptions,
                                 labelOf: (v) => _statusLabels[v] ?? v,
                                 onChanged: (v) =>
                                     setState(() => _selectedStatus = v),
                                 validator: (v) =>
-                                    v == null ? 'Status wajib dipilih' : null,
+                                    v == null ? 'Status is required' : null,
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 20),
 
-                        // Row 3: Waktu Mulai & Waktu Selesai
+                        // Row 3: Start Time & End Time
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               child: _DateTimePickerField(
-                                title: 'Waktu Mulai',
+                                title: 'Start Time',
                                 isRequired: true,
                                 value: _waktuMulai,
                                 displayText: _fmtDt(_waktuMulai),
@@ -343,7 +343,7 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
                             const SizedBox(width: 20),
                             Expanded(
                               child: _DateTimePickerField(
-                                title: 'Waktu Selesai',
+                                title: 'End Time',
                                 value: _waktuSelesai,
                                 displayText: _fmtDt(_waktuSelesai),
                                 onTap: () => _pickDateTime(isStart: false),
@@ -355,8 +355,8 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
 
                         // Notes
                         CustomTextForm(
-                          title: 'Catatan',
-                          hintText: 'Catatan tambahan (opsional)',
+                          title: 'Notes',
+                          hintText: 'Additional notes (optional)',
                           controller: _notesController,
                           maxLines: 3,
                         ),
@@ -375,7 +375,7 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
                                   height: 44,
                                   child: BasicButton(
                                     type: ButtonType.secondary,
-                                    label: 'Batal',
+                                    label: 'Cancel',
                                     onPressed: isLoading
                                         ? null
                                         : () => context.router.maybePop(),
@@ -387,8 +387,8 @@ class _MaintananceFormViewState extends State<_MaintananceFormView> {
                                   height: 44,
                                   child: BasicButton(
                                     label: widget.isEditMode
-                                        ? 'Simpan'
-                                        : 'Tambah',
+                                        ? 'Save'
+                                        : 'Add',
                                     isLoading: isLoading,
                                     onPressed: isLoading
                                         ? null

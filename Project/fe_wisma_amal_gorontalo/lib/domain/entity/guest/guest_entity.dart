@@ -64,7 +64,7 @@ class GuestPagination {
   }
 }
 
-// ─── Entity untuk penghuni (resident) ────────────────────────────────────────
+// ─── Entity for resident guests ──────────────────────────────────────────────
 
 class MyGuestItem {
   final int id;
@@ -111,7 +111,7 @@ class MyGuestItem {
   }
 }
 
-// ─── Entity untuk admin ───────────────────────────────────────────────────────
+// ─── Entity for admin ────────────────────────────────────────────────────────
 
 class GuestResponse {
   final List<GuestItem> guests;

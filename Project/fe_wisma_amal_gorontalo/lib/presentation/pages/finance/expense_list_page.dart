@@ -28,18 +28,18 @@ import '../../widget/core/table/app_data_table.dart';
 import '../../widget/core/textform/textform.dart';
 import '../../widget/core/wrapper/empty_state_widget.dart';
 
-// ── Config visual per jenis pengeluaran tetap ─────────────────────────────────
+// ── Visual config per fixed expense type ─────────────────────────────────────
 const _kJenisConfig = {
   'listrik': _JenisConfig(
     icon: Icons.bolt_rounded,
-    label: 'Listrik',
+    label: 'Electricity',
     color: Color(0xFFD97706),
     colorLight: Color(0xFFFFFBEB),
     gradient: [Color(0xFFD97706), Color(0xFFF59E0B)],
   ),
   'air': _JenisConfig(
     icon: Icons.water_drop_rounded,
-    label: 'Air',
+    label: 'Water',
     color: Color(0xFF2563EB),
     colorLight: Color(0xFFEFF6FF),
     gradient: [Color(0xFF2563EB), Color(0xFF3B82F6)],
@@ -128,11 +128,11 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   String formatRupiah(double amount) =>
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(amount);
+      NumberFormat.currency(locale: 'en_US', symbol: 'Rp ', decimalDigits: 0).format(amount);
 
-  String _bulanLabel(int b) => DateFormat('MMMM', 'id_ID').format(DateTime(2000, b));
+  String _bulanLabel(int b) => DateFormat('MMMM', 'en_US').format(DateTime(2000, b));
 
-  // Kembalikan _JenisConfig jika title cocok dengan jenis tetap (listrik/air/wifi)
+  // Return _JenisConfig if the title matches a fixed type (listrik/air/wifi)
   _JenisConfig? _cfgFromTitle(String title) {
     final t = title.toLowerCase();
     if (t.contains('listrik') || t.contains('pln')) return _kJenisConfig['listrik'];
@@ -307,30 +307,30 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isEdit ? 'Ubah Pengeluaran' : 'Tambah Pengeluaran',
+                    isEdit ? 'Edit Expense' : 'Add Expense',
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: AppSpacing.xxxl),
 
-                  // Nama / Judul
+                  // Name / Title
                   CustomTextForm(
-                    title: 'Nama / Judul Pengeluaran',
-                    hintText: 'Contoh: Tagihan Listrik PLN',
+                    title: 'Expense Name / Title',
+                    hintText: 'Example: PLN Electricity Bill',
                     isRequired: true,
                     controller: titleCtrl,
                     validator: (val) => (val == null || val.trim().isEmpty)
-                        ? 'Nama pengeluaran wajib diisi'
+                        ? 'Expense name is required'
                         : null,
                   ),
                   const SizedBox(height: AppSpacing.lg),
 
-                  // Nominal + Tanggal (berdampingan)
+                  // Amount + Date (side by side)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: CustomTextForm(
-                          title: 'Nominal (Rp)',
+                          title: 'Amount (Rp)',
                           hintText: '0',
                           isRequired: true,
                           controller: amountCtrl,
@@ -340,7 +340,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                           ],
                           validator: (val) =>
                               (val == null || val.trim().isEmpty)
-                                  ? 'Nominal wajib diisi'
+                                  ? 'Amount is required'
                                   : null,
                         ),
                       ),
@@ -350,7 +350,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text.rich(TextSpan(
-                              text: 'Tanggal',
+                              text: 'Date',
                               style: Theme.of(ctx).textTheme.titleMedium,
                               children: const [
                                 TextSpan(
@@ -404,7 +404,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                                       size: 18),
                                 ),
                                 child: Text(
-                                  DateFormat('dd MMM yyyy', 'id_ID')
+                                  DateFormat('dd MMM yyyy', 'en_US')
                                       .format(pickedDate),
                                   style: TextStyle(
                                       fontSize: 14, color: textPrimaryColor),
@@ -418,10 +418,10 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
 
-                  // Keterangan
+                  // Description
                   CustomTextForm(
-                    title: 'Keterangan',
-                    hintText: 'Deskripsi singkat (opsional)',
+                    title: 'Description',
+                    hintText: 'Short description (optional)',
                     controller: notesCtrl,
                     maxLines: 2,
                   ),
@@ -433,7 +433,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                     children: [
                       OutlinedButton(
                         onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Batal'),
+                        child: const Text('Cancel'),
                       ),
                       const SizedBox(width: AppSpacing.md),
                       ElevatedButton(
@@ -454,7 +454,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                               : CreateExpense(e));
                           Navigator.pop(ctx);
                         },
-                        child: const Text('Simpan'),
+                        child: const Text('Save'),
                       ),
                     ],
                   ),
@@ -495,7 +495,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  entry.isFilled ? 'Ubah Pengeluaran Tetap' : 'Isi Nominal',
+                  entry.isFilled ? 'Edit Fixed Expense' : 'Enter Amount',
                   style: const TextStyle(
                       fontSize: 20, fontWeight: FontWeight.w700),
                 ),
@@ -507,7 +507,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                 const SizedBox(height: AppSpacing.xxxl),
 
                 CustomTextForm(
-                  title: 'Nominal (Rp)',
+                  title: 'Amount (Rp)',
                   hintText: '0',
                   isRequired: true,
                   controller: amountCtrl,
@@ -515,10 +515,10 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
-                      return 'Nominal wajib diisi';
+                      return 'Amount is required';
                     }
                     if ((int.tryParse(val) ?? 0) <= 0) {
-                      return 'Nominal harus lebih dari 0';
+                      return 'Amount must be greater than 0';
                     }
                     return null;
                   },
@@ -526,8 +526,8 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                 const SizedBox(height: AppSpacing.lg),
 
                 CustomTextForm(
-                  title: 'Catatan',
-                  hintText: 'Misal: Tagihan PLN bulan Juni... (opsional)',
+                  title: 'Notes',
+                  hintText: 'Example: PLN bill for June... (optional)',
                   controller: notesCtrl,
                   maxLines: 2,
                 ),
@@ -538,7 +538,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                   children: [
                     OutlinedButton(
                       onPressed: () => Navigator.pop(ctx),
-                      child: const Text('Batal'),
+                      child: const Text('Cancel'),
                     ),
                     const SizedBox(width: AppSpacing.md),
                     ElevatedButton(
@@ -555,7 +555,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                         ));
                         Navigator.pop(ctx);
                       },
-                      child: const Text('Simpan'),
+                      child: const Text('Save'),
                     ),
                   ],
                 ),
@@ -574,14 +574,14 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Hapus Pengeluaran?'),
+        title: const Text('Delete Expense?'),
         content: Text(
-          'Anda yakin ingin menghapus "${e.title}"? Aksi ini tidak dapat dibatalkan.',
+          'Are you sure you want to delete "${e.title}"? This action cannot be undone.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -591,7 +591,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
               Navigator.pop(ctx);
               _expenseBloc.add(DeleteExpense(e.id));
             },
-            child: const Text('Ya, Hapus'),
+            child: const Text('Yes, Delete'),
           ),
         ],
       ),
@@ -637,12 +637,12 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
           body: Column(
             children: [
               AppTopBar(
-                title: 'Pengeluaran',
-                breadcrumb: 'Keuangan / Pengeluaran',
+                title: 'Expenses',
+                breadcrumb: 'Finance / Expenses',
                 action: ElevatedButton.icon(
                   onPressed: () => _showDialog(),
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Tambah Pengeluaran'),
+                  label: const Text('Add Expense'),
                 ),
               ),
               Expanded(
@@ -663,14 +663,14 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                         if (expenseState is ExpenseError) {
                           return EmptyStateWidget(
                             icon: Icons.error_outline,
-                            title: 'Gagal Memuat Data',
+                            title: 'Failed to Load Data',
                             subtitle: expenseState.message,
                             action: ElevatedButton(
                               onPressed: () {
                                 _expenseBloc.add(FetchExpenses());
                                 if (isFixedEnabled) _fixedExpenseBloc.add(FetchFixedExpenses());
                               },
-                              child: const Text('Coba Lagi'),
+                              child: const Text('Try Again'),
                             ),
                           );
                         }
@@ -712,7 +712,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
     final textSecondaryColor = isDark ? AppColorsDark.textSecondary : AppColorsLight.textSecondary;
     final textPrimaryColor = isDark ? AppColorsDark.textPrimary : AppColorsLight.textPrimary;
 
-    // Summary stats untuk general expense (sesuai filter)
+    // Summary stats for general expense (per filter)
     final now = DateTime.now();
     final yearFiltered = _filterYear == null
         ? allExpenses
@@ -734,14 +734,14 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
       return d != null && d.month == now.month && d.year == refYear;
     }).fold(0.0, (s, e) => s + e.amount);
     final String card1Title = _filterYear != null && _filterMonth != null
-        ? 'Total ${DateFormat('MMM yyyy', 'id_ID').format(DateTime(_filterYear!, _filterMonth!))}'
+        ? 'Total ${DateFormat('MMM yyyy', 'en_US').format(DateTime(_filterYear!, _filterMonth!))}'
         : _filterYear != null
-            ? 'Total Tahun $_filterYear'
-            : 'Total Pengeluaran';
+            ? 'Total for $_filterYear'
+            : 'Total Expenses';
     final String card2Sub =
-        '${DateFormat('MMMM', 'id_ID').format(DateTime(refYear, now.month))} $refYear';
+        '${DateFormat('MMMM', 'en_US').format(DateTime(refYear, now.month))} $refYear';
 
-    // Split list: unfilled fixed (section atas) vs main table (filled + general)
+    // Split list: unfilled fixed (top section) vs main table (filled + general)
     final unfilledFixed = _buildUnfilledFixed(allFixed);
     final mainList = _buildMainList(allFixed, allExpenses);
     final hasAny = unfilledFixed.isNotEmpty || mainList.isNotEmpty;
@@ -749,7 +749,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
     final page = _currentPage.clamp(1, totalPages);
     final paged = _paged(mainList);
 
-    // Years available dari kedua sumber
+    // Years available from both sources
     final years = <int>{
       ...allExpenses.map((e) => DateTime.tryParse(e.date)?.year).whereType<int>(),
       ...allFixed.map((e) => e.tahun),
@@ -770,13 +770,13 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                   icon: Icons.account_balance_wallet_outlined,
                   iconColor: isDark ? AppColorsDark.primary : AppColorsLight.primary,
                   iconBg: isDark ? AppColorsDark.primaryLight : AppColorsLight.primaryLight,
-                  trend: '${periodExpenses.length} transaksi',
+                  trend: '${periodExpenses.length} transactions',
                 ),
               ),
               const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: SummaryStatCard(
-                  label: _filterYear != null ? 'Bulan Ini ($_filterYear)' : 'Bulan Ini',
+                  label: _filterYear != null ? 'This Month ($_filterYear)' : 'This Month',
                   value: formatRupiah(totalThisMonth),
                   icon: Icons.calendar_month_outlined,
                   iconColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
@@ -787,29 +787,29 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
               const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: SummaryStatCard(
-                  label: 'Entri Manual',
-                  value: '${allExpenses.where((e) => !e.isIntegrated).length} Transaksi',
+                  label: 'Manual Entries',
+                  value: '${allExpenses.where((e) => !e.isIntegrated).length} Transactions',
                   icon: Icons.edit_note_outlined,
                   iconColor: isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess,
                   iconBg: isDark ? AppColorsDark.statusProcessBg : AppColorsLight.statusProcessBg,
-                  trend: 'Dicatat oleh admin',
+                  trend: 'Recorded by admin',
                 ),
               ),
               const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: SummaryStatCard(
-                  label: 'Dari Sistem',
-                  value: '${allExpenses.where((e) => e.isIntegrated).length} Transaksi',
+                  label: 'From System',
+                  value: '${allExpenses.where((e) => e.isIntegrated).length} Transactions',
                   icon: Icons.auto_awesome_outlined,
                   iconColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
                   iconBg: isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg,
-                  trend: 'Otomatis (inventaris)',
+                  trend: 'Automatic (inventory)',
                 ),
               ),
             ],
           ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0, duration: 300.ms),
 
-          // ── Summary cards (fixed expense status bulan ini) ─────────────────
+          // ── Summary cards (fixed expense status this month) ─────────────────
           if (fixedStatus != null) ...[
             const SizedBox(height: AppSpacing.lg),
             _buildFixedStatusCards(allFixed, fixedStatus, isDark),
@@ -820,7 +820,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
           // ── Search & Filter ─────────────────────────────────────────────────
           SearchAndFilterBar(
             searchController: _searchController,
-            searchHint: 'Cari pengeluaran...',
+            searchHint: 'Search expenses...',
             onSearchChanged: (val) => setState(() {
               _searchQuery = val;
               _currentPage = 1;
@@ -830,10 +830,10 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
               children: [
                 _buildDropdown<int?>(
                   value: _filterYear,
-                  hint: 'Semua Tahun',
+                  hint: 'All Years',
                   isDark: isDark,
                   items: [
-                    const DropdownMenuItem<int?>(value: null, child: Text('Semua Tahun')),
+                    const DropdownMenuItem<int?>(value: null, child: Text('All Years')),
                     ...years.map((y) => DropdownMenuItem<int?>(value: y, child: Text('$y'))),
                   ],
                   onChanged: (val) => setState(() {
@@ -845,13 +845,13 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                 const SizedBox(width: AppSpacing.sm),
                 _buildDropdown<int?>(
                   value: _filterMonth,
-                  hint: 'Semua Bulan',
+                  hint: 'All Months',
                   isDark: isDark,
                   items: [
-                    const DropdownMenuItem<int?>(value: null, child: Text('Semua Bulan')),
+                    const DropdownMenuItem<int?>(value: null, child: Text('All Months')),
                     ...List.generate(12, (i) => DropdownMenuItem<int?>(
                       value: i + 1,
-                      child: Text(DateFormat('MMMM', 'id_ID').format(DateTime(2000, i + 1))),
+                      child: Text(DateFormat('MMMM', 'en_US').format(DateTime(2000, i + 1))),
                     )),
                   ],
                   onChanged: (val) => setState(() {
@@ -883,22 +883,22 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
             EmptyStateWidget(
               icon: Icons.receipt_long,
               title: _searchQuery.isNotEmpty
-                  ? 'Tidak ada hasil untuk "$_searchQuery"'
+                  ? 'No results for "$_searchQuery"'
                   : _filterYear != null
-                      ? 'Tidak ada pengeluaran pada periode yang dipilih'
-                      : 'Belum ada data pengeluaran',
+                      ? 'No expenses for the selected period'
+                      : 'No expense data yet',
               subtitle: _searchQuery.isNotEmpty || _filterYear != null
-                  ? 'Coba ubah filter atau kata kunci pencarian Anda.'
-                  : 'Tambah pengeluaran baru menggunakan tombol di atas.',
+                  ? 'Try changing the filter or your search keyword.'
+                  : 'Add a new expense using the button above.',
             ).animate().fadeIn()
           else ...[
-            // Section: pengeluaran tetap belum diisi
+            // Section: unfilled fixed expenses
             if (unfilledFixed.isNotEmpty) ...[
               _buildUnfilledSection(unfilledFixed, isDark),
               const SizedBox(height: AppSpacing.xxxl),
             ],
 
-            // Section: semua yang sudah diisi / umum
+            // Section: all filled / general
             if (mainList.isNotEmpty) ...[
               if (unfilledFixed.isNotEmpty)
                 Padding(
@@ -912,7 +912,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text('Sudah Diisi & Umum',
+                    Text('Filled & General',
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -921,11 +921,11 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                 ),
               AppDataTable(
                 columns: const [
-                  DataColumn(label: Text('PENGELUARAN')),
-                  DataColumn(label: Text('JENIS')),
-                  DataColumn(label: Text('TANGGAL / PERIODE')),
-                  DataColumn(label: Text('NOMINAL')),
-                  DataColumn(label: Text('AKSI')),
+                  DataColumn(label: Text('EXPENSE')),
+                  DataColumn(label: Text('TYPE')),
+                  DataColumn(label: Text('DATE / PERIOD')),
+                  DataColumn(label: Text('AMOUNT')),
+                  DataColumn(label: Text('ACTION')),
                 ],
                 rows: paged
                     .map((item) => item.isFixed
@@ -942,7 +942,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                 child: Row(
                   children: [
                     Text(
-                      'Menampilkan ${paged.length} dari ${mainList.length} data',
+                      'Showing ${paged.length} of ${mainList.length} records',
                       style: TextStyle(fontSize: 13, color: textSecondaryColor),
                     ),
                     const Spacer(),
@@ -961,7 +961,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
     );
   }
 
-  // ── Fixed expense status cards (bulan ini) ─────────────────────────────────
+  // ── Fixed expense status cards (this month) ─────────────────────────────────
   Widget _buildFixedStatusCards(
     List<FixedExpenseEntryEntity> entries,
     FixedExpenseStatusEntity status,
@@ -999,11 +999,11 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
               onTap: entry != null ? () => _showFillDialog(entry) : null,
               child: SummaryStatCard(
                 label: cfg.label,
-                value: isFilled ? formatRupiah(s.amount ?? 0) : 'Belum Diisi',
+                value: isFilled ? formatRupiah(s.amount ?? 0) : 'Not Filled',
                 icon: cfg.icon,
                 iconColor: iconColor,
                 iconBg: iconBg,
-                trend: isFilled ? '✓ Sudah diisi' : 'Tap untuk isi nominal',
+                trend: isFilled ? '✓ Filled' : 'Tap to enter the amount',
                 trendColor: trendColor,
               ),
             ),
@@ -1033,7 +1033,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
             ),
           ),
           const SizedBox(width: 8),
-          Text('Belum Diisi',
+          Text('Not Filled',
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w700, color: textPrimaryColor)),
           const SizedBox(width: 8),
@@ -1052,9 +1052,9 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
         const SizedBox(height: AppSpacing.md),
         AppDataTable(
           columns: const [
-            DataColumn(label: Text('PENGELUARAN')),
-            DataColumn(label: Text('PERIODE')),
-            DataColumn(label: Text('AKSI')),
+            DataColumn(label: Text('EXPENSE')),
+            DataColumn(label: Text('PERIOD')),
+            DataColumn(label: Text('ACTION')),
           ],
           rows: unfilled.map((e) => _buildUnfilledRow(e, isDark)).toList(),
           dataRowMinHeight: 58,
@@ -1095,7 +1095,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
         ),
-        child: const Text('Isi Nominal'),
+        child: const Text('Enter Amount'),
       )),
     ]);
   }
@@ -1111,7 +1111,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
     final warningBorder = isDark ? AppColorsDark.statusWaitingBorder : AppColorsLight.statusWaitingBorder;
 
     return DataRow(cells: [
-      // Pengeluaran
+      // Expense
       DataCell(Row(children: [
         Container(
           padding: const EdgeInsets.all(8),
@@ -1137,9 +1137,9 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
           ),
         ),
       ])),
-      // Jenis chip
-      DataCell(_jenisChip('Tetap', warningColor, warningBg, warningBorder)),
-      // Tanggal / Periode
+      // Type chip
+      DataCell(_jenisChip('Fixed', warningColor, warningBg, warningBorder)),
+      // Date / Period
       DataCell(Text('${_bulanLabel(entry.bulan)} ${entry.tahun}',
           style: TextStyle(fontSize: 13, color: textSecondaryColor))),
       // Nominal
@@ -1150,7 +1150,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
           color: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
         ),
       )),
-      // Aksi
+      // Action
       DataCell(TextButton(
         onPressed: () => _showFillDialog(entry),
         style: TextButton.styleFrom(
@@ -1159,7 +1159,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
         ),
-        child: const Text('Ubah'),
+        child: const Text('Edit'),
       )),
     ]);
   }
@@ -1177,7 +1177,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
     final primaryColor = isDark ? AppColorsDark.primary : AppColorsLight.primary;
 
     return DataRow(cells: [
-      // Pengeluaran
+      // Expense
       DataCell(Row(children: [
         Container(
           padding: const EdgeInsets.all(8),
@@ -1201,13 +1201,13 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
           ),
         ),
       ])),
-      // Jenis chip
+      // Type chip
       DataCell(e.isIntegrated
-          ? _jenisChip('Sistem', processColor, processBg, processBorder)
+          ? _jenisChip('System', processColor, processBg, processBorder)
           : _jenisChip('Manual', textSecondaryColor, surfaceVariant, borderLight)),
-      // Tanggal
+      // Date
       DataCell(Text(
-        date != null ? DateFormat('dd MMM yyyy', 'id_ID').format(date) : '-',
+        date != null ? DateFormat('dd MMM yyyy', 'en_US').format(date) : '-',
         style: TextStyle(fontSize: 13, color: textSecondaryColor),
       )),
       // Nominal
@@ -1218,10 +1218,10 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
           color: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
         ),
       )),
-      // Aksi
+      // Action
       DataCell(e.isIntegrated
           ? Tooltip(
-              message: 'Dikelola otomatis oleh sistem',
+              message: 'Managed automatically by the system',
               child: Text('—', style: TextStyle(color: textHintColor, fontSize: 16)),
             )
           : Row(mainAxisSize: MainAxisSize.min, children: [
@@ -1234,7 +1234,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
-                child: const Text('Ubah'),
+                child: const Text('Edit'),
               ),
               TextButton(
                 onPressed: () => _confirmDelete(e),
@@ -1245,7 +1245,7 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
-                child: const Text('Hapus'),
+                child: const Text('Delete'),
               ),
             ])),
     ]);

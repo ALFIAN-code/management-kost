@@ -13,7 +13,7 @@ class SearchAndFilterBar extends StatelessWidget {
   const SearchAndFilterBar({
     super.key,
     this.searchController,
-    this.searchHint = 'Cari...',
+    this.searchHint = 'Search...',
     this.onSearchChanged,
     this.filterChips,
     this.dropdownFilter,

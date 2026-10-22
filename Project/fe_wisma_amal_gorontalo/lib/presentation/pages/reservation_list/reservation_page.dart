@@ -100,8 +100,8 @@ class _ReservationViewState extends State<ReservationView> {
           body: Column(
             children: [
               AppTopBar(
-                title: 'Data Reservasi',
-                breadcrumb: 'Kamar & Reservasi / Data Reservasi',
+                title: 'Reservation Data',
+                breadcrumb: 'Rooms & Reservations / Reservation Data',
               ),
               Expanded(
                 child: state.status == FormzSubmissionStatus.inProgress
@@ -115,7 +115,7 @@ class _ReservationViewState extends State<ReservationView> {
                               children: [
                                 Expanded(
                                   child: SummaryStatCard(
-                                    label: 'Total Reservasi',
+                                    label: 'Total Reservations',
                                     value: state.reservations.length.toString(),
                                     icon: Icons.bed_outlined,
                                     iconColor: isDark ? AppColorsDark.primary : AppColorsLight.primary,
@@ -125,7 +125,7 @@ class _ReservationViewState extends State<ReservationView> {
                                 const SizedBox(width: AppSpacing.lg),
                                 Expanded(
                                   child: SummaryStatCard(
-                                    label: 'Menunggu',
+                                    label: 'Pending',
                                     value: state.pendingReservations.length.toString(),
                                     icon: Icons.insert_drive_file_outlined,
                                     iconColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
@@ -135,7 +135,7 @@ class _ReservationViewState extends State<ReservationView> {
                                 const SizedBox(width: AppSpacing.lg),
                                 Expanded(
                                   child: SummaryStatCard(
-                                    label: 'Aktif',
+                                    label: 'Active',
                                     value: state.activeReservations.length.toString(),
                                     icon: Icons.assignment_turned_in_outlined,
                                     iconColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
@@ -147,7 +147,7 @@ class _ReservationViewState extends State<ReservationView> {
                             const SizedBox(height: AppSpacing.xxxl),
 
                             SearchAndFilterBar(
-                              searchHint: 'Cari penghuni / kamar...',
+                              searchHint: 'Search resident / room...',
                               onSearchChanged: (value) {
                                 context.read<ReservationBloc>().add(SearchReservationEvent(value));
                               },
@@ -165,11 +165,11 @@ class _ReservationViewState extends State<ReservationView> {
                                       child: DropdownButton<String>(
                                         value: selectedSort,
                                         items: const [
-                                          DropdownMenuItem(value: 'all', child: Text('Semua Status', style: TextStyle(fontSize: 14))),
-                                          DropdownMenuItem(value: 'pending', child: Text('Menunggu', style: TextStyle(fontSize: 14))),
-                                          DropdownMenuItem(value: 'active', child: Text('Aktif', style: TextStyle(fontSize: 14))),
-                                          DropdownMenuItem(value: 'cancelled', child: Text('Dibatalkan', style: TextStyle(fontSize: 14))),
-                                          DropdownMenuItem(value: 'finished', child: Text('Selesai', style: TextStyle(fontSize: 14))),
+                                          DropdownMenuItem(value: 'all', child: Text('All Statuses', style: TextStyle(fontSize: 14))),
+                                          DropdownMenuItem(value: 'pending', child: Text('Pending', style: TextStyle(fontSize: 14))),
+                                          DropdownMenuItem(value: 'active', child: Text('Active', style: TextStyle(fontSize: 14))),
+                                          DropdownMenuItem(value: 'cancelled', child: Text('Cancelled', style: TextStyle(fontSize: 14))),
+                                          DropdownMenuItem(value: 'finished', child: Text('Finished', style: TextStyle(fontSize: 14))),
                                         ],
                                         onChanged: (value) {
                                           if (value != null) {
@@ -195,7 +195,7 @@ class _ReservationViewState extends State<ReservationView> {
                                       ),
                                       child: Text(
                                         selectedStartDate == null
-                                            ? 'Tgl Mulai'
+                                            ? 'Start Date'
                                             : '${selectedStartDate!.day}/${selectedStartDate!.month}/${selectedStartDate!.year}',
                                         style: const TextStyle(fontSize: 14),
                                       ),
@@ -217,7 +217,7 @@ class _ReservationViewState extends State<ReservationView> {
                                       ),
                                       child: Text(
                                         selectedEndDate == null
-                                            ? 'Tgl Selesai'
+                                            ? 'End Date'
                                             : '${selectedEndDate!.day}/${selectedEndDate!.month}/${selectedEndDate!.year}',
                                         style: const TextStyle(fontSize: 14),
                                       ),
@@ -234,12 +234,12 @@ class _ReservationViewState extends State<ReservationView> {
                             AppDataTable(
                               columns: const [
                                 DataColumn(label: Text('ID')),
-                                DataColumn(label: Text('NAMA PENYEWA')),
-                                DataColumn(label: Text('NO KAMAR')),
-                                DataColumn(label: Text('JENIS SEWA')),
-                                DataColumn(label: Text('PERIODE')),
+                                DataColumn(label: Text('TENANT NAME')),
+                                DataColumn(label: Text('ROOM NO')),
+                                DataColumn(label: Text('LEASE TYPE')),
+                                DataColumn(label: Text('PERIOD')),
                                 DataColumn(label: Text('STATUS')),
-                                DataColumn(label: Text('PEMBAYARAN')),
+                                DataColumn(label: Text('PAYMENT')),
                               ],
                               rows: state.filteredReservations.map((reservation) {
                                 return DataRow(cells: [

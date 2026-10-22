@@ -44,7 +44,7 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
   String _formatDate(String raw) {
     try {
       final dt = DateTime.parse(raw).toLocal();
-      return DateFormat('d MMM yyyy, HH:mm', 'id_ID').format(dt);
+      return DateFormat('d MMM yyyy, HH:mm', 'en_US').format(dt);
     } catch (_) {
       return raw;
     }
@@ -93,12 +93,12 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
             backgroundColor: isDark ? AppColorsDark.background : AppColorsLight.background,
             body: Column(children: [
               AppTopBar(
-                title: 'Monitoring Notifikasi',
-                breadcrumb: 'Notifikasi / WhatsApp',
+                title: 'Notification Monitoring',
+                breadcrumb: 'Notifications / WhatsApp',
                 action: FilledButton.icon(
                   onPressed: () => _showSendDialog(isDark),
                   icon: const Icon(Icons.send_rounded, size: 16),
-                  label: const Text('Kirim Notifikasi'),
+                  label: const Text('Send Notification'),
                 ),
               ),
               Expanded(
@@ -134,39 +134,39 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
         if (state.summary != null)
           Row(children: [
             Expanded(child: SummaryStatCard(
-              label: 'Total Notifikasi',
+              label: 'Total Notifications',
               value: '${state.summary!.total}',
               icon: Icons.notifications_outlined,
               iconColor: primary,
               iconBg: primaryLight,
-              trend: 'Semua waktu',
+              trend: 'All time',
             )),
             const SizedBox(width: AppSpacing.lg),
             Expanded(child: SummaryStatCard(
-              label: 'Terkirim',
+              label: 'Sent',
               value: '${state.summary!.sent}',
               icon: Icons.check_circle_outline_rounded,
               iconColor: isDark ? AppColorsDark.statusDone   : AppColorsLight.statusDone,
               iconBg:    isDark ? AppColorsDark.statusDoneBg : AppColorsLight.statusDoneBg,
-              trend: 'Berhasil dikirim',
+              trend: 'Successfully sent',
             )),
             const SizedBox(width: AppSpacing.lg),
             Expanded(child: SummaryStatCard(
-              label: 'Gagal',
+              label: 'Failed',
               value: '${state.summary!.failed}',
               icon: Icons.error_outline_rounded,
               iconColor: isDark ? AppColorsDark.statusCancelled   : AppColorsLight.statusCancelled,
               iconBg:    isDark ? AppColorsDark.statusCancelledBg : AppColorsLight.statusCancelledBg,
-              trend: 'Perlu dikirim ulang',
+              trend: 'Needs to be resent',
             )),
             const SizedBox(width: AppSpacing.lg),
             Expanded(child: SummaryStatCard(
-              label: 'Hari Ini',
+              label: 'Today',
               value: '${state.summary!.today}',
               icon: Icons.today_rounded,
               iconColor: isDark ? AppColorsDark.statusProcess   : AppColorsLight.statusProcess,
               iconBg:    isDark ? AppColorsDark.statusProcessBg : AppColorsLight.statusProcessBg,
-              trend: 'Notifikasi hari ini',
+              trend: "Today's notifications",
             )),
           ]).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0, duration: 300.ms),
 
@@ -175,17 +175,17 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
         // ── Search & Filter ─────────────────────────────────────────────────
         SearchAndFilterBar(
           searchController: _searchCtrl,
-          searchHint: 'Cari nomor telepon...',
+          searchHint: 'Search phone number...',
           onSearchChanged: (val) => _cubit.applyFilter(searchQuery: val),
           dropdownFilter: Row(children: [
             _AppDropdown<String?>(
               value: state.statusFilter,
               isDark: isDark,
-              hint: 'Semua Status',
+              hint: 'All Statuses',
               items: const [
-                DropdownMenuItem(value: null,      child: Text('Semua Status')),
-                DropdownMenuItem(value: 'sent',    child: Text('Terkirim')),
-                DropdownMenuItem(value: 'failed',  child: Text('Gagal')),
+                DropdownMenuItem(value: null,      child: Text('All Statuses')),
+                DropdownMenuItem(value: 'sent',    child: Text('Sent')),
+                DropdownMenuItem(value: 'failed',  child: Text('Failed')),
                 DropdownMenuItem(value: 'pending', child: Text('Pending')),
               ],
               onChanged: (val) => _cubit.applyFilter(statusFilter: val, clearStatus: val == null),
@@ -194,18 +194,18 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
             _AppDropdown<String?>(
               value: state.typeFilter,
               isDark: isDark,
-              hint: 'Semua Tipe',
+              hint: 'All Types',
               items: const [
-                DropdownMenuItem(value: null,                    child: Text('Semua Tipe')),
-                DropdownMenuItem(value: 'payment_receipt',       child: Text('Kwitansi Bayar')),
+                DropdownMenuItem(value: null,                    child: Text('All Types')),
+                DropdownMenuItem(value: 'payment_receipt',       child: Text('Payment Receipt')),
                 DropdownMenuItem(value: 'manual_broadcast',      child: Text('Broadcast')),
-                DropdownMenuItem(value: 'pembayaran_diterima',   child: Text('Pembayaran Diterima')),
-                DropdownMenuItem(value: 'pembayaran_dibatalkan', child: Text('Pembayaran Batal')),
-                DropdownMenuItem(value: 'jadwal_dibuat',         child: Text('Jadwal Dibuat')),
-                DropdownMenuItem(value: 'jadwal_sewa_aktif',     child: Text('Sewa Aktif')),
-                DropdownMenuItem(value: 'jadwal_sewa_selesai',   child: Text('Sewa Selesai')),
-                DropdownMenuItem(value: 'jadwal_batal',          child: Text('Jadwal Batal')),
-                DropdownMenuItem(value: 'laporan_kerusakan',     child: Text('Kerusakan')),
+                DropdownMenuItem(value: 'pembayaran_diterima',   child: Text('Payment Received')),
+                DropdownMenuItem(value: 'pembayaran_dibatalkan', child: Text('Payment Cancelled')),
+                DropdownMenuItem(value: 'jadwal_dibuat',         child: Text('Schedule Created')),
+                DropdownMenuItem(value: 'jadwal_sewa_aktif',     child: Text('Lease Activated')),
+                DropdownMenuItem(value: 'jadwal_sewa_selesai',   child: Text('Lease Completed')),
+                DropdownMenuItem(value: 'jadwal_batal',          child: Text('Schedule Cancelled')),
+                DropdownMenuItem(value: 'laporan_kerusakan',     child: Text('Damage')),
               ],
               onChanged: (val) => _cubit.applyFilter(typeFilter: val, clearType: val == null),
             ),
@@ -230,21 +230,21 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
         if (state.logs.isEmpty)
           EmptyStateWidget(
             icon: Icons.notifications_off_outlined,
-            title: hasFilter ? 'Tidak ada hasil untuk filter ini' : 'Belum ada log notifikasi',
+            title: hasFilter ? 'No results for this filter' : 'No notification logs yet',
             subtitle: hasFilter
-                ? 'Coba ubah filter atau kata kunci pencarian.'
-                : 'Notifikasi WhatsApp yang dikirim akan muncul di sini.',
+                ? 'Try changing the filter or search keyword.'
+                : 'Sent WhatsApp notifications will appear here.',
           ).animate().fadeIn()
         else
           AppDataTable(
             dataRowMinHeight: 56,
             dataRowMaxHeight: double.infinity,
             columns: const [
-              DataColumn(label: Text('Tipe')),
-              DataColumn(label: Text('No. Telepon')),
-              DataColumn(label: Text('Pesan')),
+              DataColumn(label: Text('Type')),
+              DataColumn(label: Text('Phone No.')),
+              DataColumn(label: Text('Message')),
               DataColumn(label: Text('Status')),
-              DataColumn(label: Text('Waktu')),
+              DataColumn(label: Text('Time')),
               DataColumn(label: Text('')),
             ],
             rows: state.logs.map((log) {
@@ -255,7 +255,7 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
               final isResending = state.resendingIds.contains(log.id);
 
               return DataRow(cells: [
-                // Tipe
+                // Type
                 DataCell(Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(_typeIcon(log.channel), size: 16,
                       color: isDark ? AppColorsDark.textSecondary : AppColorsLight.textSecondary),
@@ -263,14 +263,14 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
                   Text(log.typeLabel, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                 ])),
 
-                // No. Telepon
+                // Phone No.
                 DataCell(Text(
                   log.recipient ?? '-',
                   style: TextStyle(fontSize: 13,
                       color: isDark ? AppColorsDark.textPrimary : AppColorsLight.textPrimary),
                 )),
 
-                // Pesan (preview)
+                // Message (preview)
                 DataCell(ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 300),
                   child: Text(
@@ -318,14 +318,14 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
                   ],
                 )),
 
-                // Waktu
+                // Time
                 DataCell(Text(
                   _formatDate(log.createdAt),
                   style: TextStyle(fontSize: 12,
                       color: isDark ? AppColorsDark.textSecondary : AppColorsLight.textSecondary),
                 )),
 
-                // Aksi
+                // Action
                 DataCell(
                   isFailed
                       ? (isResending
@@ -336,7 +336,7 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
                           : OutlinedButton.icon(
                               onPressed: () => _cubit.resend(log.id),
                               icon: Icon(Icons.refresh_rounded, size: 13, color: statusC),
-                              label: Text('Kirim Ulang',
+                              label: Text('Resend',
                                   style: TextStyle(fontSize: 11, color: statusC, fontWeight: FontWeight.w600)),
                               style: OutlinedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -358,7 +358,7 @@ class _NotificationMonitoringPageState extends State<NotificationMonitoringPage>
         if (state.pagination != null && state.logs.isNotEmpty)
           Row(children: [
             Text(
-              'Halaman ${state.currentPage} dari ${state.pagination!.lastPage} • ${state.pagination!.total} entri',
+              'Page ${state.currentPage} of ${state.pagination!.lastPage} • ${state.pagination!.total} entries',
               style: TextStyle(fontSize: 13,
                   color: isDark ? AppColorsDark.textSecondary : AppColorsLight.textSecondary),
             ),
@@ -532,9 +532,9 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
             ),
             const SizedBox(width: 14),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Kirim Notifikasi WhatsApp',
+              Text('Send WhatsApp Notification',
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: textPrimary)),
-              Text('Kirim pesan langsung ke pengguna terdaftar',
+              Text('Send a message directly to registered users',
                   style: TextStyle(fontSize: 12, color: textSecondary)),
             ]),
             const Spacer(),
@@ -556,7 +556,7 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
             ),
             child: Row(children: [
               Expanded(child: _TabOption(
-                label: 'Pilih Pengguna',
+                label: 'Select User',
                 icon: Icons.person_search_outlined,
                 isActive: _useUser,
                 isDark: isDark,
@@ -564,7 +564,7 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
               )),
               const SizedBox(width: 4),
               Expanded(child: _TabOption(
-                label: 'Nomor Manual',
+                label: 'Manual Number',
                 icon: Icons.dialpad_outlined,
                 isActive: !_useUser,
                 isDark: isDark,
@@ -575,9 +575,9 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
 
           const SizedBox(height: AppSpacing.lg),
 
-          // Input penerima
+          // Recipient input
           if (_useUser) ...[
-            Text('Penerima', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary)),
+            Text('Recipient', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary)),
             const SizedBox(height: 8),
             FutureBuilder<List<NotificationRecipientEntity>>(
               future: _recipientsFuture,
@@ -586,7 +586,7 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
                   return const SizedBox(height: 56, child: Center(child: CircularProgressIndicator(strokeWidth: 2)));
                 }
                 if (snap.hasError) {
-                  return Text('Gagal memuat penerima.', style: TextStyle(color: Colors.red.shade400, fontSize: 12));
+                  return Text('Failed to load recipients.', style: TextStyle(color: Colors.red.shade400, fontSize: 12));
                 }
 
                 final all = snap.data ?? [];
@@ -642,7 +642,7 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
                       controller: _searchCtrl,
                       style: TextStyle(fontSize: 13, color: textPrimary),
                       decoration: InputDecoration(
-                        hintText: 'Cari nama atau nomor...',
+                        hintText: 'Search name or number...',
                         hintStyle: TextStyle(fontSize: 13, color: textHint),
                         prefixIcon: Icon(Icons.search, size: 16, color: textSecondary),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -670,7 +670,7 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
                         ? Padding(
                             padding: const EdgeInsets.all(20),
                             child: Center(
-                              child: Text('Tidak ada penerima ditemukan',
+                              child: Text('No recipients found',
                                   style: TextStyle(fontSize: 13, color: textHint)),
                             ),
                           )
@@ -710,7 +710,7 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
               },
             ),
           ] else ...[
-            Text('Nomor Telepon', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary)),
+            Text('Phone Number', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary)),
             const SizedBox(height: 8),
             TextField(
               controller: _phoneCtrl,
@@ -728,7 +728,7 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
                 isDense: true,
                 filled: true,
                 fillColor: surfaceVar,
-                helperText: 'Format: 08xxx atau 628xxx',
+                helperText: 'Format: 08xxx or 628xxx',
                 helperStyle: TextStyle(fontSize: 11, color: textHint),
               ),
               keyboardType: TextInputType.phone,
@@ -737,8 +737,8 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
 
           const SizedBox(height: AppSpacing.lg),
 
-          // Pesan
-          Text('Pesan', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary)),
+          // Message
+          Text('Message', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary)),
           const SizedBox(height: 8),
           StatefulBuilder(builder: (_, setInner) {
             final charCount = _messageCtrl.text.length;
@@ -776,12 +776,12 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
 
           const SizedBox(height: AppSpacing.xl),
 
-          // Tombol aksi
+          // Action buttons
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12)),
-              child: const Text('Batal'),
+              child: const Text('Cancel'),
             ),
             const SizedBox(width: AppSpacing.md),
             BlocBuilder<NotificationMonitoringCubit, NotificationMonitoringState>(
@@ -790,7 +790,7 @@ class _SendNotificationDialogState extends State<_SendNotificationDialog> {
                 icon: state.isSending
                     ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                     : const Icon(Icons.send_rounded, size: 16),
-                label: Text(state.isSending ? 'Mengirim...' : 'Kirim Sekarang'),
+                label: Text(state.isSending ? 'Sending...' : 'Send Now'),
                 onPressed: state.isSending ? null : _submit,
                 style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12)),
               ),
@@ -919,7 +919,7 @@ class _NavBtn extends StatelessWidget {
   }
 }
 
-// ── App Dropdown (lokal, mengikuti gaya inventory) ────────────────────────────
+// ── App Dropdown (local, following the inventory style) ────────────────────────────
 
 class _AppDropdown<T> extends StatelessWidget {
   final T value;

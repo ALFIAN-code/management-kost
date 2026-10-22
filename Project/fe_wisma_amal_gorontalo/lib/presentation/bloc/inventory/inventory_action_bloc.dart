@@ -87,7 +87,7 @@ class InventoryActionBloc
     emit(InventoryActionLoading());
     try {
       await createInventoryUseCase.call(event.data);
-      emit(const InventoryActionSuccess("Inventaris berhasil ditambahkan"));
+      emit(const InventoryActionSuccess("Inventory added successfully"));
     } catch (e) {
       emit(InventoryActionError(e.toString()));
     }
@@ -98,7 +98,7 @@ class InventoryActionBloc
     emit(InventoryActionLoading());
     try {
       await updateInventoryUseCase.call(event.id, event.data);
-      emit(const InventoryActionSuccess("Inventaris berhasil diperbarui"));
+      emit(const InventoryActionSuccess("Inventory updated successfully"));
     } catch (e) {
       emit(InventoryActionError(e.toString()));
     }
@@ -109,7 +109,7 @@ class InventoryActionBloc
     emit(InventoryActionLoading());
     try {
       await deleteInventoryUseCase.call(event.id);
-      emit(const InventoryActionSuccess("Inventaris berhasil dihapus"));
+      emit(const InventoryActionSuccess("Inventory deleted successfully"));
     } catch (e) {
       emit(InventoryActionError(e.toString()));
     }

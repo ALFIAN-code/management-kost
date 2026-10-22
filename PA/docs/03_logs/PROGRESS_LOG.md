@@ -4,6 +4,232 @@
 
 ---
 
+## [2026-10-21 19:15] Rekonstruksi Ulang BAB 3: Fokus Desain Sistem & Diagram Fungsional
+
+**Status:** Selesai
+**Dikerjakan:**
+- Mengarsipkan draf lama BAB 3 yang memuat detail teknis berlebih (endpoint JSON, docker-compose, JSON schema) ke `PA/docs/modules/bab3/DRAFT_v1_2026-10-21.md`.
+- Memperbarui label "Laravel 11 API" menjadi "NestJS API" pada diagram `c4_level3_flutter_clean_architecture.svg` dan merender ulang versi `.png`.
+- Menulis ulang `PA/docs/modules/bab3/README.md` secara bertahap dengan asistensi review per subbab mengikuti gaya penulisan natural Indonesia:
+  1. §3.1 Deskripsi Solusi (6 pilar perbaikan sistem, Tabel 3.1 Daftar Fitur F01–F17).
+  2. §3.2 Desain Sistem (Arsitektur Terpadu 4 lapis, Dekomposisi 3-Tier NestJS 9 modul, dan Clean Architecture Flutter Web — Gambar 3.1 s/d 3.3).
+  3. §3.3 Alur Proses Bisnis (9 alur proses bisnis sequence/flowchart berurutan — Gambar 3.4 s/d 3.12).
+  4. §3.4 Use Case Diagram (Spesifikasi peran pengguna & pemetaan modul — Gambar 3.13 placeholder).
+  5. §3.5 Data Flow Diagram (DFD Level 0 dengan 7 entitas luar, DFD Level 1 dengan 10 proses dan 13 data store terisolasi — Gambar 3.14 & 3.15).
+  6. §3.6 Activity Diagram (Penjelasan alur dinamis alokasi sewa dan komplain fasilitas — Gambar 3.16 & 3.17 placeholder).
+  7. §3.7 Rancangan Basis Data (ERD 13 tabel PostgreSQL, Kamus Data 13 tabel, serta 9 aturan integritas validasi — Gambar 3.18).
+  8. §3.8 Rancangan Antarmuka Pengguna (Deskripsi dasbor pemilik, dasbor pengelola, dan portal penghuni — Gambar 3.19 s/d 3.21 placeholder).
+- Memperbarui helper `figures_to_images.py` agar otomatis memetakan referensi `.svg` ke `.png`.
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/modules/bab3/DRAFT_v1_2026-10-21.md` (arsip draf lama)
+- `PA/docs/System design/01-Gambaran-umum/03_arsitektur_frontend/c4_level3_flutter_clean_architecture.svg` dan `.png`
+- `PA/docs/modules/figures_to_images.py`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/00_overview/STATE.md`
+- `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Pembuatan aset visual untuk 6 diagram yang masih berstatus placeholder (Use Case, 2 Activity Diagram, dan 3 Mockup UI).
+- Integrasi naskah BAB 1 s/d BAB 5 ke dalam pipeline build DOCX.
+
+---
+
+## [2026-10-21 16:05] Audit dan Penyelarasan Konsistensi BAB 3 terhadap Desain Final
+
+**Status:** Selesai
+**Dikerjakan:**
+- Menjalankan audit silang antara naskah BAB 3 dengan diagram HTML, diagram Mermaid, dan dokumen desain (ADR-007, ADR-011, ADR-012, DESAIN_REWRITE_FASE1).
+- Menyamakan nama modul pada Tabel 3.1 dengan sembilan modul pada Tabel 3.7 dan kedua diagram arsitektur; F07 kini ditandai sebagai fungsi baca agregat di atas modul Lease dan Room, bukan modul tersendiri.
+- Menyamakan story points Tabel 3.2 dengan penjumlahan Tabel 3.3: 21, 21, 27, 26 poin dengan total 95 poin, sebelumnya tertulis 26, 30, 32, 26 dan 114 poin.
+- Menambahkan daftar sembilan event antar modul beserta penerbit dan penanganinya, mencakup `LeaseCreated`, `InvoiceIssued`, `PaymentSettled`, `InvoiceOverdue`, `RoomDamaged`, `RoomRepaired`, `GuestCheckedOut`, `AssetDamagedOrLost`, dan `MaintenanceServiceCompleted`.
+- Menyamakan path endpoint pada Tabel 3.17 dengan path yang dipakai diagram Mermaid, dan melengkapi tabel dengan endpoint yang baru muncul pada diagram.
+- Menomori ulang sembilan gambar agar berurutan sesuai kemunculan dalam naskah; sebelumnya diagram BPMN bernomor 3.6 sampai 3.9 berada sebelum diagram DFD 3.3 sampai 3.5.
+- Menyesuaikan path pada lima berkas Mermaid: `api/finance/expenses` menjadi `api/expenses`, `api/finance/invoices` menjadi `api/invoices`, `api/finance/reports/cashflow` menjadi `api/dashboard/summary`, `api/mcp/rpc` menjadi `/mcp/tools/call`, dan dua endpoint tamu menjadi `POST /api/guests/{id}/check-in` serta `POST /api/guests/{id}/checkout`. Diagram konsultasi AI kini mencantumkan keempat tool yang tersedia.
+- Hasil audit akhir: sembilan modul, tiga belas tabel, sepuluh proses DFD, sembilan event, story points, nomor tabel 1 sampai 21, nomor gambar 1 sampai 9, dan seluruh berkas rujukan konsisten.
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/System design/02-BPMN/*/*.mmd` dan `*.png`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Tiga fitur (F02, F11, F13) belum memiliki tabel pada skema 13 tabel dan ditandai sebagai perluasan skema.
+- Daftar Gambar dan Daftar Tabel belum dibuat pada dokumen akhir.
+- Blocker sitasi `[36]`, `[41]`, dan urutan kemunculan `[1]` masih terbuka.
+**Catatan/masalah:**
+- Naskah kini 8.047 kata dengan 21 tabel dan 9 gambar.
+
+---
+
+## [2026-10-21 15:35] Pipeline Build Docx: Render Diagram dan Sisipkan Gambar ke Naskah
+
+**Status:** Selesai
+**Dikerjakan:**
+- Menambah `PA/docs/modules/figures_to_images.py`: merender diagram Mermaid (mermaid-cli) dan diagram HTML (headless Edge, SVG diambil dari DOM lalu dirender ulang) menjadi PNG, serta mengubah catatan gambar pada markdown menjadi embed gambar.
+- Menambah `PA/docs/modules/build-docx.sh`: pipeline empat langkah, yaitu render diagram, penggabungan BAB 1 sampai BAB 5 beserta Daftar Pustaka, penyisipan gambar, dan konversi ke docx memakai Pandoc dengan Daftar Isi otomatis.
+- Memperbaiki tiga cacat pada perekaman diagram HTML: pilihan elemen SVG mengambil ikon tombol dan bukan diagram, atribut namespace `xmlns` hilang saat serialisasi DOM, dan ukuran jendela render membuat gambar bersisip ruang kosong.
+- Rujukan Gambar 2.14 pada BAB 2 diarahkan ke lokasi baru `02-BPMN/09_konsultasi_ai_mcp/`.
+- Menghasilkan `PA/docs/modules/ProyekAkhir_PA.docx` (86 halaman, 9 gambar tertanam) sebagai uji pipeline; berkas ini dapat dihapus karena naskah akan dibangun ulang dengan template kampus.
+**File yang diubah:**
+- `PA/docs/modules/figures_to_images.py` (baru)
+- `PA/docs/modules/build-docx.sh` (baru)
+- `PA/docs/modules/bab2/README.md`
+- `PA/docs/System design/**/*.png` dan `*.svg` (hasil render)
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- `template_pens.docx` belum ada di `PA/docs/modules/`, sehingga konversi memakai style bawaan Pandoc. Setelah template tersedia, pipeline memakainya secara otomatis.
+- Tiga fitur (F02, F11, F13) masih tanpa tabel pada skema 13 tabel.
+- `04-ERD/erd_sistem_dinamis.html` versi lama dan folder `System design/draft/` belum diarsipkan.
+**Catatan/masalah:**
+- Berkas `full_draft.md` dan `Proposal_Proyek_Akhir_Bagus.docx` milik pengguna ditulis ulang oleh pipeline baru; isi keduanya setara.
+
+---
+
+## [2026-10-21 14:05] Penyelarasan Diagram BAB 3: 5 Berkas HTML, 9 Diagram Mermaid, dan Render PNG
+
+**Status:** Selesai
+**Dikerjakan:**
+- `01-Gambaran-umum/01_arsitektur_keseluruhan/arsitektur_terpadu.html` (baru): diagram arsitektur terpadu empat lapis — tiga dasbor Flutter Web, adapter Keycloak OIDC, REST API NestJS, MCP Server, sembilan modul pada tiga tier, module gateway, adapter keluar, dan PostgreSQL.
+- `01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html` (diperbarui): 4 modul inti dan 5 modul bisnis sesuai ADR-007, PostgreSQL, NestJS Guard JWT, Keycloak OpenID Connect.
+- `03-DFD/dfd_level_0_context.html` (diperbarui): Keycloak ditambahkan sebagai entitas luar ketujuh, seluruh label aliran diselaraskan.
+- `03-DFD/dfd_level_1_dekomposisi.html` (diperbarui): 10 proses dan 13 data store sesuai kamus data, ditambah entitas Teknisi dan Model Bahasa AI.
+- `04-ERD/erd_13_tabel.html` (baru): ERD 13 tabel pada sembilan panel modul; dua FK fisik digambar, sisanya ditandai soft-reference.
+- Sembilan berkas `.mmd` pada `02-BPMN/`: istilah usang diganti (Modul Schedule menjadi Lease, Frontend UI Web/Mobile menjadi Flutter Web, event Occupancy menjadi Lease, MySQL menjadi PostgreSQL, status kamar diseragamkan), lalu dirender menjadi PNG 3x di folder masing-masing memakai mermaid-cli.
+- Alur alokasihunian ditulis ulang mengikuti desain final: sewa bulanan, validasi minimum sewa gedung, penguncian baris, dan payment barrier Finance.
+- Tabel katalog BPMN dan Tabel proses DFD Level 1 diselaraskan; penomoran tabel kini 3.1 sampai 3.21 berurutan.
+**File yang diubah:**
+- `PA/docs/System design/01-Gambaran-umum/01_arsitektur_keseluruhan/arsitektur_terpadu.html` (baru)
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html`
+- `PA/docs/System design/03-DFD/dfd_level_0_context.html`
+- `PA/docs/System design/03-DFD/dfd_level_1_dekomposisi.html`
+- `PA/docs/System design/04-ERD/erd_13_tabel.html` (baru)
+- `PA/docs/System design/02-BPMN/*/*.mmd` dan `*.png`
+- `PA/docs/modules/bab3/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Tiga fitur belum memiliki tabel pada skema 13 tabel, yaitu F02 peran kustom, F11 pengeluaran operasional, dan F13 pemeliharaan rutin berkala. Ketiganya ditandai pada diagram Mermaid dan dicatat pada naskah sebagai perluasan skema.
+- `04-ERD/erd_sistem_dinamis.html` versi lama 21 tabel masih ada dan belum diarsipkan.
+- `System design/draft/` masih memuat versi lama tiga diagram BPMN dan use case.
+- `docs-generator.sh` belum merender Mermaid menjadi gambar saat konversi ke docx. mermaid-cli sudah terpasang, tinggal menambahkan langkah render.
+**Catatan/masalah:**
+- Mesin layout ERD yang lama tidak dapat menggambar relasi lintas modul, sehingga FK `buildings.owner_id` hanya ditandai lewat tag kolom.
+
+---
+
+## [2026-10-21 13:35] Penyesuaian Format Diagram BAB 3 (HTML untuk Gambaran Umum, DFD, ERD; Mermaid untuk BPMN)
+
+**Status:** Selesai
+**Dikerjakan:**
+- Menyesuaikan seluruh rujukan gambar di `PA/docs/modules/bab3/README.md` mengikuti klarifikasi format: gambaran umum, DFD, dan ERD memakai HTML, sedangkan BPMN memakai notasi Mermaid pada berkas `.mmd`.
+- Gambar yang dipertahankan sembilan buah: 3.1 arsitektur terpadu (HTML), 3.2 dekomposisi modulith 3-tier (HTML), 3.3 DFD Level 0 (HTML), 3.4 DFD Level 1 (HTML), 3.5 ERD 13 tabel (HTML), 3.6 alokasi penempatan (Mermaid), 3.7 penagihan dan pembayaran (Mermaid), 3.8 laporan kerusakan (Mermaid), 3.9 konsultasi AI (Mermaid).
+- Rujukan gambar yang dihapus: alur kerja Scrum, papan sprint, sequence OIDC, dua diagram aktivitas, sequence reservasi, use case global, tiga mockup antarmuka, dan komposisi container. Uraian teks pada §3.4.4, §3.4.5, §3.5.1, §3.7, dan §3.9 tetap dipertahankan.
+- Menambah Tabel 3.12 berisi katalog sembilan diagram BPMN beserta fitur dan alur utamanya.
+- Memindahkan `bpmn_konsultasi_ai_mcp.mmd` dari `System design/draft/06_bpmn_konsultasi_ai_mcp/` ke `System design/02-BPMN/09_konsultasi_ai_mcp/` agar sejajar dengan delapan alur lain.
+- Memperbaiki satu karakter rusak pada `PA/docs/modules/referensi/README.md` ("Dilarang添加 referensi" menjadi "Dilarang menambahkan referensi").
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/System design/02-BPMN/09_konsultasi_ai_mcp/bpmn_konsultasi_ai_mcp.mmd` (pemindahan)
+- `PA/docs/modules/referensi/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Empat berkas HTML yang sudah ada masih menggambarkan arsitektur lama: `arsitektur_backend_modulith.html`, `dfd_level_0_context.html`, `dfd_level_1_dekomposisi.html`, dan `erd_sistem_dinamis.html`.
+- `arsitektur_terpadu.html` dan `erd_13_tabel.html` belum dibuat.
+- Sembilan berkas Mermaid masih memakai istilah lama seperti Modul Schedule dan Frontend UI Web/Mobile.
+- Pipeline `docs-generator.sh` belum merender Mermaid menjadi gambar saat konversi ke docx.
+**Catatan/masalah:**
+- Nomor tabel pada naskah kini 3.1 sampai 3.21 dan nomor gambar 3.1 sampai 3.9, keduanya berurutan tanpa lompatan.
+
+---
+
+## [2026-10-21 13:09] Penyelarasan Ulang Teks BAB 3 ke Arsitektur Final (NestJS, Keycloak, PostgreSQL, 13 Tabel)
+
+**Status:** Selesai untuk bagian teks; 19 diagram HTML menyusul
+**Dikerjakan:**
+- Menulis ulang `PA/docs/modules/bab3/README.md` (5.341 menjadi 7.609 kata) agar konsisten dengan ADR-007, ADR-011, dan ADR-012.
+- Mengganti seluruh kotak ASCII dan tabel ASCII menjadi tabel markdown (20 tabel) dan 19 rujukan gambar bernomor berurutan.
+- Menambahkan bagian yang sebelumnya belum ada: alur OIDC dan JWKS (§3.3.3), struktur direktori backend (§3.3.2), dua diagram aktivitas (§3.4.4-3.4.5), use case UC-03 dan UC-05, DFD Level 0 dan Level 1, rancangan Docker Compose (§3.9), timeline delapan minggu (§3.10.1), dan instrumen kuesioner (§3.10.2).
+- Memperbarui istilah usang: Laravel menjadi NestJS, Spatie menjadi Keycloak OIDC, MySQL menjadi PostgreSQL, modul Schedule menjadi Lease, 12 modul menjadi 9 modul, 41 tabel menjadi 13 tabel, durase harian dan tahunan menjadi bulanan saja, header `X-Building-ID` menjadi klaim `building_id` pada token, serta Pest dan deptrac menjadi Jest, Supertest, dan ESLint.
+- Memindahkan desain lama (ERD 41 tabel, matriks 12 modul, kamus data 6 tabel) ke `PA/docs/modules/bab3/ARSIP_DESAIN_LAMA.md` supaya isi lama tidak hilang tetapi tidak lagi mengganggu alur naskah.
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/modules/bab3/ARSIP_DESAIN_LAMA.md` (baru)
+**Dokumen yang diupdate:**
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/00_overview/STATE.md`
+- `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- 19 diagram dan mockup HTML belum dibuat; lokasi berkas target sudah disebut pada setiap rujukan gambar di naskah.
+- Diagram lama di `PA/docs/System design/` masih menggambarkan arsitektur lama (12 modul, 41 tabel) dan perlu digantikan.
+- Blocker sitasi belum dibereskan: `[36]` dan `[41]` dipakai di BAB 2 tetapi tidak ada di daftar pustaka, dan urutan kemunculan di BAB 1 masih dimulai dari `[2]`.
+**Catatan/masalah:**
+- Label tabel memakai pola `**Tabel 3.x - Judul**` agar tetap terbaca di markdown; pipeline docx perlu membaca pola ini atau dikonversi ke `custom-style`.
+- Dua berkas docx hasil percobaan sebelumnya (`ProyekAkhir_BAB1_BAB2_v0.4.docx` dan `ProyekAkhir_PA_lengkap_v0.5.docx`) masih ada di `PA/docs/` dan dapat dihapus bila tidak diperlukan.
+
+---
+
+## [2026-10-21 12:37] Perbaikan Paket DOCX v0.4: Relasi Footer Hilang
+
+**Status:** Selesai
+**Dikerjakan:**
+- Menemukan penyebab `ProyekAkhir_BAB1_BAB2_v0.4.docx` tidak bisa dibuka di Pages dan Google Docs: `document.xml` merujuk `rIdFtr2` (footer halaman pertama) tetapi relasi itu tidak tertulis di `word/_rels/document.xml.rels`. Paket OOXML jadi tidak konsisten.
+- Menambahkan relasi `rIdFtr2` beserta part `word/footer2.xml`, lalu memperbaiki urutan elemen `w:shd` pada style Source Code.
+- Memvalidasi ulang paket: content type setiap part, seluruh relasi dan target, semua `r:id`/`r:embed`, urutan elemen `pPr`/`rPr`/`sectPr`/`style`/`tblPr`/`tcPr`, serta well-formed XML. Hasil: 0 masalah.
+- Menguji buka file di Pages 14.4 lewat AppleScript: dokumen berhasil dibuka.
+**File yang diubah:**
+- `PA/docs/ProyekAkhir_BAB1_BAB2_v0.4.docx` (digenerate ulang)
+**Dokumen yang diupdate:**
+- `PA/docs/03_logs/CHANGELOG.md`
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Menunggu konfirmasi user apakah file sudah bisa dibuka di Google Docs.
+- Blocker sitasi (`[36]`, `[41]`, urutan `[1]`) masih terbuka.
+**Catatan/masalah:**
+- Diagnosis awal (aplikasi Google Drive sebagai penyebab) keliru; file memang cacat pada relasi footer.
+
+---
+
+## [2026-10-21 12:26] Generate DOCX BAB 1 + BAB 2 (v0.4) via Pandoc
+
+**Status:** Sebagian (draft docx jadi, dua blocker sitasi belum dibereskan)
+**Dikerjakan:**
+- Menyusun pipeline Markdown -> DOCX dengan Pandoc 3.12.1 mengikuti `PA/docs/01_guides/docs-convertion.md`.
+- Membuat `reference.docx` kustom: A4, margin 4-4-3-3 cm, Times New Roman 12 pt, spasi 1,5, Heading 1 kapital di tengah + mulai halaman baru, Heading 2-3 bold hitam, caption 10 pt, tabel berbingkai 10 pt, daftar pustaka hanging indent.
+- Menyusun cover, Daftar Isi (field TOC yang dimuat Word saat dibuka), nomor halaman romawi untuk front matter dan arab untuk isi.
+- Menggabungkan `modules/bab1/README.md` + `modules/bab2/README.md` + `modules/referensi/DAFTAR_PUSTAKA_LENGKAP.md` menjadi satu dokumen.
+- Gambar 2.2, 2.4, 2.5 disisipkan dari `System design/`; 11 gambar lain ditandai "(belum tersedia)".
+- Menambahkan caption `Tabel 1.1 Empat Proposal Previous Work` dan `Tabel 2.1 Penelitian Terkait` di dokumen hasil (belum ditulis di markdown sumber).
+- Memperbaiki list yang menempel pada paragraf pengantar agar dikenali Pandoc (hanya di salinan build, sumber tidak diubah).
+**File yang diubah:**
+- `PA/docs/ProyekAkhir_BAB1_BAB2_v0.4.docx` (baru)
+**Dokumen yang diupdate:**
+- `PA/docs/03_logs/CHANGELOG.md`
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Blocker sitasi: urutan kemunculan di body dimulai dari `[2]`, bukan `[1]`. `[36]` dan `[41]` dipakai di BAB 2 tetapi tidak ada di `DAFTAR_PUSTAKA_LENGKAP.md` (28 entri).
+- 11 gambar BAB 2 belum tersedia.
+- Daftar Gambar dan Daftar Tabel belum dibuat (butuh caption ber-SEQ field).
+- Pipeline build masih di direktori sementara, belum disimpan di repo.
+**Catatan/masalah:**
+- Isi naskah markdown tidak diubah. Semua transformasi (caption tabel, gambar, perbaikan list) hanya terjadi di salinan build.
+- Layout belum diverifikasi visual di Word/LibreOffice (keduanya tidak terpasang di mesin ini).
+
+---
+
 ## [2026-10-18 11:15] Rekonstruksi Penuh BAB 3: NestJS Modular Monolith, BPMN, DFD, ERD 13 Tabel, & Kontrak REST/MCP
 
 **Status:** Selesai

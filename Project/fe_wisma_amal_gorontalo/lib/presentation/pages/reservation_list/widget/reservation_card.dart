@@ -22,11 +22,11 @@ class ReservationCard extends StatelessWidget {
 
   Color _getStatusColor() {
     switch (status) {
-      case 'Aktif':
+      case 'Active':
         return Colors.green;
       case 'Pending':
         return Colors.orange;
-      case 'Selesai':
+      case 'Completed':
         return Colors.grey;
       default:
         return Colors.blue;

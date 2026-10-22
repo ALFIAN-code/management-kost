@@ -75,7 +75,7 @@ class RoomScheduleItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '$reservationCount Reservasi',
+                  '$reservationCount Reservations',
                   style: theme.textTheme.labelMedium,
                 ),
               ),
@@ -184,13 +184,13 @@ class _EmptyReservationState extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Tidak ada reservasi',
+              'No reservations',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
               ),
             ),
             Text(
-              'Kamar Tersedia untuk booking',
+              'Room available for booking',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
               ),

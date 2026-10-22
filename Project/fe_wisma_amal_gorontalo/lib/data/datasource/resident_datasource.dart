@@ -12,7 +12,7 @@ class ResidentDatasource {
 
   ResidentDatasource({required this.dioClient});
 
-  /// Mengambil daftar semua penghuni untuk halaman Admin (berserta paginasi dan filter)
+  /// Fetches the list of all residents for the Admin page (with pagination and filters)
   Future<ResidentResponse> getAdminResidents({
     int page = 1,
     int perPage = 10,
@@ -41,10 +41,10 @@ class ResidentDatasource {
     }
   }
 
-  /// Mengambil detail spesifik dari satu penghuni
+  /// Fetches the specific details of a single resident
   Future<ResidentDetailEntity> getAdminResidentDetail(String id) async {
     try {
-      // Sesuaikan URL ini jika endpoint detail di backend berbeda
+      // Adjust this URL if the detail endpoint differs on the backend
       final response = await dioClient.get('/v1/room-schedules/$id');
       return ResidentDetailModel.fromJson(response.data['data']);
     } catch (e) {
@@ -52,10 +52,10 @@ class ResidentDatasource {
     }
   }
 
-  /// Mengambil data profil milik penghuni yang sedang login
+  /// Fetches the profile data of the currently signed-in resident
   Future<ResidentProfileEntity> getProfile() async {
     try {
-      // Diambil dari endpoint Auth Module backend yang sudah Anda miliki
+      // Retrieved from the backend Auth Module endpoint you already have
       final response = await dioClient.get('/resident/profile');
       return ResidentProfileModel.fromJson(response.data['data']);
     } catch (e) {
@@ -63,7 +63,7 @@ class ResidentDatasource {
     }
   }
 
-  /// Melengkapi profil data diri penghuni (termasuk upload foto KTP)
+  /// Completes the resident's personal data profile (including ID card photo upload)
   Future<ResidentProfileEntity> completeProfile({
     required String idCardNumber,
     required String phoneNumber,
@@ -75,7 +75,7 @@ class ResidentDatasource {
     PlatformFile? ktpPhoto,
   }) async {
     try {
-      // Menggunakan FormData karena ada potensi pengiriman file (Multipart/form-data)
+      // Using FormData because there may be file uploads (Multipart/form-data)
       FormData formData = FormData.fromMap({
         'id_card_number': idCardNumber,
         'phone_number': phoneNumber,
@@ -88,7 +88,7 @@ class ResidentDatasource {
           'emergency_contact_phone': emergencyContactPhone,
       });
 
-      // Menyisipkan file KTP jika user memilih file
+      // Attaches the ID card file if the user selects one
       if (ktpPhoto != null) {
         if (ktpPhoto.bytes != null) {
           formData.files.add(

@@ -1,76 +1,57 @@
 sequenceDiagram
   autonumber
-  actor User as Calon Penghuni / Staf
-  actor Admin as Pengelola / Pengawas Gedung
-  participant FE as Frontend UI (Web / Mobile)
-  participant Sched as Modul Schedule (Core)
+  actor User as Penghuni / Calon Penghuni
+  actor Admin as Pengelola Gedung
+  participant FE as Flutter Web (Antarmuka)
+  participant Bldg as Modul Building (Core)
   participant Room as Modul Room (Core)
+  participant Lease as Modul Lease (Core)
   participant Bus as Internal Event Bus
   participant Fin as Modul Finance (Opsional)
   participant Mid as Gateway Pembayaran (Midtrans)
 
-  User->>FE: Buka Halaman Ketersediaan Kamar
-  FE->>Room: GET /api/rooms?building_id=X (Ambil Unit Fisik & Kapasitas)
-  FE->>Sched: GET /api/occupancy/availability?room_id=Y&dates=Z
-  Sched-->>FE: Return Slot Sisa Kuota Kamar pada Rentang Tanggal
-  
-  User->>FE: Pilih Unit Kamar & Periode Huni
-  FE->>Sched: POST /api/occupancy/requests (building_id, room_id, user_id, start_date, end_date)
-  
-  Sched->>Room: Cek Kapasitas Maksimal Fisik Unit
-  Sched->>Sched: Validasi Anti-Bentrok Jadwal & Kuota Unit
-  
-  alt Kuota Kamar Penuh / Tanggal Bentrok
-    Sched-->>FE: Return Error 422 (Kuota Penuh pada Periode Terpilih)
-    FE-->>User: Tampilkan Peringatan Kuota Habis
-  else Kuota Tersedia
-    Sched->>Sched: Buat Record Alokasi Baru
-    
-    alt Kasus A: Modul Finance NONAKTIF (Asrama / Mes / Pondok Gratis)
-      alt Kebijakan Gedung: SELF_SERVICE_APPROVAL
-        Sched->>Sched: Set Status 'pending_approval'
-        Admin->>Sched: Review Berkas & Klik 'Setujui'
-        Sched->>Sched: Update Status -> 'confirmed'
-      else Kebijakan Gedung: SELF_SERVICE_INSTANT
-        Sched->>Sched: Set Status Langsung -> 'confirmed'
-      else Kebijakan Gedung: ADMIN_ASSIGN_ONLY
-        Note over Admin, Sched: Admin langsung assign user tanpa permohonan mandiri
-        Sched->>Sched: Set Status Langsung -> 'confirmed'
+  User->>FE: Buka Katalog Kamar (pilih gedung)
+  FE->>Bldg: GET /api/buildings (filter building_id dari klaim token)
+  FE->>Room: GET /api/rooms?building_id=X&status=kosong
+  Room-->>FE: Daftar unit kamar kosong beserta harga bulanan
+  FE->>Lease: GET /api/leases/availability?room_id=Y
+  Lease-->>FE: Status ketersediaan kamar pada periode berjalan
+
+  User->>FE: Pilih unit kamar dan durasi sewa (satuan bulan)
+  FE->>Lease: POST /api/leases (room_id, duration_months, start_month)
+
+  Lease->>Bldg: Ambil min_rental_months dari building_settings
+  alt Durasi lebih pendek dari minimum sewa gedung
+    Lease-->>FE: Error 422 (durasi minimum gedung adalah N bulan)
+    FE-->>User: Tampilkan pilihan durasi minimum
+  else Durasi memenuhi minimum sewa
+    Lease->>Lease: Kunci baris kamar (SELECT ... FOR UPDATE)
+    Lease->>Lease: Periksa kontrak aktif yang tumpang tindih
+
+    alt Sudah ada kontrak aktif pada periode yang sama
+      Lease-->>FE: Error 422 (kamar sedang diproses atau sudah terisi)
+      FE-->>User: Tampilkan peringatan kamar tidak tersedia
+    else Kamar tersedia
+      Lease->>Lease: Simpan kontrak sewa (status: 'pending_payment')
+      Lease->>Bus: emit(LeaseCreated)
+
+      alt Modul Finance AKTIF (rumah kost komersial)
+        Bus->>Fin: handle(LeaseCreated) -> Terbitkan invoice periode pertama
+        Fin->>Mid: Request SNAP Token (VA / QRIS)
+        Mid-->>Fin: Return SNAP Token
+        Fin-->>FE: Return invoice dan snap_token
+        FE-->>User: Tampilkan antarmuka pembayaran
+        User->>Mid: Selesaikan pembayaran
+        Mid-->>Fin: Webhook settlement (tanda tangan terverifikasi)
+        Fin->>Bus: emit(PaymentSettled)
+        Bus->>Lease: handle(PaymentSettled) -> Buka barrier pembayaran
+        Lease->>Lease: Set status kontrak -> 'confirmed'
+        Lease->>Room: Update status kamar -> 'terisi'
+        FE-->>User: Tampilkan bukti lunas dan konfirmasi sewa
+      else Modul Finance NONAKTIF (asrama atau mes gratis)
+        Lease->>Lease: Set status kontrak -> 'confirmed'
+        Lease->>Room: Update status kamar -> 'terisi'
+        FE-->>User: Tampilkan konfirmasi sewa
       end
-      
-      Sched->>Bus: emit(OccupancyConfirmed)
-      Sched-->>FE: Return Konfirmasi Berhasil (Tanpa Invoice)
-      FE-->>User: Tampilkan Tiket Penempatan Kamar
-      
-    else Kasus B: Modul Finance AKTIF (Rumah Kost Komersial)
-      Sched->>Sched: Set Status 'pending_payment' (Payment Barrier Terkunci)
-      Sched->>Bus: emit(OccupancyCreated)
-      
-      Bus->>Fin: handle(OccupancyCreated) -> Generate Invoice
-      Fin->>Mid: Request SNAP Token Pembayaran
-      Mid-->>Fin: Return SNAP Token
-      Fin-->>FE: Return Data Invoice & SNAP Token
-      FE-->>User: Tampilkan Antarmuka Bayar (VA / QRIS)
-      
-      User->>Mid: Selesaikan Pembayaran
-      Mid-->>Fin: Webhook Callback Settlement
-      Fin->>Fin: Update Invoice -> 'paid'
-      Fin->>Bus: emit(PaymentSettled)
-      
-      Bus->>Sched: handle(PaymentSettled) -> Buka Payment Barrier
-      Sched->>Sched: Update Status Alokasi -> 'confirmed'
-      FE-->>User: Tampilkan Bukti Lunas & Jadwal Huni Terkonfirmasi
-    end
-    
-    opt Tahap Check-in (Tanggal Mulai Tiba)
-      Admin->>Sched: Konfirmasi Kehadiran Fisik Penghuni
-      Sched->>Sched: Update Status -> 'active' (Sedang Menghuni)
-    end
-    
-    opt Tahap Check-out (Masa Tinggal Berakhir)
-      User->>Sched: Pengakhiran Huni / Selesai
-      Sched->>Sched: Update Status -> 'completed'
-      Sched->>Bus: emit(OccupancyEnded)
-      Note over Sched, Room: Kuota Kamar Otomatis Pulih Kembali
     end
   end

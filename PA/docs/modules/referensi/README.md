@@ -22,7 +22,7 @@ Akibatnya penguji akan menemukan sitasi yang tidak cocok dengan klaim yangティ
 1. Nomor IEEE dihitung **urutan kemunculan pertama** pada BAB 1 → BAB 2 → BAB 3.
 2. Setiap entri wajib punya **DOI atau URL**. Entri tanpa keduanya berstatus `PERLU VERIFIKASI` dan **dilarang** masuk generate docx final.
 3. Sitasi proposal *previous work* (internal) tetap diberi nomor seperti sitasi biasa, agar bisa dirujuk di BAB 1.
-4. Dilarang添加 referensi baru langsung ke naskah. Tambah dulu di `DAFTAR_PUSTAKA_LENGKAP.md`, catat status verifikasinya, baru pakai di teks.
+4. Dilarang menambahkan referensi baru langsung ke naskah. Tambah dulu di `DAFTAR_PUSTAKA_LENGKAP.md`, catat status verifikasinya, baru pakai di teks.
 5. Kalau satu sumber dipakai untuk dua klaim berbeda, tetap **satu nomor**.
 
 ---

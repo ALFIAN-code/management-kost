@@ -33,7 +33,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusWaitingBorder : AppColorsLight.statusWaitingBorder,
         dotColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
         textColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
-        label: 'Menunggu',
+        label: 'Pending',
       );
     } else if (normalizedStatus == 'dalam_proses' || normalizedStatus == 'proses' || normalizedStatus == 'dalam proses') {
       return StatusBadgeConfig(
@@ -41,7 +41,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusProcessBorder : AppColorsLight.statusProcessBorder,
         dotColor: isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess,
         textColor: isDark ? AppColorsDark.statusProcess : AppColorsLight.statusProcess,
-        label: 'Dalam Proses',
+        label: 'In Process',
       );
     } else if (normalizedStatus == 'selesai') {
       return StatusBadgeConfig(
@@ -49,7 +49,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusDoneBorder : AppColorsLight.statusDoneBorder,
         dotColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
         textColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
-        label: 'Selesai',
+        label: 'Completed',
       );
     } else if (normalizedStatus == 'cancelled' || normalizedStatus == 'dibatalkan' || normalizedStatus == 'batal') {
       return StatusBadgeConfig(
@@ -57,7 +57,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusCancelledBorder : AppColorsLight.statusCancelledBorder,
         dotColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
         textColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
-        label: 'Dibatalkan',
+        label: 'Cancelled',
       );
     } else if (normalizedStatus == 'active' || normalizedStatus == 'aktif') {
       return StatusBadgeConfig(
@@ -65,7 +65,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusDoneBorder : AppColorsLight.statusDoneBorder,
         dotColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
         textColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
-        label: 'Aktif',
+        label: 'Active',
       );
     } else if (normalizedStatus == 'pending') {
       return StatusBadgeConfig(
@@ -81,7 +81,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusDoneBorder : AppColorsLight.statusDoneBorder,
         dotColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
         textColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
-        label: 'Lunas',
+        label: 'Paid',
       );
     } else if (normalizedStatus == 'belum lunas' || normalizedStatus == 'belum_lunas') {
       return StatusBadgeConfig(
@@ -89,7 +89,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusCancelledBorder : AppColorsLight.statusCancelledBorder,
         dotColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
         textColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
-        label: 'Belum Lunas',
+        label: 'Unpaid',
       );
     } else if (normalizedStatus == 'unpaid' || normalizedStatus == 'belum bayar') {
       return StatusBadgeConfig(
@@ -97,7 +97,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusWaitingBorder : AppColorsLight.statusWaitingBorder,
         dotColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
         textColor: isDark ? AppColorsDark.statusWaiting : AppColorsLight.statusWaiting,
-        label: 'Belum Bayar',
+        label: 'Unpaid',
       );
     } else if (normalizedStatus == 'paid' || normalizedStatus == 'verified') {
       return StatusBadgeConfig(
@@ -105,7 +105,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusDoneBorder : AppColorsLight.statusDoneBorder,
         dotColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
         textColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
-        label: normalizedStatus == 'paid' ? 'Lunas' : 'Terverifikasi',
+        label: normalizedStatus == 'paid' ? 'Paid' : 'Verified',
       );
     } else if (normalizedStatus == 'rejected' || normalizedStatus == 'failed') {
       return StatusBadgeConfig(
@@ -113,7 +113,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusCancelledBorder : AppColorsLight.statusCancelledBorder,
         dotColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
         textColor: isDark ? AppColorsDark.statusCancelled : AppColorsLight.statusCancelled,
-        label: normalizedStatus == 'rejected' ? 'Ditolak' : 'Gagal',
+        label: normalizedStatus == 'rejected' ? 'Rejected' : 'Failed',
       );
     } else if (normalizedStatus == 'confirmed' || normalizedStatus == 'dikonfirmasi' || normalizedStatus == 'terkonfirmasi') {
       return StatusBadgeConfig(
@@ -121,7 +121,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusDoneBorder : AppColorsLight.statusDoneBorder,
         dotColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
         textColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
-        label: 'Terkonfirmasi',
+        label: 'Confirmed',
       );
     } else if (normalizedStatus == 'success' || normalizedStatus == 'berhasil' || normalizedStatus == 'sukses') {
       return StatusBadgeConfig(
@@ -129,7 +129,7 @@ class StatusBadge extends StatelessWidget {
         borderColor: isDark ? AppColorsDark.statusDoneBorder : AppColorsLight.statusDoneBorder,
         dotColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
         textColor: isDark ? AppColorsDark.statusDone : AppColorsLight.statusDone,
-        label: 'Berhasil',
+        label: 'Successful',
       );
     } else {
       // Default / Unknown

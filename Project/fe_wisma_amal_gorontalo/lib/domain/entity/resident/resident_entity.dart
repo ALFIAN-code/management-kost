@@ -19,7 +19,7 @@ class ResidentResponse {
         .map((item) => ResidentItem.fromJson(item as Map<String, dynamic>))
         .toList();
 
-    // Membaca key yang benar dari response backend: 'residents', 'pagination', 'stats'
+    // Read the correct keys from the backend response: 'residents', 'pagination', 'stats'
     final residentsList = json['residents'] as List<dynamic>? ?? <dynamic>[];
     final paginationMap = json['pagination'] as Map<String, dynamic>? ?? <String, dynamic>{};
     final statsMap = json['stats'] as Map<String, dynamic>?;
@@ -70,7 +70,7 @@ class ResidentItem {
       nama: tenant?['name'] ?? '-',
       kamar: room?['number'] ?? '-',
       kontak: tenant?['phone'] ?? '-',
-      detailBayar: json['payment_status'] ?? 'Belum Lunas',
+      detailBayar: json['payment_status'] ?? 'Not Fully Paid',
       status: json['status'] ?? 'Pending',
     );
   }

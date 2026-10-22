@@ -29,7 +29,7 @@ class DummyDataSeeder extends Seeder
         $admin = User::firstOrCreate(
             ['email' => 'admin@wismaamal.com'],
             [
-                'name' => 'Admin Wisma Amal',
+                'name' => 'Wisma Amal Admin',
                 'password' => bcrypt('password'),
             ]
         );
@@ -69,8 +69,8 @@ class DummyDataSeeder extends Seeder
                 'id_card_number' => '7501012901950001',
                 'phone_number' => '081234567890',
                 'gender' => 'male',
-                'job' => 'Karyawan Swasta',
-                'address_ktp' => 'Jl. Merdeka No. 123, Gorontalo',
+                'job' => 'Private Employee',
+                'address_ktp' => 'St. Merdeka No. 123, Gorontalo',
                 'emergency_contact_name' => 'Fatimah Hidayat',
                 'emergency_contact_phone' => '081234567891',
             ],
@@ -80,8 +80,8 @@ class DummyDataSeeder extends Seeder
                 'id_card_number' => '7501016505920002',
                 'phone_number' => '081234567892',
                 'gender' => 'female',
-                'job' => 'Guru',
-                'address_ktp' => 'Jl. Pendidikan No. 45, Gorontalo',
+                'job' => 'Teacher',
+                'address_ktp' => 'St. Pendidikan No. 45, Gorontalo',
                 'emergency_contact_name' => 'Ahmad Nurhaliza',
                 'emergency_contact_phone' => '081234567893',
             ],
@@ -91,8 +91,8 @@ class DummyDataSeeder extends Seeder
                 'id_card_number' => '7501011203880003',
                 'phone_number' => '081234567894',
                 'gender' => 'male',
-                'job' => 'Mahasiswa',
-                'address_ktp' => 'Jl. Kampus No. 67, Gorontalo',
+                'job' => 'Student',
+                'address_ktp' => 'St. Kampus No. 67, Gorontalo',
                 'emergency_contact_name' => 'Siti Santoso',
                 'emergency_contact_phone' => '081234567895',
             ],
@@ -102,8 +102,8 @@ class DummyDataSeeder extends Seeder
                 'id_card_number' => '7501015204930004',
                 'phone_number' => '081234567896',
                 'gender' => 'female',
-                'job' => 'Perawat',
-                'address_ktp' => 'Jl. Kesehatan No. 89, Gorontalo',
+                'job' => 'Nurse',
+                'address_ktp' => 'St. Kesehatan No. 89, Gorontalo',
                 'emergency_contact_name' => 'Budi Lestari',
                 'emergency_contact_phone' => '081234567897',
             ],
@@ -113,8 +113,8 @@ class DummyDataSeeder extends Seeder
                 'id_card_number' => '7501013108900005',
                 'phone_number' => '081234567898',
                 'gender' => 'male',
-                'job' => 'Wiraswasta',
-                'address_ktp' => 'Jl. Perdagangan No. 12, Gorontalo',
+                'job' => 'Self-employed',
+                'address_ktp' => 'St. Perdagangan No. 12, Gorontalo',
                 'emergency_contact_name' => 'Ani Hartono',
                 'emergency_contact_phone' => '081234567899',
             ],
@@ -124,8 +124,8 @@ class DummyDataSeeder extends Seeder
                 'id_card_number' => '7501017809940006',
                 'phone_number' => '081234567800',
                 'gender' => 'female',
-                'job' => 'Dokter',
-                'address_ktp' => 'Jl. Rumah Sakit No. 34, Gorontalo',
+                'job' => 'Doctor',
+                'address_ktp' => 'St. Rumah Sakit No. 34, Gorontalo',
                 'emergency_contact_name' => 'Hadi Permata',
                 'emergency_contact_phone' => '081234567801',
             ],
@@ -135,8 +135,8 @@ class DummyDataSeeder extends Seeder
                 'id_card_number' => '7501012405910007',
                 'phone_number' => '081234567802',
                 'gender' => 'male',
-                'job' => 'PNS',
-                'address_ktp' => 'Jl. Pemerintahan No. 56, Gorontalo',
+                'job' => 'Civil Servant',
+                'address_ktp' => 'St. Pemerintahan No. 56, Gorontalo',
                 'emergency_contact_name' => 'Sri Wijaya',
                 'emergency_contact_phone' => '081234567803',
             ],
@@ -146,8 +146,8 @@ class DummyDataSeeder extends Seeder
                 'id_card_number' => '7501016612950008',
                 'phone_number' => '081234567804',
                 'gender' => 'female',
-                'job' => 'Dosen',
-                'address_ktp' => 'Jl. Universitas No. 78, Gorontalo',
+                'job' => 'Lecturer',
+                'address_ktp' => 'St. Universitas No. 78, Gorontalo',
                 'emergency_contact_name' => 'Rudi Kusuma',
                 'emergency_contact_phone' => '081234567805',
             ],
@@ -166,6 +166,19 @@ class DummyDataSeeder extends Seeder
             $user->save();
             $user->assignRole('resident');
 
+            \Modules\Auth\Models\UserProfile::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'id_card_number' => $residentData['id_card_number'],
+                    'phone_number' => $residentData['phone_number'],
+                    'gender' => $residentData['gender'],
+                    'job' => $residentData['job'],
+                    'address_ktp' => $residentData['address_ktp'],
+                    'emergency_contact_name' => $residentData['emergency_contact_name'],
+                    'emergency_contact_phone' => $residentData['emergency_contact_phone'],
+                ]
+            );
+
             $users[] = $user;
         }
 
@@ -177,8 +190,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Standard',
                 'price' => 500000,
                 'status' => 'occupied',
-                'description' => 'Kamar Standard Deluxe yang dirancang khusus untuk kenyamanan maksimal Anda. Menawarkan suasana tenang dengan pencahayaan alami yang cukup. Dilengkapi dengan fasilitas modern, area kerja yang ergonomis, dan koneksi internet cepat.',
-                'facilities' => ['AC', 'WiFi', 'Kasur Single', 'Lemari', 'Meja Belajar'],
+                'description' => 'A Standard Deluxe room designed specifically for your maximum comfort. It offers a calm atmosphere with plenty of natural light, complete with modern amenities, an ergonomic work area, and a fast internet connection.',
+                'facilities' => ['AC', 'WiFi', 'Single Bed', 'Wardrobe', 'Study Desk'],
                 'images_count' => 3,
             ],
             [
@@ -187,8 +200,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Standard',
                 'price' => 500000,
                 'status' => 'available',
-                'description' => 'Ruangan standar yang tenang dengan jendela besar yang menghadap langsung ke taman hijau yang asri. Memberikan nuansa tropis yang menyegarkan setiap kali Anda membuka tirai di pagi hari.',
-                'facilities' => ['AC', 'WiFi', 'Kasur Single', 'Lemari'],
+                'description' => 'A quiet standard room with large windows overlooking a lush green garden, giving you a refreshing tropical feel every time you open the curtains in the morning.',
+                'facilities' => ['AC', 'WiFi', 'Single Bed', 'Wardrobe'],
                 'images_count' => 2,
             ],
             [
@@ -197,8 +210,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Standard',
                 'price' => 500000,
                 'status' => 'occupied',
-                'description' => 'Pilihan praktis dan ekonomis bagi Anda yang mengutamakan fungsi tanpa mengabaikan kenyamanan dasar. Kamar ini tetap dilengkapi dengan standar kebersihan tinggi dan fasilitas WiFi.',
-                'facilities' => ['WiFi', 'Kasur Single', 'Lemari', 'Meja Belajar'],
+                'description' => 'A practical and affordable option for those who put function first without overlooking basic comfort. The room still comes with high hygiene standards and WiFi facilities.',
+                'facilities' => ['WiFi', 'Single Bed', 'Wardrobe', 'Study Desk'],
                 'images_count' => 2,
             ],
             [
@@ -207,8 +220,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Standard',
                 'price' => 500000,
                 'status' => 'available',
-                'description' => 'Kamar standar dengan keunggulan aksesibilitas terbaik, terletak di lantai dasar dan dekat dengan area parkir utama. Memudahkan Anda yang sering memiliki mobilitas luar ruangan tinggi.',
-                'facilities' => ['AC', 'WiFi', 'Kasur Single', 'Lemari'],
+                'description' => 'A standard room with the best accessibility, located on the ground floor and close to the main parking area, making everyday life easier for residents who are often out and about.',
+                'facilities' => ['AC', 'WiFi', 'Single Bed', 'Wardrobe'],
                 'images_count' => 2,
             ],
             [
@@ -217,8 +230,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Standard',
                 'price' => 500000,
                 'status' => 'maintenance',
-                'description' => 'Kamar standar yang nyaman dengan pencahayaan yang hangat. Cocok untuk istirahat setelah seharian beraktivitas.',
-                'facilities' => ['AC', 'WiFi', 'Kasur Single', 'Lemari'],
+                'description' => 'A cozy standard room with warm lighting, perfect for unwinding after a long day.',
+                'facilities' => ['AC', 'WiFi', 'Single Bed', 'Wardrobe'],
                 'images_count' => 1,
             ],
             [
@@ -227,8 +240,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Deluxe',
                 'price' => 750000,
                 'status' => 'occupied',
-                'description' => 'Kamar Executive Deluxe yang menawarkan standar kemewahan dan privasi tingkat tinggi. Terletak di lantai 2, kamar ini dilengkapi dengan balkon pribadi.',
-                'facilities' => ['AC', 'WiFi', 'Kasur Queen', 'Lemari', 'Meja Belajar', 'Kamar Mandi Dalam', 'Balkon', 'TV'],
+                'description' => 'An Executive Deluxe room offering a high standard of luxury and privacy. Located on the 2nd floor, it comes with a private balcony.',
+                'facilities' => ['AC', 'WiFi', 'Queen Bed', 'Wardrobe', 'Study Desk', 'En-suite Bathroom', 'Balcony', 'TV'],
                 'images_count' => 4,
             ],
             [
@@ -237,8 +250,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Deluxe',
                 'price' => 750000,
                 'status' => 'available',
-                'description' => 'Menghadirkan konsep hunian modern minimalis yang fungsional namun tetap memberikan kesan luas dan lega. Interior didesain dengan sentuhan elegan.',
-                'facilities' => ['AC', 'WiFi', 'Kasur Queen', 'Lemari', 'Meja Belajar', 'Kamar Mandi Dalam', 'TV'],
+                'description' => 'A modern minimalist living concept that stays functional while still feeling spacious and open, with an interior designed with an elegant touch.',
+                'facilities' => ['AC', 'WiFi', 'Queen Bed', 'Wardrobe', 'Study Desk', 'En-suite Bathroom', 'TV'],
                 'images_count' => 3,
             ],
             [
@@ -247,8 +260,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Deluxe',
                 'price' => 750000,
                 'status' => 'occupied',
-                'description' => 'Nikmati pagi yang cerah di Bright Deluxe 203 yang memiliki jendela kaca besar. Pencahayaan alami yang maksimal membuat ruangan terasa lebih luas.',
-                'facilities' => ['AC', 'WiFi', 'Kasur Queen', 'Lemari', 'Meja Belajar', 'Kamar Mandi Dalam', 'Balkon'],
+                'description' => 'Enjoy bright mornings in Bright Deluxe 203, which features large glass windows. Abundant natural light makes the room feel even more spacious.',
+                'facilities' => ['AC', 'WiFi', 'Queen Bed', 'Wardrobe', 'Study Desk', 'En-suite Bathroom', 'Balcony'],
                 'images_count' => 3,
             ],
             [
@@ -257,8 +270,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Deluxe',
                 'price' => 750000,
                 'status' => 'available',
-                'description' => 'Kamar deluxe yang tenang, jauh dari kebisingan. Sangat cocok bagi Anda yang membutuhkan konsentrasi tinggi untuk bekerja atau belajar.',
-                'facilities' => ['AC', 'WiFi', 'Kasur Queen', 'Lemari', 'Meja Belajar', 'Kamar Mandi Dalam'],
+                'description' => 'A quiet deluxe room far from the noise, ideal for you who need high concentration for work or study.',
+                'facilities' => ['AC', 'WiFi', 'Queen Bed', 'Wardrobe', 'Study Desk', 'En-suite Bathroom'],
                 'images_count' => 2,
             ],
             [
@@ -267,8 +280,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Deluxe',
                 'price' => 750000,
                 'status' => 'maintenance',
-                'description' => 'Kamar deluxe dengan tata letak studio yang efisien. Memberikan kenyamanan maksimal dalam ruang yang fungsional.',
-                'facilities' => ['AC', 'WiFi', 'Kasur Queen', 'Lemari', 'Meja Belajar', 'Kamar Mandi Dalam'],
+                'description' => 'A deluxe room with an efficient studio layout, delivering maximum comfort in a functional space.',
+                'facilities' => ['AC', 'WiFi', 'Queen Bed', 'Wardrobe', 'Study Desk', 'En-suite Bathroom'],
                 'images_count' => 2,
             ],
             [
@@ -277,8 +290,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Suite',
                 'price' => 1200000,
                 'status' => 'available',
-                'description' => 'Royal Suite adalah mahakarya hunian di Wisma Amal. Merupakan tipe kamar termewah yang luasnya setara dengan apartemen studio besar.',
-                'facilities' => ['AC', 'WiFi', 'Kasur King', 'Lemari Besar', 'Meja Kerja', 'Kamar Mandi Dalam', 'Balkon', 'TV', 'Kulkas', 'Dapur Kecil', 'Sofa'],
+                'description' => 'The Royal Suite is the masterpiece of Wisma Amal. It is our most premium room type, with a space comparable to a large studio apartment.',
+                'facilities' => ['AC', 'WiFi', 'King Bed', 'Large Wardrobe', 'Work Desk', 'En-suite Bathroom', 'Balcony', 'TV', 'Refrigerator', 'Kitchenette', 'Sofa'],
                 'images_count' => 5,
             ],
             [
@@ -287,8 +300,8 @@ class DummyDataSeeder extends Seeder
                 'type' => 'Suite',
                 'price' => 1200000,
                 'status' => 'available',
-                'description' => 'Kemewahan tanpa batas di Presidential Suite. Dilengkapi dengan fasilitas terbaik untuk pengalaman menginap yang tak terlupakan.',
-                'facilities' => ['AC', 'WiFi', 'Kasur King', 'Lemari Besar', 'Meja Kerja', 'Kamar Mandi Dalam', 'Balkon', 'TV', 'Kulkas', 'Dapur Kecil', 'Sofa'],
+                'description' => 'Boundless luxury in the Presidential Suite. Outfitted with the finest amenities for a stay you will never forget.',
+                'facilities' => ['AC', 'WiFi', 'King Bed', 'Large Wardrobe', 'Work Desk', 'En-suite Bathroom', 'Balcony', 'TV', 'Refrigerator', 'Kitchenette', 'Sofa'],
                 'images_count' => 5,
             ],
         ];
@@ -413,7 +426,7 @@ class DummyDataSeeder extends Seeder
         $guestsData = [
             [
                 'schedule' => $schedule1,
-                'name' => 'Bapak Hidayat',
+                'name' => 'Mr. Hidayat',
                 'relationship' => GuestRelationship::PARENT,
                 'check_in_at' => now()->subDays(10)->setTime(14, 0),
                 'check_out_at' => now()->subDays(8)->setTime(12, 0),
@@ -423,7 +436,7 @@ class DummyDataSeeder extends Seeder
             ],
             [
                 'schedule' => $schedule1,
-                'name' => 'Adik Hidayat',
+                'name' => 'Hidayat Sibling',
                 'relationship' => GuestRelationship::SIBLING,
                 'check_in_at' => now()->subDays(5)->setTime(15, 0),
                 'check_out_at' => now()->subDays(2)->setTime(10, 0),
@@ -462,7 +475,7 @@ class DummyDataSeeder extends Seeder
             ],
             [
                 'schedule' => $schedule7,
-                'name' => 'Rekan Kerja Guest',
+                'name' => 'Guest Colleague',
                 'relationship' => GuestRelationship::COLLEAGUE,
                 'check_in_at' => now()->subMonths(3)->setTime(14, 0),
                 'check_out_at' => now()->subMonths(3)->addDays(2)->setTime(12, 0),
@@ -505,7 +518,7 @@ class DummyDataSeeder extends Seeder
             \Modules\Notification\Models\NotificationLog::create([
                 'type' => \Modules\Notification\Enums\NotificationType::GUEST_REGISTERED->value,
                 'target_phone' => 'admin',
-                'message_body' => "Tamu terdaftar: {$guest->name} (Penghuni: {$sched->tenant_name}).",
+                'message_body' => "Guest registered: {$guest->name} (Resident: {$sched->tenant_name}).",
                 'status' => \Modules\Notification\Enums\NotificationStatus::SENT->value,
                 'is_read' => false,
             ]);

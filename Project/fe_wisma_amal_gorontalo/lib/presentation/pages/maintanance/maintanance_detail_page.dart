@@ -61,7 +61,7 @@ class _MaintananceDetailView extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
         appBar: AppBar(
           title: const Text(
-            'Detail Pemeliharaan',
+            'Maintenance Details',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -195,7 +195,7 @@ class _DetailsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final df = DateFormat('EEEE, dd MMM yyyy', 'id_ID');
+    final df = DateFormat('EEEE, dd MMM yyyy', 'en_US');
     final tf = DateFormat('HH:mm');
 
     return GridView.count(
@@ -208,24 +208,24 @@ class _DetailsGrid extends StatelessWidget {
       children: [
         _InfoItem(
           icon: Icons.category_rounded,
-          label: 'Misi',
-          value: schedule.type == 'pembersihan' ? 'Pembersihan' : 'Perawatan',
+          label: 'Task',
+          value: schedule.type == 'pembersihan' ? 'Cleaning' : 'Maintenance',
         ),
         _InfoItem(
           icon: Icons.settings_suggest_rounded,
-          label: 'Kategori',
+          label: 'Category',
           value: schedule.subtype.toUpperCase(),
         ),
         _InfoItem(
           icon: Icons.event_rounded,
-          label: 'Tanggal',
+          label: 'Date',
           value: df.format(schedule.startTime),
         ),
         _InfoItem(
           icon: Icons.schedule_rounded,
-          label: 'Waktu',
+          label: 'Time',
           value:
-              '${tf.format(schedule.startTime)} - ${schedule.endTime != null ? tf.format(schedule.endTime!) : "Selesai"}',
+              '${tf.format(schedule.startTime)} - ${schedule.endTime != null ? tf.format(schedule.endTime!) : "Finished"}',
         ),
       ],
     );
@@ -311,7 +311,7 @@ class _NotesCard extends StatelessWidget {
                   size: 20, color: theme.colorScheme.primary),
               const SizedBox(width: 8),
               Text(
-                'Catatan Penugasan',
+                'Assignment Notes',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.primary,
@@ -349,7 +349,7 @@ class _TimelineHeader extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Text(
-          'Rekam Jejak Progres',
+          'Progress History',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -358,7 +358,7 @@ class _TimelineHeader extends StatelessWidget {
         FilledButton.icon(
           onPressed: () => _showUpdateDialog(context),
           icon: const Icon(Icons.add_task_rounded, size: 18),
-          label: const Text('Input Progress'),
+          label: const Text('Add Progress'),
           style: FilledButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -394,7 +394,7 @@ class _ModernTimeline extends StatelessWidget {
             children: [
               Icon(Icons.history_rounded, size: 48, color: Colors.grey[400]),
               const SizedBox(height: 12),
-              const Text('Belum ada histori progres.'),
+              const Text('No progress history yet.'),
             ],
           ),
         ),
@@ -429,7 +429,7 @@ class _ModernTimelineItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final df = DateFormat('dd MMMM yyyy, HH:mm', 'id_ID');
+    final df = DateFormat('dd MMMM yyyy, HH:mm', 'en_US');
 
     return IntrinsicHeight(
       child: Row(
@@ -552,15 +552,15 @@ class _StatusBadge extends StatelessWidget {
     switch (status) {
       case 'done':
         color = Colors.green;
-        label = 'SELESAI';
+        label = 'DONE';
         break;
       case 'cancelled':
         color = Colors.red;
-        label = 'BATAL';
+        label = 'CANCELLED';
         break;
       default:
         color = Colors.orange;
-        label = 'PROSES';
+        label = 'IN PROGRESS';
     }
 
     if (isDark) {
@@ -621,22 +621,22 @@ class _UpdateFormDialogState extends State<_UpdateFormDialog> {
     final theme = Theme.of(context);
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      title: const Text('Update Progres Kerja'),
+      title: const Text('Update Work Progress'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CustomTextForm(
-              title: 'Laporan Progres',
-              hintText: 'Apa yang sudah dikerjakan?',
+              title: 'Progress Report',
+              hintText: 'What has been done?',
               controller: _notesController,
               maxLines: 4,
               isRequired: true,
             ),
             const SizedBox(height: 24),
             Text(
-              'Perbarui Status (Jika ada)',
+              'Update Status (If any)',
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -652,16 +652,16 @@ class _UpdateFormDialogState extends State<_UpdateFormDialog> {
                 child: DropdownButton<String>(
                   isExpanded: true,
                   value: _selectedStatus,
-                  hint: const Text('Pilih status baru'),
+                  hint: const Text('Select a new status'),
                   items: const [
                     DropdownMenuItem(
                       value: 'in_progress',
-                      child: Text('Masih Proses'),
+                      child: Text('In Progress'),
                     ),
-                    DropdownMenuItem(value: 'done', child: Text('Sudah Selesai')),
+                    DropdownMenuItem(value: 'done', child: Text('Completed')),
                     DropdownMenuItem(
                       value: 'cancelled',
-                      child: Text('Dibatalkan'),
+                      child: Text('Cancelled'),
                     ),
                   ],
                   onChanged: (v) => setState(() => _selectedStatus = v),
@@ -674,7 +674,7 @@ class _UpdateFormDialogState extends State<_UpdateFormDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Tutup'),
+          child: const Text('Close'),
         ),
         BlocConsumer<ScheduleActionBloc, ScheduleActionState>(
           listener: (context, state) {
@@ -700,7 +700,7 @@ class _UpdateFormDialogState extends State<_UpdateFormDialog> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('Simpan Update'),
+                  : const Text('Save Update'),
             );
           },
         ),
@@ -710,7 +710,7 @@ class _UpdateFormDialogState extends State<_UpdateFormDialog> {
 
   void _submit() {
     if (_notesController.text.trim().isEmpty) {
-      AppSnackbar.showError('Laporan wajib diisi');
+      AppSnackbar.showError('The report is required');
       return;
     }
 

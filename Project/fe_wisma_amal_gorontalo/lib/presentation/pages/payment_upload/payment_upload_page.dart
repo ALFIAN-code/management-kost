@@ -34,15 +34,15 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
   bool _isSubmitting = false;
   bool _isExpired = false;
   bool _isCancelling = false;
-  int _remainingSeconds = 900; // 15 menit default
+  int _remainingSeconds = 900; // 15 minutes default
   Timer? _countdownTimer;
   List<BankAccountEntity> _bankAccounts = [];
   String _wismaAddress = 'Jl. Wisma Amal No. 1, Gorontalo';
-  String _wismaHours = 'Senin – Sabtu, 08.00 – 17.00 WITA';
+  String _wismaHours = 'Monday – Saturday, 08.00 – 17.00 WITA';
   String _wismaPhone = '0811-4300-XXX';
 
   final currencyFormat = NumberFormat.currency(
-    locale: 'id_ID',
+    locale: 'en_US',
     symbol: 'Rp ',
     decimalDigits: 0,
   );
@@ -127,7 +127,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
     try {
       await serviceLocator.get<CancelReservationUseCase>().execute(widget.reservation.id);
     } catch (_) {
-      // Tidak perlu handle error, scheduler backend akan membatalkan otomatis
+      // No need to handle the error, the backend scheduler cancels automatically
     } finally {
       if (mounted) {
         context.router.replaceAll([const LandingRoute()]);
@@ -140,19 +140,19 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Batalkan Pemesanan?'),
+        title: const Text('Cancel Booking?'),
         content: const Text(
-          'Jika Anda meninggalkan halaman ini tanpa melakukan pembayaran, pemesanan akan dibatalkan dan kamar kembali tersedia untuk pengguna lain.',
+          'If you leave this page without making a payment, the booking will be cancelled and the room will become available to other users.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Lanjutkan Bayar'),
+            child: const Text('Continue Payment'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Ya, Batalkan', style: TextStyle(color: Colors.white)),
+            child: const Text('Yes, Cancel', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -170,9 +170,9 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Waktu Pembayaran Habis'),
+        title: const Text('Payment Time Expired'),
         content: const Text(
-          'Batas waktu upload bukti pembayaran (15 menit) telah habis. Pemesanan dibatalkan secara otomatis dan kamar kembali tersedia.',
+          'The 15-minute limit for uploading payment proof has expired. The booking was cancelled automatically and the room is available again.',
         ),
         actions: [
           ElevatedButton(
@@ -180,7 +180,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
               Navigator.pop(ctx);
               _cancelAndGoBack();
             },
-            child: const Text('Kembali ke Beranda'),
+            child: const Text('Back to Home'),
           ),
         ],
       ),
@@ -197,12 +197,12 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 28),
             const SizedBox(width: 8),
-            const Text('Bukti Terkirim'),
+            const Text('Proof Submitted'),
           ],
         ),
         content: const Text(
-          'Bukti pembayaran Anda berhasil dikirim dan sedang menunggu konfirmasi dari admin. '
-          'Anda akan menjadi penghuni resmi setelah pembayaran diverifikasi.',
+          'Your payment proof was submitted successfully and is awaiting confirmation from the admin. '
+          'You will become an official resident once the payment is verified.',
         ),
         actions: [
           ElevatedButton(
@@ -210,7 +210,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
               Navigator.pop(ctx);
               context.router.replaceAll([const LandingRoute()]);
             },
-            child: const Text('Kembali ke Beranda'),
+            child: const Text('Back to Home'),
           ),
         ],
       ),
@@ -234,7 +234,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
             setState(() => _isSubmitting = false);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Gagal mengunggah bukti pembayaran'),
+                content: Text(state.errorMessage ?? 'Failed to upload the payment proof'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -244,7 +244,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
           onWillPop: _onWillPop,
           child: Scaffold(
             appBar: CustomAppbar(
-              title: 'Pembayaran Manual',
+              title: 'Manual Payment',
               icon: const Icon(Icons.arrow_back),
               onPressed: () => _onWillPop(),
             ),
@@ -305,8 +305,8 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
               children: [
                 Text(
                   _isExpired
-                      ? 'Waktu Pembayaran Habis'
-                      : 'Batas Waktu Upload Bukti Pembayaran',
+                      ? 'Payment Time Expired'
+                      : 'Payment Proof Upload Deadline',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: _isExpired ? Colors.red : _timerColor,
@@ -316,8 +316,8 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                 const SizedBox(height: 2),
                 Text(
                   _isExpired
-                      ? 'Pemesanan akan dibatalkan secara otomatis.'
-                      : 'Upload bukti pembayaran sebelum waktu habis. Jika tidak, kamar akan tersedia kembali untuk pengguna lain.',
+                      ? 'The booking will be cancelled automatically.'
+                      : 'Upload your payment proof before the time runs out. Otherwise, the room will become available again for other users.',
                   style: TextStyle(
                     fontSize: 12,
                     color: _isExpired ? Colors.red.shade700 : Colors.grey.shade700,
@@ -344,11 +344,11 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
   Widget _buildStepIndicator() {
     return Row(
       children: [
-        _stepCircle('1', 'Pemesanan', true, done: true),
+        _stepCircle('1', 'Booking', true, done: true),
         _stepLine(true),
-        _stepCircle('2', 'Pembayaran', true),
+        _stepCircle('2', 'Payment', true),
         _stepLine(false),
-        _stepCircle('3', 'Verifikasi', false),
+        _stepCircle('3', 'Verification', false),
       ],
     );
   }
@@ -401,14 +401,14 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
       children: [
         // Transfer Bank
         BasicCard(
-          title: 'Pembayaran via Transfer Bank',
+          title: 'Payment via Bank Transfer',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _instructionStep(
                 1,
-                'Lakukan Transfer ke Rekening Berikut',
-                'Pastikan nominal transfer sesuai dengan total tagihan.',
+                'Make a Transfer to the Following Account',
+                'Make sure the transfer amount matches the total invoice.',
               ),
               const SizedBox(height: 16),
               if (_bankAccounts.isEmpty)
@@ -420,7 +420,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                     border: Border.all(color: Colors.blue.shade200),
                   ),
                   child: const Text(
-                    'Hubungi pengelola wisma untuk informasi rekening transfer.',
+                    'Contact the dormitory administrator for transfer account details.',
                     style: TextStyle(fontSize: 13),
                   ),
                 )
@@ -443,8 +443,8 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                         ),
                         const SizedBox(height: 8),
-                        _bankInfoRow('No. Rekening', account.accountNumber),
-                        _bankInfoRow('Atas Nama', account.accountHolder),
+                        _bankInfoRow('Account Number', account.accountNumber),
+                        _bankInfoRow('Account Holder', account.accountHolder),
                         if (account.paymentInstructions != null && account.paymentInstructions!.isNotEmpty) ...[
                           const SizedBox(height: 6),
                           Text(account.paymentInstructions!,
@@ -462,7 +462,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
-                                  'Jumlah Transfer:',
+                                  'Transfer Amount:',
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                                 ),
                                 Text(
@@ -483,8 +483,8 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
               const SizedBox(height: 16),
               _instructionStep(
                 2,
-                'Simpan Bukti Transfer',
-                'Screenshot atau foto struk transfer dari mobile banking / ATM.',
+                'Save the Transfer Proof',
+                'Screenshot or photo the transfer receipt from your mobile banking / ATM app.',
               ),
             ],
           ),
@@ -492,16 +492,16 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
 
         const SizedBox(height: 16),
 
-        // Pembayaran Cash
+        // Cash Payment
         BasicCard(
-          title: 'Pembayaran Cash (Tunai)',
+          title: 'Cash Payment (In Person)',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _instructionStep(
                 1,
-                'Datang ke Pengelola Wisma',
-                'Kunjungi kantor pengelola Wisma Amal Gorontalo secara langsung.',
+                'Visit the Dormitory Office',
+                'Come directly to the Wisma Amal Gorontalo management office.',
               ),
               const SizedBox(height: 12),
               Container(
@@ -514,23 +514,23 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _bankInfoRow('Alamat', _wismaAddress),
-                    _bankInfoRow('Jam Operasional', _wismaHours),
-                    _bankInfoRow('Kontak', _wismaPhone),
+                    _bankInfoRow('Address', _wismaAddress),
+                    _bankInfoRow('Operating Hours', _wismaHours),
+                    _bankInfoRow('Contact', _wismaPhone),
                   ],
                 ),
               ),
               const SizedBox(height: 12),
               _instructionStep(
                 2,
-                'Bayar & Minta Kwitansi',
-                'Lakukan pembayaran tunai dan minta kwitansi resmi dari pengelola.',
+                'Pay & Request a Receipt',
+                'Make the cash payment and ask for an official receipt from the administrator.',
               ),
               const SizedBox(height: 12),
               _instructionStep(
                 3,
-                'Foto Kwitansi',
-                'Foto kwitansi pembayaran dengan jelas sebagai bukti.',
+                'Photo of the Receipt',
+                'Take a clear photo of the payment receipt as proof.',
               ),
             ],
           ),
@@ -538,16 +538,16 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
 
         const SizedBox(height: 16),
 
-        // Upload Bukti
+        // Upload Proof
         BasicCard(
-          title: 'Upload Bukti Pembayaran',
+          title: 'Upload Payment Proof',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _instructionStep(
                 1,
-                'Pilih File Bukti',
-                'Pilih foto struk transfer atau kwitansi cash yang jelas dan terbaca.',
+                'Choose a Proof File',
+                'Choose a clear, readable photo of the transfer receipt or cash receipt.',
               ),
               const SizedBox(height: 16),
               _buildUploadArea(),
@@ -634,7 +634,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'File terpilih: ${_selectedFile!.name}',
+                    'Selected file: ${_selectedFile!.name}',
                     style: const TextStyle(fontSize: 13, color: Colors.green),
                   ),
                 ),
@@ -655,14 +655,14 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                 : () async {
                     final result = await FilePicker.platform.pickFiles(
                       type: FileType.image,
-                      withData: true, // pastikan bytes tersedia di semua platform termasuk web
+                      withData: true, // ensure bytes are available on all platforms including web
                     );
                     if (result != null) {
                       setState(() => _selectedFile = result.files.first);
                     }
                   },
             icon: const Icon(Icons.image_outlined),
-            label: Text(_selectedFile == null ? 'Pilih Gambar Bukti' : 'Ganti Gambar'),
+            label: Text(_selectedFile == null ? 'Choose Proof Image' : 'Change Image'),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -677,24 +677,24 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
     return Column(
       children: [
         BasicCard(
-          title: 'Ringkasan Pesanan',
+          title: 'Booking Summary',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _summaryRow('Kamar', widget.reservation.roomTitle),
-              _summaryRow('No. Kamar', widget.reservation.roomNumber),
+              _summaryRow('Room', widget.reservation.roomTitle),
+              _summaryRow('Room No.', widget.reservation.roomNumber),
               _summaryRow(
-                'Tipe Sewa',
-                widget.reservation.rentalType == 'monthly' ? 'Bulanan' : 'Harian',
+                'Lease Type',
+                widget.reservation.rentalType == 'monthly' ? 'Monthly' : 'Daily',
               ),
-              _summaryRow('Mulai', widget.reservation.startDate),
-              _summaryRow('Selesai', widget.reservation.endDate),
+              _summaryRow('Start', widget.reservation.startDate),
+              _summaryRow('End', widget.reservation.endDate),
               const Divider(height: 28),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Total Bayar',
+                    'Total Payment',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
@@ -712,7 +712,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
               const SizedBox(height: 8),
               if (widget.reservation.invoiceId != null)
                 Text(
-                  'ID Invoice: #${widget.reservation.invoiceId}',
+                  'Invoice ID: #${widget.reservation.invoiceId}',
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                 ),
             ],
@@ -721,10 +721,10 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
 
         const SizedBox(height: 16),
 
-        // Tombol Kirim
+        // Submit Button
         Builder(builder: (context) {
           return BasicButton(
-            label: _isSubmitting ? 'Mengirim...' : 'Kirim Bukti Pembayaran',
+            label: _isSubmitting ? 'Sending...' : 'Submit Payment Proof',
             isLoading: _isSubmitting,
             onPressed: (_selectedFile == null || _isExpired || _isSubmitting)
                 ? null
@@ -733,7 +733,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                     if (invoiceId == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('ID invoice tidak ditemukan. Hubungi admin.'),
+                          content: Text('Invoice ID not found. Contact the admin.'),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -743,7 +743,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                     if (bytes == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Gagal membaca file. Coba pilih ulang gambar.'),
+                          content: Text('Failed to read the file. Try selecting the image again.'),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -764,7 +764,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
 
         const SizedBox(height: 12),
 
-        // Tombol Batalkan
+        // Cancel Button
         SizedBox(
           width: double.infinity,
           child: OutlinedButton(
@@ -774,14 +774,14 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                     final confirmed = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        title: const Text('Batalkan Pemesanan?'),
+                        title: const Text('Cancel Booking?'),
                         content: const Text(
-                          'Pemesanan akan dibatalkan dan kamar kembali tersedia untuk pengguna lain.',
+                          'The booking will be cancelled and the room will become available to other users.',
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(ctx, false),
-                            child: const Text('Tidak'),
+                            child: const Text('No'),
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -789,7 +789,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                             ),
                             onPressed: () => Navigator.pop(ctx, true),
                             child: const Text(
-                              'Ya, Batalkan',
+                              'Yes, Cancel',
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -813,14 +813,14 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                     width: 18,
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.red),
                   )
-                : const Text('Batalkan Pemesanan'),
+                : const Text('Cancel Booking'),
           ),
         ),
 
         const SizedBox(height: 12),
 
         Text(
-          'Kamar ini sedang dikunci untuk Anda selama batas waktu pembayaran.',
+          'This room is locked for you during the payment period.',
           style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
           textAlign: TextAlign.center,
         ),

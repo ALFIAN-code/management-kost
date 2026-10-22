@@ -69,17 +69,17 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
             });
           }
           if (state is CompleteProfileSuccess) {
-            AppSnackbar.showSuccess('Biodata berhasil disimpan.');
+            AppSnackbar.showSuccess('Profile successfully saved.');
             // Refresh Auth state to update permissions/roles
             context.read<AuthBloc>().add(const InitLoginStatusEvent());
             context.router.pop();
           } else if (state is CompleteProfileFailure) {
-            AppSnackbar.showError('Gagal: ${state.message}');
+            AppSnackbar.showError('Failed: ${state.message}');
           }
         },
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Lengkapi Profil Penghuni'),
+            title: const Text('Complete Resident Profile'),
             elevation: 0,
             backgroundColor: Colors.transparent,
             foregroundColor: theme.colorScheme.onSurface,
@@ -92,14 +92,14 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Informasi Profil',
+                    'Profile Information',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Silakan lengkapi data diri Anda untuk melanjutkan proses pemesanan kamar.',
+                    'Please complete your personal information to continue the room booking process.',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -111,29 +111,29 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSectionTitle(theme, 'Data Pribadi'),
+                        _buildSectionTitle(theme, 'Personal Information'),
                         const SizedBox(height: 16),
                         Row(
                           children: [
                             Expanded(
                               child: CustomTextForm(
                                 controller: _nikController,
-                                title: 'NIK (No. KTP)',
+                                title: 'NIK (ID Number)',
                                 isRequired: true,
-                                hintText: 'Masukkan 16 digit NIK',
+                                hintText: 'Enter the 16-digit NIK',
                                 validator: (v) =>
-                                    v!.isEmpty ? 'Wajib diisi' : null,
+                                    v!.isEmpty ? 'Is required' : null,
                               ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: CustomTextForm(
                                 controller: _phoneController,
-                                title: 'Nomor Telepon',
+                                title: 'Phone Number',
                                 isRequired: true,
-                                hintText: 'Contoh: 08123456789',
+                                hintText: 'Example: 08123456789',
                                 validator: (v) =>
-                                    v!.isEmpty ? 'Wajib diisi' : null,
+                                    v!.isEmpty ? 'Is required' : null,
                               ),
                             ),
                           ],
@@ -143,12 +143,12 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                           children: [
                             Expanded(
                               child: CustomDropdownField<String>(
-                                title: 'Jenis Kelamin',
+                                title: 'Gender',
                                 isRequired: true,
-                                hint: 'Pilih jenis kelamin',
+                                hint: 'Select gender',
                                 value: _gender,
                                 items: const ['male', 'female']
-                                    .map((e) => DropdownMenuItem(value: e, child: Text(e == 'male' ? 'Laki-laki' : 'Perempuan')))
+                                    .map((e) => DropdownMenuItem(value: e, child: Text(e == 'male' ? 'Male' : 'Female')))
                                     .toList(),
                                 onChanged: (v) => setState(() => _gender = v!),
                               ),
@@ -157,8 +157,8 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                             Expanded(
                               child: CustomTextForm(
                                 controller: _jobController,
-                                title: 'Pekerjaan',
-                                hintText: 'Contoh: Mahasiswa, Karyawan',
+                                title: 'Occupation',
+                                hintText: 'Example: Student, Employee',
                               ),
                             ),
                           ],
@@ -166,38 +166,38 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                         const SizedBox(height: 16),
                         CustomTextForm(
                           controller: _addressController,
-                          title: 'Alamat KTP',
+                          title: 'ID Card Address',
                           isRequired: true,
-                          hintText: 'Masukkan alamat lengkap sesuai KTP',
+                          hintText: 'Enter the full address as stated on your ID card',
                           maxLines: 3,
-                          validator: (v) => v!.isEmpty ? 'Wajib diisi' : null,
+                          validator: (v) => v!.isEmpty ? 'Is required' : null,
                         ),
 
                         const SizedBox(height: 32),
-                        _buildSectionTitle(theme, 'Kontak Darurat'),
+                        _buildSectionTitle(theme, 'Emergency Contact'),
                         const SizedBox(height: 16),
                         Row(
                           children: [
                             Expanded(
                               child: CustomTextForm(
                                 controller: _emergencyNameController,
-                                title: 'Nama Kontak Darurat',
-                                hintText: 'Nama orang tua/wali',
+                                title: 'Emergency Contact Name',
+                                hintText: 'Parent or guardian name',
                               ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: CustomTextForm(
                                 controller: _emergencyPhoneController,
-                                title: 'Nomor Telepon Darurat',
-                                hintText: 'Contoh: 08123456789',
+                                title: 'Emergency Phone Number',
+                                hintText: 'Example: 08123456789',
                               ),
                             ),
                           ],
                         ),
 
                         const SizedBox(height: 32),
-                        _buildSectionTitle(theme, 'Foto KTP'),
+                        _buildSectionTitle(theme, 'ID Card Photo'),
                         const SizedBox(height: 16),
                         _buildImagePicker(theme),
                       ],
@@ -208,7 +208,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                   BlocBuilder<CompleteProfileBloc, CompleteProfileState>(
                     builder: (context, state) {
                       return BasicButton(
-                        label: 'SIMPAN PROFIL',
+                        label: 'SAVE PROFILE',
                         isLoading: state is CompleteProfileLoading,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
@@ -296,9 +296,9 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                         color: theme.colorScheme.primary,
                       ),
                       const SizedBox(height: 8),
-                      Text('Unggah Foto KTP', style: theme.textTheme.titleSmall),
+                      Text('Upload ID Card Photo', style: theme.textTheme.titleSmall),
                       Text(
-                        'Format JPG/PNG, maks 2MB',
+                        'JPG/PNG format, max 2MB',
                         style: theme.textTheme.bodySmall,
                       ),
                     ],

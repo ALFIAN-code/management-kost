@@ -68,7 +68,7 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
   bool _timerExpired = false;
 
   final _currency = NumberFormat.currency(
-    locale: 'id_ID',
+    locale: 'en_US',
     symbol: 'Rp ',
     decimalDigits: 0,
   );
@@ -107,16 +107,16 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Waktu Habis'),
+        title: const Text("Time's Up"),
         content: const Text(
-            'Batas waktu pembayaran (15 menit) telah habis. Silakan ulangi proses pembayaran.'),
+            'The payment time limit (15 minutes) has expired. Please repeat the payment process.'),
         actions: [
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
               context.router.pop(false);
             },
-            child: const Text('Kembali'),
+            child: const Text('Back'),
           ),
         ],
       ),
@@ -182,7 +182,7 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Pembayaran Manual'),
+          title: const Text('Manual Payment'),
           leading: BackButton(
             onPressed: () => context.router.pop(false),
           ),
@@ -210,7 +210,7 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
                           ? null
                           : _submit,
                       icon: Icon(Icons.send_outlined, color: theme.colorScheme.onPrimary, size: 18),
-                      label: Text(_isSubmitting ? 'Mengirim...' : 'Kirim Bukti Pembayaran'),
+                      label: Text(_isSubmitting ? 'Sending...' : 'Send Payment Proof'),
                     ),
                   ),
                 ],
@@ -245,7 +245,7 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _timerExpired ? 'Waktu pembayaran habis' : 'Batas waktu pembayaran',
+                  _timerExpired ? 'Payment time expired' : 'Payment time limit',
                   style: TextStyle(
                       fontSize: 12,
                       color: color,
@@ -253,7 +253,7 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
                 ),
                 if (!_timerExpired)
                   Text(
-                    'Kirim bukti sebelum waktu habis',
+                    'Send the proof before time runs out',
                     style: TextStyle(
                         fontSize: 11,
                         color: color.withAlpha(180)),
@@ -281,19 +281,19 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            Text('Ringkasan Tagihan',
+            Text('Invoice Summary',
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
             const Divider(height: 20),
-            _summaryRow(theme, 'Tamu', widget.guestName),
+            _summaryRow(theme, 'Guest', widget.guestName),
             if (widget.billNumber != null)
-              _summaryRow(theme, 'No. Tagihan', widget.billNumber!, 
+              _summaryRow(theme, 'Invoice No.', widget.billNumber!, 
                   valueColor: theme.colorScheme.primary, boldValue: true),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Total Bayar',
+                Text('Total Payment',
                     style: theme.textTheme.bodyMedium
                         ?.copyWith(fontWeight: FontWeight.bold)),
                 Text(
@@ -316,7 +316,7 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            Text('Informasi Transfer',
+            Text('Transfer Information',
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
             const Divider(height: 20),
@@ -329,7 +329,7 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
                   border: Border.all(color: theme.colorScheme.outlineVariant),
                 ),
                 child: Text(
-                  'Hubungi pengelola wisma untuk informasi rekening transfer.',
+                  'Contact the dormitory manager for transfer account details.',
                   style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant),
                 ),
@@ -362,7 +362,7 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text('a.n. ${account.accountHolder}',
+                      Text('Account name: ${account.accountHolder}',
                           style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant)),
                       if (account.paymentInstructions != null &&
@@ -376,7 +376,7 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Nominal Transfer: ',
+                          Text('Transfer Amount: ',
                               style: theme.textTheme.bodyMedium),
                           Text(
                             _currency.format(widget.amount),
@@ -402,12 +402,12 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            Text('Upload Bukti Pembayaran',
+            Text('Upload Payment Proof',
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
             Text(
-              'Upload foto struk transfer atau kwitansi pembayaran (JPG, PNG, PDF — maks 5 MB)',
+              'Upload a photo of the transfer receipt or payment invoice (JPG, PNG, PDF — max 5 MB)',
               style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant),
             ),
@@ -451,7 +451,7 @@ class _GuestBillPaymentViewState extends State<_GuestBillPaymentView> {
                 type: ButtonType.secondary,
                 onPressed: _pickFile,
                 leadIcon: Icon(Icons.upload_file_outlined, color: theme.colorScheme.primary, size: 18),
-                label: _selectedFile == null ? 'Pilih File Bukti' : 'Ganti File',
+                label: _selectedFile == null ? 'Choose Proof File' : 'Change File',
               ),
             ),
           ],

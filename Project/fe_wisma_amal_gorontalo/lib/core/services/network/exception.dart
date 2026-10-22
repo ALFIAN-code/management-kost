@@ -7,7 +7,7 @@ class AppException implements Exception {
 
   AppException(this.message, {this.code, this.details});
 
-  /// Factory utama untuk mengonversi error Dio jadi AppException
+  /// Main factory to convert Dio errors into AppException
   factory AppException.fromDioError(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
@@ -46,7 +46,7 @@ class AppException implements Exception {
     }
   }
 
-  /// Factory tambahan untuk error non-Dio (misalnya parsing, logic, dll)
+  /// Additional factory for non-Dio errors (parsing, logic, etc.)
   factory AppException.other(dynamic error) {
     if (error is FormatException) {
       return AppException("Data format error: ${error.message}");
@@ -58,13 +58,13 @@ class AppException implements Exception {
   }
 
   static String _parseServerMessage(dynamic data, int? statusCode) {
-    // Kalau response-nya JSON dari API, coba ekstrak pesan error-nya
+    // If the response is JSON from the API, try to extract the error message
     if (data is Map<String, dynamic>) {
       // Handle format: {"status":"Error","message":"Validation Error","data":{"email":["..."]}}
       if (data.containsKey('data') && data['data'] is Map<String, dynamic>) {
         final errorData = data['data'] as Map<String, dynamic>;
 
-        // Ambil field pertama yang ada error
+        // Get the first field that has an error
         if (errorData.isNotEmpty) {
           final firstKey = errorData.keys.first;
           final firstError = errorData[firstKey];
@@ -79,7 +79,7 @@ class AppException implements Exception {
       }
 
       if (data.containsKey('errors')) {
-        // Kalau bentuknya {"errors": {"email": ["Already taken"]}}
+        // If the shape is {"errors": {"email": ["Already taken"]}}
         final errors = data['errors'];
         if (errors is Map && errors.isNotEmpty) {
           return errors.values.first is List && (errors.values.first as List).isNotEmpty
@@ -88,12 +88,12 @@ class AppException implements Exception {
         }
       }
 
-      // Handle format standard lainnya
+      // Handle other standard formats
       if (data.containsKey('message')) return data['message'].toString();
       if (data.containsKey('error')) return data['error'].toString();
     }
 
-    // Fallback berdasarkan status code umum
+    // Fallback based on common status codes
     switch (statusCode) {
       case 400:
         return "Bad request — please check your input.";
