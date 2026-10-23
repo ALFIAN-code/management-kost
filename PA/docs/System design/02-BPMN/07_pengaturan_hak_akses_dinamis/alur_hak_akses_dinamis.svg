@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="bpmn-svg" width="1240" height="540" viewBox="0 0 1240 540" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#334155"></path>
+      </marker>
+    </defs>
+
+    <!-- POOL CONTAINER -->
+    <rect x="20" y="20" width="1200" height="500" rx="8" fill="#ffffff" stroke="#334155" stroke-width="2"></rect>
+    
+    <!-- POOL HEADER -->
+    <rect x="20" y="20" width="45" height="500" rx="8" fill="#0f172a"></rect>
+    <text x="-270" y="50" transform="rotate(-90)" fill="#ffffff" font-size="14" font-weight="700" letter-spacing="1" text-anchor="middle">MANAJEMEN PERAN &amp; HAK AKSES</text>
+
+    <!-- LANES -->
+    <!-- Lane 1: Pemilik (y: 20, h: 250) -->
+    <rect x="65" y="20" width="1155" height="250" fill="#f8fafc" stroke="#94a3b8" stroke-width="1"></rect>
+    <rect x="65" y="20" width="35" height="250" fill="#fef3c7"></rect>
+    <text x="-145" y="88" transform="rotate(-90)" fill="#92400e" font-size="13" font-weight="700" text-anchor="middle">Pemilik (Owner)</text>
+
+    <!-- Lane 2: Sistem Kost (y: 270, h: 250) -->
+    <rect x="65" y="270" width="1155" height="250" fill="#ffffff" stroke="#94a3b8" stroke-width="1"></rect>
+    <rect x="65" y="270" width="35" height="250" fill="#dbeafe"></rect>
+    <text x="-395" y="88" transform="rotate(-90)" fill="#1e3a8a" font-size="13" font-weight="700" text-anchor="middle">Sistem Kost</text>
+
+    <!-- FLOW NODES -->
+
+    <!-- LANE 1: PEMILIK -->
+    <circle cx="125" cy="100" r="17" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"></circle>
+    <text x="125" y="132" font-size="11" font-weight="700" fill="#15803d" text-anchor="middle">Mulai</text>
+
+    <!-- Task: Buka Menu Peran & Izin -->
+    <g transform="translate(175, 73)">
+      <rect width="145" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6"></rect>
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Buka Pengaturan</text>
+      <text x="72" y="40" font-size="11.5" font-weight="600" fill="#475569" text-anchor="middle">Peran &amp; Hak Akses</text>
+    </g>
+
+    <!-- Gateway: Buat Peran Baru atau Bawaan? -->
+    <g transform="translate(370, 81)">
+      <polygon points="19,0 38,19 19,38 0,19" fill="#fef3c7" stroke="#d97706" stroke-width="2"></polygon>
+      <path d="M 13 13 L 25 25 M 25 13 L 13 25" stroke="#d97706" stroke-width="2.5"></path>
+    </g>
+    <rect x="330" y="42" width="80" height="18" rx="3" fill="#ffffff"></rect>
+    <text x="370" y="55" font-size="11" font-weight="700" fill="#b45309" text-anchor="middle">Jenis Peran?</text>
+
+    <!-- Task: Pilih Peran Bawaan -->
+    <g transform="translate(460, 45)">
+      <rect width="145" height="48" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6"></rect>
+      <text x="72" y="20" font-size="11.5" font-weight="700" fill="#0f172a" text-anchor="middle">Pilih Peran Standar</text>
+      <text x="72" y="35" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">(Pengelola / Staf)</text>
+    </g>
+
+    <!-- Task: Rancang Peran Baru -->
+    <g transform="translate(460, 115)">
+      <rect width="145" height="54" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.6"></rect>
+      <text x="72" y="22" font-size="11.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">Beri Nama Peran &amp;</text>
+      <text x="72" y="38" font-size="11" font-weight="600" fill="#2563eb" text-anchor="middle">Pilih Hak Akses</text>
+    </g>
+
+    <!-- Task: Pilih Akun Pengguna -->
+    <g transform="translate(680, 73)">
+      <rect width="145" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6"></rect>
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Pilih Akun Staf /</text>
+      <text x="72" y="40" font-size="11.5" font-weight="600" fill="#475569" text-anchor="middle">Pengguna Tujuan</text>
+    </g>
+
+    <!-- Task: Kaitkan Peran -->
+    <g transform="translate(875, 73)">
+      <rect width="140" height="54" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.6"></rect>
+      <text x="70" y="23" font-size="12" font-weight="700" fill="#1e3a8a" text-anchor="middle">Tetapkan Peran</text>
+      <text x="70" y="40" font-size="11.5" font-weight="600" fill="#2563eb" text-anchor="middle">ke Pengguna</text>
+    </g>
+
+    <circle cx="1185" cy="100" r="17" fill="#fee2e2" stroke="#dc2626" stroke-width="3"></circle>
+    <text x="1185" y="132" font-size="11" font-weight="700" fill="#b91c1c" text-anchor="middle">Selesai</text>
+
+
+    <!-- LANE 2: SISTEM KOST -->
+    <!-- Task: Muat Master Izin -->
+    <g transform="translate(175, 368)">
+      <rect width="145" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6"></rect>
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Ambil Daftar Izin</text>
+      <text x="72" y="40" font-size="11.5" font-weight="600" fill="#2563eb" text-anchor="middle">&amp; Modul Granular</text>
+    </g>
+
+    <!-- Task: Simpan Master Peran -->
+    <g transform="translate(460, 368)">
+      <rect width="145" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6"></rect>
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Simpan Definisi</text>
+      <text x="72" y="40" font-size="11.5" font-weight="600" fill="#475569" text-anchor="middle">Peran Kustom</text>
+    </g>
+
+    <!-- Task: Simpan Relasi Peran-Pengguna -->
+    <g transform="translate(875, 368)">
+      <rect width="140" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6"></rect>
+      <text x="70" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Perbarui Hak Akses</text>
+      <text x="70" y="40" font-size="11.5" font-weight="600" fill="#475569" text-anchor="middle">di Basis Data</text>
+    </g>
+
+    <!-- Task: Terapkan Guard & Filter Menu -->
+    <g transform="translate(1055, 368)">
+      <rect width="145" height="54" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8"></rect>
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#14532d" text-anchor="middle">Terapkan Pembatasan</text>
+      <text x="72" y="40" font-size="11.5" font-weight="600" fill="#15803d" text-anchor="middle">Menu &amp; Fitur Sistem</text>
+    </g>
+
+
+    <!-- SEQUENCE FLOWS -->
+    <!-- Start -> Buka Menu -->
+    <path d="M 142 100 L 175 100" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+
+    <!-- Buka Menu -> Muat Master Izin (turun ke Sistem) -->
+    <path d="M 247 127 L 247 368" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+
+    <!-- Muat Master Izin -> Gateway (naik kembali) -->
+    <path d="M 320 395 L 350 395 L 350 100 L 370 100" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+
+    <!-- Gateway -> [Tidak / Standar] -> Pilih Peran Bawaan -->
+    <path d="M 389 81 L 389 69 L 460 69" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+    <rect x="395" y="52" width="52" height="18" rx="3" fill="#ffffff"></rect>
+    <text x="421" y="65" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">Bawaan</text>
+
+    <!-- Gateway -> [Ya / Kustom] -> Rancang Peran Baru -->
+    <path d="M 389 119 L 389 142 L 460 142" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+    <rect x="395" y="132" width="52" height="18" rx="3" fill="#ffffff"></rect>
+    <text x="421" y="145" font-size="11" font-weight="700" fill="#2563eb" text-anchor="middle">Kustom</text>
+
+    <!-- Rancang Peran -> Simpan Master Peran (turun ke Sistem) -->
+    <path d="M 532 169 L 532 368" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+
+    <!-- Simpan Master Peran -> Pilih Akun Pengguna -->
+    <path d="M 605 395 L 650 395 L 650 100 L 680 100" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+
+    <!-- Pilih Peran Bawaan -> Pilih Akun Pengguna -->
+    <path d="M 605 69 L 650 69 L 650 100 L 680 100" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+
+    <!-- Pilih Akun Pengguna -> Kaitkan Peran -->
+    <path d="M 825 100 L 875 100" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+
+    <!-- Kaitkan Peran -> Simpan Relasi (turun ke Sistem) -->
+    <path d="M 945 127 L 945 368" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+
+    <!-- Simpan Relasi -> Terapkan Pembatasan Menu -->
+    <path d="M 1015 395 L 1055 395" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+
+    <!-- Terapkan Pembatasan Menu -> End (naik ke Pemilik) -->
+    <path d="M 1127 368 L 1127 100 L 1168 100" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)"></path>
+    <rect x="1090" y="215" width="80" height="18" rx="3" fill="#ffffff"></rect>
+    <text x="1130" y="228" font-size="10.5" font-weight="700" fill="#15803d" text-anchor="middle">Akses Aktif</text>
+
+  </svg>

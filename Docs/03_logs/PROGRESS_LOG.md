@@ -4,6 +4,293 @@
 
 ---
 
+## [2026-10-23 03:33] Pembuatan Diagram BPMN 2.0 Alur 10: Pemesanan DP (Two-Phase Invoicing) & Refund Semi-Manual
+**Status:** Selesai
+**Dikerjakan:**
+- Membuat diagram BPMN 2.0 resmi untuk alur kerja teknis engineering di `PA/docs/System design/02-BPMN/10_pembatalan_sewa_dan_refund/`:
+  1. `alur_pembatalan_dan_refund.html`: Berkas interaktif berbasis SVG dengan tombol unduh SVG & PNG.
+  2. `alur_pembatalan_dan_refund.svg`: Berkas vektor resolusi tinggi.
+  3. `alur_pembatalan_dan_refund.png`: Berkas raster resolusi tinggi (1340x730 px).
+  4. `README.md`: Spesifikasi alur, kamus data transisi status (*State Machine*), dan detail teknis scheduler/m-banking.
+- Memodelkan 4 swimlane (Penghuni, Sistem Kost NestJS, Payment Gateway Midtrans, Pengelola Properti).
+- Mengintegrasikan logika booking DP via Midtrans SNAP, penguncian status `Reserved`, cron job H-3 pelunasan, permohonan refund digital, transfer bank m-banking manual oleh pengelola, pengunggahan struk bukti transfer resmi, hingga pelepasan unit kamar kembali menjadi `available`.
+- Memperbarui indeks BPMN di `PA/docs/System design/02-BPMN/README.md` dan `PA/docs/System design/README.md`.
+**File yang diubah:**
+- `PA/docs/System design/02-BPMN/10_pembatalan_sewa_dan_refund/*`
+- `PA/docs/System design/02-BPMN/README.md`
+- `PA/docs/System design/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Tahap berikutnya: Melanjutkan perancangan visual Mockup Antarmuka Web (§3.7) untuk 3 role dalam format komponen modern (shadcn/ui style).
+
+---
+
+## [2026-10-23 03:15] Sinkronisasi Total Naskah BAB 1–3 dengan PDF dan Integrasi Aturan DP & Refund
+**Status:** Selesai (ACC Diterapkan)
+**Dikerjakan:**
+- Menyinkronkan seluruh naskah `bab1`, `bab2`, dan `bab3` di `PA/docs/modules/` dengan draf PDF terkini:
+  1. **BAB 1:** Menyelaraskan judul resmi (*Arsitektur Modular Monolithic Berbasis Event-Driven untuk Sistem Informasi Manajemen Rumah Kost Terintegrasi.*), judul subbab 1.1.2, serta memperbarui batasan masalah §1.4 butir 2 mencakup pemesanan DP *Two-Phase Invoicing* dan *refund* semi-manual.
+  2. **BAB 2:** Menata urutan diagram teori penunjang menjadi berurutan (Gambar 2.1 s.d. 2.9), membuat dan menautkan aset BLoC (`gambar_2_4_bloc_flow.png`), menautkan 6 diagram teori baru di `06-Teori-Penunjang/`, serta mengeliminasi sitasi blocker `[36]` dan `[41]`.
+  3. **BAB 3:** Menghapus subbab Activity Diagram yang redundan, menata penomoran subbab (3.6 Rancangan Basis Data, 3.7 Rancangan Antarmuka), memperbarui tautan diagram DFD, Use Case (UML 2.5), dan ERD, serta menyisipkan detail logika bisnis DP & Refund pada §3.1, Tabel 3.1, §3.3.1, §3.3.2, dan aturan integritas data §3.6.2 butir 10.
+**File yang diubah:**
+- `PA/docs/modules/bab1/README.md`
+- `PA/docs/modules/bab2/README.md`
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/System design/06-Teori-Penunjang/gambar_2_4_bloc_flow.{html,svg,png}`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Melanjutkan ke tahap perancangan visual Mockup Antarmuka Web (§3.7) untuk 3 role (Pemilik, Pengelola, Penghuni) dengan gaya komponen modern (shadcn/ui style).
+
+---
+
+## [2026-10-23 02:35] Ratifikasi ADR-013: Kebijakan Booking DP Dinamis (Two-Phase Invoicing), Alur Refund Semi-Manual, dan Penagihan Anniversary Cycle
+**Status:** Selesai
+**Dikerjakan:**
+- Meratifikasi ADR-013 di `Docs/03_logs/DECISIONS.md` untuk memfasilitasi kebutuhan bisnis riil manajemen kost general multi-gedung tanpa menambah tabel cicilan baru:
+  1. Kebijakan DP dinamis per gedung via `building_settings` (`booking_fee_mode`: `FULL_MONTH`, `FIXED_DP`, `NO_DP`).
+  2. Pendekatan *Two-Phase Invoicing* (Invoice DP + Invoice Pelunasan H-3 masuk, tanpa tabel cicilan; tabel `invoices` cukup ditambah enum `type`).
+  3. Alur pengembalian dana (*Refund*) semi-manual: pengajuan digital calon penghuni $\rightarrow$ verifikasi admin di menu *Refund Requests* $\rightarrow$ transfer m-banking manual $\rightarrow$ unggah bukti struk transfer $\rightarrow$ pelepasan unit kamar otomatis menjadi *available*.
+  4. Siklus penagihan *Anniversary Date* (sesuai tanggal mulai huni) terbit H-7 otomatis, notifikasi dua arah (penghuni & admin), serta tombol aksi "Kirim Pengingat" (*Manual Reminder Trigger*) pada antarmuka tagihan pengelola.
+- Memperbarui spesifikasi fitur F04, F08, F09, dan F16 di `PA/docs/System design/DAFTAR_FITUR.md`.
+- Memperbarui `Docs/00_overview/STATE.md` menyelaraskan status arsitektur terbaru.
+**File yang diubah:**
+- `Docs/03_logs/DECISIONS.md`
+- `PA/docs/System design/DAFTAR_FITUR.md`
+- `Docs/00_overview/STATE.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Melanjutkan penyusunan draf Mockup Antarmuka Web (§3.8) untuk 3 role dalam format komponen modern (shadcn/ui style).
+
+---
+
+## [2026-10-23 01:16] Pembuatan 6 Diagram Teori Penunjang BAB 2 (Format HTML, SVG, PNG 2x)
+**Status:** Selesai (Draf Siap Review)
+**Dikerjakan:**
+- Membuat 6 diagram teori penunjang BAB 2 yang dirancang ringkas, konseptual, dan minim whitespace di `PA/docs/System design/06-Teori-Penunjang/`:
+  1. `gambar_2_3_nestjs_modul_di`: Pemisahan Modul & Dependency Injection pada NestJS (§2.2.3).
+  2. `gambar_2_8_row_level_scoping`: Isolasi Data Antar Gedung pada Row-Level Scoping (§2.2.8).
+  3. `gambar_2_9_oidc_jwks`: Alur Verifikasi Token OIDC dengan JWKS (§2.2.9).
+  4. `gambar_2_11_midtrans_webhook`: Alur Pembayaran SNAP & Verifikasi Webhook (§2.2.11).
+  5. `gambar_2_13_piramida_pengujian`: Piramida Pengujian beserta Komposisinya (§2.2.13).
+  6. `gambar_2_14_mcp`: Alur Konsultasi AI via Model Context Protocol (§2.2.14).
+- Setiap diagram dilengkapi file interaktif HTML dengan tombol unduh SVG dan PNG (2x resolusi cetak), serta aset vektor .svg dan raster .png siap pakai.
+- Menyusun dokumentasi spesifikasi dan kamus di `PA/docs/System design/06-Teori-Penunjang/README.md`.
+- Memperbarui daftar pustaka indeks di `PA/docs/System design/README.md`.
+**File yang diubah:**
+- `PA/docs/System design/06-Teori-Penunjang/*`
+- `PA/docs/System design/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Menunggu tanggapan/ACC pengguna untuk diagram teori penunjang sebelum disisipkan ke naskah `PA/docs/modules/bab2/README.md`.
+
+---
+
+## [2026-10-23 10:45] Pembuatan UML 2.5 Use Case Diagram Global dalam Format HTML, SVG, dan PNG 2x
+
+**Status:** Selesai
+**Dikerjakan:**
+- Membuat diagram Use Case global terpadu berbasis standar UML 2.5 di `PA/docs/System design/05-Use-Case/use_case_global.html` dengan batas sistem (*System Boundary*), 4 aktor manusia (*Default Seed Roles* & *Dynamic RBAC*), 4 sistem eksternal, dan relasi `<<include>>` serta `<<extend>>`.
+- Memodelkan 13 Use Case Primer dan 4 Sub-Use Case Terintegrasi mencakup autentikasi JWT JWKS, reservasi anti-bentrok, pembayaran SNAP Midtrans, notifikasi WhatsApp, serta kueri wawasan bisnis analitik via MCP.
+- Memperbaiki tata letak diagram menjadi sangat padat dan ringkas (780x690 px, reduksi lebar dari 1420 px -> 1080 px -> 780 px, mengeliminasi celah horizontal antara kolom dari 180 px menjadi 35 px) serta melenyapkan rongga kosong horizontal tanpa mengurangi satu pun komponen informasi.
+- Memperbaiki fitur ekspor PNG di browser yang sebelumnya terhalang sintaks komentar XML ganda, serta menghitung ulang titik singgung garis relasi aktor dan panah secara matematis agar menempel pas pada perimeter elips tanpa menembus atau mengambang.
+- Merender aset vektor `use_case_global.svg` (780x690) dan raster `use_case_global.png` (1560x1380 px resolusi 2x cetak).
+- Menyusun dokumentasi spesifikasi use case dan kamus relasi aktor di `PA/docs/System design/05-Use-Case/README.md`.
+- Memperbarui indeks pusat rancangan sistem di `PA/docs/System design/README.md`.
+**File yang diubah:**
+- `PA/docs/System design/05-Use-Case/use_case_global.html`
+- `PA/docs/System design/05-Use-Case/use_case_global.svg`
+- `PA/docs/System design/05-Use-Case/use_case_global.png`
+- `PA/docs/System design/05-Use-Case/README.md`
+- `PA/docs/System design/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Tampilkan before-after teks naskah Bab 3 §3.4 (Gambar 3.13) dan tunggu ACC user sebelum menyisipkan gambar use case.
+
+---
+
+## [2026-10-23 09:30] Perbaikan Total Routing Panah, Titik Sambung, dan Resolusi Overlap pada 6 Diagram BPMN 2.0
+
+**Status:** Selesai
+**Dikerjakan:**
+- Merombak total tata letak dan penjaluran panah (sequence flows) pada 6 diagram BPMN 2.0 sesuai hasil review pengguna agar bebas overlap, rapi, dan mudah dibaca:
+  1. `01_alokasi_penempatan_hunian`: Restrukturisasi kolom alur durasi, cek bentrok kamar, gateway komersial, terbit tagihan, dan pembayaran online/tunai tanpa persilangan panah.
+  2. `02_penagihan_pembayaran`: Memisahkan jalur metode bayar digital (Col 5) dan tunai (Col 6) ke koridor vertikal terpisah sehingga tidak memotong kotak; merapikan panah denda agar masuk pas ke sisi bawah kotak tagihan.
+  3. `03_laporan_kerusakan_fasilitas`: Menata alur murni kiri-ke-kanan; panah turun hanya keluar dari sisi bawah kotak sumber dan masuk dari atas kotak target; menghilangkan loop balik penugasan teknisi yang memotong kotak.
+  4. `04_pemeliharaan_rutin_berkala`: Mengoreksi jalur panah serah nota teknisi dan input verifikasi pengelola agar tidak saling timpa; menggabungkan cabang biaya servis (Ya/Tidak) ke satu End Event tunggal yang jelas dan definitif.
+  5. `06_pengawasan_buku_tamu`: Memindahkan kotak registrasi kedatangan fisik tamu luar agar koridor vertikal form rencana penghuni ke sistem tidak memotong kotak identitas tamu; menunggalkan titik akhir alur.
+  6. `08_pendataan_inventaris_aset`: Memisahkan koridor vertikal jalur audit baik (Col 5-A) dan jalur kerusakan/denda (Col 5-B & Col 6); memposisikan kotak denda di luar kolom riwayat audit sehingga panah tagihan denda ke penghuni naik bebas tanpa menabrak kotak sistem; merapikan posisi End Event.
+- Merender ulang seluruh berkas HTML ke format SVG vektor dan PNG resolusi tinggi (2x scale) menggunakan helper headless Chrome.
+**File yang diubah:**
+- `PA/docs/System design/02-BPMN/01_alokasi_penempatan_hunian/alur_alokasi_penempatan.html`
+- `PA/docs/System design/02-BPMN/01_alokasi_penempatan_hunian/alur_alokasi_penempatan.svg`
+- `PA/docs/System design/02-BPMN/01_alokasi_penempatan_hunian/alur_alokasi_penempatan.png`
+- `PA/docs/System design/02-BPMN/02_penagihan_pembayaran/alur_penagihan_pembayaran.html`
+- `PA/docs/System design/02-BPMN/02_penagihan_pembayaran/alur_penagihan_pembayaran.svg`
+- `PA/docs/System design/02-BPMN/02_penagihan_pembayaran/alur_penagihan_pembayaran.png`
+- `PA/docs/System design/02-BPMN/03_laporan_kerusakan_fasilitas/alur_laporan_kerusakan.html`
+- `PA/docs/System design/02-BPMN/03_laporan_kerusakan_fasilitas/alur_laporan_kerusakan.svg`
+- `PA/docs/System design/02-BPMN/03_laporan_kerusakan_fasilitas/alur_laporan_kerusakan.png`
+- `PA/docs/System design/02-BPMN/04_pemeliharaan_rutin_berkala/alur_pemeliharaan_rutin.html`
+- `PA/docs/System design/02-BPMN/04_pemeliharaan_rutin_berkala/alur_pemeliharaan_rutin.svg`
+- `PA/docs/System design/02-BPMN/04_pemeliharaan_rutin_berkala/alur_pemeliharaan_rutin.png`
+- `PA/docs/System design/02-BPMN/06_pengawasan_buku_tamu/alur_pengawasan_buku_tamu.html`
+- `PA/docs/System design/02-BPMN/06_pengawasan_buku_tamu/alur_pengawasan_buku_tamu.svg`
+- `PA/docs/System design/02-BPMN/06_pengawasan_buku_tamu/alur_pengawasan_buku_tamu.png`
+- `PA/docs/System design/02-BPMN/08_pendataan_inventaris_aset/alur_inventaris_aset.html`
+- `PA/docs/System design/02-BPMN/08_pendataan_inventaris_aset/alur_inventaris_aset.svg`
+- `PA/docs/System design/02-BPMN/08_pendataan_inventaris_aset/alur_inventaris_aset.png`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Tunggu konfirmasi akhir user mengenai visualisasi 9 diagram BPMN hasil revisi.
+- Lakukan commit Git terhadap seluruh berkas diagram sistem rancangan terpadu.
+**Catatan/masalah:**
+- Seluruh penjaluran vertikal antar swimlane kini mengadopsi prinsip single unobstructed corridor sehingga panah tidak pernah melintasi atau memotong elemen lain.
+
+---
+
+## [2026-10-22 19:15] Konversi Seluruh Alur BPMN ke Format HTML Interaktif, SVG, dan PNG 2x Resolusi Tinggi
+
+**Status:** Selesai
+**Dikerjakan:**
+- Mengonversi seluruh 9 alur proses bisnis di `PA/docs/System design/02-BPMN` dari format sequence/mermaid whitespace berlebih menjadi diagram kolaborasi BPMN 2.0 berbasis HTML/SVG interaktif dengan tata letak swimlane ringkas dan proporsional:
+  1. `01_alokasi_penempatan_hunian`: Alur kolaborasi Penghuni, Sistem Kost, Payment GW, dan Pengelola untuk penempatan kamar dan kontrak sewa bulanan.
+  2. `02_penagihan_pembayaran`: Alur siklus penagihan berkala, timer pemantauan jatuh tempo, penalti keterlambatan, metode digital/tunai, serta pelunasan invoice.
+  3. `03_laporan_kerusakan_fasilitas`: Alur tiket komplain kerusakan kamar, evaluasi urgensi/fatalitas pengelola, penugasan teknisi, perbaikan, hingga verifikasi penutupan tiket.
+  4. `04_pemeliharaan_rutin_berkala`: Alur penjadwalan pemeliharaan preventif (AC, pompa, air), notifikasi H-7, pelaksanaan servis vendor, rekalkulasi periode depan, dan pencatatan beban.
+  5. `05_pengeluaran_operasional`: Alur pencatatan pengeluaran riil pengelola, validasi bukti nota, rekalkulasi arus kas, serta dashboard laba-rugi bagi Pemilik (Owner).
+  6. `06_pengawasan_buku_tamu`: Alur registrasi rencana tamu oleh penghuni, check-in fisik identitas di pengelola/keamanan, periode kunjungan, check-out kepulangan, dan kalkulasi inap.
+  7. `07_pengaturan_hak_akses_dinamis`: Alur konfigurasi RBAC granular, pemilihan peran bawaan vs perancangan peran kustom, penugasan ke akun pengguna, dan penegakan guard menu.
+  8. `08_pendataan_inventaris_aset`: Alur registrasi inventaris master kamar, audit fisik terverifikasi saat check-in/out, penanganan kerusakan aset, serta penerbitan tiket servis & tagihan denda kelalaian.
+  9. `09_konsultasi_ai_mcp`: Alur konsultasi bahasa alami pemilik ke Mesin AI, validasi kepemilikan gedung, kueri data operasional/finansial faktual, anti-halusinasi, dan penyajian narasi wawasan terstruktur.
+- Menyederhanakan penamaan aktivitas dan gateway agar fokus pada alur bisnis (non-teknis) tanpa mencantumkan nama endpoint kaku/prematur.
+- Merender dan mengekspor seluruh diagram menjadi file SVG vektor dan PNG resolusi tinggi (2x scale) menggunakan helper headless renderer.
+- Memperbarui katalog `PA/docs/System design/02-BPMN/README.md`.
+**File yang diubah:**
+- `PA/docs/System design/02-BPMN/01_alokasi_penempatan_hunian/alur_alokasi_penempatan.html` (baru)
+- `PA/docs/System design/02-BPMN/01_alokasi_penempatan_hunian/alur_alokasi_penempatan.svg` (baru)
+- `PA/docs/System design/02-BPMN/01_alokasi_penempatan_hunian/alur_alokasi_penempatan.png` (diperbarui)
+- `PA/docs/System design/02-BPMN/02_penagihan_pembayaran/alur_penagihan_pembayaran.html` (baru)
+- `PA/docs/System design/02-BPMN/02_penagihan_pembayaran/alur_penagihan_pembayaran.svg` (baru)
+- `PA/docs/System design/02-BPMN/02_penagihan_pembayaran/alur_penagihan_pembayaran.png` (diperbarui)
+- `PA/docs/System design/02-BPMN/03_laporan_kerusakan_fasilitas/alur_laporan_kerusakan.html` (baru)
+- `PA/docs/System design/02-BPMN/03_laporan_kerusakan_fasilitas/alur_laporan_kerusakan.svg` (baru)
+- `PA/docs/System design/02-BPMN/03_laporan_kerusakan_fasilitas/alur_laporan_kerusakan.png` (diperbarui)
+- `PA/docs/System design/02-BPMN/04_pemeliharaan_rutin_berkala/alur_pemeliharaan_rutin.html` (baru)
+- `PA/docs/System design/02-BPMN/04_pemeliharaan_rutin_berkala/alur_pemeliharaan_rutin.svg` (baru)
+- `PA/docs/System design/02-BPMN/04_pemeliharaan_rutin_berkala/alur_pemeliharaan_rutin.png` (diperbarui)
+- `PA/docs/System design/02-BPMN/05_pengeluaran_operasional/alur_pengeluaran_operasional.html` (baru)
+- `PA/docs/System design/02-BPMN/05_pengeluaran_operasional/alur_pengeluaran_operasional.svg` (baru)
+- `PA/docs/System design/02-BPMN/05_pengeluaran_operasional/alur_pengeluaran_operasional.png` (diperbarui)
+- `PA/docs/System design/02-BPMN/06_pengawasan_buku_tamu/alur_pengawasan_buku_tamu.html` (baru)
+- `PA/docs/System design/02-BPMN/06_pengawasan_buku_tamu/alur_pengawasan_buku_tamu.svg` (baru)
+- `PA/docs/System design/02-BPMN/06_pengawasan_buku_tamu/alur_pengawasan_buku_tamu.png` (diperbarui)
+- `PA/docs/System design/02-BPMN/07_pengaturan_hak_akses_dinamis/alur_hak_akses_dinamis.html` (baru)
+- `PA/docs/System design/02-BPMN/07_pengaturan_hak_akses_dinamis/alur_hak_akses_dinamis.svg` (baru)
+- `PA/docs/System design/02-BPMN/07_pengaturan_hak_akses_dinamis/alur_hak_akses_dinamis.png` (diperbarui)
+- `PA/docs/System design/02-BPMN/08_pendataan_inventaris_aset/alur_inventaris_aset.html` (baru)
+- `PA/docs/System design/02-BPMN/08_pendataan_inventaris_aset/alur_inventaris_aset.svg` (baru)
+- `PA/docs/System design/02-BPMN/08_pendataan_inventaris_aset/alur_inventaris_aset.png` (diperbarui)
+- `PA/docs/System design/02-BPMN/09_konsultasi_ai_mcp/bpmn_konsultasi_ai_mcp.html` (baru)
+- `PA/docs/System design/02-BPMN/09_konsultasi_ai_mcp/bpmn_konsultasi_ai_mcp.svg` (baru)
+- `PA/docs/System design/02-BPMN/09_konsultasi_ai_mcp/bpmn_konsultasi_ai_mcp.png` (diperbarui)
+- `PA/docs/System design/02-BPMN/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Review pengguna untuk hasil visualisasi diagram BPMN 2.0 baru.
+- Commit git seluruh aset diagram dan dokumentasi perancangan sistem.
+
+---
+
+## [2026-10-22 18:30] Peningkatan Tipografi & Resolusi Seluruh Diagram Sistem (Siap Cetak Word/A4 16cm)
+
+**Status:** Selesai
+**Dikerjakan:**
+- Memperbesar ukuran font dan menebalkan tipografi seluruh diagram arsitektur, DFD, dan ERD di `PA/docs/System design` agar terbaca tajam saat disematkan pada dokumen Word/A4 (~16 cm lebar cetak):
+  1. `01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html`: font judul diperbesar (23px bold, sub 18px), kanvas disesuaikan ke 1420x1460, ekspor SVG dan PNG resolusi tinggi (2840x2920) diperbarui.
+  2. `01-Gambaran-umum/01_arsitektur_keseluruhan/arsitektur_terpadu.html`: font komponen utama diperbesar (18–22px, weight 700–800), label relasi diperbesar (15px), legenda dilebarkan dan diselaraskan, ekspor SVG dan PNG (2800x3060) diperbarui.
+  3. `03-DFD/dfd_level_0_context.html`: font proses sentral diperbesar (28px/15px/13.5px), entitas (17px bold), label aliran data (12.5px bold), posisi label diperbaiki dari tabrakan garis, ekspor SVG dan PNG (2400x2000) diperbarui.
+  4. `03-DFD/dfd_level_1_dekomposisi.html`: lebar kanvas diperbesar ke 1420px, font proses (17px/15px/13px), data store (15px/13.5px), entitas luar (15px/13px), label panah dipertebal (12.5–13px bold) dengan background pill anti-tumpang tindih, ekspor SVG dan PNG (2840x6054) diperbarui.
+  5. `04-ERD/erd_13_tabel.html`: lebar kanvas 1420px, lebar tabel diperluas ke 190px (RH: 22px, HH: 28px), font kolom diperbesar (12px bold, tag key/tipe 10.5px bold), ekspor SVG dan PNG (2840x2054) diperbarui.
+  6. `04-ERD/erd_sistem_dinamis.html`: diselaraskan dengan skala lebar kanvas 1420px (TW: 190px, RH: 22px), font diperbesar (12px bold monospace, header 14px bold), ekspor SVG dan PNG (2840x2670) diperbarui.
+- Memperbaiki helper renderer Chrome headless (`render_diagram.py`) agar mendukung protokol `file://` lokal dan pemilihan elemen SVG terbesar secara otomatis.
+**File yang diubah:**
+- `PA/docs/System design/01-Gambaran-umum/01_arsitektur_keseluruhan/arsitektur_terpadu.html`
+- `PA/docs/System design/01-Gambaran-umum/01_arsitektur_keseluruhan/arsitektur_terpadu.svg`
+- `PA/docs/System design/01-Gambaran-umum/01_arsitektur_keseluruhan/arsitektur_terpadu.png`
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html`
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.svg`
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.png`
+- `PA/docs/System design/03-DFD/dfd_level_0_context.html`
+- `PA/docs/System design/03-DFD/dfd_level_0_context.svg`
+- `PA/docs/System design/03-DFD/dfd_level_0_context.png`
+- `PA/docs/System design/03-DFD/dfd_level_1_dekomposisi.html`
+- `PA/docs/System design/03-DFD/dfd_level_1_dekomposisi.svg`
+- `PA/docs/System design/03-DFD/dfd_level_1_dekomposisi.png`
+- `PA/docs/System design/04-ERD/erd_13_tabel.html`
+- `PA/docs/System design/04-ERD/erd_13_tabel.svg`
+- `PA/docs/System design/04-ERD/erd_13_tabel.png`
+- `PA/docs/System design/04-ERD/erd_sistem_dinamis.html`
+- `PA/docs/System design/04-ERD/erd_sistem_dinamis.svg`
+- `PA/docs/System design/04-ERD/erd_sistem_dinamis.png`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Menunggu konfirmasi user atas seluruh diagram yang telah di-render ulang sebelum lanjut ke tahap penulisan/bab berikutnya.
+
+---
+
+## [2026-10-22 17:54] Normalisasi Light Mode Seluruh Diagram HTML di System Design
+
+**Status:** Selesai
+**Dikerjakan:**
+- Mengubah `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html` dari tema gelap ke terang (body `#1a1b26` → `#f1f5f9`, kanvas `#16161e` → `#ffffff`, teks header `#fff` → `#0f172a`, garis/konektor `#8da0b8` → `#64748b`, panel `#1b1c28` → `#f1f5f9`, label tier `#5fd0b0`/`#f0997b` → `#0f6e56`/`#993c1d`). Geometri, posisi, dan urutan elemen tidak berubah sama sekali (verifikasi: 283 token warna SVG, urutan identik, hanya nilai hex yang berganti).
+- Memaksa light mode pada 5 ERD per-modul di `PA/docs/System design/draft/12_erd_multi_tenant_global/permodule/*.html` yang sebelumnya mengikuti `prefers-color-scheme` sistem: atribut `data-mode="light"` pada elemen `<html>` + `color-scheme: light` pada `:root`, sehingga tema Mermaid dan `light-dark()` selalu memilih palet terang.
+- Mengaudit 6 diagram HTML lain (`arsitektur_terpadu`, `dfd_level_0_context`, `dfd_level_1_dekomposisi`, `erd_13_tabel`, `erd_sistem_dinamis`) — seluruhnya sudah terang, tidak ada perubahan.
+- Membangun ulang ekspor `.svg` dan `.png` yang tertinggal pada versi gelap: `arsitektur_backend_modulith.svg/.png` (1210×1160) dan `arsitektur_terpadu.svg/.png` (1400×1530, sebelumnya masih 1400×1010 versi lama) memakai Chrome headless.
+- Verifikasi visual seluruh diagram melalui browser (tangkapan layar) — tidak ada elemen dark yang tersisa dan tata letak identik dengan versi sebelumnya.
+**File yang diubah:**
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html`
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.svg`
+- `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.png`
+- `PA/docs/System design/01-Gambaran-umum/01_arsitektur_keseluruhan/arsitektur_terpadu.svg`
+- `PA/docs/System design/01-Gambaran-umum/01_arsitektur_keseluruhan/arsitektur_terpadu.png`
+- `PA/docs/System design/draft/12_erd_multi_tenant_global/permodule/erd_1_auth_rbac.html`
+- `PA/docs/System design/draft/12_erd_multi_tenant_global/permodule/erd_2_kamar_jadwal_tamu.html`
+- `PA/docs/System design/draft/12_erd_multi_tenant_global/permodule/erd_3_keuangan.html`
+- `PA/docs/System design/draft/12_erd_multi_tenant_global/permodule/erd_4_maintenance.html`
+- `PA/docs/System design/draft/12_erd_multi_tenant_global/permodule/erd_5_setting_pendukung.html`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Diagram berbasis Mermaid (`.mmd`) di `02-BPMN`, `03-DFD`, `04-ERD` sudah dirender dengan latar putih (`-b white`) sehingga tidak perlu penyesuaian warna.
+- Bila ada diagram HTML baru, gunakan palet terang yang sama: panel `#f1f5f9`, garis `#64748b`, teks `#0f172a`/`#475569`.
+**Catatan/masalah:**
+- `PA/docs/System design/draft/` berstatus arsip obsolete (README System design), perubahan di sana murni kosmetik agar tetap konsisten saat dibuka.
+
+---
+
 ## [2026-10-21 20:28] Perbaikan Cache Stale Cloudflare & Safari: Penambahan Cache-Buster & Header No-Cache Nginx
 
 **Status:** Selesai

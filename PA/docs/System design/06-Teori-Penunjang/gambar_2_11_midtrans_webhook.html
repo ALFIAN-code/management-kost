@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gambar 2.11 — Alur Pembayaran dan Verifikasi Webhook</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f8fafc; color: #0f172a; padding: 12px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .bar {
+    width: 100%; max-width: 704px; display: flex; justify-content: space-between;
+    align-items: center; background: #ffffff; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 8px 14px; margin-bottom: 8px;
+  }
+  .bar h1 { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+  .bar p { font-size: 0.75rem; color: #64748b; margin-top: 1px; }
+  .tb { display: flex; gap: 8px; }
+  .btn {
+    padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;
+  }
+  .btn:hover { background: #f1f5f9; }
+  .btn.primary { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+  .btn.primary:hover { background: #1d4ed8; }
+  .wrap {
+    background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 10px; max-width: 704px; overflow-x: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  svg { display: block; user-select: none; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div>
+    <h1>Gambar 2.11 — Alur Pembayaran dan Verifikasi Webhook</h1>
+    <p>Alur penerbitan token transaksi SNAP hingga verifikasi notifikasi asinkron (webhook) berbasis SHA512</p>
+  </div>
+  <div class="tb">
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+<div class="wrap">
+  <svg id="fig-svg" width="680" height="275" viewBox="0 0 680 275" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <rect width="680" height="275" fill="#ffffff"/>
+    <defs>
+      <marker id="arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#2563eb" />
+      </marker>
+      <marker id="arr-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#16a34a" />
+      </marker>
+      <marker id="arr-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#dc2626" />
+      </marker>
+      <marker id="arr-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706" />
+      </marker>
+      <marker id="arr-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed" />
+      </marker>
+      <marker id="arr-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#475569" />
+      </marker>
+    </defs>
+    
+    <!-- Entitas Header Boxes -->
+    <rect x="25" y="15" width="130" height="34" rx="5" fill="#f8fafc" stroke="#64748b" stroke-width="1.2"/>
+    <text x="90" y="32" font-size="10.5" font-weight="700" fill="#0f172a" text-anchor="middle">Penghuni</text>
+    <text x="90" y="43" font-size="8" fill="#64748b" text-anchor="middle">Aplikasi Web / SNAP</text>
+
+    <rect x="255" y="15" width="160" height="34" rx="5" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.2"/>
+    <text x="350" y="32" font-size="10.5" font-weight="700" fill="#1e40af" text-anchor="middle">Backend Rumah Kost</text>
+    <text x="350" y="43" font-size="8" fill="#3b82f6" text-anchor="middle">Server Merchant</text>
+
+    <rect x="495" y="15" width="160" height="34" rx="5" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.2"/>
+    <text x="575" y="32" font-size="10.5" font-weight="700" fill="#92400e" text-anchor="middle">Midtrans Payment</text>
+    <text x="575" y="43" font-size="8" fill="#d97706" text-anchor="middle">Payment Gateway</text>
+
+    <!-- Lifelines -->
+    <line x1="90" y1="50" x2="90" y2="265" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="335" y1="50" x2="335" y2="265" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="575" y1="50" x2="575" y2="265" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3"/>
+
+    <!-- 1. Minta Bayar -->
+    <line x1="90" y1="75" x2="327" y2="75" stroke="#475569" stroke-width="1.3" marker-end="url(#arr-slate)"/>
+    <text x="210" y="70" font-size="8.5" font-weight="600" fill="#334155" text-anchor="middle">1. Klik Bayar Tagihan Sewa</text>
+
+    <!-- 2. Request Token SNAP -->
+    <line x1="335" y1="95" x2="567" y2="95" stroke="#2563eb" stroke-width="1.3" marker-end="url(#arr-blue)"/>
+    <text x="450" y="90" font-size="8.5" font-weight="600" fill="#1e40af" text-anchor="middle">2. Request Token (Order ID, Total, Server Key)</text>
+
+    <!-- 3. Return Snap Token -->
+    <line x1="575" y1="115" x2="343" y2="115" stroke="#2563eb" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#arr-blue)"/>
+    <text x="450" y="110" font-size="8.5" fill="#1e40af" text-anchor="middle">3. Kembalikan SNAP Token</text>
+
+    <!-- 4. Teruskan Token ke Frontend -->
+    <line x1="335" y1="135" x2="98" y2="135" stroke="#475569" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#arr-slate)"/>
+    <text x="210" y="130" font-size="8.5" fill="#334155" text-anchor="middle">4. Buka Pop-up Pembayaran SNAP</text>
+
+    <!-- 5. Pembayaran Sukses -->
+    <line x1="90" y1="160" x2="567" y2="160" stroke="#16a34a" stroke-width="1.4" marker-end="url(#arr-green)"/>
+    <text x="330" y="155" font-size="8.5" font-weight="700" fill="#166534" text-anchor="middle">5. Selesaikan Pembayaran (QRIS / VA / E-Wallet)</text>
+
+    <!-- 6. Webhook Notifikasi Asinkron -->
+    <line x1="575" y1="188" x2="343" y2="188" stroke="#d97706" stroke-width="1.5" marker-end="url(#arr-amber)"/>
+    <text x="455" y="182" font-size="8.5" font-weight="700" fill="#b45309" text-anchor="middle">6. Webhook Status Pembayaran + Signature Key</text>
+
+    <!-- 7. Validasi Signature & Update DB -->
+    <rect x="235" y="200" width="200" height="36" rx="4" fill="#f0fdf4" stroke="#22c55e" stroke-width="1"/>
+    <text x="350" y="214" font-size="8.5" font-weight="700" fill="#166534" text-anchor="middle">7. Verifikasi Hash SHA512</text>
+    <text x="350" y="227" font-size="7.5" fill="#15803d" text-anchor="middle">Jika valid, ubah status tagihan jadi "Lunas"</text>
+
+    <!-- 8. Respon 200 OK -->
+    <line x1="335" y1="248" x2="567" y2="248" stroke="#16a34a" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr-green)"/>
+    <text x="450" y="244" font-size="8" font-weight="600" fill="#15803d" text-anchor="middle">8. Respon HTTP 200 OK (Konfirmasi diterima)</text>
+    
+  </svg>
+</div>
+<script>
+const NAME = 'gambar_2_11_midtrans_webhook_simple';
+function getSVG() {
+  return new XMLSerializer().serializeToString(document.getElementById('fig-svg'));
+}
+function download(href, filename) {
+  const a = document.createElement('a'); a.href = href; a.download = filename;
+  document.body.appendChild(a); a.click(); setTimeout(() => a.remove(), 100);
+}
+function exportSVG() {
+  const blob = new Blob([getSVG()], { type: 'image/svg+xml;charset=utf-8' });
+  download(URL.createObjectURL(blob), NAME + '.svg');
+}
+function exportPNG(scale = 2) {
+  const svg = document.getElementById('fig-svg');
+  const w = +svg.getAttribute('width'), h = +svg.getAttribute('height');
+  const canvas = document.createElement('canvas');
+  canvas.width = w * scale; canvas.height = h * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(scale, scale);
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0);
+    download(canvas.toDataURL('image/png'), NAME + '@' + scale + 'x.png');
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getSVG());
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup Portal Peran Penghuni — SmartKost Resident</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #0f172a;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+  .browser-frame {
+    width: 1380px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    border: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Browser Chrome */
+  .browser-header {
+    background: #1e293b;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid #334155;
+  }
+  .window-dots {
+    display: flex;
+    gap: 7px;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot-red { background: #ef4444; }
+  .dot-yellow { background: #f59e0b; }
+  .dot-green { background: #10b981; }
+  
+  .address-bar {
+    flex: 1;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 5px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+  .address-bar span.lock { color: #10b981; }
+  .address-bar span.url { color: #f8fafc; font-weight: 500; }
+  
+  .window-actions {
+    display: flex;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+  .badge-role {
+    background: #2563eb;
+    color: #ffffff;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.72rem;
+  }
+
+  /* App Layout */
+  .app-container {
+    display: flex;
+    min-height: 860px;
+    background: #f8fafc;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 250px;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 14px;
+    flex-shrink: 0;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 14px;
+  }
+  .brand-logo {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+  .brand-text h2 { font-size: 0.95rem; font-weight: 800; color: #0f172a; line-height: 1.2; }
+  .brand-text p { font-size: 0.7rem; color: #64748b; font-weight: 500; }
+
+  .building-selector {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 7px 10px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #1e293b;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .building-selector span.caret { color: #64748b; font-size: 0.7rem; }
+
+  .nav-group-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.6px;
+    margin: 12px 8px 6px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 500;
+    margin-bottom: 3px;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .nav-item:hover { background: #f1f5f9; color: #0f172a; }
+  .nav-item.active {
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 700;
+    border-left: 3px solid #2563eb;
+  }
+  .nav-item .icon { font-size: 1rem; width: 18px; text-align: center; }
+  
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .user-widget {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: #f8fafc;
+  }
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #1e40af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+  .user-info h4 { font-size: 0.78rem; font-weight: 700; color: #0f172a; }
+  .user-info p { font-size: 0.68rem; color: #64748b; }
+
+  /* Main Content */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .top-navbar {
+    height: 60px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .page-title h1 { font-size: 1.15rem; font-weight: 800; color: #0f172a; }
+  .page-title p { font-size: 0.75rem; color: #64748b; }
+  
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ai-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    color: #64748b;
+    width: 300px;
+  }
+  .ai-spark {
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+  }
+  .btn-action {
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary { background: #2563eb; color: #ffffff; }
+  .btn-outline { background: #ffffff; border: 1px solid #cbd5e1; color: #334155; }
+
+  .content-body {
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+</style>
+</head>
+<body>
+
+<div class="browser-frame">
+  <!-- Window Header -->
+  <div class="browser-header">
+    <div class="window-dots">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+    </div>
+    <div class="address-bar">
+      <span class="lock">🔒</span>
+      <span class="url">https://wismaamal.allvvnt.my.id/resident/home</span>
+    </div>
+    <div class="window-actions">
+      <span class="badge-role">PENGHUNI (RESIDENT)</span>
+    </div>
+  </div>
+
+  
+  <div class="app-container" style="flex-direction: column;">
+    <!-- Resident Top Bar (Self Service Navigation) -->
+    <div style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 24px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 34px; height: 34px; background: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800;">🏠</div>
+          <span style="font-weight: 800; font-size: 1rem; color: #0f172a;">Portal Penghuni</span>
+        </div>
+        <nav style="display: flex; gap: 18px; font-size: 0.82rem; font-weight: 600;">
+          <a href="#" style="color: #2563eb; text-decoration: none; border-bottom: 2px solid #2563eb; padding-bottom: 20px;">Kamar Saya</a>
+          <a href="#" style="color: #64748b; text-decoration: none; padding-bottom: 20px;">Riwayat Tagihan</a>
+          <a href="#" style="color: #64748b; text-decoration: none; padding-bottom: 20px;">Lapor Kerusakan (Tiket)</a>
+          <a href="#" style="color: #64748b; text-decoration: none; padding-bottom: 20px;">Daftar Tamu</a>
+        </nav>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 0.75rem; background: #eff6ff; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-weight: 700;">Gedung A • Kamar 104</span>
+        <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; color: #334155;">RR</div>
+      </div>
+    </div>
+
+    <!-- Main Body Portal -->
+    <div style="max-width: 1200px; width: 100%; margin: 24px auto; padding: 0 24px; display: flex; flex-direction: column; gap: 20px;">
+      
+      <!-- Welcome Hero Banner -->
+      <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 12px; padding: 22px 28px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+        <div>
+          <span style="font-size: 0.75rem; color: #93c5fd; font-weight: 700; letter-spacing: 0.5px;">HUNIAN AKTIF</span>
+          <h2 style="font-size: 1.35rem; font-weight: 800; margin-top: 4px;">Hai, Rizky Ramadhan!</h2>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 3px;">Kamar 104 (Tipe Deluxe AC • Lantai 1) • Kontrak s/d 10 Mei 2027</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 14px; text-align: right;">
+            <span style="font-size: 0.68rem; color: #cbd5e1; display: block;">WIFI KAMAR:</span>
+            <span style="font-size: 0.82rem; font-weight: 700; color: #38bdf8;">WismaAmal_Lt1 (Psw: 104kost)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 Columns: Payment + Damage Reporting -->
+      <div style="display: grid; grid-template-columns: 1.35fr 1fr; gap: 20px;">
+        
+        <!-- Kolom Kiri: Tagihan Sewa Berjalan & Midtrans SNAP Trigger -->
+        <div style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 22px; display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+            <div>
+              <h3 style="font-size: 1rem; font-weight: 800; color: #0f172a;">Tagihan Sewa Bulan Ini</h3>
+              <p style="font-size: 0.75rem; color: #64748b;">Invoice #INV-202610-0104 • Jatuh Tempo: 28 Oktober 2026</p>
+            </div>
+            <span style="background: #fef3c7; color: #92400e; font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: 20px;">MENUNGGU PEMBAYARAN</span>
+          </div>
+
+          <!-- Rincian Biaya -->
+          <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.8rem;">
+            <div style="display: flex; justify-content: space-between; color: #334155;">
+              <span>Sewa Bulanan Kamar Deluxe (November 2026)</span>
+              <span style="font-weight: 700;">Rp 1.250.000</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: #334155;">
+              <span>Iuran Kebersihan & Keamanan Gedung</span>
+              <span style="font-weight: 700;">Rp 50.000</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: #334155;">
+              <span>Biaya Penanganan Gateway Pembayaran</span>
+              <span style="color: #16a34a; font-weight: 600;">GRATIS (Rp 0)</span>
+            </div>
+            <div style="border-top: 1px dashed #cbd5e1; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.88rem; font-weight: 800; color: #0f172a;">TOTAL PEMBAYARAN:</span>
+              <span style="font-size: 1.25rem; font-weight: 800; color: #2563eb;">Rp 1.300.000</span>
+            </div>
+          </div>
+
+          <!-- SNAP Payment Button & Channels -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <button style="width: 100%; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.3);">
+              <span>💳 Bayar Sekarang via Midtrans SNAP</span>
+            </button>
+            <div style="display: flex; justify-content: center; gap: 14px; font-size: 0.7rem; color: #64748b; font-weight: 600;">
+              <span>✓ QRIS Instan</span>
+              <span>✓ BCA / Mandiri / BRI VA</span>
+              <span>✓ GoPay / ShopeePay</span>
+            </div>
+          </div>
+
+          <!-- Riwayat Terakhir -->
+          <div style="margin-top: 4px;">
+            <span style="font-size: 0.72rem; color: #64748b; font-weight: 700;">PEMBAYARAN SEBELUMNYA:</span>
+            <div style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 8px 12px; border-radius: 6px;">
+              <span style="color: #166534; font-weight: 600;">Invoice #INV-202609-0104 (Oktober 2026) — Rp 1.300.000</span>
+              <span style="color: #16a34a; font-weight: 700;">✓ LUNAS • Unduh Kuitansi PDF</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kolom Kanan: Layanan Kamar & Aduan Fasilitas -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- Quick Complaint Box -->
+          <div style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px;">
+            <h3 style="font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-bottom: 4px;">Laporkan Kerusakan Fasilitas</h3>
+            <p style="font-size: 0.74rem; color: #64748b; margin-bottom: 14px;">Pengelola dan teknisi akan segera menindaklanjuti keluhan Anda.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.76rem;">
+              <div>
+                <label style="display: block; font-weight: 600; color: #334155; margin-bottom: 4px;">Fasilitas Bermasalah:</label>
+                <select style="width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; font-size: 0.75rem; background: #f8fafc;">
+                  <option>AC (Kurang Dingin / Bocor)</option>
+                  <option>Kamar Mandi / Kran Air</option>
+                  <option>Lampu / Kelistrikan</option>
+                  <option>Pintu / Kunci Kamar</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="display: block; font-weight: 600; color: #334155; margin-bottom: 4px;">Foto Bukti Kerusakan:</label>
+                <div style="border: 1px dashed #94a3b8; border-radius: 6px; padding: 12px; text-align: center; color: #64748b; cursor: pointer; background: #f8fafc;">
+                  <span>📷 Klik untuk Unggah Foto dari Galeri / Kamera</span>
+                </div>
+              </div>
+
+              <button style="background: #0f172a; color: white; border: none; border-radius: 6px; padding: 8px; font-weight: 700; cursor: pointer; margin-top: 4px;">
+                Kirim Tiket Komplain
+              </button>
+            </div>
+          </div>
+
+          <!-- Status Komplain Terakhir -->
+          <div style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px;">
+            <h4 style="font-size: 0.8rem; font-weight: 800; color: #334155; margin-bottom: 8px;">Status Aduan Terkini:</h4>
+            <div style="border-left: 3px solid #16a34a; padding-left: 10px; font-size: 0.74rem;">
+              <span style="font-weight: 700; color: #0f172a; display: block;">Ganti Bohlam Lampu Utama</span>
+              <p style="color: #64748b; margin-top: 2px;">Selesai diperbaiki oleh Teknisi Agus pada 18 Oktober 2026.</p>
+              <span style="display: inline-block; margin-top: 4px; background: #dcfce7; color: #166534; font-size: 0.65rem; font-weight: 700; padding: 1px 6px; border-radius: 4px;">SELESAI (RESOLVED)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+    
+</div>
+
+</body>
+</html>

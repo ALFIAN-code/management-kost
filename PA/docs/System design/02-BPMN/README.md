@@ -8,14 +8,16 @@
 
 | No | Subfolder | Nama Alur & Fitur | Kategori Modul | Aktor Terlibat | File Diagram |
 |---|---|---|---|---|---|
-| **01** | `01_alokasi_penempatan_hunian/` | **Alokasi & Penempatan Hunian** | **CORE** (M4: Schedule, M3: Room) | Calon Penghuni, Pengelola, Sistem | `alur_alokasi_penempatan.mmd` |
-| **02** | `02_penagihan_pembayaran/` | **Penagihan & Pembayaran Sewa** | **OPSIONAL** (O1: Finance) | Penghuni, Pengelola, Midtrans Gateway | `alur_penagihan_pembayaran.mmd` |
-| **03** | `03_laporan_kerusakan_fasilitas/` | **Tiket Pelaporan Kerusakan** | **OPSIONAL** (O2: Maintenance) | Penghuni, Pengelola, Teknisi | `alur_laporan_kerusakan.mmd` |
-| **04** | `04_pemeliharaan_rutin_berkala/` | **Jadwal Pemeliharaan Rutin** | **OPSIONAL** (O2: Maintenance) | Pengelola, Teknisi / Vendor | `alur_pemeliharaan_rutin.mmd` |
-| **05** | `05_pengeluaran_operasional/` | **Pencatatan Biaya Operasional** | **OPSIONAL** (O1: Finance) | Pengelola, Pemilik | `alur_pengeluaran_operasional.mmd` |
-| **06** | `06_pengawasan_buku_tamu/` | **Buku Tamu & Tamu Menginap** | **OPSIONAL** (O4: Guest) | Penghuni, Pengelola, Tamu | `alur_pengawasan_buku_tamu.mmd` |
-| **07** | `07_pengaturan_hak_akses_dinamis/` | **Dynamic RBAC & Role Builder** | **CORE** (M1: User & Access) | Pemilik, Pengguna / Staf | `alur_hak_akses_dinamis.mmd` |
-| **08** | `08_pendataan_inventaris_aset/` | **Inventarisasi & Audit Aset** | **OPSIONAL** (O3: Inventory) | Pengelola, Penghuni | `alur_inventaris_aset.mmd` |
+| **01** | `01_alokasi_penempatan_hunian/` | **Alokasi & Penempatan Hunian** | **CORE** (M4: Schedule, M3: Room) | Calon Penghuni, Pengelola, Sistem | `alur_alokasi_penempatan.html` (.png/.svg) |
+| **02** | `02_penagihan_pembayaran/` | **Penagihan & Pembayaran Sewa** | **OPSIONAL** (O1: Finance) | Penghuni, Pengelola, Midtrans Gateway | `alur_penagihan_pembayaran.html` (.png/.svg) |
+| **03** | `03_laporan_kerusakan_fasilitas/` | **Tiket Pelaporan Kerusakan** | **OPSIONAL** (O2: Maintenance) | Penghuni, Pengelola, Teknisi | `alur_laporan_kerusakan.html` (.png/.svg) |
+| **04** | `04_pemeliharaan_rutin_berkala/` | **Jadwal Pemeliharaan Rutin** | **OPSIONAL** (O2: Maintenance) | Pengelola, Teknisi / Vendor | `alur_pemeliharaan_rutin.html` (.png/.svg) |
+| **05** | `05_pengeluaran_operasional/` | **Pencatatan Biaya Operasional** | **OPSIONAL** (O1: Finance) | Pengelola, Pemilik | `alur_pengeluaran_operasional.html` (.png/.svg) |
+| **06** | `06_pengawasan_buku_tamu/` | **Buku Tamu & Tamu Menginap** | **OPSIONAL** (O4: Guest) | Penghuni, Pengelola, Tamu | `alur_pengawasan_buku_tamu.html` (.png/.svg) |
+| **07** | `07_pengaturan_hak_akses_dinamis/` | **Dynamic RBAC & Role Builder** | **CORE** (M1: User & Access) | Pemilik, Pengguna / Staf | `alur_hak_akses_dinamis.html` (.png/.svg) |
+| **08** | `08_pendataan_inventaris_aset/` | **Inventarisasi & Audit Aset** | **OPSIONAL** (O3: Inventory) | Pengelola, Penghuni | `alur_inventaris_aset.html` (.png/.svg) |
+| **09** | `09_konsultasi_ai_mcp/` | **Konsultasi Asisten AI & Data** | **AI INTEGRATION** (MCP Server) | Pemilik / Pengelola, Mesin AI, Sistem | `bpmn_konsultasi_ai_mcp.html` (.png/.svg) |
+| **10** | `10_pembatalan_sewa_dan_refund/` | **Pemesanan DP & Refund Pembatalan** | **ADR-013** (Lease, Finance) | Calon Penghuni, Pengelola, Midtrans, Sistem | `alur_pembatalan_dan_refund.html` (.png/.svg) |
 
 ---
 

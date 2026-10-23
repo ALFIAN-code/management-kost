@@ -1,0 +1,84 @@
+<svg id="fig-svg" width="725" height="225" viewBox="0 0 725 225" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <rect width="725" height="225" fill="#ffffff"/>
+    <defs>
+      <marker id="arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#2563eb" />
+      </marker>
+      <marker id="arr-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#16a34a" />
+      </marker>
+      <marker id="arr-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#dc2626" />
+      </marker>
+      <marker id="arr-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706" />
+      </marker>
+      <marker id="arr-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed" />
+      </marker>
+      <marker id="arr-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#475569" />
+      </marker>
+    </defs>
+    
+    <!-- 4 Komponen Utama (Alur Kiri ke Kanan) -->
+    
+    <!-- 1. Pengguna (Pemilik/Pengelola) -->
+    <rect x="15" y="55" width="110" height="105" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="1.3"/>
+    <circle cx="70" cy="88" r="14" fill="#e2e8f0"/>
+    <text x="70" y="93" font-size="12" font-weight="700" fill="#334155" text-anchor="middle">👤</text>
+    <text x="70" y="118" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">Pemilik / Admin</text>
+    <text x="70" y="132" font-size="8" fill="#64748b" text-anchor="middle">Tanya via Chat</text>
+
+    <!-- 2. Asisten AI / LLM Host -->
+    <rect x="190" y="45" width="130" height="125" rx="6" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="190" y="45" width="130" height="24" rx="6" fill="#ede9fe"/>
+    <text x="255" y="61" font-size="10" font-weight="700" fill="#5b21b6" text-anchor="middle">Asisten AI (LLM Host)</text>
+    <circle cx="255" cy="95" r="14" fill="#ddd6fe"/>
+    <text x="255" y="100" font-size="12" font-weight="700" fill="#6d28d9" text-anchor="middle">🤖</text>
+    <text x="255" y="125" font-size="9" font-weight="700" fill="#4c1d95" text-anchor="middle">Analisis Pertanyaan</text>
+    <text x="255" y="140" font-size="8" fill="#6d28d9" text-anchor="middle">Pilih Tool Data</text>
+
+    <!-- 3. MCP Server (Read-Only Adapter) -->
+    <rect x="390" y="45" width="135" height="125" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="390" y="45" width="135" height="24" rx="6" fill="#dbeafe"/>
+    <text x="457" y="61" font-size="10" font-weight="700" fill="#1e40af" text-anchor="middle">MCP Server (Read-Only)</text>
+    <rect x="402" y="80" width="110" height="28" rx="4" fill="#ffffff" stroke="#93c5fd" stroke-width="0.8"/>
+    <text x="457" y="97" font-size="8.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">Tools: Baca Data</text>
+    <text x="457" y="125" font-size="8.5" font-weight="600" fill="#1e3a8a" text-anchor="middle">JSON-RPC 2.0</text>
+    <text x="457" y="140" font-size="8" fill="#3b82f6" text-anchor="middle">Akses Terkontrol</text>
+
+    <!-- 4. Basis Data Operasional -->
+    <rect x="590" y="55" width="120" height="105" rx="6" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.3"/>
+    <path d="M 590 68 C 590 60, 710 60, 710 68 L 710 80 L 590 80 Z" fill="#16a34a"/>
+    <text x="650" y="73" font-size="9" font-weight="700" fill="#ffffff" text-anchor="middle">Database Kost</text>
+    <text x="650" y="105" font-size="9" font-weight="700" fill="#166534" text-anchor="middle">Data Real-Time</text>
+    <text x="650" y="120" font-size="8" fill="#15803d" text-anchor="middle">• Status Kamar</text>
+    <text x="650" y="134" font-size="8" fill="#15803d" text-anchor="middle">• Tagihan Sewa</text>
+
+    <!-- Alur Panah Antar Komponen -->
+    <!-- 1 -> 2: Pertanyaan -->
+    <path d="M 125 85 L 183 85" fill="none" stroke="#64748b" stroke-width="1.3" marker-end="url(#arr-slate)"/>
+    <text x="154" y="78" font-size="7.5" font-weight="600" fill="#475569" text-anchor="middle">1. Tanya</text>
+
+    <!-- 2 -> 1: Jawaban -->
+    <path d="M 190 125 L 132 125" fill="none" stroke="#16a34a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#arr-green)"/>
+    <text x="161" y="140" font-size="7.5" font-weight="600" fill="#166534" text-anchor="middle">4. Jawaban</text>
+
+    <!-- 2 -> 3: Panggil Tool -->
+    <path d="M 320 85 L 383 85" fill="none" stroke="#2563eb" stroke-width="1.3" marker-end="url(#arr-blue)"/>
+    <text x="355" y="78" font-size="7.5" font-weight="600" fill="#1d4ed8" text-anchor="middle">2. Tool Call</text>
+
+    <!-- 3 -> 2: Hasil Data -->
+    <path d="M 390 125 L 327 125" fill="none" stroke="#7c3aed" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#arr-purple)"/>
+    <text x="355" y="140" font-size="7.5" font-weight="600" fill="#6d28d9" text-anchor="middle">3. Data Fakta</text>
+
+    <!-- 3 <-> 4: Query Data -->
+    <path d="M 525 95 L 583 95" fill="none" stroke="#22c55e" stroke-width="1.3" marker-end="url(#arr-green)"/>
+    <path d="M 590 115 L 532 115" fill="none" stroke="#22c55e" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#arr-green)"/>
+    <text x="557" y="88" font-size="7.5" font-weight="600" fill="#166534" text-anchor="middle">SELECT</text>
+
+    <!-- Keterangan bawah -->
+    <text x="362" y="200" font-size="8.5" fill="#475569" text-anchor="middle">Protokol MCP menjembatani model AI dengan database operasional secara aman (hanya membaca data tanpa izin modifikasi)</text>
+    
+  </svg>

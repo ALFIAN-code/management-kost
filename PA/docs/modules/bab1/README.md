@@ -1,10 +1,10 @@
-# BAB 1 — Pendahuluan
+# BAB 1 — PENDAHULUAN
 
 > Dokumen Resmi Naskah Proyek Akhir — Departemen Teknik Informatika dan Komputer, PENS.
 > Format sitasi mengacu pada IEEE numeric `[1]`-`[28]` terurut sesuai kemunculan pertama pada teks.
 
 **Judul Proyek Akhir:**
-*Refactoring Sistem Manajemen Rumah Kost dengan Arsitektur Modular Monolithic Berbasis Kerangka Kerja Scrum*
+*Arsitektur Modular Monolithic Berbasis Event-Driven untuk Sistem Informasi Manajemen Rumah Kost Terintegrasi.*
 
 ---
 
@@ -24,7 +24,7 @@ Kondisi tersebut menuntut adanya Sistem Informasi Manajemen (SIM) berbasis web y
 
 ---
 
-### 1.1.2 Telaah Kritis Empat Proposal *Previous Work*
+### 1.1.2 Telaah Kritis Empat Sistem Lama
 
 Upaya awal digitalisasi pengelolaan rumah kost telah diinisiasi pada Juni 2025 melalui empat proposal proyek akhir yang terpisah [5][6][7][8]:
 
@@ -81,7 +81,7 @@ Tujuan yang ingin dicapai melalui Proyek Akhir ini adalah:
 
 Ruang lingkup dan batasan dalam penelitian Proyek Akhir ini mencakup:
 1. **Lingkup Domain Sistem:** Sistem mencakup modul Pengguna (`Auth`), Gedung (`Building`), Kamar (`Room`), Kontrak Sewa (`Lease`), Keuangan (`Finance`), Komplain Kerusakan (`Maintenance`), Buku Tamu (`Guest`), Inventaris (`Inventory`), dan Notifikasi WhatsApp (`Notification`).
-2. **Satuan dan Skema Sewa:** Sistem hanya melayani masa sewa dalam satuan **bulan penuh**. Batas minimal durasi sewa ditentukan per gedung melalui pengaturan sistem (`min_rental_months`). Skema sewa harian, mingguan, dan tahunan tidak didukung.
+2. **Satuan dan Skema Sewa:** Sistem hanya melayani masa sewa dalam satuan **bulan penuh**. Batas minimal durasi sewa ditentukan per gedung melalui pengaturan sistem (`min_rental_months`). Pemesanan unit mendukung opsi pembayaran penuh bulan pertama maupun uang tanda jadi (*Down Payment* / DP flat) yang diatur per gedung melalui mekanisme *Two-Phase Invoicing*, serta pembatalan reservasi difasilitasi melalui pengajuan *refund* semi-manual berbukti transfer resmi. Skema sewa harian, mingguan, dan tahunan tidak didukung.
 3. **Peran Pengguna (*Roles*):** Hak akses dibatasi untuk tiga kategori pengguna: Pemilik (*Owner* seluruh gedung), Pengelola (*Admin* yang ditugaskan pada gedung tertentu), dan Penghuni (*Resident* kamar aktif).
 4. **Platform Antarmuka:** Pengujian fungsionalitas dan antarmuka difokuskan pada platform **Web (Flutter Web)** untuk peramban desktop dan tablet. Kode antarmuka dirancang dengan Clean Architecture agar siap dikompilasi ke aplikasi mobile pada masa mendatang, namun evaluasi kinerja aplikasi mobile fisik berada di luar ruang lingkup pengujian proyek akhir ini.
 5. **Model Multi-Tenancy:** Pemisahan data multi-gedung menggunakan pendekatan *Shared Database with Row-Level Scoping* (`building_id`), bukan pemisahan basis data per gedung.

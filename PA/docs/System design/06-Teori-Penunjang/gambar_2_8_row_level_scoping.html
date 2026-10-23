@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gambar 2.8 — Isolasi Data Antar Gedung pada Row-Level Scoping</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f8fafc; color: #0f172a; padding: 12px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .bar {
+    width: 100%; max-width: 704px; display: flex; justify-content: space-between;
+    align-items: center; background: #ffffff; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 8px 14px; margin-bottom: 8px;
+  }
+  .bar h1 { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+  .bar p { font-size: 0.75rem; color: #64748b; margin-top: 1px; }
+  .tb { display: flex; gap: 8px; }
+  .btn {
+    padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;
+  }
+  .btn:hover { background: #f1f5f9; }
+  .btn.primary { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+  .btn.primary:hover { background: #1d4ed8; }
+  .wrap {
+    background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 10px; max-width: 704px; overflow-x: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  svg { display: block; user-select: none; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div>
+    <h1>Gambar 2.8 — Isolasi Data Antar Gedung pada Row-Level Scoping</h1>
+    <p>Pemisahan data logis dalam satu tabel bersama menggunakan kolom identitas gedung (building_id)</p>
+  </div>
+  <div class="tb">
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+<div class="wrap">
+  <svg id="fig-svg" width="680" height="255" viewBox="0 0 680 255" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <rect width="680" height="255" fill="#ffffff"/>
+    <defs>
+      <marker id="arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#2563eb" />
+      </marker>
+      <marker id="arr-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#16a34a" />
+      </marker>
+      <marker id="arr-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#dc2626" />
+      </marker>
+      <marker id="arr-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706" />
+      </marker>
+      <marker id="arr-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed" />
+      </marker>
+      <marker id="arr-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#475569" />
+      </marker>
+    </defs>
+    
+    <!-- Pengguna Gedung A -->
+    <rect x="15" y="40" width="135" height="60" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+    <circle cx="42" cy="70" r="13" fill="#bfdbfe"/>
+    <text x="42" y="74" font-size="11" font-weight="700" fill="#1e40af" text-anchor="middle">A</text>
+    <text x="65" y="65" font-size="10" font-weight="700" fill="#1e3a8a">Pengelola A</text>
+    <text x="65" y="79" font-size="8.5" fill="#3b82f6">Konteks: Gedung A</text>
+
+    <!-- Pengguna Gedung B -->
+    <rect x="15" y="150" width="135" height="60" rx="6" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+    <circle cx="42" cy="180" r="13" fill="#fde68a"/>
+    <text x="42" y="184" font-size="11" font-weight="700" fill="#92400e" text-anchor="middle">B</text>
+    <text x="65" y="175" font-size="10" font-weight="700" fill="#78350f">Pengelola B</text>
+    <text x="65" y="189" font-size="8.5" fill="#d97706">Konteks: Gedung B</text>
+
+    <!-- Aplikasi / Lapisan Filter -->
+    <rect x="180" y="30" width="180" height="195" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.4"/>
+    <rect x="180" y="30" width="180" height="28" rx="8" fill="#e2e8f0"/>
+    <text x="270" y="48" font-size="10.5" font-weight="700" fill="#1e293b" text-anchor="middle">Aplikasi (Satu Instance)</text>
+    
+    <rect x="190" y="68" width="160" height="62" rx="4" fill="#ffffff" stroke="#93c5fd" stroke-width="1"/>
+    <text x="198" y="84" font-size="9" font-weight="700" fill="#1e40af">Filter Otomatis Kueri A:</text>
+    <text x="198" y="100" font-size="8" font-family="monospace" fill="#0f172a">SELECT * FROM kamar</text>
+    <text x="198" y="115" font-size="8" font-family="monospace" font-weight="700" fill="#2563eb">WHERE building_id = 'A'</text>
+
+    <rect x="190" y="145" width="160" height="62" rx="4" fill="#ffffff" stroke="#fcd34d" stroke-width="1"/>
+    <text x="198" y="161" font-size="9" font-weight="700" fill="#92400e">Filter Otomatis Kueri B:</text>
+    <text x="198" y="177" font-size="8" font-family="monospace" fill="#0f172a">SELECT * FROM kamar</text>
+    <text x="198" y="192" font-size="8" font-family="monospace" font-weight="700" fill="#d97706">WHERE building_id = 'B'</text>
+
+    <!-- Panah dari User ke App -->
+    <path d="M 150 70 L 180 85" fill="none" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+    <path d="M 150 180 L 180 165" fill="none" stroke="#d97706" stroke-width="1.5" marker-end="url(#arr-amber)"/>
+
+    <!-- Basis Data Bersama (Single Shared Database) -->
+    <rect x="390" y="30" width="275" height="195" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+    <path d="M 390 40 C 390 32, 665 32, 665 40 L 665 54 L 390 54 Z" fill="#0f172a"/>
+    <text x="527" y="46" font-size="10.5" font-weight="700" fill="#ffffff" text-anchor="middle">Basis Data Bersama (Tabel Kamar)</text>
+
+    <!-- Tabel Data Row-Level -->
+    <rect x="400" y="65" width="255" height="22" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.8"/>
+    <text x="410" y="79" font-size="8.5" font-weight="700" fill="#475569">ID</text>
+    <text x="445" y="79" font-size="8.5" font-weight="700" fill="#475569">Nomor</text>
+    <text x="500" y="79" font-size="8.5" font-weight="700" fill="#1e40af">building_id</text>
+    <text x="580" y="79" font-size="8.5" font-weight="700" fill="#475569">Visibilitas Akses</text>
+
+    <!-- Baris 1: Gedung A -->
+    <rect x="400" y="87" width="255" height="26" fill="#eff6ff" stroke="#bfdbfe" stroke-width="0.6"/>
+    <text x="410" y="103" font-size="8.5" font-family="monospace">101</text>
+    <text x="445" y="103" font-size="8.5">Kamar 1</text>
+    <text x="500" y="103" font-size="8.5" font-weight="700" fill="#2563eb">Gedung A</text>
+    <text x="580" y="103" font-size="8" font-weight="700" fill="#166534">✓ Hanya Gedung A</text>
+
+    <!-- Baris 2: Gedung B -->
+    <rect x="400" y="113" width="255" height="26" fill="#fffbeb" stroke="#fde68a" stroke-width="0.6"/>
+    <text x="410" y="129" font-size="8.5" font-family="monospace">201</text>
+    <text x="445" y="129" font-size="8.5">Kamar A</text>
+    <text x="500" y="129" font-size="8.5" font-weight="700" fill="#d97706">Gedung B</text>
+    <text x="580" y="129" font-size="8" font-weight="700" fill="#d97706">✓ Hanya Gedung B</text>
+
+    <!-- Baris 3: Gedung A -->
+    <rect x="400" y="139" width="255" height="26" fill="#eff6ff" stroke="#bfdbfe" stroke-width="0.6"/>
+    <text x="410" y="155" font-size="8.5" font-family="monospace">102</text>
+    <text x="445" y="155" font-size="8.5">Kamar 2</text>
+    <text x="500" y="155" font-size="8.5" font-weight="700" fill="#2563eb">Gedung A</text>
+    <text x="580" y="155" font-size="8" font-weight="700" fill="#166534">✓ Hanya Gedung A</text>
+
+    <!-- Baris 4: Gedung B -->
+    <rect x="400" y="165" width="255" height="26" fill="#fffbeb" stroke="#fde68a" stroke-width="0.6"/>
+    <text x="410" y="181" font-size="8.5" font-family="monospace">202</text>
+    <text x="445" y="181" font-size="8.5">Kamar B</text>
+    <text x="500" y="181" font-size="8.5" font-weight="700" fill="#d97706">Gedung B</text>
+    <text x="580" y="181" font-size="8" font-weight="700" fill="#d97706">✓ Hanya Gedung B</text>
+
+    <text x="527" y="210" font-size="8.5" fill="#64748b" text-anchor="middle">Isolasi logis ditegakkan oleh kolom penanda gedung</text>
+
+    <!-- Panah dari App ke DB -->
+    <path d="M 360 99 L 390 99" fill="none" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+    <path d="M 360 176 L 390 176" fill="none" stroke="#d97706" stroke-width="1.5" marker-end="url(#arr-amber)"/>
+    
+  </svg>
+</div>
+<script>
+const NAME = 'gambar_2_8_row_level_scoping_simple';
+function getSVG() {
+  return new XMLSerializer().serializeToString(document.getElementById('fig-svg'));
+}
+function download(href, filename) {
+  const a = document.createElement('a'); a.href = href; a.download = filename;
+  document.body.appendChild(a); a.click(); setTimeout(() => a.remove(), 100);
+}
+function exportSVG() {
+  const blob = new Blob([getSVG()], { type: 'image/svg+xml;charset=utf-8' });
+  download(URL.createObjectURL(blob), NAME + '.svg');
+}
+function exportPNG(scale = 2) {
+  const svg = document.getElementById('fig-svg');
+  const w = +svg.getAttribute('width'), h = +svg.getAttribute('height');
+  const canvas = document.createElement('canvas');
+  canvas.width = w * scale; canvas.height = h * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(scale, scale);
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0);
+    download(canvas.toDataURL('image/png'), NAME + '@' + scale + 'x.png');
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getSVG());
+}
+</script>
+</body>
+</html>

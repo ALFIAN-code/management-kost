@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPMN — Alur Pengeluaran Operasional</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f8fafc; color: #0f172a; padding: 24px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .header-bar {
+    width: 100%; max-width: 1280px; display: flex; justify-content: space-between; align-items: center;
+    background: #ffffff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;
+  }
+  .header-title h1 { font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+  .header-title p { font-size: 0.875rem; color: #64748b; margin: 0; }
+  .toolbar { display: flex; gap: 10px; }
+  .btn {
+    padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
+    cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: #f1f5f9; }
+  .btn.primary { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+  .btn.primary:hover { background: #1d4ed8; }
+  .canvas-wrap {
+    background: #ffffff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%; max-width: 1280px;
+    overflow-x: auto; display: flex; justify-content: center;
+  }
+  svg { display: block; user-select: none; }
+</style>
+</head>
+<body>
+
+<div class="header-bar">
+  <div class="header-title">
+    <h1>BPMN 2.0 — Alur Pencatatan & Transparansi Pengeluaran Operasional</h1>
+    <p>Kolaborasi Proses Bisnis: Pengelola Gedung, Sistem Manajemen Kost, & Pemilik Properti</p>
+  </div>
+  <div class="toolbar">
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+
+<div class="canvas-wrap">
+  <svg id="bpmn-svg" width="1240" height="580" viewBox="0 0 1240 580" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#334155" />
+      </marker>
+    </defs>
+
+    <!-- POOL CONTAINER -->
+    <rect x="20" y="20" width="1200" height="540" rx="8" fill="#ffffff" stroke="#334155" stroke-width="2" />
+    
+    <!-- POOL HEADER -->
+    <rect x="20" y="20" width="45" height="540" rx="8" fill="#0f172a" />
+    <text x="-290" y="50" transform="rotate(-90)" fill="#ffffff" font-size="14" font-weight="700" letter-spacing="1" text-anchor="middle">MANAJEMEN PENGELUARAN &amp; LABA-RUGI</text>
+
+    <!-- LANES -->
+    <!-- Lane 1: Pengelola Gedung (y: 20, h: 170) -->
+    <rect x="65" y="20" width="1155" height="170" fill="#f8fafc" stroke="#94a3b8" stroke-width="1" />
+    <rect x="65" y="20" width="35" height="170" fill="#e2e8f0" />
+    <text x="-105" y="88" transform="rotate(-90)" fill="#1e293b" font-size="13" font-weight="700" text-anchor="middle">Pengelola</text>
+
+    <!-- Lane 2: Sistem Kost (y: 190, h: 190) -->
+    <rect x="65" y="190" width="1155" height="190" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
+    <rect x="65" y="190" width="35" height="190" fill="#dbeafe" />
+    <text x="-285" y="88" transform="rotate(-90)" fill="#1e3a8a" font-size="13" font-weight="700" text-anchor="middle">Sistem Kost</text>
+
+    <!-- Lane 3: Pemilik Properti (y: 380, h: 180) -->
+    <rect x="65" y="380" width="1155" height="180" fill="#f8fafc" stroke="#94a3b8" stroke-width="1" />
+    <rect x="65" y="380" width="35" height="180" fill="#fef3c7" />
+    <text x="-470" y="88" transform="rotate(-90)" fill="#92400e" font-size="13" font-weight="700" text-anchor="middle">Pemilik (Owner)</text>
+
+    <!-- FLOW NODES -->
+
+    <!-- LANE 1: PENGELOLA -->
+    <circle cx="125" cy="105" r="17" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" />
+    <text x="125" y="137" font-size="11" font-weight="700" fill="#15803d" text-anchor="middle">Biaya Terjadi</text>
+
+    <!-- Task: Input Pengeluaran -->
+    <g transform="translate(180, 78)">
+      <rect width="165" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6" />
+      <text x="82" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Input Data Pengeluaran</text>
+      <text x="82" y="40" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">(Kategori, Biaya, &amp; Nota)</text>
+    </g>
+
+    <!-- Task: Terima Konfirmasi -->
+    <g transform="translate(435, 78)">
+      <rect width="145" height="54" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#14532d" text-anchor="middle">Terima Konfirmasi</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#15803d" text-anchor="middle">Beban Tercatat</text>
+    </g>
+
+    <circle cx="635" cy="105" r="17" fill="#fee2e2" stroke="#dc2626" stroke-width="3" />
+    <text x="635" y="137" font-size="11" font-weight="700" fill="#b91c1c" text-anchor="middle">Selesai</text>
+
+
+    <!-- LANE 2: SISTEM KOST -->
+    <!-- Task: Validasi & Simpan Biaya -->
+    <g transform="translate(180, 258)">
+      <rect width="165" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6" />
+      <text x="82" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Validasi &amp; Simpan</text>
+      <text x="82" y="40" font-size="11" font-weight="600" fill="#2563eb" text-anchor="middle">Transaksi Pengeluaran</text>
+    </g>
+
+    <!-- Task: Rekalkulasi Beban -->
+    <g transform="translate(435, 258)">
+      <rect width="145" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Rekalkulasi Total</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Arus Kas Keluar</text>
+    </g>
+
+    <!-- Task: Agregasi Laba Bersih -->
+    <g transform="translate(670, 258)">
+      <rect width="165" height="54" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.6" />
+      <text x="82" y="23" font-size="12" font-weight="700" fill="#1e3a8a" text-anchor="middle">Agregasi Laba Bersih</text>
+      <text x="82" y="40" font-size="11" font-weight="600" fill="#2563eb" text-anchor="middle">(Pendapatan - Beban)</text>
+    </g>
+
+
+    <!-- LANE 3: PEMILIK (OWNER) -->
+    <circle cx="670" cy="470" r="17" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" />
+    <text x="670" y="502" font-size="11" font-weight="700" fill="#15803d" text-anchor="middle">Tinjau Finansial</text>
+
+    <!-- Task: Buka Dashboard Laba Rugi -->
+    <g transform="translate(735, 443)">
+      <rect width="155" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6" />
+      <text x="77" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Akses Laporan</text>
+      <text x="77" y="40" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Keuangan &amp; Laba-Rugi</text>
+    </g>
+
+    <!-- Task: Analisis Pengeluaran -->
+    <g transform="translate(945, 443)">
+      <rect width="160" height="54" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" />
+      <text x="80" y="23" font-size="12" font-weight="700" fill="#14532d" text-anchor="middle">Analisis Arus Kas Bersih</text>
+      <text x="80" y="40" font-size="11" font-weight="600" fill="#15803d" text-anchor="middle">&amp; Grafik Kategori Biaya</text>
+    </g>
+
+    <circle cx="1165" cy="470" r="17" fill="#fee2e2" stroke="#dc2626" stroke-width="3" />
+    <text x="1165" y="502" font-size="11" font-weight="700" fill="#b91c1c" text-anchor="middle">Selesai</text>
+
+
+    <!-- SEQUENCE FLOWS -->
+    <!-- Mulai Pengelola -> Input -->
+    <path d="M 142 105 L 180 105" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+    <!-- Input -> Validasi (turun ke Sistem) -->
+    <path d="M 262 132 L 262 258" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+    <!-- Validasi -> Rekalkulasi Beban -->
+    <path d="M 345 285 L 435 285" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+    <!-- Rekalkulasi -> Terima Konfirmasi (naik ke Pengelola) -->
+    <path d="M 507 258 L 507 132" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+    <!-- Terima Konfirmasi -> End Pengelola -->
+    <path d="M 580 105 L 618 105" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+    <!-- Rekalkulasi -> Agregasi Laba Bersih -->
+    <path d="M 580 285 L 670 285" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+    <!-- Mulai Pemilik -> Buka Dashboard -->
+    <path d="M 687 470 L 735 470" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+    <!-- Agregasi Sistem -> Dashboard Pemilik (turun data) -->
+    <path d="M 752 312 L 752 443" fill="none" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="710" y="365" width="85" height="18" rx="3" fill="#ffffff" />
+    <text x="752" y="378" font-size="10.5" font-weight="700" fill="#2563eb" text-anchor="middle">Data Teragregasi</text>
+
+    <!-- Buka Dashboard -> Analisis Pengeluaran -->
+    <path d="M 890 470 L 945 470" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+    <!-- Analisis -> End Pemilik -->
+    <path d="M 1105 470 L 1148 470" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+  </svg>
+</div>
+
+<script>
+function getSVGString() {
+  const svg = document.getElementById('bpmn-svg');
+  let s = new XMLSerializer().serializeToString(svg);
+  if (!s.includes('xmlns=')) {
+    s = s.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  return s;
+}
+
+function download(href, name) {
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function exportSVG() {
+  const blob = new Blob([getSVGString()], { type: 'image/svg+xml;charset=utf-8' });
+  download(URL.createObjectURL(blob), 'alur_pengeluaran_operasional.svg');
+}
+
+function exportPNG(scale = 2) {
+  const svg = document.getElementById('bpmn-svg');
+  const w = 1240, h = 580;
+  const canvas = document.createElement('canvas');
+  canvas.width = w * scale;
+  canvas.height = h * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(scale, scale);
+
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0);
+    download(canvas.toDataURL('image/png'), 'alur_pengeluaran_operasional@' + scale + 'x.png');
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getSVGString());
+}
+</script>
+</body>
+</html>

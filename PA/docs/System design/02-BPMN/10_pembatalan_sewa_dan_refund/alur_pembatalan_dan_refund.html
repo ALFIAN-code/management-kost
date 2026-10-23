@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPMN 2.0 — Alur Pemesanan DP (Two-Phase Invoicing) & Refund Pembatalan Sewa</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f8fafc; color: #0f172a; padding: 24px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .header-bar {
+    width: 100%; max-width: 1840px; display: flex; justify-content: space-between; align-items: center;
+    background: #ffffff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;
+  }
+  .header-title h1 { font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+  .header-title p { font-size: 0.85rem; color: #64748b; margin: 0; }
+  .toolbar { display: flex; gap: 10px; }
+  .btn {
+    padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+    cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: #f1f5f9; }
+  .btn.primary { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+  .btn.primary:hover { background: #1d4ed8; }
+  .canvas-wrap {
+    background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%; max-width: 1840px;
+    overflow-x: auto; display: flex; justify-content: center;
+  }
+  svg { display: block; user-select: none; }
+</style>
+</head>
+<body>
+
+<div class="header-bar">
+  <div class="header-title">
+    <h1>BPMN 2.0 — Alur Pemesanan DP (Two-Phase Invoicing) &amp; Refund Pembatalan Sewa (ADR-013)</h1>
+    <p>Tata Letak 3 Fase Bebas Overlap: (1) Booking &amp; DP, (2) Pelunasan H-3 &amp; Check-in, (3) Pembatalan &amp; Refund Semi-Manual</p>
+  </div>
+  <div class="toolbar">
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+
+<div class="canvas-wrap">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="bpmn-svg" width="1840" height="740" viewBox="0 0 1840 740" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#334155" />
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#2563eb" />
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#16a34a" />
+    </marker>
+    <marker id="arr-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#dc2626" />
+    </marker>
+  </defs>
+
+  <!-- POOL CONTAINER -->
+  <rect x="15" y="15" width="1810" height="710" rx="8" fill="#ffffff" stroke="#334155" stroke-width="2" />
+  
+  <!-- POOL HEADER -->
+  <rect x="15" y="15" width="45" height="710" rx="8" fill="#0f172a" />
+  <text x="-370" y="44" transform="rotate(-90)" fill="#ffffff" font-size="13" font-weight="700" letter-spacing="1" text-anchor="middle">PEMESANAN DP &amp; REFUND PEMBATALAN SEWA</text>
+
+  <!-- LANES -->
+  <!-- Lane 1: Penghuni (y: 15, h: 155) -->
+  <rect x="60" y="15" width="1765" height="155" fill="#f8fafc" stroke="#94a3b8" stroke-width="1" />
+  <rect x="60" y="15" width="35" height="155" fill="#e2e8f0" />
+  <text x="-92" y="83" transform="rotate(-90)" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">Penghuni</text>
+
+  <!-- Lane 2: Sistem Kost (y: 170, h: 260) -->
+  <rect x="60" y="170" width="1765" height="260" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
+  <rect x="60" y="170" width="35" height="260" fill="#dbeafe" />
+  <text x="-300" y="83" transform="rotate(-90)" fill="#1e3a8a" font-size="12" font-weight="700" text-anchor="middle">Sistem Kost</text>
+
+  <!-- Lane 3: Payment Gateway (y: 430, h: 125) -->
+  <rect x="60" y="430" width="1765" height="125" fill="#f8fafc" stroke="#94a3b8" stroke-width="1" />
+  <rect x="60" y="430" width="35" height="125" fill="#fef3c7" />
+  <text x="-492" y="83" transform="rotate(-90)" fill="#92400e" font-size="12" font-weight="700" text-anchor="middle">Payment GW</text>
+
+  <!-- Lane 4: Pengelola (y: 555, h: 170) -->
+  <rect x="60" y="555" width="1765" height="170" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
+  <rect x="60" y="555" width="35" height="170" fill="#e2e8f0" />
+  <text x="-640" y="83" transform="rotate(-90)" fill="#1e293b" font-size="12" font-weight="700" text-anchor="middle">Pengelola</text>
+
+  <!-- FASE SEPARATOR VERTICAL WATERMARKS -->
+  <line x1="720" y1="15" x2="720" y2="725" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4" />
+  <text x="710" y="32" font-size="10" font-weight="800" fill="#94a3b8" text-anchor="end">FASE 1: BOOKING &amp; DP</text>
+
+  <line x1="1175" y1="15" x2="1175" y2="725" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4" />
+  <text x="1165" y="32" font-size="10" font-weight="800" fill="#1d4ed8" text-anchor="end">FASE 2A: PELUNASAN H-3 &amp; CHECK-IN</text>
+  <text x="1185" y="32" font-size="10" font-weight="800" fill="#dc2626" text-anchor="start">FASE 2B: PEMBATALAN &amp; REFUND SEMI-MANUAL</text>
+
+  <!-- ========================================================================= -->
+  <!-- FASE 1: BOOKING & DP (X: 110 - 700)                                       -->
+  <!-- ========================================================================= -->
+
+  <!-- Start Event: Penghuni Booking -->
+  <circle cx="125" cy="92" r="15" fill="#dcfce7" stroke="#16a34a" stroke-width="2" />
+  <text x="125" y="122" font-size="9.5" font-weight="700" fill="#15803d" text-anchor="middle">Mulai Sewa</text>
+
+  <!-- Task: Pilih Kamar & Ajukan Reservasi -->
+  <g transform="translate(165, 68)">
+    <rect width="125" height="48" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <text x="62" y="20" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Pilih Kamar &amp;</text>
+    <text x="62" y="35" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">Ajukan Reservasi</text>
+  </g>
+
+  <!-- Task: Validasi & Kunci Kamar -->
+  <g transform="translate(165, 215)">
+    <rect width="125" height="48" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <text x="62" y="20" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Kunci Unit Kamar</text>
+    <text x="62" y="35" font-size="9.5" font-weight="600" fill="#2563eb" text-anchor="middle">SELECT FOR UPDATE</text>
+  </g>
+
+  <!-- Gateway 1: Aturan Gedung? -->
+  <g transform="translate(315, 221)">
+    <polygon points="18,0 36,18 18,36 0,18" fill="#fef3c7" stroke="#d97706" stroke-width="1.8" />
+    <path d="M 12 12 L 24 24 M 24 12 L 12 24" stroke="#d97706" stroke-width="2" />
+  </g>
+  <rect x="293" y="197" width="80" height="15" rx="3" fill="#ffffff" />
+  <text x="333" y="208" font-size="9.5" font-weight="700" fill="#b45309" text-anchor="middle">Aturan Gedung?</text>
+
+  <!-- Task: Terbitkan Invoice #1 DP -->
+  <g transform="translate(385, 215)">
+    <rect width="135" height="48" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5" />
+    <text x="67" y="20" font-size="11" font-weight="700" fill="#1e3a8a" text-anchor="middle">Terbitkan Invoice #1</text>
+    <text x="67" y="35" font-size="9.5" font-weight="600" fill="#2563eb" text-anchor="middle">DP Flat (Tanda Jadi)</text>
+  </g>
+
+  <!-- Task: Bayar DP (Penghuni) -->
+  <g transform="translate(385, 68)">
+    <rect width="135" height="48" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <text x="67" y="20" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Bayar DP via</text>
+    <text x="67" y="35" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">SNAP (VA / QRIS)</text>
+  </g>
+
+  <!-- Task: Webhook Pembayaran DP -->
+  <g transform="translate(440, 468)">
+    <rect width="140" height="48" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="1.5" />
+    <text x="70" y="20" font-size="11" font-weight="700" fill="#92400e" text-anchor="middle">Webhook Callback</text>
+    <text x="70" y="35" font-size="10" font-weight="600" fill="#b45309" text-anchor="middle">Verifikasi SHA-512</text>
+  </g>
+
+  <!-- Task: Kunci Status Reserved -->
+  <g transform="translate(585, 215)">
+    <rect width="130" height="48" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.6" />
+    <text x="65" y="20" font-size="11" font-weight="700" fill="#15803d" text-anchor="middle">Set Status: Reserved</text>
+    <text x="65" y="35" font-size="9.5" font-weight="600" fill="#16a34a" text-anchor="middle">Kamar Terkunci Aman</text>
+  </g>
+
+  <!-- FLOW 1 CONNECTING LINES -->
+  <!-- Start -> Pilih Kamar -->
+  <line x1="140" y1="92" x2="165" y2="92" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)" />
+
+  <!-- Pilih Kamar -> Kunci Kamar (Straight DOWN) -->
+  <line x1="227" y1="116" x2="227" y2="215" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)" />
+
+  <!-- Kunci Kamar -> Gateway 1 -->
+  <line x1="290" y1="239" x2="315" y2="239" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)" />
+
+  <!-- Gateway 1 -> Terbitkan Invoice #1 DP -->
+  <line x1="351" y1="239" x2="385" y2="239" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr-blue)" />
+  <rect x="357" y="227" width="20" height="12" fill="#ffffff" />
+  <text x="367" y="236" font-size="8.5" font-weight="700" fill="#2563eb" text-anchor="middle">DP</text>
+
+  <!-- Terbitkan Invoice #1 -> Bayar DP (LURUS KE ATAS) -->
+  <line x1="452" y1="215" x2="452" y2="116" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr-blue)" />
+  <rect x="397" y="156" width="110" height="16" rx="3" fill="#eff6ff" stroke="#bfdbfe" stroke-width="0.8" />
+  <text x="452" y="168" font-size="8.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">1. Tagihan DP Terbit</text>
+
+  <!-- Bayar DP -> Webhook Midtrans (Lewat koridor x=545, Lurus ke BAWAH) -->
+  <path d="M 520 92 H 545 V 468" fill="none" stroke="#d97706" stroke-width="1.5" marker-end="url(#arr)" />
+  <rect x="511" y="320" width="68" height="16" rx="3" fill="#fffbeb" stroke="#fde68a" stroke-width="0.8" />
+  <text x="545" y="332" font-size="8.5" font-weight="700" fill="#92400e" text-anchor="middle">2. Bayar SNAP</text>
+
+  <!-- Webhook Midtrans -> Set Status Reserved (Lewat koridor x=650, Lurus ke ATAS) -->
+  <path d="M 580 492 H 650 V 263" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arr-green)" />
+  <rect x="605" y="370" width="90" height="16" rx="3" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="0.8" />
+  <text x="650" y="382" font-size="8.5" font-weight="700" fill="#15803d" text-anchor="middle">3. Webhook Sukses</text>
+
+
+  <!-- ========================================================================= -->
+  <!-- GATEWAY PERCABANGAN UTAMA (X: 740)                                         -->
+  <!-- ========================================================================= -->
+
+  <!-- Gateway G2: Pilihan Alur Sewa -->
+  <g transform="translate(740, 221)">
+    <polygon points="18,0 36,18 18,36 0,18" fill="#fef3c7" stroke="#d97706" stroke-width="1.8" />
+    <path d="M 12 12 L 24 24 M 24 12 L 12 24" stroke="#d97706" stroke-width="2" />
+  </g>
+  <rect x="715" y="197" width="86" height="15" rx="3" fill="#ffffff" />
+  <text x="758" y="208" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">Kondisi Sewa?</text>
+
+  <!-- Reserved -> Gateway G2 -->
+  <line x1="715" y1="239" x2="740" y2="239" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arr-green)" />
+
+
+  <!-- ========================================================================= -->
+  <!-- FASE 2A: PELUNASAN H-3 & CHECK-IN (X: 775 - 1160)                         -->
+  <!-- ========================================================================= -->
+
+  <!-- Timer Event: H-3 Check-in -->
+  <circle cx="820" cy="239" r="14" fill="#eff6ff" stroke="#2563eb" stroke-width="1.8" />
+  <circle cx="820" cy="239" r="11" fill="none" stroke="#2563eb" stroke-width="0.8" stroke-dasharray="2 2" />
+  <text x="820" y="268" font-size="9" font-weight="700" fill="#1d4ed8" text-anchor="middle">Cron H-3</text>
+
+  <!-- Task: Terbitkan Invoice #2 Pelunasan -->
+  <g transform="translate(865, 215)">
+    <rect width="135" height="48" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5" />
+    <text x="67" y="20" font-size="11" font-weight="700" fill="#1e3a8a" text-anchor="middle">Terbitkan Invoice #2</text>
+    <text x="67" y="35" font-size="9.5" font-weight="600" fill="#2563eb" text-anchor="middle">Pelunasan (Harga - DP)</text>
+  </g>
+
+  <!-- Task: Bayar Pelunasan (Penghuni) -->
+  <g transform="translate(865, 68)">
+    <rect width="135" height="48" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <text x="67" y="20" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Bayar Pelunasan</text>
+    <text x="67" y="35" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">Sebelum Masuk</text>
+  </g>
+
+  <!-- Task: Aktivasi Status Huni -->
+  <g transform="translate(1030, 215)">
+    <rect width="125" height="48" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.6" />
+    <text x="62" y="20" font-size="11" font-weight="700" fill="#15803d" text-anchor="middle">Aktivasi Check-in</text>
+    <text x="62" y="35" font-size="9.5" font-weight="600" fill="#16a34a" text-anchor="middle">Status: Active</text>
+  </g>
+
+  <!-- End Event 1: Sukses Masuk Kost -->
+  <circle cx="1190" cy="239" r="15" fill="#f0fdf4" stroke="#16a34a" stroke-width="2.5" />
+  <text x="1190" y="268" font-size="9.5" font-weight="700" fill="#15803d" text-anchor="middle">Selesai Huni</text>
+
+  <!-- FLOW 2A CONNECTING LINES -->
+  <!-- Gateway G2 -> Cron H-3 (Jalur Normal Kanan) -->
+  <line x1="776" y1="239" x2="806" y2="239" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr-blue)" />
+  <rect x="778" y="227" width="26" height="12" fill="#ffffff" />
+  <text x="791" y="236" font-size="8" font-weight="700" fill="#2563eb" text-anchor="middle">Normal</text>
+
+  <!-- Cron H-3 -> Terbitkan Invoice #2 -->
+  <line x1="834" y1="239" x2="865" y2="239" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr-blue)" />
+
+  <!-- Terbitkan Invoice #2 -> Bayar Pelunasan (LURUS KE ATAS) -->
+  <line x1="932" y1="215" x2="932" y2="116" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr-blue)" />
+  <rect x="874" y="156" width="116" height="16" rx="3" fill="#eff6ff" stroke="#bfdbfe" stroke-width="0.8" />
+  <text x="932" y="168" font-size="8.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">4. Tagihan Pelunasan</text>
+
+  <!-- Bayar Pelunasan -> Aktivasi Check-in (Turun ke BAWAH lewat x=1092) -->
+  <path d="M 1000 92 H 1092 V 215" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arr-green)" />
+  <rect x="1044" y="156" width="96" height="16" rx="3" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="0.8" />
+  <text x="1092" y="168" font-size="8.5" font-weight="700" fill="#15803d" text-anchor="middle">5. Pelunasan Lunas</text>
+
+  <!-- Aktivasi Check-in -> End Event 1 -->
+  <line x1="1155" y1="239" x2="1175" y2="239" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arr-green)" />
+
+
+  <!-- ========================================================================= -->
+  <!-- FASE 2B: PEMBATALAN & REFUND SEMI-MANUAL (X: 1220 - 1800)                  -->
+  <!-- ========================================================================= -->
+
+  <!-- BYPASS HIGHWAY: DARI GATEWAY G2 BAWAH (Y=257) MENUJU FASE 2B (LEWAT KORIDOR Y=360) -->
+  <path d="M 758 257 V 360 H 1220 V 92 H 1240" fill="none" stroke="#dc2626" stroke-width="1.8" marker-end="url(#arr-red)" />
+  <rect x="910" y="351" width="190" height="18" rx="4" fill="#fef2f2" stroke="#fca5a5" stroke-width="1" />
+  <text x="1005" y="364" font-size="9" font-weight="700" fill="#991b1b" text-anchor="middle">&#x26A0; Jika Penghuni Batal Sebelum Masuk</text>
+
+  <!-- Task: Ajukan Pembatalan (Penghuni) -->
+  <g transform="translate(1240, 68)">
+    <rect width="135" height="48" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5" />
+    <text x="67" y="20" font-size="11" font-weight="700" fill="#991b1b" text-anchor="middle">Batal &amp; Ajukan Refund</text>
+    <text x="67" y="35" font-size="9.5" font-weight="500" fill="#dc2626" text-anchor="middle">Input No. Rekening Bank</text>
+  </g>
+
+  <!-- Task: Validasi Jendela Pembatalan -->
+  <g transform="translate(1240, 215)">
+    <rect width="135" height="48" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <text x="67" y="20" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Cek Batas Waktu</text>
+    <text x="67" y="35" font-size="9" font-weight="600" fill="#475569" text-anchor="middle">cancellation_grace_days</text>
+  </g>
+
+  <!-- Gateway G3: Batas Waktu Refund Terpenuhi? -->
+  <g transform="translate(1405, 221)">
+    <polygon points="18,0 36,18 18,36 0,18" fill="#fef3c7" stroke="#d97706" stroke-width="1.8" />
+    <path d="M 12 12 L 24 24 M 24 12 L 12 24" stroke="#d97706" stroke-width="2" />
+  </g>
+  <rect x="1378" y="197" width="90" height="15" rx="3" fill="#ffffff" />
+  <text x="1423" y="208" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">Batal H &gt;= 14 Hari?</text>
+
+  <!-- Branch Tidak: Hangus (Atas) -->
+  <g transform="translate(1470, 160)">
+    <rect width="130" height="42" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.4" />
+    <text x="65" y="17" font-size="10" font-weight="700" fill="#991b1b" text-anchor="middle">DP Hangus &amp;</text>
+    <text x="65" y="30" font-size="9" font-weight="600" fill="#dc2626" text-anchor="middle">Rilis Kamar Available</text>
+  </g>
+  <circle cx="1625" cy="181" r="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5" />
+  <text x="1625" y="208" font-size="9" font-weight="700" fill="#991b1b" text-anchor="middle">Uang Hangus</text>
+
+  <!-- Branch Ya: Masuk Menu Refund Requests (Bawah) -->
+  <g transform="translate(1470, 268)">
+    <rect width="130" height="46" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5" />
+    <text x="65" y="19" font-size="10.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">Catat Tiket Refund</text>
+    <text x="65" y="33" font-size="9" font-weight="600" fill="#2563eb" text-anchor="middle">Menu: Refund Requests</text>
+  </g>
+
+  <!-- Task: Pengelola Review & Transfer -->
+  <g transform="translate(1465, 615)">
+    <rect width="140" height="52" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <text x="70" y="20" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Tinjau Rekening &amp;</text>
+    <text x="70" y="36" font-size="10" font-weight="600" fill="#2563eb" text-anchor="middle">Transfer Bank Manual</text>
+  </g>
+
+  <!-- Task: Pengelola Upload Bukti Transfer -->
+  <g transform="translate(1625, 615)">
+    <rect width="140" height="52" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <text x="70" y="20" font-size="10.5" font-weight="700" fill="#0f172a" text-anchor="middle">Upload Struk Transfer</text>
+    <text x="70" y="35" font-size="9.5" font-weight="600" fill="#16a34a" text-anchor="middle">&amp; Klik Selesaikan</text>
+  </g>
+
+  <!-- Task: Sistem Update Status Cancelled & Rilis Kamar -->
+  <g transform="translate(1625, 268)">
+    <rect width="140" height="48" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5" />
+    <text x="70" y="20" font-size="10.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">Set Sewa: Cancelled</text>
+    <text x="70" y="34" font-size="9" font-weight="600" fill="#16a34a" text-anchor="middle">Kamar Jadi Available</text>
+  </g>
+
+  <!-- Task: Penghuni Terima Notifikasi & Struk -->
+  <g transform="translate(1625, 68)">
+    <rect width="140" height="48" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" />
+    <text x="70" y="20" font-size="10.5" font-weight="700" fill="#15803d" text-anchor="middle">Terima Kuitansi Refund</text>
+    <text x="70" y="34" font-size="9" font-weight="600" fill="#16a34a" text-anchor="middle">&amp; Struk Transfer Resmi</text>
+  </g>
+
+  <!-- End Event 3: Selesai Refund -->
+  <circle cx="1785" cy="92" r="14" fill="#f0fdf4" stroke="#16a34a" stroke-width="2.5" />
+  <text x="1785" y="120" font-size="9.5" font-weight="700" fill="#15803d" text-anchor="middle">Refund Selesai</text>
+
+  <!-- FLOW 2B CONNECTING LINES -->
+  <!-- Ajukan Pembatalan -> Cek Batas Waktu (LURUS KE BAWAH) -->
+  <line x1="1307" y1="116" x2="1307" y2="215" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arr-red)" />
+
+  <!-- Cek Batas Waktu -> Gateway G3 -->
+  <line x1="1375" y1="239" x2="1405" y2="239" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)" />
+
+  <!-- Gateway G3 -> Branch Tidak (Hangus) -->
+  <path d="M 1423 221 V 181 H 1470" fill="none" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arr-red)" />
+  <text x="1435" y="175" font-size="8.5" font-weight="700" fill="#dc2626">Tidak</text>
+
+  <!-- Branch Tidak -> End Event Uang Hangus -->
+  <line x1="1600" y1="181" x2="1611" y2="181" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arr-red)" />
+
+  <!-- Gateway G3 -> Branch Ya (Catat Tiket) -->
+  <path d="M 1423 257 V 291 H 1470" fill="none" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr-blue)" />
+  <text x="1435" y="286" font-size="8.5" font-weight="700" fill="#2563eb">Ya</text>
+
+  <!-- Catat Tiket -> Pengelola Review (LURUS KE BAWAH lewat x=1535) -->
+  <line x1="1535" y1="314" x2="1535" y2="615" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)" />
+  <rect x="1485" y="480" width="100" height="16" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.8" />
+  <text x="1535" y="492" font-size="8.5" font-weight="700" fill="#334155" text-anchor="middle">Antrean Tiket Admin</text>
+
+  <!-- Review -> Upload Struk (Horizontal di Lane 4) -->
+  <line x1="1605" y1="641" x2="1625" y2="641" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)" />
+
+  <!-- Upload Struk -> Set Sewa Cancelled (LURUS KE ATAS lewat x=1695) -->
+  <line x1="1695" y1="615" x2="1695" y2="316" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr-blue)" />
+  <rect x="1645" y="480" width="100" height="16" rx="3" fill="#eff6ff" stroke="#bfdbfe" stroke-width="0.8" />
+  <text x="1695" y="492" font-size="8.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">Struk Terverifikasi</text>
+
+  <!-- Set Sewa Cancelled -> Terima Kuitansi Refund (LURUS KE ATAS lewat x=1695) -->
+  <line x1="1695" y1="268" x2="1695" y2="116" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arr-green)" />
+  <rect x="1650" y="165" width="90" height="16" rx="3" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="0.8" />
+  <text x="1695" y="177" font-size="8.5" font-weight="700" fill="#15803d" text-anchor="middle">WA Notifikasi</text>
+
+  <!-- Terima Kuitansi Refund -> End Event Refund Selesai -->
+  <line x1="1765" y1="92" x2="1771" y2="92" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arr-green)" />
+
+</svg>
+</div>
+
+<script>
+function exportSVG() {
+  const svg = document.getElementById('bpmn-svg');
+  const serializer = new XMLSerializer();
+  let source = serializer.serializeToString(svg);
+  if(!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)){
+    source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  const blob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'alur_pembatalan_dan_refund.svg';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function exportPNG(scale = 2) {
+  const svg = document.getElementById('bpmn-svg');
+  const serializer = new XMLSerializer();
+  let source = serializer.serializeToString(svg);
+  if(!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)){
+    source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  const img = new Image();
+  const svgBlob = new Blob([source], {type: 'image/svg+xml;charset=utf-8'});
+  const url = URL.createObjectURL(svgBlob);
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1840 * scale; canvas.height = 740 * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0);
+    URL.revokeObjectURL(url);
+    const pngUrl = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = pngUrl; a.download = 'alur_pembatalan_dan_refund.png';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  };
+  img.src = url;
+}
+</script>
+</body>
+</html>

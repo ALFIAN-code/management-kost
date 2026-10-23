@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup Dasbor Peran Pemilik — SmartKost Executive</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #0f172a;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+  .browser-frame {
+    width: 1380px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    border: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Browser Chrome */
+  .browser-header {
+    background: #1e293b;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid #334155;
+  }
+  .window-dots {
+    display: flex;
+    gap: 7px;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot-red { background: #ef4444; }
+  .dot-yellow { background: #f59e0b; }
+  .dot-green { background: #10b981; }
+  
+  .address-bar {
+    flex: 1;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 5px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+  .address-bar span.lock { color: #10b981; }
+  .address-bar span.url { color: #f8fafc; font-weight: 500; }
+  
+  .window-actions {
+    display: flex;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+  .badge-role {
+    background: #2563eb;
+    color: #ffffff;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.72rem;
+  }
+
+  /* App Layout */
+  .app-container {
+    display: flex;
+    min-height: 860px;
+    background: #f8fafc;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 250px;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 14px;
+    flex-shrink: 0;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 14px;
+  }
+  .brand-logo {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+  .brand-text h2 { font-size: 0.95rem; font-weight: 800; color: #0f172a; line-height: 1.2; }
+  .brand-text p { font-size: 0.7rem; color: #64748b; font-weight: 500; }
+
+  .building-selector {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 7px 10px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #1e293b;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .building-selector span.caret { color: #64748b; font-size: 0.7rem; }
+
+  .nav-group-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.6px;
+    margin: 12px 8px 6px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 500;
+    margin-bottom: 3px;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .nav-item:hover { background: #f1f5f9; color: #0f172a; }
+  .nav-item.active {
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 700;
+    border-left: 3px solid #2563eb;
+  }
+  .nav-item .icon { font-size: 1rem; width: 18px; text-align: center; }
+  
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .user-widget {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: #f8fafc;
+  }
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #1e40af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+  .user-info h4 { font-size: 0.78rem; font-weight: 700; color: #0f172a; }
+  .user-info p { font-size: 0.68rem; color: #64748b; }
+
+  /* Main Content */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .top-navbar {
+    height: 60px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .page-title h1 { font-size: 1.15rem; font-weight: 800; color: #0f172a; }
+  .page-title p { font-size: 0.75rem; color: #64748b; }
+  
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ai-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    color: #64748b;
+    width: 300px;
+  }
+  .ai-spark {
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+  }
+  .btn-action {
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary { background: #2563eb; color: #ffffff; }
+  .btn-outline { background: #ffffff; border: 1px solid #cbd5e1; color: #334155; }
+
+  .content-body {
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+</style>
+</head>
+<body>
+
+<div class="browser-frame">
+  <!-- Window Header -->
+  <div class="browser-header">
+    <div class="window-dots">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+    </div>
+    <div class="address-bar">
+      <span class="lock">🔒</span>
+      <span class="url">https://wismaamal.allvvnt.my.id/owner/dashboard</span>
+    </div>
+    <div class="window-actions">
+      <span class="badge-role">PEMILIK (OWNER)</span>
+    </div>
+  </div>
+
+  
+  <div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="brand">
+        <div class="brand-logo" style="background: linear-gradient(135deg, #7c3aed, #4f46e5);">👑</div>
+        <div class="brand-text">
+          <h2>SmartKost Executive</h2>
+          <p>Portal Pemilik Multi-Gedung</p>
+        </div>
+      </div>
+
+      <!-- Multi-Building Portfolio Selector -->
+      <div class="building-selector" style="border-color: #c4b5fd; background: #faf5ff;">
+        <div>
+          <span style="font-size: 0.68rem; color: #6b21a8; font-weight: 700; display: block;">PORTOFOLIO:</span>
+          <span style="color: #581c87; font-weight: 800;">Semua Gedung (Gabungan)</span>
+        </div>
+        <span class="caret" style="color: #7c3aed;">▼</span>
+      </div>
+
+      <div class="nav-group-title">MANAJEMEN EKSEKUTIF</div>
+      <a href="#" class="nav-item active" style="color: #6d28d9; background: #f5f3ff; border-left-color: #7c3aed;"><span class="icon">📈</span> Ringkasan Portofolio</a>
+      <a href="#" class="nav-item"><span class="icon">🏢</span> Portofolio 3 Gedung Kost</a>
+      <a href="#" class="nav-item"><span class="icon">💰</span> Arus Kas & Laba Bersih</a>
+      <a href="#" class="nav-item"><span class="icon">📊</span> Tingkat Okupansi Properti</a>
+
+      <div class="nav-group-title">ASISTEN KECERDASAN BUATAN</div>
+      <a href="#" class="nav-item" style="color: #7c3aed; font-weight: 700;"><span class="icon">✨</span> Konsultasi AI (MCP) <span style="margin-left:auto; background:#ede9fe; color:#6d28d9; font-size:0.65rem; padding:1px 6px; border-radius:10px;">PRO</span></a>
+
+      <div class="nav-group-title">PENGAWASAN & AKSES</div>
+      <a href="#" class="nav-item"><span class="icon">🛡️</span> Manajemen Staf Pengelola</a>
+      <a href="#" class="nav-item"><span class="icon">📜</span> Log Audit & Integritas</a>
+
+      <div class="sidebar-footer">
+        <div class="user-widget" style="background: #faf5ff;">
+          <div class="user-avatar" style="background: #ede9fe; color: #5b21b6;">BA</div>
+          <div class="user-info">
+            <h4>H. Bachtiar Amal</h4>
+            <p>Pemilik Utama (Owner)</p>
+          </div>
+          <span style="margin-left: auto; color: #7c3aed; font-size: 0.8rem;">🔒</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main View -->
+    <div class="main-content">
+      <div class="top-navbar">
+        <div class="page-title">
+          <h1>Laporan Eksekutif Portofolio Gedung</h1>
+          <p>Konsolidasi keuangan dan analitik performa 3 properti (Total 52 Kamar)</p>
+        </div>
+        <div class="top-actions">
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+            <span>📅 Periode:</span>
+            <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; color: #0f172a;">Oktober 2026 ▼</span>
+          </div>
+          <button class="btn-action btn-outline">📊 Ekspor Laporan Laba Rugi</button>
+        </div>
+      </div>
+
+      <div class="content-body">
+        <!-- 4 KPI Cards Macro -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
+          <!-- Card 1 -->
+          <div style="background: white; border-radius: 10px; padding: 16px; border: 1px solid #e2e8f0;">
+            <p style="font-size: 0.72rem; color: #64748b; font-weight: 600;">TOTAL PENDAPATAN KOTOR</p>
+            <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin-top: 4px;">Rp 48.500.000</h2>
+            <p style="font-size: 0.7rem; color: #16a34a; font-weight: 700; margin-top: 6px;">↑ +8.4% dibanding bulan lalu</p>
+          </div>
+          <!-- Card 2 -->
+          <div style="background: white; border-radius: 10px; padding: 16px; border: 1px solid #e2e8f0;">
+            <p style="font-size: 0.72rem; color: #64748b; font-weight: 600;">BIAYA OPERASIONAL RIIL</p>
+            <h2 style="font-size: 1.4rem; font-weight: 800; color: #ea580c; margin-top: 4px;">Rp 14.250.000</h2>
+            <p style="font-size: 0.7rem; color: #64748b; margin-top: 6px;">Listrik, air, gaji, & maintenance</p>
+          </div>
+          <!-- Card 3 -->
+          <div style="background: #f0fdf4; border-radius: 10px; padding: 16px; border: 1px solid #86efac;">
+            <p style="font-size: 0.72rem; color: #166534; font-weight: 700;">LABA BERSIH (NET INCOME)</p>
+            <h2 style="font-size: 1.4rem; font-weight: 800; color: #15803d; margin-top: 4px;">Rp 34.250.000</h2>
+            <p style="font-size: 0.7rem; color: #166534; font-weight: 600; margin-top: 6px;">Margin Bersih: 70.6%</p>
+          </div>
+          <!-- Card 4 -->
+          <div style="background: white; border-radius: 10px; padding: 16px; border: 1px solid #e2e8f0;">
+            <p style="font-size: 0.72rem; color: #64748b; font-weight: 600;">OKUPANSI PORTOFOLIO</p>
+            <h2 style="font-size: 1.4rem; font-weight: 800; color: #2563eb; margin-top: 4px;">88.5% <span style="font-size: 0.8rem; font-weight: 500; color: #64748b;">(46/52)</span></h2>
+            <p style="font-size: 0.7rem; color: #2563eb; font-weight: 600; margin-top: 6px;">Hanya 6 kamar kosong</p>
+          </div>
+        </div>
+
+        <!-- Middle Section: Chart + MCP AI Chat Widget -->
+        <div style="display: grid; grid-template-columns: 1.4fr 1.1fr; gap: 14px;">
+          <!-- Financial Chart Preview -->
+          <div style="background: white; border-radius: 10px; border: 1px solid #e2e8f0; padding: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <div>
+                <h3 style="font-size: 0.95rem; font-weight: 800; color: #0f172a;">Tren Laba Bersih & Arus Kas (6 Bulan)</h3>
+                <p style="font-size: 0.72rem; color: #64748b;">Grafik komparasi pendapatan vs beban pengeluaran</p>
+              </div>
+              <div style="display: flex; gap: 8px; font-size: 0.7rem; font-weight: 600;">
+                <span style="color: #2563eb;">■ Pendapatan</span>
+                <span style="color: #ea580c;">■ Pengeluaran</span>
+                <span style="color: #16a34a;">■ Laba Bersih</span>
+              </div>
+            </div>
+
+            <!-- SVG Simplified Bar Chart -->
+            <svg width="100%" height="160" viewBox="0 0 500 160">
+              <line x1="40" y1="20" x2="480" y2="20" stroke="#f1f5f9" stroke-width="1"/>
+              <line x1="40" y1="60" x2="480" y2="60" stroke="#f1f5f9" stroke-width="1"/>
+              <line x1="40" y1="100" x2="480" y2="100" stroke="#f1f5f9" stroke-width="1"/>
+              <line x1="40" y1="140" x2="480" y2="140" stroke="#cbd5e1" stroke-width="1"/>
+              
+              <!-- May -->
+              <rect x="65" y="55" width="16" height="85" fill="#93c5fd" rx="2"/>
+              <rect x="83" y="105" width="16" height="35" fill="#fed7aa" rx="2"/>
+              <rect x="101" y="90" width="16" height="50" fill="#86efac" rx="2"/>
+              <text x="91" y="153" font-size="9" fill="#64748b" text-anchor="middle">Mei</text>
+
+              <!-- Jun -->
+              <rect x="135" y="50" width="16" height="90" fill="#93c5fd" rx="2"/>
+              <rect x="153" y="100" width="16" height="40" fill="#fed7aa" rx="2"/>
+              <rect x="171" y="85" width="16" height="55" fill="#86efac" rx="2"/>
+              <text x="161" y="153" font-size="9" fill="#64748b" text-anchor="middle">Jun</text>
+
+              <!-- Jul -->
+              <rect x="205" y="45" width="16" height="95" fill="#93c5fd" rx="2"/>
+              <rect x="223" y="102" width="16" height="38" fill="#fed7aa" rx="2"/>
+              <rect x="241" y="82" width="16" height="58" fill="#86efac" rx="2"/>
+              <text x="231" y="153" font-size="9" fill="#64748b" text-anchor="middle">Jul</text>
+
+              <!-- Aug -->
+              <rect x="275" y="40" width="16" height="100" fill="#93c5fd" rx="2"/>
+              <rect x="293" y="108" width="16" height="32" fill="#fed7aa" rx="2"/>
+              <rect x="311" y="75" width="16" height="65" fill="#86efac" rx="2"/>
+              <text x="301" y="153" font-size="9" fill="#64748b" text-anchor="middle">Agu</text>
+
+              <!-- Sep -->
+              <rect x="345" y="38" width="16" height="102" fill="#93c5fd" rx="2"/>
+              <rect x="363" y="105" width="16" height="35" fill="#fed7aa" rx="2"/>
+              <rect x="381" y="72" width="16" height="68" fill="#86efac" rx="2"/>
+              <text x="371" y="153" font-size="9" fill="#64748b" text-anchor="middle">Sep</text>
+
+              <!-- Oct (Current) -->
+              <rect x="415" y="30" width="16" height="110" fill="#2563eb" rx="2"/>
+              <rect x="433" y="102" width="16" height="38" fill="#ea580c" rx="2"/>
+              <rect x="451" y="68" width="16" height="72" fill="#16a34a" rx="2"/>
+              <text x="441" y="153" font-size="9" font-weight="700" fill="#0f172a" text-anchor="middle">Okt</text>
+            </svg>
+          </div>
+
+          <!-- MCP AI Assistant Panel (Feature Spotlight) -->
+          <div style="background: #ffffff; border-radius: 10px; border: 1px solid #c4b5fd; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(124,58,237,0.08);">
+            <!-- Panel Header -->
+            <div style="background: linear-gradient(135deg, #7c3aed, #6d28d9); padding: 12px 16px; color: white; display: flex; justify-content: space-between; align-items: center;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.1rem;">✨</span>
+                <div>
+                  <h4 style="font-size: 0.85rem; font-weight: 800;">Asisten AI Eksekutif (MCP Server)</h4>
+                  <p style="font-size: 0.65rem; opacity: 0.9;">Kueri Data Real-Time • Akses Read-Only Aman</p>
+                </div>
+              </div>
+              <span style="font-size: 0.65rem; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">JSON-RPC 2.0</span>
+            </div>
+
+            <!-- Chat Content -->
+            <div style="padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 10px; font-size: 0.74rem;">
+              <!-- User Question -->
+              <div style="align-self: flex-end; background: #f3e8ff; color: #581c87; padding: 8px 12px; border-radius: 8px 8px 0 8px; max-width: 85%;">
+                "Gedung mana yang paling banyak tunggakan dan berapa estimasi kas masuk minggu ini?"
+              </div>
+              
+              <!-- AI Response with Real DB Context -->
+              <div style="align-self: flex-start; background: #f8fafc; border: 1px solid #e2e8f0; color: #1e293b; padding: 10px 12px; border-radius: 8px 8px 8px 0; max-width: 95%;">
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; color: #7c3aed; font-weight: 700; font-size: 0.68rem;">
+                  <span>🤖 Tools dipanggil: get_outstanding_invoices()</span>
+                </div>
+                <p>Berdasarkan data tagihan aktif per 23 Oktober 2026:</p>
+                <ul style="margin: 4px 0 6px 14px; line-height: 1.4;">
+                  <li><strong>Wisma Amal Gorontalo:</strong> Terdapat 2 invoice tertunggak total <strong>Rp 2.500.000</strong> (Kamar 102 & 201).</li>
+                  <li><strong>Kost Melati:</strong> 100% lunas.</li>
+                </ul>
+                <p style="color: #15803d; font-weight: 600;">✓ Estimasi penerimaan kas minggu ini: <strong>Rp 6.250.000</strong> dari 5 kontrak jatuh tempo.</p>
+              </div>
+            </div>
+
+            <!-- Input Box -->
+            <div style="padding: 10px 14px; border-top: 1px solid #f1f5f9; background: #faf5ff; display: flex; gap: 8px;">
+              <input type="text" placeholder="Tanyakan kondisi keuangan / okupansi gedung..." style="flex: 1; border: 1px solid #ddd6fe; border-radius: 6px; padding: 6px 10px; font-size: 0.75rem; background: white;" value="Berapa rata-rata durasi sewa di Gedung Wisma Amal?">
+              <button style="background: #7c3aed; color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Tanya</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Table: Performa Per Properti -->
+        <div style="background: white; border-radius: 10px; border: 1px solid #e2e8f0; padding: 16px;">
+          <h3 style="font-size: 0.92rem; font-weight: 800; color: #0f172a; margin-bottom: 10px;">Ringkasan Kinerja Properti Portofolio</h3>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.75rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid #e2e8f0; color: #64748b; text-align: left;">
+                <th style="padding: 8px 6px;">NAMA PROPERTI</th>
+                <th style="padding: 8px 6px;">LOKASI</th>
+                <th style="padding: 8px 6px;">KAPASITAS</th>
+                <th style="padding: 8px 6px;">OKUPANSI</th>
+                <th style="padding: 8px 6px;">PENDAPATAN KOTOR</th>
+                <th style="padding: 8px 6px;">BEBAN OPERASIONAL</th>
+                <th style="padding: 8px 6px;">PENGELOLA</th>
+                <th style="padding: 8px 6px; text-align: right;">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 6px; font-weight: 800; color: #1e40af;">Wisma Amal Gorontalo</td>
+                <td style="padding: 10px 6px; color: #475569;">Kota Barat, Gorontalo</td>
+                <td style="padding: 10px 6px;">20 Kamar</td>
+                <td style="padding: 10px 6px; font-weight: 700; color: #16a34a;">75% (15/20)</td>
+                <td style="padding: 10px 6px; font-weight: 700;">Rp 18.750.000</td>
+                <td style="padding: 10px 6px; color: #dc2626;">Rp 5.200.000</td>
+                <td style="padding: 10px 6px;">Agus Perdana</td>
+                <td style="padding: 10px 6px; text-align: right;"><span style="background: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 4px; font-size: 0.68rem; font-weight: 700;">AKTIF</span></td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 6px; font-weight: 800; color: #1e40af;">Kost Cendrawasih</td>
+                <td style="padding: 10px 6px; color: #475569;">Dungingi, Gorontalo</td>
+                <td style="padding: 10px 6px;">18 Kamar</td>
+                <td style="padding: 10px 6px; font-weight: 700; color: #16a34a;">100% (18/18)</td>
+                <td style="padding: 10px 6px; font-weight: 700;">Rp 19.800.000</td>
+                <td style="padding: 10px 6px; color: #dc2626;">Rp 4.900.000</td>
+                <td style="padding: 10px 6px;">Siti Aminah</td>
+                <td style="padding: 10px 6px; text-align: right;"><span style="background: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 4px; font-size: 0.68rem; font-weight: 700;">AKTIF</span></td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 6px; font-weight: 800; color: #1e40af;">Kost Melati Indah</td>
+                <td style="padding: 10px 6px; color: #475569;">Sipatana, Gorontalo</td>
+                <td style="padding: 10px 6px;">14 Kamar</td>
+                <td style="padding: 10px 6px; font-weight: 700; color: #16a34a;">92.8% (13/14)</td>
+                <td style="padding: 10px 6px; font-weight: 700;">Rp 9.950.000</td>
+                <td style="padding: 10px 6px; color: #dc2626;">Rp 4.150.000</td>
+                <td style="padding: 10px 6px;">Bambang S.</td>
+                <td style="padding: 10px 6px; text-align: right;"><span style="background: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 4px; font-size: 0.68rem; font-weight: 700;">AKTIF</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+    
+</div>
+
+</body>
+</html>

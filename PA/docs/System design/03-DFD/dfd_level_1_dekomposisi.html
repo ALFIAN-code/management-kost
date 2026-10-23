@@ -6,12 +6,12 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #0f172a; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; }
-  .bar { width: 100%; max-width: 1300px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+  .bar { width: 100%; max-width: 1420px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
   .bar h1 { font-size: 1.2rem; } .bar p { font-size: .85rem; color: #64748b; }
   .btn { padding: 8px 16px; font-weight: 600; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; margin-left: 8px; }
   .btn.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
-  .wrap { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; max-width: 1300px; width: 100%; overflow-x: auto; display: flex; justify-content: center; }
-  .note { max-width: 1300px; width: 100%; margin-top: 20px; background: #fff; padding: 18px 24px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: .85rem; line-height: 1.6; color: #475569; }
+  .wrap { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; max-width: 1420px; width: 100%; overflow-x: auto; display: flex; justify-content: center; }
+  .note { max-width: 1420px; width: 100%; margin-top: 20px; background: #fff; padding: 18px 24px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: .85rem; line-height: 1.6; color: #475569; }
   table { border-collapse: collapse; margin-top: 8px; width: 100%; } td, th { border: 1px solid #e2e8f0; padding: 4px 8px; text-align: left; }
 </style>
 </head>
@@ -24,7 +24,7 @@
     <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
   </div>
 </div>
-<div class="wrap"><svg id="dfd1" xmlns="http://www.w3.org/2000/svg" width="1240" height="100"></svg></div>
+<div class="wrap"><svg id="dfd1" xmlns="http://www.w3.org/2000/svg" width="1420" height="100"></svg></div>
 
 <div class="note">
   <b>Cara baca:</b> setiap baris = satu proses. Entitas/data store yang muncul lebih dari sekali digambar ulang (duplikat) dengan tanda garis miring di pojok (entitas) atau garis vertikal tambahan (data store), sesuai konvensi Gane &amp; Sarson, agar tidak ada panah yang saling silang dan semua label terbaca.
@@ -112,25 +112,25 @@ const P = [
 
 // ===== LAYOUT
 const NS='http://www.w3.org/2000/svg', svg=document.getElementById('dfd1');
-const W=1240, CX=640, SX1=40, SX2=250, EX=1010, EW=190, LANE=26, PADG=14, GAPROW=34, TOP=90;
+const W=1420, CX=710, SX1=40, SX2=280, EX=1150, EW=230, LANE=32, PADG=16, GAPROW=40, TOP=95;
 const BLUE='#2563eb', RED='#dc2626';
 const seenS={}, seenE={};
 function el(t,a,txt){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!==undefined)e.textContent=txt;svg.appendChild(e);return e;}
-function label(x,y,t){const tx=el('text',{x,y,'font-size':11,'font-weight':600,fill:'#1e293b','text-anchor':'middle','font-family':'Arial, sans-serif'},t);
-  const b=tx.getBBox();const r=el('rect',{x:b.x-3,y:b.y-1,width:b.width+6,height:b.height+2,fill:'#fff'});svg.insertBefore(r,tx);}
+function label(x,y,t){const tx=el('text',{x,y,'font-size':12.5,'font-weight':700,fill:'#1e293b','text-anchor':'middle','font-family':'-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'},t);
+  const b=tx.getBBox();const r=el('rect',{x:b.x-4,y:b.y-2,width:b.width+8,height:b.height+4,fill:'#fff'});svg.insertBefore(r,tx);}
 function groupH(g){return g[1].length*LANE+PADG;}
 
 el('defs',{}).innerHTML=`<marker id="mb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="${BLUE}"/></marker>
 <marker id="mr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="${RED}"/></marker>`;
-el('text',{x:40,y:45,'font-size':22,'font-weight':'bold','font-family':'Times New Roman, serif','text-decoration':'underline'},'DFD LEVEL 1');
-el('line',{x1:1010,y1:30,x2:1070,y2:30,stroke:BLUE,'stroke-width':2.5,'marker-end':'url(#mb)'});el('text',{x:1080,y:35,'font-size':14,'font-weight':700},'Input');
-el('line',{x1:1010,y1:56,x2:1070,y2:56,stroke:RED,'stroke-width':2.5,'marker-end':'url(#mr)'});el('text',{x:1080,y:61,'font-size':14,'font-weight':700},'Output');
+el('text',{x:40,y:45,'font-size':24,'font-weight':'bold','font-family':'Times New Roman, serif','text-decoration':'underline'},'DFD LEVEL 1');
+el('line',{x1:1190,y1:30,x2:1250,y2:30,stroke:BLUE,'stroke-width':2.5,'marker-end':'url(#mb)'});el('text',{x:1260,y:35,'font-size':16,'font-weight':700},'Input');
+el('line',{x1:1190,y1:56,x2:1250,y2:56,stroke:RED,'stroke-width':2.5,'marker-end':'url(#mr)'});el('text',{x:1260,y:61,'font-size':16,'font-weight':700},'Output');
 
 let y=TOP;
 P.forEach((p,i)=>{
-  const hl=p.L.reduce((s,g)=>s+groupH(g),0)+(p.L.length-1)*10;
-  const hr=p.R.reduce((s,g)=>s+groupH(g),0)+(p.R.length-1)*10;
-  const H=Math.max(hl,hr), r=Math.max(64,H/2+14), rowH=Math.max(H,2*r), cy=y+rowH/2;
+  const hl=p.L.reduce((s,g)=>s+groupH(g),0)+(p.L.length-1)*12;
+  const hr=p.R.reduce((s,g)=>s+groupH(g),0)+(p.R.length-1)*12;
+  const H=Math.max(hl,hr), r=Math.max(72,H/2+18), rowH=Math.max(H,2*r), cy=y+rowH/2;
   if(i>0) el('line',{x1:30,y1:y-GAPROW/2,x2:W-30,y2:y-GAPROW/2,stroke:'#e2e8f0','stroke-dasharray':'4 4'});
   const edge=(ly)=>Math.sqrt(Math.max(0,r*r-(ly-cy)**2));
 
@@ -141,43 +141,43 @@ P.forEach((p,i)=>{
     el('rect',{x:SX1,y:ly,width:SX2-SX1,height:h,fill:'#f8fafc'});
     el('line',{x1:SX1,y1:ly,x2:SX2,y2:ly,stroke:'#334155','stroke-width':2});
     el('line',{x1:SX1,y1:ly+h,x2:SX2,y2:ly+h,stroke:'#334155','stroke-width':2});
-    el('line',{x1:SX1+42,y1:ly,x2:SX1+42,y2:ly+h,stroke:'#334155','stroke-width':1.5});
+    el('line',{x1:SX1+44,y1:ly,x2:SX1+44,y2:ly+h,stroke:'#334155','stroke-width':1.5});
     if(dup) el('line',{x1:SX1+6,y1:ly,x2:SX1+6,y2:ly+h,stroke:'#334155','stroke-width':1.5});
-    el('text',{x:SX1+24,y:ly+h/2+4,'font-size':13,'font-weight':800,fill:'#0369a1','text-anchor':'middle'},id);
-    el('text',{x:SX1+50,y:ly+h/2+4,'font-size':12,'font-weight':700,fill:'#0f172a'},STORES[id]);
+    el('text',{x:SX1+22,y:ly+h/2+4,'font-size':15,'font-weight':800,fill:'#0369a1','text-anchor':'middle'},id);
+    el('text',{x:SX1+52,y:ly+h/2+5,'font-size':13.5,'font-weight':700,fill:'#0f172a'},STORES[id]);
     flows.forEach(([d,t],k)=>{
       const fy=ly+PADG/2+LANE*k+LANE/2+4, cxE=CX-edge(fy);
       const [x1,x2]=d==='in'?[SX2,cxE]:[cxE,SX2];
-      el('line',{x1,y1:fy,x2,y2:fy,stroke:d==='in'?BLUE:RED,'stroke-width':1.8,'marker-end':d==='in'?'url(#mb)':'url(#mr)'});
-      label((SX2+cxE)/2,fy-5,t);
+      el('line',{x1,y1:fy,x2,y2:fy,stroke:d==='in'?BLUE:RED,'stroke-width':2,'marker-end':d==='in'?'url(#mb)':'url(#mr)'});
+      label((SX2+cxE)/2,fy-6,t);
     });
-    ly+=h+10;
+    ly+=h+12;
   });
 
   // Entitas (kanan)
   let ry=cy-hr/2;
   p.R.forEach(([id,flows])=>{
     const h=groupH([id,flows]); const dup=seenE[id]; seenE[id]=1;
-    el('rect',{x:EX,y:ry,width:EW,height:h,rx:3,fill:'#f1f5f9',stroke:'#334155','stroke-width':1.8});
-    if(dup) el('line',{x1:EX,y1:ry+12,x2:EX+12,y2:ry,stroke:'#334155','stroke-width':1.5});
-    el('text',{x:EX+EW/2,y:ry+h/2-1,'font-size':13,'font-weight':700,'text-anchor':'middle'},ENT[id][0]);
-    el('text',{x:EX+EW/2,y:ry+h/2+14,'font-size':11,fill:'#475569','text-anchor':'middle'},ENT[id][1]);
+    el('rect',{x:EX,y:ry,width:EW,height:h,rx:5,fill:'#f1f5f9',stroke:'#334155','stroke-width':2});
+    if(dup) el('line',{x1:EX,y1:ry+14,x2:EX+14,y2:ry,stroke:'#334155','stroke-width':1.6});
+    el('text',{x:EX+EW/2,y:ry+h/2-2,'font-size':15,'font-weight':800,'text-anchor':'middle'},ENT[id][0]);
+    el('text',{x:EX+EW/2,y:ry+h/2+16,'font-size':13,'font-weight':600,fill:'#475569','text-anchor':'middle'},ENT[id][1]);
     flows.forEach(([d,t],k)=>{
       const fy=ry+PADG/2+LANE*k+LANE/2+4, cxE=CX+edge(fy);
       const [x1,x2]=d==='in'?[EX,cxE]:[cxE,EX];
-      el('line',{x1,y1:fy,x2,y2:fy,stroke:d==='in'?BLUE:RED,'stroke-width':1.8,'marker-end':d==='in'?'url(#mb)':'url(#mr)'});
-      label((EX+cxE)/2,fy-5,t);
+      el('line',{x1,y1:fy,x2,y2:fy,stroke:d==='in'?BLUE:RED,'stroke-width':2,'marker-end':d==='in'?'url(#mb)':'url(#mr)'});
+      label((EX+cxE)/2,fy-6,t);
     });
-    ry+=h+10;
+    ry+=h+12;
   });
 
   // Proses (digambar terakhir agar di atas garis)
-  el('circle',{cx:CX,cy,r,fill:'#eff6ff',stroke:'#2563eb','stroke-width':2.5});
-  el('text',{x:CX,y:cy-24,'font-size':14,'font-weight':800,fill:'#1e3a8a','text-anchor':'middle'},p.no);
-  el('line',{x1:CX-r*0.7,y1:cy-16,x2:CX+r*0.7,y2:cy-16,stroke:'#93c5fd'});
-  el('text',{x:CX,y:cy+2,'font-size':13,'font-weight':700,'text-anchor':'middle'},p.name[0]);
-  el('text',{x:CX,y:cy+18,'font-size':13,'font-weight':700,'text-anchor':'middle'},p.name[1]);
-  el('text',{x:CX,y:cy+36,'font-size':10.5,'font-weight':600,fill:'#2563eb','text-anchor':'middle'},p.f);
+  el('circle',{cx:CX,cy,r,fill:'#eff6ff',stroke:'#2563eb','stroke-width':2.8});
+  el('text',{x:CX,y:cy-28,'font-size':17,'font-weight':800,fill:'#1e3a8a','text-anchor':'middle'},p.no);
+  el('line',{x1:CX-r*0.7,y1:cy-18,x2:CX+r*0.7,y2:cy-18,stroke:'#93c5fd','stroke-width':1.5});
+  el('text',{x:CX,y:cy+2,'font-size':15,'font-weight':800,'text-anchor':'middle'},p.name[0]);
+  el('text',{x:CX,y:cy+22,'font-size':15,'font-weight':800,'text-anchor':'middle'},p.name[1]);
+  el('text',{x:CX,y:cy+44,'font-size':13,'font-weight':700,fill:'#2563eb','text-anchor':'middle'},p.f);
   y+=rowH+GAPROW;
 });
 svg.setAttribute('height',y);svg.setAttribute('viewBox',`0 0 ${W} ${y}`);

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UML Use Case Diagram — Sistem Manajemen Rumah Kost Terpadu</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f8fafc; color: #0f172a; padding: 16px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .header-bar {
+    width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center;
+    background: #ffffff; padding: 10px 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 12px;
+  }
+  .header-title h1 { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+  .header-title p { font-size: 0.775rem; color: #64748b; margin: 0; }
+  .toolbar { display: flex; gap: 8px; }
+  .btn {
+    padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: #f1f5f9; }
+  .btn.primary { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+  .btn.primary:hover { background: #1d4ed8; }
+  .canvas-wrap {
+    background: #ffffff; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%; max-width: 800px;
+    overflow-x: auto; display: flex; justify-content: center;
+  }
+  svg { display: block; user-select: none; }
+</style>
+</head>
+<body>
+
+<div class="header-bar">
+  <div class="header-title">
+    <h1>UML 2.5 Use Case Diagram — Sistem Manajemen Rumah Kost Terpadu</h1>
+    <p>Pemodelan Batasan Fungsionalitas Aktor &amp; Sistem Eksternal (Tata Letak Kompak &amp; Padat)</p>
+  </div>
+  <div class="toolbar">
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+
+<div class="canvas-wrap">
+  <svg id="usecase-svg" width="780" height="690" viewBox="0 0 780 690" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Arrow markers for include and extend -->
+      <marker id="arr-inc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
+        <path d="M 1 2 L 8 5 L 1 8" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </marker>
+      <marker id="arr-ext" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
+        <path d="M 1 2 L 8 5 L 1 8" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </marker>
+      <marker id="arr-ai" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
+        <path d="M 1 2 L 8 5 L 1 8" fill="none" stroke="#7e22ce" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </marker>
+      <marker id="arr-mid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
+        <path d="M 1 2 L 8 5 L 1 8" fill="none" stroke="#d97706" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </marker>
+      <!-- Elevation shadow filter -->
+      <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+        <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.05"/>
+      </filter>
+    </defs>
+
+    <!-- 1. SYSTEM BOUNDARY (BATAS SISTEM) -->
+    <rect x="100" y="16" width="505" height="658" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.8" />
+    <path d="M 100 24 Q 100 16 108 16 L 597 16 Q 605 16 605 24 L 605 44 L 100 44 Z" fill="#0f172a" />
+    <text x="352" y="33.5" fill="#ffffff" font-size="11" font-weight="700" letter-spacing="0.6" text-anchor="middle">SISTEM MANAJEMEN RUMAH KOST TERPADU</text>
+
+
+    <!-- 2. HUMAN ACTORS (KIRI) -->
+    <!-- ACTOR 1: PEMILIK (OWNER) -->
+    <g id="actor-owner" transform="translate(48, 142)">
+      <circle cx="0" cy="-26" r="10" fill="#ffffff" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="-16" x2="0" y2="8" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="-15" y1="-7" x2="15" y2="-7" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="8" x2="-11" y2="26" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="8" x2="11" y2="26" stroke="#0f172a" stroke-width="1.8" />
+      <text x="0" y="41" font-size="10.5" font-weight="800" fill="#0f172a" text-anchor="middle">Pemilik</text>
+      <rect x="-40" y="46" width="80" height="14" rx="3" fill="#eff6ff" stroke="#bfdbfe" stroke-width="0.7" />
+      <text x="0" y="56.5" font-size="7.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">Super Admin</text>
+    </g>
+
+    <!-- ACTOR 2: PENGELOLA (ADMIN) -->
+    <g id="actor-admin" transform="translate(48, 380)">
+      <circle cx="0" cy="-26" r="10" fill="#ffffff" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="-16" x2="0" y2="8" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="-15" y1="-7" x2="15" y2="-7" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="8" x2="-11" y2="26" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="8" x2="11" y2="26" stroke="#0f172a" stroke-width="1.8" />
+      <text x="0" y="41" font-size="10.5" font-weight="800" fill="#0f172a" text-anchor="middle">Pengelola</text>
+      <rect x="-40" y="46" width="80" height="14" rx="3" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="0.7" />
+      <text x="0" y="56.5" font-size="7.5" font-weight="700" fill="#14532d" text-anchor="middle">Admin Gedung</text>
+    </g>
+
+    <!-- ACTOR 3: PENGHUNI (RESIDENT) -->
+    <g id="actor-resident" transform="translate(48, 574)">
+      <circle cx="0" cy="-26" r="10" fill="#ffffff" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="-16" x2="0" y2="8" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="-15" y1="-7" x2="15" y2="-7" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="8" x2="-11" y2="26" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="8" x2="11" y2="26" stroke="#0f172a" stroke-width="1.8" />
+      <text x="0" y="41" font-size="10.5" font-weight="800" fill="#0f172a" text-anchor="middle">Penghuni</text>
+      <rect x="-40" y="46" width="80" height="14" rx="3" fill="#fef3c7" stroke="#fde68a" stroke-width="0.7" />
+      <text x="0" y="56.5" font-size="7.5" font-weight="700" fill="#92400e" text-anchor="middle">Self-Service</text>
+    </g>
+
+
+    <!-- 3. ACTORS (KANAN) -->
+    <!-- EXT-1: KEYCLOAK SSO OIDC -->
+    <g id="ext-keycloak" transform="translate(635, 49)">
+      <rect width="130" height="42" rx="6" fill="#f8fafc" stroke="#475569" stroke-width="1.4" filter="url(#shadow)" />
+      <text x="65" y="16" font-size="8.5" font-weight="700" fill="#64748b" text-anchor="middle">«external system»</text>
+      <text x="65" y="31" font-size="10" font-weight="800" fill="#0f172a" text-anchor="middle">Keycloak SSO OIDC</text>
+    </g>
+
+    <!-- EXT-2: MESIN AI (MCP HOST) -->
+    <g id="ext-ai" transform="translate(635, 193)">
+      <rect width="130" height="42" rx="6" fill="#f8fafc" stroke="#7e22ce" stroke-width="1.4" filter="url(#shadow)" />
+      <text x="65" y="16" font-size="8.5" font-weight="700" fill="#7e22ce" text-anchor="middle">«external system»</text>
+      <text x="65" y="31" font-size="10" font-weight="800" fill="#581c87" text-anchor="middle">Mesin AI (MCP Host)</text>
+    </g>
+
+    <!-- ACTOR 4: TEKNISI SERVIS -->
+    <g id="actor-technician" transform="translate(705, 382)">
+      <circle cx="0" cy="-26" r="10" fill="#ffffff" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="-16" x2="0" y2="8" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="-15" y1="-7" x2="15" y2="-7" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="8" x2="-11" y2="26" stroke="#0f172a" stroke-width="1.8" />
+      <line x1="0" y1="8" x2="11" y2="26" stroke="#0f172a" stroke-width="1.8" />
+      <text x="0" y="41" font-size="10.5" font-weight="800" fill="#0f172a" text-anchor="middle">Teknisi</text>
+      <rect x="-38" y="46" width="76" height="14" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.7" />
+      <text x="0" y="56.5" font-size="7.5" font-weight="700" fill="#475569" text-anchor="middle">Staf Servis</text>
+    </g>
+
+    <!-- EXT-3: MIDTRANS SNAP -->
+    <g id="ext-midtrans" transform="translate(635, 577)">
+      <rect width="130" height="42" rx="6" fill="#f8fafc" stroke="#d97706" stroke-width="1.4" filter="url(#shadow)" />
+      <text x="65" y="16" font-size="8.5" font-weight="700" fill="#b45309" text-anchor="middle">«external system»</text>
+      <text x="65" y="31" font-size="10" font-weight="800" fill="#78350f" text-anchor="middle">Midtrans Payment GW</text>
+    </g>
+
+    <!-- EXT-4: WHATSAPP GATEWAY -->
+    <g id="ext-wa" transform="translate(635, 625)">
+      <rect width="130" height="42" rx="6" fill="#f8fafc" stroke="#16a34a" stroke-width="1.4" filter="url(#shadow)" />
+      <text x="65" y="16" font-size="8.5" font-weight="700" fill="#15803d" text-anchor="middle">«external system»</text>
+      <text x="65" y="31" font-size="10" font-weight="800" fill="#14532d" text-anchor="middle">WhatsApp Gateway</text>
+    </g>
+
+
+    <!-- 4. USE CASE OVALS -->
+    <!-- [KOLOM 1: PRIMARY USE CASES - center x: 225, rx: 110, ry: 20] -->
+
+    <!-- UC-01 -->
+    <g id="uc-01" transform="translate(225, 70)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-01: Kelola Hak Akses Dinamis</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#2563eb" text-anchor="middle">(Dynamic Role Builder)</text>
+    </g>
+
+    <!-- UC-02 -->
+    <g id="uc-02" transform="translate(225, 118)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-02: Kelola Master Gedung</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">&amp; Aturan Tarif (building_settings)</text>
+    </g>
+
+    <!-- UC-08 -->
+    <g id="uc-08" transform="translate(225, 166)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-08: Pantau Portofolio Bisnis</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">&amp; Rekapitulasi Laba-Rugi</text>
+    </g>
+
+    <!-- UC-14 -->
+    <g id="uc-14" transform="translate(225, 214)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#7e22ce" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#581c87" text-anchor="middle">UC-14: Konsultasi Wawasan Bisnis</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#7e22ce" text-anchor="middle">Pertanyaan Bahasa Alami AI</text>
+    </g>
+
+    <!-- UC-03 -->
+    <g id="uc-03" transform="translate(225, 262)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-03: Kelola Master Kamar,</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">Tipe, Tarif, &amp; Kapasitas</text>
+    </g>
+
+    <!-- UC-17 -->
+    <g id="uc-17" transform="translate(225, 310)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-17: Catat Pengeluaran Kas</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">Operasional Riil &amp; Nota Beban</text>
+    </g>
+
+    <!-- UC-10 -->
+    <g id="uc-10" transform="translate(225, 358)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-10: Tindak Lanjut Komplain &amp;</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#2563eb" text-anchor="middle">Penugasan Teknisi Servis</text>
+    </g>
+
+    <!-- UC-11 -->
+    <g id="uc-11" transform="translate(225, 406)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-11: Penjadwalan Pemeliharaan</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">Rutin Preventif (H-7)</text>
+    </g>
+
+    <!-- UC-12 -->
+    <g id="uc-12" transform="translate(225, 454)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-12: Audit Inventaris Aset</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">Checklist Check-In / Check-Out</text>
+    </g>
+
+    <!-- UC-13 -->
+    <g id="uc-13" transform="translate(225, 502)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-13: Pengawasan Buku Tamu &amp;</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">Verifikasi Jam Inap Kunjungan</text>
+    </g>
+
+    <!-- UC-04 -->
+    <g id="uc-04" transform="translate(225, 550)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-04: Reservasi Kamar &amp;</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#2563eb" text-anchor="middle">Pilih Durasi Sewa Bulanan</text>
+    </g>
+
+    <!-- UC-06 -->
+    <g id="uc-06" transform="translate(225, 598)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-06: Bayar Tagihan Sewa</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#15803d" text-anchor="middle">Bulanan Mandiri (Self-Service)</text>
+    </g>
+
+    <!-- UC-09 -->
+    <g id="uc-09" transform="translate(225, 646)">
+      <ellipse rx="110" ry="20" fill="#ffffff" stroke="#2563eb" stroke-width="1.6" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-09: Lapor Kerusakan Fasilitas</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#dc2626" text-anchor="middle">Unggah Deskripsi &amp; Foto Bukti</text>
+    </g>
+
+
+    <!-- [KOLOM 2: SUB-USE CASES & INTEGRATIONS - center x: 480, rx: 110, ry: 20] -->
+
+    <!-- UC-00: Verifikasi Sesi JWT -->
+    <g id="uc-00" transform="translate(480, 70)">
+      <ellipse rx="110" ry="20" fill="#f8fafc" stroke="#475569" stroke-width="1.5" stroke-dasharray="3.5 2.5" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#0f172a" text-anchor="middle">UC-00: Verifikasi Sesi &amp;</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#475569" text-anchor="middle">Token Stateless JWT (JWKS)</text>
+    </g>
+
+    <!-- UC-16: Eksekusi Tool Analitik MCP -->
+    <g id="uc-16" transform="translate(480, 214)">
+      <ellipse rx="110" ry="20" fill="#faf5ff" stroke="#7e22ce" stroke-width="1.5" stroke-dasharray="3.5 2.5" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#581c87" text-anchor="middle">UC-16: Eksekusi Tool Analitik</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#7e22ce" text-anchor="middle">Faktual Protokol MCP</text>
+    </g>
+
+    <!-- UC-05: Kunci Baris Jadwal Kamar -->
+    <g id="uc-05" transform="translate(480, 550)">
+      <ellipse rx="110" ry="20" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3.5 2.5" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#14532d" text-anchor="middle">UC-05: Kunci Baris Jadwal Kamar</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#15803d" text-anchor="middle">(SELECT FOR UPDATE)</text>
+    </g>
+
+    <!-- UC-07: Transaksi SNAP Midtrans -->
+    <g id="uc-07" transform="translate(480, 598)">
+      <ellipse rx="110" ry="20" fill="#fffbeb" stroke="#d97706" stroke-width="1.5" stroke-dasharray="3.5 2.5" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#78350f" text-anchor="middle">UC-07: Proses Transaksi SNAP</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#b45309" text-anchor="middle">&amp; Webhook Callback Lunas</text>
+    </g>
+
+    <!-- UC-15: Notifikasi WhatsApp -->
+    <g id="uc-15" transform="translate(480, 646)">
+      <ellipse rx="110" ry="20" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3.5 2.5" filter="url(#shadow)" />
+      <text x="0" y="-3" font-size="10" font-weight="700" fill="#14532d" text-anchor="middle">UC-15: Kirim Notifikasi Pesan</text>
+      <text x="0" y="10" font-size="8.5" font-weight="600" fill="#15803d" text-anchor="middle">Otomatis WhatsApp Gateway</text>
+    </g>
+
+
+    <!-- 5. ASSOCIATION LINES (AKTOR KE USE CASE) -->
+
+    <!-- [PEMILIK / OWNER] -->
+    <line x1="75" y1="115" x2="142.2" y2="83.2" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="133" x2="122.9" y2="125.4" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="151" x2="122.9" y2="158.6" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="169" x2="142.2" y2="200.8" stroke="#334155" stroke-width="1.4" />
+
+    <!-- [PENGELOLA / ADMIN] -->
+    <line x1="75" y1="310" x2="159.4" y2="182.1" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="330" x2="149.6" y2="276.6" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="350" x2="139.9" y2="322.7" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="370" x2="120.5" y2="364.3" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="390" x2="123.7" y2="398.2" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="410" x2="141.8" y2="440.9" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="430" x2="150.6" y2="487.3" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="450" x2="155.3" y2="534.5" stroke="#334155" stroke-width="1.4" />
+
+    <!-- [PENGHUNI / RESIDENT] -->
+    <line x1="75" y1="538" x2="152.9" y2="469.1" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="556" x2="145.6" y2="515.8" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="574" x2="130.0" y2="560.1" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="592" x2="116.6" y2="594.6" stroke="#334155" stroke-width="1.4" />
+    <line x1="75" y1="610" x2="137.8" y2="633.8" stroke="#334155" stroke-width="1.4" />
+
+    <!-- [TEKNISI SERVIS] -->
+    <line x1="675" y1="372" x2="334.5" y2="359.9" stroke="#334155" stroke-width="1.4" />
+    <line x1="675" y1="392" x2="334.5" y2="404.1" stroke="#334155" stroke-width="1.4" />
+
+    <!-- [SISTEM EKSTERNAL] -->
+    <!-- Keycloak -> UC-00 -->
+    <line x1="635" y1="70" x2="590" y2="70" stroke="#334155" stroke-width="1.4" />
+
+    <!-- Mesin AI -> UC-16 -->
+    <line x1="635" y1="214" x2="590" y2="214" stroke="#334155" stroke-width="1.4" />
+
+    <!-- Midtrans -> UC-07 -->
+    <line x1="635" y1="598" x2="590" y2="598" stroke="#334155" stroke-width="1.4" />
+
+    <!-- WhatsApp -> UC-15 -->
+    <line x1="635" y1="646" x2="590" y2="646" stroke="#334155" stroke-width="1.4" />
+
+
+    <!-- 6. RELATIONSHIPS: INCLUDE & EXTEND -->
+
+    <!-- UC-01 include UC-00 -->
+    <path d="M 335 70 L 370 70" fill="none" stroke="#2563eb" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#arr-inc)" />
+    <rect x="332" y="51" width="42" height="13" rx="2.5" fill="#ffffff" stroke="#bfdbfe" stroke-width="0.6" />
+    <text x="353" y="60.5" font-size="7.5" font-weight="700" fill="#2563eb" text-anchor="middle">«include»</text>
+
+    <!-- UC-14 include UC-16 -->
+    <path d="M 335 214 L 370 214" fill="none" stroke="#7e22ce" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#arr-ai)" />
+    <rect x="332" y="195" width="42" height="13" rx="2.5" fill="#ffffff" stroke="#e9d5ff" stroke-width="0.6" />
+    <text x="353" y="204.5" font-size="7.5" font-weight="700" fill="#7e22ce" text-anchor="middle">«include»</text>
+
+    <!-- UC-04 include UC-05 -->
+    <path d="M 335 550 L 370 550" fill="none" stroke="#16a34a" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#arr-ext)" />
+    <rect x="332" y="531" width="42" height="13" rx="2.5" fill="#ffffff" stroke="#bbf7d0" stroke-width="0.6" />
+    <text x="353" y="540.5" font-size="7.5" font-weight="700" fill="#16a34a" text-anchor="middle">«include»</text>
+
+    <!-- UC-06 include UC-07 -->
+    <path d="M 335 598 L 370 598" fill="none" stroke="#d97706" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#arr-mid)" />
+    <rect x="332" y="579" width="42" height="13" rx="2.5" fill="#ffffff" stroke="#fde68a" stroke-width="0.6" />
+    <text x="353" y="588.5" font-size="7.5" font-weight="700" fill="#d97706" text-anchor="middle">«include»</text>
+
+    <!-- UC-06 extend UC-15 (Notifikasi Lunas) -->
+    <path d="M 301.4 612.4 L 403.6 631.6" fill="none" stroke="#16a34a" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#arr-ext)" />
+    <rect x="333" y="612" width="38" height="13" rx="2.5" fill="#ffffff" stroke="#bbf7d0" stroke-width="0.6" />
+    <text x="352" y="621.5" font-size="7.5" font-weight="700" fill="#16a34a" text-anchor="middle">«extend»</text>
+
+    <!-- UC-09 extend UC-15 (Notifikasi Tiket Selesai) -->
+    <path d="M 335 646 L 370 646" fill="none" stroke="#16a34a" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#arr-ext)" />
+    <rect x="332" y="627" width="38" height="13" rx="2.5" fill="#ffffff" stroke="#bbf7d0" stroke-width="0.6" />
+    <text x="351" y="636.5" font-size="7.5" font-weight="700" fill="#16a34a" text-anchor="middle">«extend»</text>
+
+  </svg>
+</div>
+
+<script>
+function getSVGString() {
+  const svg = document.getElementById('usecase-svg');
+  let s = new XMLSerializer().serializeToString(svg);
+  if (!s.includes('xmlns=')) {
+    s = s.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  return s;
+}
+
+function download(href, name) {
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => a.remove(), 100);
+}
+
+function exportSVG() {
+  const blob = new Blob([getSVGString()], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  download(url, 'use_case_global.svg');
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function exportPNG(scale = 2) {
+  const svg = document.getElementById('usecase-svg');
+  const w = 780, h = 690;
+  const canvas = document.createElement('canvas');
+  canvas.width = w * scale;
+  canvas.height = h * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(scale, scale);
+
+  const svgString = getSVGString();
+  const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+  const blobUrl = URL.createObjectURL(blob);
+
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0);
+    URL.revokeObjectURL(blobUrl);
+    try {
+      const dataUrl = canvas.toDataURL('image/png');
+      download(dataUrl, 'use_case_global@' + scale + 'x.png');
+    } catch (e) {
+      canvas.toBlob((b) => {
+        if (b) {
+          const u = URL.createObjectURL(b);
+          download(u, 'use_case_global@' + scale + 'x.png');
+          setTimeout(() => URL.revokeObjectURL(u), 1000);
+        }
+      }, 'image/png');
+    }
+  };
+  img.onerror = (err) => {
+    URL.revokeObjectURL(blobUrl);
+    const fallbackImg = new Image();
+    fallbackImg.onload = () => {
+      ctx.drawImage(fallbackImg, 0, 0);
+      download(canvas.toDataURL('image/png'), 'use_case_global@' + scale + 'x.png');
+    };
+    fallbackImg.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
+  };
+  img.src = blobUrl;
+}
+</script>
+</body>
+</html>

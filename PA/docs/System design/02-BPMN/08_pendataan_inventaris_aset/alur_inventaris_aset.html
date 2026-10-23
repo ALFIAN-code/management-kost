@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPMN — Alur Pendataan & Audit Inventaris Aset</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f8fafc; color: #0f172a; padding: 24px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .header-bar {
+    width: 100%; max-width: 1480px; display: flex; justify-content: space-between; align-items: center;
+    background: #ffffff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;
+  }
+  .header-title h1 { font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+  .header-title p { font-size: 0.875rem; color: #64748b; margin: 0; }
+  .toolbar { display: flex; gap: 10px; }
+  .btn {
+    padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
+    cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: #f1f5f9; }
+  .btn.primary { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+  .btn.primary:hover { background: #1d4ed8; }
+  .canvas-wrap {
+    background: #ffffff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%; max-width: 1480px;
+    overflow-x: auto; display: flex; justify-content: center;
+  }
+  svg { display: block; user-select: none; }
+</style>
+</head>
+<body>
+
+<div class="header-bar">
+  <div class="header-title">
+    <h1>BPMN 2.0 — Alur Pendataan Master Aset &amp; Audit Kondisi Fasilitas</h1>
+    <p>Kolaborasi Proses Bisnis: Pengelola Gedung, Penghuni, &amp; Sistem Manajemen Kost</p>
+  </div>
+  <div class="toolbar">
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+
+<div class="canvas-wrap">
+  <svg id="bpmn-svg" width="1460" height="740" viewBox="0 0 1460 740" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#334155" />
+      </marker>
+    </defs>
+
+    <!-- POOL CONTAINER -->
+    <rect x="20" y="20" width="1420" height="700" rx="8" fill="#ffffff" stroke="#334155" stroke-width="2" />
+    
+    <!-- POOL HEADER -->
+    <rect x="20" y="20" width="45" height="700" rx="8" fill="#0f172a" />
+    <text x="-370" y="50" transform="rotate(-90)" fill="#ffffff" font-size="14" font-weight="700" letter-spacing="1" text-anchor="middle">MANAJEMEN INVENTARIS ASET &amp; AUDIT</text>
+
+    <!-- LANES -->
+    <!-- Lane 1: Pengelola Gedung (y: 20, h: 200) -->
+    <rect x="65" y="20" width="1375" height="200" fill="#f8fafc" stroke="#94a3b8" stroke-width="1" />
+    <rect x="65" y="20" width="35" height="200" fill="#e2e8f0" />
+    <text x="-120" y="88" transform="rotate(-90)" fill="#1e293b" font-size="13" font-weight="700" text-anchor="middle">Pengelola</text>
+
+    <!-- Lane 2: Penghuni (y: 220, h: 180) -->
+    <rect x="65" y="220" width="1375" height="180" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
+    <rect x="65" y="220" width="35" height="180" fill="#fef3c7" />
+    <text x="-310" y="88" transform="rotate(-90)" fill="#92400e" font-size="13" font-weight="700" text-anchor="middle">Penghuni</text>
+
+    <!-- Lane 3: Sistem Kost (y: 400, h: 320) -->
+    <rect x="65" y="400" width="1375" height="320" fill="#f8fafc" stroke="#94a3b8" stroke-width="1" />
+    <rect x="65" y="400" width="35" height="320" fill="#dbeafe" />
+    <text x="-560" y="88" transform="rotate(-90)" fill="#1e3a8a" font-size="13" font-weight="700" text-anchor="middle">Sistem Kost</text>
+
+    <!-- SUB-FLOW DIVIDER -->
+    <line x1="335" y1="20" x2="335" y2="720" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6 4" />
+    <rect x="300" y="24" width="70" height="18" rx="3" fill="#e2e8f0" />
+    <text x="335" y="37" font-size="9" font-weight="700" fill="#475569" text-anchor="middle">SUB-ALUR</text>
+
+
+    <!-- ========================================== -->
+    <!-- BAGIAN 1: REGISTRASI ASET BARU (x: 100..320) -->
+    <!-- ========================================== -->
+    <!-- Lane 1: Pengelola -->
+    <circle cx="125" cy="80" r="16" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" />
+    <text x="125" y="110" font-size="10.5" font-weight="700" fill="#15803d" text-anchor="middle">Aset Baru</text>
+
+    <g transform="translate(170, 53)">
+      <rect width="145" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Registrasi Aset Kamar</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">(Nama, Kode, Kondisi)</text>
+    </g>
+
+    <!-- Lane 3: Sistem Kost -->
+    <g transform="translate(170, 470)">
+      <rect width="145" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Validasi Unit Kamar &amp;</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#2563eb" text-anchor="middle">Simpan Master Aset</text>
+    </g>
+
+    <!-- End Event Sub-Alur 1 -->
+    <circle cx="242" cy="590" r="15" fill="#fee2e2" stroke="#dc2626" stroke-width="2.5" />
+    <text x="242" y="620" font-size="10.5" font-weight="700" fill="#b91c1c" text-anchor="middle">Tersimpan</text>
+
+
+    <!-- ========================================== -->
+    <!-- BAGIAN 2: AUDIT CHECK-IN/CHECK-OUT (x: 350+) -->
+    <!-- ========================================== -->
+
+    <!-- STEP 1: INISIASI AUDIT (Col 2: x=360..510) -->
+    <!-- Lane 1: Pengelola -->
+    <circle cx="375" cy="155" r="16" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5" />
+    <text x="375" y="185" font-size="10.5" font-weight="700" fill="#15803d" text-anchor="middle">Jadwal Audit</text>
+
+    <g transform="translate(420, 128)">
+      <rect width="145" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Buka Formulir Checklist</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Inventaris Kamar</text>
+    </g>
+
+    <!-- Lane 3: Sistem Kost -->
+    <g transform="translate(420, 470)">
+      <rect width="145" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Ambil Data Barang</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#2563eb" text-anchor="middle">&amp; Riwayat Terakhir</text>
+    </g>
+
+
+    <!-- STEP 2: INSPEKSI FISIK BERSAMA (Col 3: x=600..750) -->
+    <!-- Lane 1: Pengelola -->
+    <g transform="translate(610, 128)">
+      <rect width="145" height="54" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.6" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#1e3a8a" text-anchor="middle">Inspeksi Fisik Unit</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#2563eb" text-anchor="middle">Bersama Penghuni</text>
+    </g>
+
+    <!-- Lane 2: Penghuni -->
+    <g transform="translate(610, 285)">
+      <rect width="145" height="54" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.6" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#0f172a" text-anchor="middle">Dampingi Cek Fisik &amp;</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Validasi Kondisi Riil</text>
+    </g>
+
+
+    <!-- STEP 3: EVALUASI KONDISI (Col 4: x=800..960) -->
+    <!-- Lane 1: Pengelola -->
+    <g transform="translate(800, 136)">
+      <polygon points="19,0 38,19 19,38 0,19" fill="#fef3c7" stroke="#d97706" stroke-width="2" />
+      <path d="M 13 13 L 25 25 M 25 13 L 13 25" stroke="#d97706" stroke-width="2.5" />
+    </g>
+    <rect x="770" y="108" width="98" height="18" rx="3" fill="#ffffff" />
+    <text x="819" y="121" font-size="10.5" font-weight="700" fill="#b45309" text-anchor="middle">Kondisi Baik?</text>
+
+    <!-- Branch Baik: Konfirmasi Bersih -->
+    <g transform="translate(870, 53)">
+      <rect width="150" height="54" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" />
+      <text x="75" y="23" font-size="12" font-weight="700" fill="#14532d" text-anchor="middle">Konfirmasi Audit Baik</text>
+      <text x="75" y="40" font-size="11" font-weight="600" fill="#15803d" text-anchor="middle">&amp; TTD Berita Acara</text>
+    </g>
+
+    <!-- Branch Rusak: Catat Masalah -->
+    <g transform="translate(870, 128)">
+      <rect width="150" height="54" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.4" />
+      <text x="75" y="22" font-size="11.5" font-weight="700" fill="#991b1b" text-anchor="middle">Catat Barang Rusak /</text>
+      <text x="75" y="38" font-size="10.5" font-weight="500" fill="#dc2626" text-anchor="middle">Hilang &amp; Bukti Foto</text>
+    </g>
+
+
+    <!-- STEP 4: TINDAK LANJUT SISTEM & PENERIMAAN -->
+
+    <!-- JALUR 1 (BAIK): Log Sistem (Col 5-A: x=1070) -->
+    <g transform="translate(1070, 470)">
+      <rect width="145" height="54" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#14532d" text-anchor="middle">Catat Riwayat Audit</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#15803d" text-anchor="middle">(Status: Terverifikasi)</text>
+    </g>
+    <!-- End Event Jalur Baik -->
+    <circle cx="1265" cy="497" r="15" fill="#fee2e2" stroke="#dc2626" stroke-width="2.5" />
+    <text x="1265" y="527" font-size="10.5" font-weight="700" fill="#b91c1c" text-anchor="middle">Selesai</text>
+
+
+    <!-- JALUR 2 (RUSAK): Tiket Servis (Col 5-B: x=1070, y=575) -->
+    <g transform="translate(1070, 575)">
+      <rect width="145" height="54" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.6" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#1e3a8a" text-anchor="middle">Terbitkan Tiket Servis</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#2563eb" text-anchor="middle">Perbaikan Fasilitas</text>
+    </g>
+
+    <!-- JALUR 2: Tagihan Denda (Col 6: x=1250, y=575) -->
+    <g transform="translate(1250, 575)">
+      <rect width="145" height="54" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="1.6" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#78350f" text-anchor="middle">Terbitkan Tagihan Denda</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#b45309" text-anchor="middle">Ganti Rugi Kerusakan</text>
+    </g>
+
+    <!-- Lane 2: Penghuni Terima Denda (Col 6: x=1250, y=285) -->
+    <g transform="translate(1250, 285)">
+      <rect width="145" height="54" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.6" />
+      <text x="72" y="23" font-size="12" font-weight="700" fill="#991b1b" text-anchor="middle">Terima Tagihan Denda</text>
+      <text x="72" y="40" font-size="11" font-weight="600" fill="#dc2626" text-anchor="middle">&amp; Kewajiban Bayar</text>
+    </g>
+
+    <!-- End Event Jalur Denda -->
+    <circle cx="1430" cy="312" r="15" fill="#fee2e2" stroke="#dc2626" stroke-width="2.5" />
+    <text x="1430" y="342" font-size="10.5" font-weight="700" fill="#b91c1c" text-anchor="middle">Selesai</text>
+
+
+    <!-- SEQUENCE FLOWS (STRICT LEFT-TO-RIGHT, ZERO OVERLAP, DISTINCT CLEAR CORRIDORS) -->
+
+    <!-- SUB-ALUR 1: Pendaftaran Aset (x=242 koridor bersih) -->
+    <path d="M 141 80 L 170 80" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <!-- Turun dari bawah kotak pengelola di x=242 ke atas kotak sistem -->
+    <path d="M 242 107 L 242 470" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="200" y="280" width="85" height="18" rx="3" fill="#ffffff" />
+    <text x="242" y="293" font-size="10" font-weight="700" fill="#2563eb" text-anchor="middle">Kirim Data Aset</text>
+
+    <!-- Sistem -> Selesai Sub-Alur 1 -->
+    <path d="M 242 524 L 242 575" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+
+    <!-- SUB-ALUR 2: AUDIT CHECKLIST -->
+    <!-- Start -> Buka Formulir -->
+    <path d="M 391 155 L 420 155" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+    <!-- Buka Formulir -> Ambil Data Sistem (TURUN LEWAT KORIDOR BERSIH x=492) -->
+    <path d="M 492 182 L 492 470" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="450" y="320" width="85" height="18" rx="3" fill="#ffffff" />
+    <text x="492" y="333" font-size="10" font-weight="700" fill="#2563eb" text-anchor="middle">Request Data</text>
+
+    <!-- Sistem Ambil Data -> Inspeksi Bersama (KELUAR KANAN SISTEM DI x=565, NAIK KE KIRI INSPEKSI DI x=610) -->
+    <path d="M 565 497 L 585 497 L 585 155 L 610 155" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="550" y="320" width="70" height="18" rx="3" fill="#ffffff" />
+    <text x="585" y="333" font-size="10" font-weight="700" fill="#15803d" text-anchor="middle">Form Siap</text>
+
+    <!-- Inspeksi Pengelola -> Dampingi Penghuni (KELUAR SISI BAWAH DI x=682, TURUN KE ATAS PENGHUNI) -->
+    <path d="M 682 182 L 682 285" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="640" y="225" width="85" height="18" rx="3" fill="#ffffff" />
+    <text x="682" y="238" font-size="10" font-weight="700" fill="#2563eb" text-anchor="middle">Cek Bersama</text>
+
+    <!-- Penghuni Selesai Cek -> Gateway Pengelola (KELUAR KANAN PENGHUNI, NAIK KE KIRI GATEWAY DI x=800) -->
+    <path d="M 755 312 L 780 312 L 780 155 L 800 155" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="745" y="225" width="70" height="18" rx="3" fill="#ffffff" />
+    <text x="780" y="238" font-size="10" font-weight="700" fill="#475569" text-anchor="middle">Hasil Fisik</text>
+
+    <!-- Gateway -> [Ya / Kondisi Baik]: KELUAR SUDUT ATAS NAIK KE KONFIRMASI BERSIH -->
+    <path d="M 819 136 L 819 80 L 870 80" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="822" y="95" width="24" height="16" rx="3" fill="#ffffff" />
+    <text x="834" y="107" font-size="9.5" font-weight="700" fill="#15803d" text-anchor="middle">Ya</text>
+
+    <!-- Gateway -> [Tidak / Rusak atau Hilang]: LURUS KE CATAT MASALAH -->
+    <path d="M 838 155 L 870 155" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="840" y="160" width="28" height="16" rx="3" fill="#ffffff" />
+    <text x="854" y="172" font-size="9.5" font-weight="700" fill="#dc2626" text-anchor="middle">Tidak</text>
+
+
+    <!-- JALUR BAIK: Konfirmasi Bersih -> Catat Riwayat Audit (KELUAR KANAN, TURUN LEWAT KORIDOR x=1142) -->
+    <path d="M 1020 80 L 1142 80 L 1142 470" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="1100" y="280" width="85" height="18" rx="3" fill="#ffffff" />
+    <text x="1142" y="293" font-size="10" font-weight="700" fill="#15803d" text-anchor="middle">Simpan Bersih</text>
+
+    <!-- Catat Riwayat Audit -> End Event Jalur Baik -->
+    <path d="M 1215 497 L 1250 497" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+
+    <!-- JALUR RUSAK: Catat Masalah -> Terbitkan Tiket Servis (KELUAR KANAN, TURUN LEWAT KORIDOR x=1045) -->
+    <path d="M 1020 155 L 1045 155 L 1045 602 L 1070 602" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="1005" y="370" width="80" height="18" rx="3" fill="#ffffff" />
+    <text x="1045" y="383" font-size="10" font-weight="700" fill="#dc2626" text-anchor="middle">Laporkan Rusak</text>
+
+    <!-- Tiket Servis -> Terbitkan Tagihan Denda (DI LANE SISTEM: LURUS KE KANAN) -->
+    <path d="M 1215 602 L 1250 602" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+    <!-- Tagihan Denda -> Penghuni Terima Denda (KELUAR SISI ATAS SISTEM DI x=1322, NAIK KE SISI BAWAH PENGHUNI DI KORIDOR TERBUKA) -->
+    <path d="M 1322 575 L 1322 339" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+    <rect x="1275" y="445" width="95" height="18" rx="3" fill="#ffffff" />
+    <text x="1322" y="458" font-size="10" font-weight="700" fill="#b45309" text-anchor="middle">Tagihan Ganti Rugi</text>
+
+    <!-- Penghuni Terima Denda -> End Event Jalur Denda -->
+    <path d="M 1395 312 L 1415 312" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arr)" />
+
+  </svg>
+</div>
+
+<script>
+function getSVGString() {
+  const svg = document.getElementById('bpmn-svg');
+  let s = new XMLSerializer().serializeToString(svg);
+  if (!s.includes('xmlns=')) {
+    s = s.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  return s;
+}
+
+function download(href, name) {
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function exportSVG() {
+  const blob = new Blob([getSVGString()], { type: 'image/svg+xml;charset=utf-8' });
+  download(URL.createObjectURL(blob), 'alur_inventaris_aset.svg');
+}
+
+function exportPNG(scale = 2) {
+  const svg = document.getElementById('bpmn-svg');
+  const w = 1460, h = 740;
+  const canvas = document.createElement('canvas');
+  canvas.width = w * scale;
+  canvas.height = h * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(scale, scale);
+
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0);
+    download(canvas.toDataURL('image/png'), 'alur_inventaris_aset@' + scale + 'x.png');
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getSVGString());
+}
+</script>
+</body>
+</html>

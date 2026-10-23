@@ -233,4 +233,59 @@ Mengadopsi pendekatan **Hexagonal Architecture (Ports and Adapters) / Dependency
 - Kode dan migration di folder baru wajib mengikuti dialek SQL PostgreSQL (misalnya `SERIAL`/`IDENTITY` untuk auto-increment dan `TIMESTAMPTZ` untuk kolom waktu).
 - Infrastruktur lokal dapat dijalankan dengan satu perintah `docker compose up`.
 
+---
+
+## ADR-013: Kebijakan Booking DP Fleksibel (Two-Phase Invoicing), Alur Refund Semi-Manual Berbukti Transfer, dan Otomasi Penagihan Siklus Ulang Tahun Sewa
+
+**Tanggal:** 2026-10-23  
+**Status:** Accepted  
+**Konteks:**
+1. **Dinamika Operasional Sewa Properti Riil:** Pada sistem manajemen kost general (multi-tenant/SaaS), calon penghuni kerap memesan kamar jauh hari sebelum masa huni (H-1 s/d H-3 bulan). Setiap pemilik properti memiliki segmentasi dan kebijakan bisnis berbeda: sebagian mewajibkan bayar sewa bulan pertama penuh di muka (komitmen tinggi), sebagian memfasilitasi Uang Tanda Jadi / Down Payment (DP) flat agar kamar dapat di-booking oleh mahasiswa, dan sebagian membebaskan biaya pemesanan (bayar saat tiba).
+2. **Eliminasi Kerumitan Skema Cicilan:** Pendekatan cicilan atau pembayaran parsial konvensional menuntut pelacakan saldo piutang berjalan (`amount_paid`, `remaining_balance`, `partial_status`) yang rawan inkonsistensi akuntansi dan terbukti menjadi salah satu pemicu membengkaknya basis data lama menjadi 41 tabel.
+3. **Realitas Pengembalian Dana (Refund):** Jika calon penghuni membatalkan reservasi berbayar jauh-jauh hari, sistem wajib menyediakan alur penyelesaian yang adil dan transparan. Namun, otomatisasi refund via API payment gateway (Midtrans) mensyaratkan akun korporat berbadan hukum (PT/CV) dengan deposit saldo terpisah yang tidak aplikatif bagi pengelola kost UMKM dan berisiko tinggi untuk lingkup Proyek Akhir.
+4. **Siklus Penagihan Berkala & Kontrol Pengelola:** Penagihan bulanan memerlukan otomasi penjadwalan penerbitan tagihan, pemberitahuan dua arah (penghuni dan pengelola), serta mekanisme pengingat manual sewaktu-waktu oleh pengelola.
+
+**Keputusan:**
+1. **Konfigurasi Kebijakan Booking Dinamis per Properti (`building_settings`):**  
+   Pengelola/pemilik properti dapat mengonfigurasi aturan pemesanan melalui parameter:
+   - `booking_fee_mode`: `FULL_MONTH` (wajib lunas sewa bulan ke-1 di muka), `FIXED_DP` (uang tanda jadi flat, misal Rp 250.000), atau `NO_DP` (reservasi manual tanpa bayar di muka).
+   - `dp_amount`: besaran nominal uang muka jika mode `FIXED_DP` aktif.
+   - `dp_expiry_hours`: batas waktu pembayaran DP (default: 24 jam) sebelum reservasi dibatalkan otomatis oleh scheduler.
+   - `settlement_lead_days`: tenggat hari penerbitan tagihan pelunasan sebelum tanggal mulai sewa (default: H-3).
+   - `cancellation_grace_days`: batas waktu pembatalan yang masih memenuhi syarat pengembalian dana (default: $\ge$ 14 hari sebelum check-in).
+   - `auto_invoice_lead_days`: rentang hari penerbitan tagihan sewa berkala otomatis sebelum jatuh tempo (default: H-7).
+
+2. **Pola Two-Phase Invoicing untuk Penanganan DP (Nol Tabel Baru):**  
+   Untuk menjaga kesederhanaan skema basis data, sistem menolak mekanisme cicilan parsial. Satu baris invoice selalu bernilai pasti dan diselesaikan dalam satu kali pembayaran penuh (*1 Invoice = 1 Amount = 1 Full Settlement*).  
+   Jika mode `FIXED_DP` aktif, bulan pertama dipecah menjadi dua invoice terpisah berstatus definitif:
+   - *Invoice #1 (Tipe `DP`):* Diterbitkan saat booking disetujui. Pembayaran DP mengunci unit kamar ke status `reserved` / `upcoming`.
+   - *Invoice #2 (Tipe `SETTLEMENT`):* Diterbitkan otomatis oleh scheduler pada H-3 sebelum tanggal mulai huni dengan nominal matematis pasti:
+     $$\text{Nominal Pelunasan} = \text{monthly\_price\_snapshot} - \text{Total DP Lunas}$$
+     Aktivasi huni (*check-in*) hanya dapat dieksekusi jika Invoice DP dan Invoice Pelunasan berstatus lunas (`paid`).  
+   Bulan ke-2 dan seterusnya diterbitkan normal sebagai tipe `RECURRING` sebesar harga sewa penuh kamar.
+
+3. **Alur Refund Semi-Manual Berbukti Transfer Resmi:**  
+   Pengembalian dana akibat pembatalan sewa diselesaikan secara semi-manual:
+   - Calon penghuni mengajukan pembatalan secara mandiri melalui aplikasi dengan mengunggah alasan dan rincian rekening bank tujuan.
+   - Pengelola meninjau permohonan melalui menu **Refund Requests**, memeriksa kepatuhan jendela waktu pembatalan, dan mengonfirmasi nominal pengembalian (dipotong denda/biaya pembatalan jika ada).
+   - Pengelola mengeksekusi transfer bank secara mandiri (m-banking), mengunggah foto struk/bukti transfer (`refund_proof_url`), dan menekan tombol *Selesaikan Refund*.
+   - Sistem secara otomatis mengubah status kontrak menjadi `cancelled`, melepaskan unit kamar kembali ke publik menjadi `available`, serta mengirimkan notifikasi resmi kepada penghuni berlampiran bukti transfer.
+
+4. **Penagihan Siklus Ulang Tahun Sewa (*Anniversary Billing Cycle*) & Notifikasi Dua Arah:**  
+   - Tanggal jatuh tempo penagihan sewa berkala diselaraskan dengan tanggal mulai sewa penghuni (*anniversary date*).
+   - Tagihan di-generate otomatis oleh scheduler NestJS pada H-7 sebelum jatuh tempo.
+   - Notifikasi dikirimkan dua arah: H-7 (tagihan terbit ke penghuni), H-1 (pengingat jatuh tempo ke penghuni), Hari H (peringatan jatuh tempo ke penghuni dan rekap tunggakan ke dashboard admin), serta konfirmasi kuitansi lunas instan saat pembayaran terverifikasi.
+   - Pada antarmuka penagihan pengelola, disediakan tombol aksi **"Kirim Pengingat" (*Manual Reminder Trigger*)** yang dapat diklik pengelola sewaktu-waktu untuk mengirimkan pesan peringatan sopan via WhatsApp/Notifikasi ke kontak penghuni.
+
+**Alternatif:**
+- *Multi-payment partial billing pada 1 invoice* (ditolak — menciptakan kompleksitas saldo gantung dan memicu pembengkakan relasi tabel seperti sistem lama).
+- *Automated Refund via Midtrans API* (ditolak — mensyaratkan akun berbadan hukum PT/CV dengan escrow disbursement balance, tidak realistis untuk kost skala UMKM dan pengujian PA).
+- *Strict Non-refundable Policy tanpa refund* (ditolak — kurang adil bagi calon penghuni yang membatalkan pemesanan jauh hari pada sistem multi-properti general).
+
+**Konsekuensi:**
+- Skema tabel `invoices` diperkaya kolom enum `type` (`DP`, `SETTLEMENT`, `RECURRING`, `FINE`), tanpa memerlukan penambahan tabel transaksi baru.
+- Menu antarmuka pengelola *Refund Requests* dan *Fine Management* pada rancangan UI web dipertahankan secara definitif sebagai modul fungsional aktif.
+- Dokumentasi kebutuhan fitur (`DAFTAR_FITUR.md`) disinkronkan untuk memperjelas aturan F04, F08, F09, dan F16.
+
+
 

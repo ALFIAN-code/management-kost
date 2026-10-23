@@ -6,12 +6,12 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #0f172a; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; }
-  .bar { width: 100%; max-width: 1300px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+  .bar { width: 100%; max-width: 1420px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
   .bar h1 { font-size: 1.2rem; } .bar p { font-size: .85rem; color: #64748b; }
   .btn { padding: 8px 16px; font-weight: 600; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; margin-left: 8px; }
   .btn.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
-  .wrap { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; max-width: 1300px; width: 100%; overflow-x: auto; display: flex; justify-content: center; }
-  .note { max-width: 1300px; width: 100%; margin-top: 20px; background: #fff; padding: 18px 24px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: .85rem; line-height: 1.6; color: #475569; }
+  .wrap { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; max-width: 1420px; width: 100%; overflow-x: auto; display: flex; justify-content: center; }
+  .note { max-width: 1420px; width: 100%; margin-top: 20px; background: #fff; padding: 18px 24px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: .85rem; line-height: 1.6; color: #475569; }
 </style>
 </head>
 <body>
@@ -23,7 +23,7 @@
     <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
   </div>
 </div>
-<div class="wrap"><svg id="erd" xmlns="http://www.w3.org/2000/svg" width="1300" height="100"></svg></div>
+<div class="wrap"><svg id="erd" xmlns="http://www.w3.org/2000/svg" width="1420" height="100"></svg></div>
 <div class="note">
   <b>Cara baca:</b> setiap panel = satu modul terenkapsulasi pada NestJS; panel bergaris putus berarti modul yang fiturnya dapat dinonaktifkan per gedung. Sesuai ADR-007 hanya ada dua FK fisik, yaitu <code>payments.invoice_id</code> menuju <code>invoices</code> di dalam modul Finance dan <code>buildings.owner_id</code> menuju <code>users</code> di tingkat infrastruktur. Semua kolom bertag oranye <code>→ tabel</code> adalah soft-reference: nilainya bersifat logis, hanya diperkuat indeks sehingga nol FK lintas modul. Kolom <code>created_at</code> dan <code>updated_at</code> ada di semua tabel dan tidak ditampilkan agar ringkas.
 </div>
@@ -66,24 +66,24 @@ const M = [
 
 // ===== LAYOUT
 const NS='http://www.w3.org/2000/svg', svg=document.getElementById('erd');
-const W=1300, COLS=3, PW=416, PG=14, X0=12, TW=166, TG=60, RH=17, HH=22, TOP=70, PAD=12;
+const W=1420, COLS=3, PW=450, PG=16, X0=14, TW=190, TG=42, RH=22, HH=28, TOP=75, PAD=14;
 function el(t,a,txt,parent){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!==undefined)e.textContent=txt;(parent||svg).appendChild(e);return e;}
-const tH=rows=>HH+rows.length*RH+4;
+const tH=rows=>HH+rows.length*RH+6;
 const stackH=(m,list)=>list.reduce((s,n)=>s+tH(m.T[n])+18,0)-18;
-const panelH=m=>36+Math.max(stackH(m,m.A),m.B.length?stackH(m,m.B):0)+PAD;
+const panelH=m=>42+Math.max(stackH(m,m.A),m.B.length?stackH(m,m.B):0)+PAD;
 
-el('text',{x:12,y:34,'font-size':22,'font-weight':'bold','font-family':'Times New Roman, serif','text-decoration':'underline'},'ENTITY RELATIONSHIP DIAGRAM');
+el('text',{x:14,y:36,'font-size':24,'font-weight':'bold','font-family':'Times New Roman, serif','text-decoration':'underline'},'ENTITY RELATIONSHIP DIAGRAM');
 // legenda
 const lg=[[ '#1e3a8a','PK'],['#15803d','FK (intra-modul)'],['#c2410c','→ soft-ref lintas modul']];
-lg.forEach(([c,t],i)=>{el('rect',{x:700+i*180,y:20,width:26,height:15,rx:3,fill:c});el('text',{x:732+i*180,y:32,'font-size':12,'font-weight':600},t);});
+lg.forEach(([c,t],i)=>{el('rect',{x:760+i*210,y:20,width:28,height:18,rx:4,fill:c});el('text',{x:796+i*210,y:34,'font-size':14,'font-weight':700},t);});
 
 const colY=[TOP,TOP,TOP]; const pos={};
 M.forEach(m=>{
   const c=colY.indexOf(Math.min(...colY)); const px=X0+c*(PW+PG), py=colY[c], ph=panelH(m);
   colY[c]+=ph+PG;
-  el('rect',{x:px,y:py,width:PW,height:ph,rx:10,fill:m.core?'#f8fafc':'#fffbeb',stroke:m.core?'#94a3b8':'#f59e0b','stroke-width':1.4,'stroke-dasharray':m.core?'':'6 4'});
-  el('text',{x:px+12,y:py+22,'font-size':12.5,'font-weight':800,fill:m.core?'#334155':'#92400e'},`${m.id} · ${m.name} ${m.core?'(Core)':'(Opsional)'}`);
-  const place=(list,tx)=>{let ty=py+36;list.forEach(n=>{pos[n]={x:tx,y:ty,col:tx};drawTable(n,m.T[n],tx,ty);ty+=tH(m.T[n])+18;});};
+  el('rect',{x:px,y:py,width:PW,height:ph,rx:12,fill:m.core?'#f8fafc':'#fffbeb',stroke:m.core?'#94a3b8':'#f59e0b','stroke-width':1.6,'stroke-dasharray':m.core?'':'6 4'});
+  el('text',{x:px+14,y:py+24,'font-size':15,'font-weight':800,fill:m.core?'#334155':'#92400e'},`${m.id} · ${m.name} ${m.core?'(Core)':'(Opsional)'}`);
+  const place=(list,tx)=>{let ty=py+40;list.forEach(n=>{pos[n]={x:tx,y:ty,col:tx};drawTable(n,m.T[n],tx,ty);ty+=tH(m.T[n])+18;});};
   const ax=px+PAD, bx=ax+TW+TG; place(m.A,ax); place(m.B,bx);
   // relasi FK
   const G='#15803d', fromCount={}; let gapLane=0, sideLane=0;
@@ -96,29 +96,29 @@ M.forEach(m=>{
     const y1=rowY(p,'id')+(j-1)*5-2, y2=rowY(ch,fk);
     let d, x1, x2, dir;                                   // dir = arah masuk ke child (+1 dari kiri, -1 dari kanan)
     if(P.x!==C.x){                                        // beda kolom → lewat celah, jalur unik
-      x1=P.x+TW; x2=C.x; const mx=x1+10+laneOf(e)*9; dir=1;
+      x1=P.x+TW; x2=C.x; const mx=x1+8+laneOf(e)*8; dir=1;
       d=`M${x1} ${y1} H${mx} V${y2} H${x2}`;
     } else {                                              // kolom sama → lewat sisi luar kanan
       x1=P.x+TW; x2=C.x+TW; const mx=x1+8+sideLane*7; sideLane++; dir=-1;
       d=`M${x1} ${y1} H${mx} V${y2} H${x2}`;
     }
-    el('path',{d,fill:'none',stroke:G,'stroke-width':1.5});
-    el('line',{x1:x1+5,y1:y1-5,x2:x1+5,y2:y1+5,stroke:G,'stroke-width':1.5});                  // sisi "satu"
-    if(card==='N') [-5,0,5].forEach(o=>el('line',{x1:x2-dir*9,y1:y2,x2:x2,y2:y2+o,stroke:G,'stroke-width':1.5})); // crow's foot
-    else el('line',{x1:x2-dir*5,y1:y2-5,x2:x2-dir*5,y2:y2+5,stroke:G,'stroke-width':1.5});
+    el('path',{d,fill:'none',stroke:G,'stroke-width':1.8});
+    el('line',{x1:x1+5,y1:y1-5,x2:x1+5,y2:y1+5,stroke:G,'stroke-width':1.8});                  // sisi "satu"
+    if(card==='N') [-5,0,5].forEach(o=>el('line',{x1:x2-dir*9,y1:y2,x2:x2,y2:y2+o,stroke:G,'stroke-width':1.8})); // crow's foot
+    else el('line',{x1:x2-dir*5,y1:y2-5,x2:x2-dir*5,y2:y2+5,stroke:G,'stroke-width':1.8});
   });
 });
 
 function drawTable(n,rows,x,y){
   const h=tH(rows);
-  el('rect',{x,y,width:TW,height:h,rx:4,fill:'#fff',stroke:'#334155','stroke-width':1.3});
+  el('rect',{x,y,width:TW,height:h,rx:6,fill:'#fff',stroke:'#334155','stroke-width':1.4});
   el('path',{d:`M${x} ${y+HH} V${y+4} Q${x} ${y} ${x+4} ${y} H${x+TW-4} Q${x+TW} ${y} ${x+TW} ${y+4} V${y+HH} Z`,fill:'#1e293b'});
-  el('text',{x:x+TW/2,y:y+15,'font-size':11.5,'font-weight':700,fill:'#fff','text-anchor':'middle'},n);
+  el('text',{x:x+TW/2,y:y+18,'font-size':14,'font-weight':800,fill:'#fff','text-anchor':'middle'},n);
   rows.forEach(([c,t,k],i)=>{
-    const ry=y+HH+i*RH+13; const sr=k&&k[0]==='>';
+    const ry=y+HH+i*RH+15; const sr=k&&k[0]==='>';
     const col=k==='PK'||k==='PFK'?'#1e3a8a':k==='FK'?'#15803d':sr?'#c2410c':'#0f172a';
-    const tag=el('text',{x:x+TW-6,y:ry,'font-size':9,fill:sr?'#c2410c':'#64748b','text-anchor':'end'},sr?'→'+k.slice(1):(k==='UK'?'UK':k==='PFK'?'PK,FK':t));
-    const nm=el('text',{x:x+6,y:ry,'font-size':10,'font-weight':k&&k!=='UK'?700:500,fill:col,'font-family':'Menlo, Consolas, monospace'},c);
+    const tag=el('text',{x:x+TW-6,y:ry,'font-size':10.5,'font-weight':700,fill:sr?'#c2410c':'#64748b','text-anchor':'end'},sr?'→'+k.slice(1):(k==='UK'?'UK':k==='PFK'?'PK,FK':t));
+    const nm=el('text',{x:x+6,y:ry,'font-size':12,'font-weight':k&&k!=='UK'?800:600,fill:col,'font-family':'Menlo, Consolas, monospace'},c);
     const room=TW-12-tag.getComputedTextLength()-6;       // ruang tersisa agar nama tidak menabrak tag
     if(nm.getComputedTextLength()>room){nm.setAttribute('textLength',room);nm.setAttribute('lengthAdjust','spacingAndGlyphs');}
   });

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gambar 2.4 — Alur Pengelolaan State Menggunakan Pola BLoC</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f8fafc; color: #0f172a; padding: 12px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .bar {
+    width: 100%; max-width: 580px; display: flex; justify-content: space-between;
+    align-items: center; background: #ffffff; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 8px 14px; margin-bottom: 8px;
+  }
+  .bar h1 { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+  .bar p { font-size: 0.75rem; color: #64748b; margin-top: 1px; }
+  .tb { display: flex; gap: 8px; }
+  .btn {
+    padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;
+  }
+  .btn:hover { background: #f1f5f9; }
+  .btn.primary { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+  .btn.primary:hover { background: #1d4ed8; }
+  .wrap {
+    background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 10px; max-width: 580px; overflow-x: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  svg { display: block; user-select: none; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div>
+    <h1>Gambar 2.4 — Alur Pengelolaan State Menggunakan Pola BLoC</h1>
+    <p>Aliran data searah: UI memicu Events ke BLoC, BLoC meminta Data dan memancarkan States ke UI</p>
+  </div>
+  <div class="tb">
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+<div class="wrap">
+  <svg id="fig-svg" width="540" height="150" viewBox="0 0 540 150" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <rect width="540" height="150" fill="#ffffff"/>
+    <defs>
+      <marker id="arr-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/>
+      </marker>
+      <marker id="arr-l" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto">
+        <path d="M6,0 L0,3 L6,6 Z" fill="#64748b"/>
+      </marker>
+    </defs>
+
+    <!-- UI Box -->
+    <rect x="30" y="38" width="90" height="74" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.8"/>
+    <text x="75" y="81" font-size="16" font-weight="700" fill="#1e3a8a" text-anchor="middle">UI</text>
+
+    <!-- BLoC Box -->
+    <rect x="225" y="38" width="90" height="74" rx="8" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.8"/>
+    <text x="270" y="81" font-size="16" font-weight="700" fill="#5b21b6" text-anchor="middle">BLoC</text>
+
+    <!-- Data Box -->
+    <rect x="420" y="38" width="90" height="74" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.8"/>
+    <text x="465" y="81" font-size="16" font-weight="700" fill="#065f46" text-anchor="middle">Data</text>
+
+    <!-- Arrows between UI and BLoC -->
+    <!-- Top arrow: States (BLoC -> UI) -->
+    <line x1="215" y1="58" x2="130" y2="58" stroke="#64748b" stroke-width="1.6" marker-end="url(#arr-l)"/>
+    <rect x="150" y="47" width="46" height="16" rx="4" fill="#ffffff"/>
+    <text x="173" y="59" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">States</text>
+
+    <!-- Bottom arrow: Events (UI -> BLoC) -->
+    <line x1="130" y1="92" x2="215" y2="92" stroke="#64748b" stroke-width="1.6" marker-end="url(#arr-r)"/>
+    <rect x="148" y="84" width="50" height="16" rx="4" fill="#ffffff"/>
+    <text x="173" y="96" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Events</text>
+
+    <!-- Arrows between BLoC and Data -->
+    <!-- Top arrow: Request (BLoC -> Data) -->
+    <line x1="325" y1="58" x2="410" y2="58" stroke="#64748b" stroke-width="1.6" marker-end="url(#arr-r)"/>
+    <rect x="342" y="47" width="52" height="16" rx="4" fill="#ffffff"/>
+    <text x="368" y="59" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Request</text>
+
+    <!-- Bottom arrow: Response (Data -> BLoC) -->
+    <line x1="410" y1="92" x2="325" y2="92" stroke="#64748b" stroke-width="1.6" marker-end="url(#arr-l)"/>
+    <rect x="339" y="84" width="58" height="16" rx="4" fill="#ffffff"/>
+    <text x="368" y="96" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Response</text>
+  </svg>
+</div>
+
+<script>
+function exportSVG() {
+  const svg = document.getElementById('fig-svg');
+  const serializer = new XMLSerializer();
+  let source = serializer.serializeToString(svg);
+  if(!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)){
+    source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  const blob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'gambar_2_4_bloc_flow.svg';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function exportPNG(scale = 2) {
+  const svg = document.getElementById('fig-svg');
+  const serializer = new XMLSerializer();
+  let source = serializer.serializeToString(svg);
+  if(!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)){
+    source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  const img = new Image();
+  const svgBlob = new Blob([source], {type: 'image/svg+xml;charset=utf-8'});
+  const url = URL.createObjectURL(svgBlob);
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 540 * scale; canvas.height = 150 * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0);
+    URL.revokeObjectURL(url);
+    const pngUrl = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = pngUrl; a.download = 'gambar_2_4_bloc_flow.png';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  };
+  img.src = url;
+}
+</script>
+</body>
+</html>

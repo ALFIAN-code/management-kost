@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Mockup Dasbor Peran Pemilik (Owner Dashboard) — Shadcn UI</title>
+<style>
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+    background: #f8fafc;
+    color: #09090b;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app-shell {
+    width: 1440px;
+    height: 920px;
+    display: flex;
+    background: #f8fafc;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+  }
+  /* SIDEBAR SHADCN COMPACT (Fits all 24 items cleanly) */
+  .sidebar {
+    width: 246px;
+    height: 100%;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 10px 8px 10px;
+    flex-shrink: 0;
+  }
+  .brand-box {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    margin-bottom: 8px;
+  }
+  .brand-logo {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .brand-logo svg { width: 17px; height: 17px; }
+  .brand-meta { flex: 1; min-width: 0; }
+  .brand-title { font-size: 11.5px; font-weight: 700; color: #09090b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand-sub { font-size: 9.5px; color: #64748b; }
+  .brand-chev { color: #64748b; width: 14px; height: 14px; }
+  .nav-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .nav-group-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.06em;
+    padding: 6px 8px 2px 8px;
+    text-transform: uppercase;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4.2px 8px;
+    border-radius: 6px;
+    font-size: 11.2px;
+    font-weight: 500;
+    color: #475569;
+  }
+  .nav-item.active {
+    background: #1d4ed8;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(29, 78, 216, 0.25);
+  }
+  .nav-icon { width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-icon svg { width: 13.5px; height: 13.5px; }
+  .sidebar-footer {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .theme-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #334155;
+  }
+  .switch-pill {
+    width: 30px; height: 16px; border-radius: 999px; border: 1.5px solid #09090b;
+    background: #ffffff; display: flex; align-items: center; padding: 1px;
+  }
+  .switch-dot { width: 10px; height: 10px; border-radius: 50%; background: #09090b; }
+  .user-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 7px;
+    background: #ffffff;
+  }
+  .user-avatar {
+    width: 26px; height: 26px; border-radius: 50%; background: #eff6ff; color: #1d4ed8;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .user-avatar svg { width: 14px; height: 14px; }
+  .user-info { flex: 1; }
+  .user-name { font-size: 11px; font-weight: 700; color: #09090b; line-height: 1.2; }
+  .user-role { font-size: 9.5px; color: #64748b; }
+  .user-logout { color: #64748b; width: 15px; height: 15px; }
+
+  /* MAIN AREA */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 22px;
+    gap: 14px;
+    overflow: hidden;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .page-head h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: #09090b; }
+  .page-head p { font-size: 12px; color: #64748b; margin-top: 2px; }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .building-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #ffffff; border: 1px solid #cbd5e1; border-radius: 7px;
+    padding: 6px 11px; font-size: 11.5px; font-weight: 600; color: #0f172a;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .building-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; }
+  .btn-shadcn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 7px; font-size: 11.5px; font-weight: 600;
+    border: 1px solid #e2e8f0; background: #ffffff; color: #09090b;
+  }
+  .btn-shadcn.primary { background: #1d4ed8; color: #ffffff; border-color: #1d4ed8; }
+  .btn-shadcn svg { width: 14px; height: 14px; }
+
+  /* CARDS & BENTO GRID */
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  }
+  .card-title-row {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+  }
+  .card-title { font-size: 13px; font-weight: 700; color: #09090b; letter-spacing: -0.01em; }
+  .card-sub { font-size: 11px; color: #64748b; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .badge.green { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+  .badge.blue { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+  .badge.amber { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+  .badge.red { background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; }
+  .badge.purple { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+
+  .num { font-variant-numeric: tabular-nums; font-family: "Inter", sans-serif; }
+  .mono { font-family: "SF Mono", "JetBrains Mono", Menlo, monospace; font-variant-numeric: tabular-nums; }
+
+  table.shadcn-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  table.shadcn-table th {
+    text-align: left; font-size: 10.5px; font-weight: 600; color: #64748b;
+    padding: 7px 10px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;
+  }
+  table.shadcn-table td {
+    padding: 8px 10px; border-bottom: 1px solid #f1f5f9; color: #0f172a; vertical-align: middle;
+  }
+
+  .kpi-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .kpi-box {
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .kpi-box .lbl { font-size: 11px; font-weight: 600; color: #64748b; display: flex; justify-content: space-between; align-items: center; }
+  .kpi-box .val { font-size: 22px; font-weight: 800; color: #09090b; margin: 6px 0 4px 0; letter-spacing: -0.02em; }
+  .kpi-box .sub { font-size: 10.5px; color: #64748b; display: flex; align-items: center; gap: 6px; }
+
+  .owner-split {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 12px;
+    flex: 1;
+  }
+  .left-col { display: flex; flex-direction: column; gap: 12px; }
+  .bar-chart {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    align-items: end;
+    height: 150px;
+    padding: 16px 12px 6px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+  .bar-group { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+  .bars { display: flex; gap: 5px; align-items: flex-end; height: 110px; }
+  .bar-in { width: 18px; background: #1d4ed8; border-radius: 4px 4px 0 0; }
+  .bar-out { width: 18px; background: #94a3b8; border-radius: 4px 4px 0 0; }
+  .bar-lbl { font-size: 10px; font-weight: 600; color: #475569; }
+
+  /* MCP AI PANEL */
+  .mcp-panel {
+    display: flex;
+    flex-direction: column;
+    border: 1.5px solid #c4b5fd;
+    background: linear-gradient(180deg, #faf5ff 0%, #ffffff 38%);
+  }
+  .mcp-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 10px; border-bottom: 1px solid #ede9fe; margin-bottom: 10px;
+  }
+  .mcp-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: #4c1d95; }
+  .mcp-icon {
+    width: 28px; height: 28px; border-radius: 7px; background: #7c3aed; color: #ffffff;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mcp-icon svg { width: 15px; height: 15px; }
+  .chat-feed { flex: 1; display: flex; flex-direction: column; gap: 9px; }
+  .bubble-user {
+    align-self: flex-end;
+    background: #1e293b; color: #ffffff;
+    padding: 8px 12px; border-radius: 10px 10px 2px 10px;
+    font-size: 11px; max-width: 88%; line-height: 1.4;
+  }
+  .tool-call-pill {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px;
+    padding: 5px 9px; font-size: 10px; color: #5b21b6; font-family: monospace;
+  }
+  .bubble-ai {
+    background: #ffffff; border: 1px solid #e2e8f0;
+    padding: 10px 12px; border-radius: 2px 10px 10px 10px;
+    font-size: 11px; color: #0f172a; line-height: 1.45;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .bubble-ai ul { margin: 5px 0 5px 16px; }
+  .bubble-ai li { margin-bottom: 3px; }
+  .mcp-input {
+    margin-top: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px;
+    font-size: 11px; color: #64748b;
+  }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  
+    <aside class="sidebar">
+      <div class="brand-box">
+        <div class="brand-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg></div>
+        <div class="brand-meta">
+          <div class="brand-title">Wisma Amal Gorontalo</div>
+          <div class="brand-sub">Multi-Property Kost System</div>
+        </div>
+        <span class="brand-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+      </div>
+
+      <div class="nav-list">
+        <div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span><span class="nav-text">Admin Dashboard</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 17.5h7"/><path d="M17.5 14v7"/></svg></span><span class="nav-text">Resident Dashboard</span></div>
+<div class="nav-group-label">SYSTEM AUTHENTICATION</div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><span class="nav-text">Permissions</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span><span class="nav-text">Roles</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="15" r="3"/><circle cx="9" cy="7" r="4"/><path d="M10 15H6a4 4 0 0 0-4 4v2"/></svg></span><span class="nav-text">Account Management</span></div>
+<div class="nav-group-label">RESIDENT MANAGEMENT</div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="nav-text">Resident List</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg></span><span class="nav-text">Guest List</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M14 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg></span><span class="nav-text">Guest Invoices</span></div>
+<div class="nav-group-label">ROOMS & RESERVATIONS</div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z"/></svg></span><span class="nav-text">Rooms</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg></span><span class="nav-text">Room Schedule</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="8" x2="16" y1="10" y2="10"/><line x1="8" x2="12" y1="14" y2="14"/></svg></span><span class="nav-text">Reservations</span></div>
+<div class="nav-group-label">FINANCE</div>
+<div class="nav-item active"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span><span class="nav-text">Dashboard</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M14 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg></span><span class="nav-text">Expenses</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span><span class="nav-text">Invoice List</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></span><span class="nav-text">Payment Management</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></span><span class="nav-text">Refund Requests</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 12.5-8 8a2.119 2.119 0 1 1-3-3l8-8"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/><path d="m9 7 8 8"/><path d="m21 11-8-8"/></svg></span><span class="nav-text">Fine Management</span></div>
+<div class="nav-group-label">INVENTORY & MAINTENANCE</div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg></span><span class="nav-text">Inventory</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><span class="nav-text">Maintenance</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><span class="nav-text">Damage Reports</span></div>
+<div class="nav-group-label">SYSTEM & ACCOUNT</div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span class="nav-text">Settings</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></span><span class="nav-text">Landing Page</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span><span class="nav-text">Notification Monitoring</span></div>
+<div class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="nav-text">My Profile</span></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="theme-row">
+          <span>Light Mode</span>
+          <div class="switch-pill"><div class="switch-dot"></div></div>
+        </div>
+        <div class="user-card">
+          <div class="user-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="user-info">
+            <div class="user-name">Pemilik Properti</div>
+            <div class="user-role">owner · Semua Gedung</div>
+          </div>
+          <div class="user-logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg></div>
+        </div>
+      </div>
+    </aside>
+    
+  <main class="main">
+    <!-- TOP BAR WITH BUILDING SWITCHER -->
+    <div class="topbar">
+      <div class="page-head">
+        <h1>Owner Portfolio & Financial Dashboard</h1>
+        <p>Rekapitulasi kinerja lintas gedung properti kost, laba bersih operasional (NOI), dan asisten analitik MCP.</p>
+      </div>
+      <div class="topbar-right">
+        <div class="building-pill" style="border-color:#1d4ed8;background:#eff6ff;">
+          <span class="building-dot"></span>
+          <span style="color:#1e40af;">Building Switcher: Semua Properti (3 Gedung)</span>
+          <span style="width:13px;height:13px;color:#1d4ed8;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="btn-shadcn">Gedung A</div>
+        <div class="btn-shadcn">Gedung B</div>
+        <div class="btn-shadcn">Gedung C</div>
+      </div>
+    </div>
+
+    <!-- 4 KPI CARDS -->
+    <div class="kpi-4">
+      <div class="card kpi-box">
+        <div class="lbl"><span>Total Pendapatan Kas Masuk</span><span class="badge green">+14.8% YoY</span></div>
+        <div class="val num">Rp 54.200.000</div>
+        <div class="sub"><span>Bulan berjalan (Okt 2026)</span><span>·</span><span>51 Kontrak Aktif</span></div>
+      </div>
+      <div class="card kpi-box">
+        <div class="lbl"><span>Laba Bersih Operasional (NOI)</span><span class="badge blue">Margin 77.2%</span></div>
+        <div class="val num" style="color:#15803d;">Rp 41.850.000</div>
+        <div class="sub"><span>Setelah dikurangi kas keluar Rp 12,35 Jt</span></div>
+      </div>
+      <div class="card kpi-box">
+        <div class="lbl"><span>Tingkat Keterisian (Occupancy)</span><span class="badge green">Optimal</span></div>
+        <div class="val num">85.0% <span style="font-size:13px;font-weight:600;color:#64748b;">(51 / 60 Kamar)</span></div>
+        <div class="sub"><span>6 Kamar Kosong</span><span>·</span><span>3 Kamar Maintenance</span></div>
+      </div>
+      <div class="card kpi-box">
+        <div class="lbl"><span>Piutang Tagihan Tertunggak</span><span class="badge red">3 Invoice</span></div>
+        <div class="val num" style="color:#be123c;">Rp 3.650.000</div>
+        <div class="sub"><span>Termasuk denda keterlambatan otomatis</span></div>
+      </div>
+    </div>
+
+    <!-- MAIN SPLIT: PORTFOLIO ANALYTICS + MCP AI ASSISTANT -->
+    <div class="owner-split">
+      <div class="left-col">
+        <!-- Chart Card -->
+        <div class="card">
+          <div class="card-title-row">
+            <div>
+              <div class="card-title">Tren Arus Kas Gabungan 6 Bulan Terakhir (Pendapatan vs Pengeluaran Operasional)</div>
+              <div class="card-sub">Agregasi seluruh gedung dalam jutaan Rupiah</div>
+            </div>
+            <div style="display:flex;gap:10px;font-size:10.5px;font-weight:600;">
+              <span style="color:#1d4ed8;">■ Kas Masuk (Sewa & Denda)</span>
+              <span style="color:#64748b;">■ Kas Keluar (Listrik, Air, Servis)</span>
+            </div>
+          </div>
+          <div class="bar-chart">
+            <div class="bar-group"><div class="bars"><div class="bar-in" style="height:78px;"></div><div class="bar-out" style="height:24px;"></div></div><div class="bar-lbl">Mei (46,2 Jt)</div></div>
+            <div class="bar-group"><div class="bars"><div class="bar-in" style="height:82px;"></div><div class="bar-out" style="height:26px;"></div></div><div class="bar-lbl">Jun (48,0 Jt)</div></div>
+            <div class="bar-group"><div class="bars"><div class="bar-in" style="height:88px;"></div><div class="bar-out" style="height:22px;"></div></div><div class="bar-lbl">Jul (50,5 Jt)</div></div>
+            <div class="bar-group"><div class="bars"><div class="bar-in" style="height:85px;"></div><div class="bar-out" style="height:29px;"></div></div><div class="bar-lbl">Agu (49,1 Jt)</div></div>
+            <div class="bar-group"><div class="bars"><div class="bar-in" style="height:94px;"></div><div class="bar-out" style="height:25px;"></div></div><div class="bar-lbl">Sep (52,0 Jt)</div></div>
+            <div class="bar-group"><div class="bars"><div class="bar-in" style="height:102px;"></div><div class="bar-out" style="height:23px;"></div></div><div class="bar-lbl" style="color:#1d4ed8;font-weight:800;">Okt (54,2 Jt)</div></div>
+          </div>
+        </div>
+
+        <!-- Per-Building Comparison Table -->
+        <div class="card" style="flex:1;">
+          <div class="card-title-row">
+            <div>
+              <div class="card-title">Perbandingan Kinerja per Gedung (Row-Level Scoped Aggregation)</div>
+              <div class="card-sub">Isolasi data menggunakan building_id dengan laporan gabungan instan</div>
+            </div>
+          </div>
+          <table class="shadcn-table">
+            <thead>
+              <tr>
+                <th>Kode & Nama Properti</th>
+                <th>Okupansi</th>
+                <th>Min. Sewa</th>
+                <th>Pendapatan Kotor</th>
+                <th>Beban Operasional</th>
+                <th>Laba Bersih (NOI)</th>
+                <th>Tunggakan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>GD-01 · Wisma Amal Utama</strong></td>
+                <td><span class="badge blue">18 / 20 (90%)</span></td>
+                <td>3 Bulan</td>
+                <td class="mono">Rp 21.500.000</td>
+                <td class="mono">Rp 4.850.000</td>
+                <td class="mono" style="font-weight:700;color:#15803d;">Rp 16.650.000</td>
+                <td><span class="badge red">1 Inv (Rp 1,25 Jt)</span></td>
+              </tr>
+              <tr>
+                <td><strong>GD-02 · Wisma Amal Putri</strong></td>
+                <td><span class="badge green">19 / 20 (95%)</span></td>
+                <td>6 Bulan</td>
+                <td class="mono">Rp 19.200.000</td>
+                <td class="mono">Rp 4.100.000</td>
+                <td class="mono" style="font-weight:700;color:#15803d;">Rp 15.100.000</td>
+                <td><span class="badge green">Nihil (Lunas)</span></td>
+              </tr>
+              <tr>
+                <td><strong>GD-03 · Wisma Eksekutif</strong></td>
+                <td><span class="badge amber">14 / 20 (70%)</span></td>
+                <td>1 Bulan</td>
+                <td class="mono">Rp 13.500.000</td>
+                <td class="mono">Rp 3.400.000</td>
+                <td class="mono" style="font-weight:700;color:#15803d;">Rp 10.100.000</td>
+                <td><span class="badge red">2 Inv (Rp 2,40 Jt)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RIGHT: MCP AI ASSISTANT PANEL -->
+      <div class="card mcp-panel">
+        <div class="mcp-head">
+          <div class="mcp-title">
+            <div class="mcp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
+            <div>
+              <div>Asisten AI Manajerial (MCP Server)</div>
+              <div style="font-size:10px;font-weight:500;color:#6d28d9;">JSON-RPC 2.0 · Read-Only Database Tools</div>
+            </div>
+          </div>
+          <span class="badge purple">READ-ONLY SAFE</span>
+        </div>
+
+        <div class="chat-feed">
+          <div class="bubble-user">
+            Berapa laba bersih masing-masing gedung bulan ini, dan siapa penghuni yang masih menunggak pembayaran?
+          </div>
+
+          <div class="tool-call-pill">
+            <span>⚡ tools/call: get_financial_summary(period="2026-10")</span>
+            <span style="color:#15803d;font-weight:700;">✓ 18 ms</span>
+          </div>
+          <div class="tool-call-pill">
+            <span>⚡ tools/call: list_overdue_invoices(status="overdue")</span>
+            <span style="color:#15803d;font-weight:700;">✓ 12 ms</span>
+          </div>
+
+          <div class="bubble-ai">
+            <strong>Ringkasan Laba Bersih (Oktober 2026):</strong>
+            <ul>
+              <li><strong>Gedung Utama (GD-01):</strong> Laba bersih <strong>Rp 16.650.000</strong> (Okupansi 90%).</li>
+              <li><strong>Gedung Putri (GD-02):</strong> Laba bersih <strong>Rp 15.100.000</strong> (Okupansi 95%, tanpa tunggakan).</li>
+              <li><strong>Gedung Eksekutif (GD-03):</strong> Laba bersih <strong>Rp 10.100.000</strong> (Okupansi 70%).</li>
+            </ul>
+            <strong>Daftar Penghuni Menunggak (3 Tagihan — Total Rp 3.650.000):</strong>
+            <ul>
+              <li><strong>#108 (GD-01) — Dimas Saputra:</strong> Rp 1.250.000 (terlambat 4 hari, termasuk denda Rp 50.000).</li>
+              <li><strong>#302 (GD-03) — Fajar Nugroho:</strong> Rp 1.200.000 (terlambat 2 hari).</li>
+              <li><strong>#305 (GD-03) — Kevin Pratama:</strong> Rp 1.200.000 (terlambat 1 hari).</li>
+            </ul>
+            <div style="margin-top:6px;padding-top:6px;border-top:1px solid #f1f5f9;font-size:10px;color:#64748b;">
+              Sumber: Tabel <code>invoices</code>, <code>expenses</code>, dan <code>leases</code> (Akses baca terverifikasi).
+            </div>
+          </div>
+        </div>
+
+        <div class="mcp-input">
+          <span>Tanyakan okupansi, arus kas, atau komplain gedung...</span>
+          <span class="badge purple">Kirim ↵</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

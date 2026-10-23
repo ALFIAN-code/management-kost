@@ -5,7 +5,7 @@
 
 ---
 
-## 2.1 Deskripsi Permasalahan Empiris dan Teknis
+## 2.1 Deskripsi Permasalahan
 
 Penelitian ini berfokus pada **refactoring** sistem informasi manajemen rumah kost yang sebelumnya telah dikembangkan sebagai *previous work* oleh empat mahasiswa [5][6][7][8]. Sebelum merancang ulang, sistem lama dianalisis lebih dahulu untuk menemukan hambatan teknis yang menjadi dasar rewrite ini. Lima masalah berikut merupakan temuan utama yang menjadi dasar pemetaan kelemahan pada BAB 1 dan pemetaan solusi pada BAB 3:
 
@@ -36,8 +36,6 @@ Pada industri properti sewa, SIM menjalankan tiga fungsi yang saling terkait. Pe
 
 PA ini memakai konsep SIM sebagai kerangka dasar karena ketiga fungsi tersebut tercakup di dalam sistem yang dibangun. Yang membedakan sistem ini dari sistem lama adalah letak otomasi. Pada sistem lama, laporan okupansi dan tunggakan harus dihimpun manual dengan membuka beberapa menu satu per satu. Pada sistem yang dirancang, data sudah tersusun begitu masuk sehingga laporan terbentuk otomatis dan tidak perlu diketik ulang.
 
-> **Gambar 2.1 — Dimensi Fungsional SIM pada Sistem Manajemen Rumah Kost:** belum tersedia. Diagram ini masih perlu dibuat.
-
 ---
 
 ### 2.2.2 Arsitektur Modular Monolithic
@@ -50,7 +48,7 @@ PA ini memakai pendekatan ini karena alasan utamanya adalah kemudahan waktu depa
 
 Kemudahan inilah yang tidak dimiliki sistem lama. Folder modulnya memang ada, tetapi karena batasnya tidak ditegakkan, modul keuangan tetap bisa membaca tabel modul kamar. Akibatnya tidak ada satu pun bagian yang bisa dilepas atau diuji sendiri tanpa menarik bagian lain ikutcampur. Batas yang benar-benar dipaksakan oleh kerangka kerja membuat penambahan dan penghapusan modul menjadi pekerjaan yang biasa, bukan proses yang perlu dikhawatirkan.
 
-> **Gambar 2.2 — Hirarki Modul 3-Tier pada Modular Monolithic:** `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/hierarki_3_tier_modulith.mmd` / `.png`
+> **Gambar 2.1 — Arsitektur Modular Monolithic:** `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.png`
 
 ---
 
@@ -62,7 +60,7 @@ Dua mekanisme membuat hal itu bekerja. Pertama, *encapsulation*. Layanan yang ti
 
 PA ini memilih NestJS karena pemisahan antar modul ditegakkan oleh kerangka kerjanya sendiri, bukan oleh disiplin tim. Ketika modul keuangan mencoba menulis kueri ke tabel milik modul kamar, kode itu akan gagal sejak tahap build, bukan baru ketahuan saat pengujian. Pengalaman sistem lama menunjukkan bahwa pemisahan yang hanya dijaga lewat aturan tertulis akan cepat dilanggar ketika waktu pengembangan sedang menekan. Dengan NestJS, pelanggaran aturan menjadi kesalahan teknis, bukan pilihan penyusun kode.
 
-> **Gambar 2.3 — Pemisahan Antar Modul dan Mekanisme Dependency Injection pada NestJS:** belum tersedia. Diagram ini masih perlu dibuat.
+> **Gambar 2.2 — Struktur Modul dan Dependency Injection pada NestJS:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_3_nestjs_modul_di.png`
 
 ---
 
@@ -71,8 +69,6 @@ PA ini memilih NestJS karena pemisahan antar modul ditegakkan oleh kerangka kerj
 Flutter adalah kerangka kerja antarmuka lintas platform yang dikembangkan oleh Google dengan bahasa pemrograman Dart [15]. Semua tampilan pada aplikasi disusun dari komponen yang namanya *widget*. Satu basis kode yang sama dapat dikompilasi menjadi aplikasi web, aplikasi Android, maupun aplikasi iOS, tanpa menulis ulang lapisan tampilannya. Karena itu Flutter disebut multi-platform, sebab satu proyek dapat dipakai untuk beberapa perangkat sekaligus.
 
 PA ini memakai Flutter dengan target utama berupa aplikasi web. Alasan memilih lingkungan web adalah lingkup penggunaan sistem: pengoperasian harian dilakukan dari komputer atau tablet di ruang pengelola, sehingga tampilan lebar lebih sesuai. Arsitektur yang dipakai juga memperjelas alasan itu. Karena logika bisnis disimpan di lapisan domain yang murni Dart tanpa bergantung pada sistem operasi maupun peramban, lapisan tersebut tetap bisa dipakai ulang ketika aplikasi dikompilasi untuk perangkat mobile di kemudian hari. Jadi kesiapan ekspansi ke mobile muncul sebagai hasil dari struktur kode, bukan sebagai target tambahan yang harus dirancang terpisah.
-
-> **Gambar 2.4 — Lapisan Clean Architecture pada Flutter:** `PA/docs/System design/01-Gambaran-umum/03_arsitektur_frontend/clean_architecture_frontend.mmd` / `.png`
 
 ---
 
@@ -84,7 +80,7 @@ Pada aplikasi Flutter, pemisahan ini menjawab satu masalah yang sering muncul. K
 
 PA ini memakai Clean Architecture pada sisi antarmuka karena pemisahan tersebut memudahkan dua hal. Pertama, pengujian: setiap lapisan punya fokus yang jelas, sehingga aturan bisnis dapat diuji tanpa lapisan lain, dan pengujian antarmuka cukup memeriksa pemetaan state ke tampilan. Kedua, perubahan pada bagian tertentu tidak menimpa bagian lain. Contohnya, apabila format jawaban API berubah, cukup ubah lapisan data; lapisan domain dan lapisan presentasi tidak perlu disentuh karena keduanya tidak tahu bentuk data mentah.
 
-> **Gambar 2.5 — Pembagian Lapisan pada Clean Architecture:** `PA/docs/System design/01-Gambaran-umum/03_arsitektur_frontend/clean_architecture_frontend.mmd` / `.png`
+> **Gambar 2.3 — Penerapan Clean Architecture pada Aplikasi Flutter:** `PA/docs/System design/01-Gambaran-umum/03_arsitektur_frontend/clean_architecture_frontend.png`
 
 ---
 
@@ -96,7 +92,7 @@ Pola ini membuat aliran data pada antarmuka berjalan satu arah dan mudah dilacak
 
 PA ini memakai BLoC karena pola ini sebenarnya memaksa struktur kode menjadi tertata. BLoC hanya bekerja jika logika bisnis berada di use case terpisah dari widget yang memunculkannya. Umumnya, pengembang yang langsung memuat data dan memprosesnya di dalam widget akan membuat pola ini mustahil diterapkan. Dengan BLoC, pemisahan antara logika bisnis dan tampilan bukan lagi pilihan disiplin, melainkan syarat agar pola tersebut berjalan.
 
-> **Gambar 2.6 — Alur Data pada Pola BLoC:** belum tersedia. Diagram ini masih perlu dibuat.
+> **Gambar 2.4 — Alur Pengelolaan State Menggunakan Pola BLoC:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_4_bloc_flow.png`
 
 ---
 
@@ -108,8 +104,6 @@ Pertama, tipe numerik `NUMERIC` dipakai untuk seluruh nilai uang. Tipe ini menyi
 
 Mekanisme penguncian itulah yang dipakai untuk mencegah dua orang memesan kamar yang sama pada saat bersamaan. Saat permintaan sewa masuk, baris kamar dikunci lebih dulu, lalu diperiksa apakah sudah ada kontrak aktif di periode tersebut. Kalau belum ada, kontrak disimpan di dalam transaksi yang sama; kalau sudah ada, transaksi dibatalkan dan permintaan kedua ditolak. Selama penguncian masih aktif, permintaan lain untuk kamar yang sama harus mengantre. Inilah yang membuat pemesanan ganda tidak mungkin terjadi meski beberapa orang menekan tombol sewa pada milidetik yang sama.
 
-> **Gambar 2.7 — Mekanisme Penguncian Baris untuk Pencegahan Pemesanan Ganda:** belum tersedia. Diagram ini masih perlu dibuat.
-
 ---
 
 ### 2.2.8 Multi-Tenancy dengan Row-Level Scoping
@@ -120,7 +114,7 @@ Tiga model yang lazim adalah *database per tenant*, *schema per tenant*, dan *sh
 
 PA ini memilih model ketiga karena tiga alasannya. Migrasi skema cukup dijalankan satu kali untuk seluruh gedung, bukan diulang tiap kali ada properti baru. Biaya server tidak bertambah seiring jumlah gedung. Dan yang paling penting, laporan gabungan seluruh portofolio bisa disusun dengan satu kueri, sedangkan pada model terpisah data harus digabungkan lebih dahulu. Keterbatasan model ini juga diketahui: pemisahan data harus dijaga di lapisan aplikasi, bukan oleh basis data, sehingga setiap kueri wajib menyertakan `building_id`.
 
-> **Gambar 2.8 — Isolasi Data Antar Gedung pada Row-Level Scoping:** belum tersedia. Diagram ini masih perlu dibuat.
+> **Gambar 2.5 — Pendekatan Multi-Tenancy Shared Database dengan Row-Level Scoping:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_8_row_level_scoping.png`
 
 ---
 
@@ -134,7 +128,7 @@ Keycloak adalah *identity and access management* open-source yang mendukung OIDC
 
 PA ini memakai Keycloak karena tiga alasan. Pertama, fitur keamanan yang dibutuhkan sudah tersedia sehingga waktu pengembangan bisa dipakai untuk aturan bisnis sewa. Kedua, peran pengguna seperti pemilik, pengelola, dan penghuni cukup diatur di satu tempat, lalu diteruskan ke backend lewat isi token. Ketiga, backend cukup memverifikasi tanda tangan token tanpa perlu menghubungi Keycloak pada setiap permintaan, sehingga waktu tanggap tidak bertambah. Perlu dicatat bahwa Keycloak menambah satu layanan yang harus dijalankan dan dipelihara, dan pembagian peran harus disusun di Keycloak dengan cermat supaya tetap sinkron dengan aturan pada sistem.
 
-> **Gambar 2.9 — Alur Verifikasi Token OIDC dengan JWKS:** belum tersedia. Diagram ini masih perlu dibuat.
+> **Gambar 2.6 — Alur Autentikasi SSO Berbasis OpenID Connect dengan Keycloak:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_9_oidc_jwks.png`
 
 ---
 
@@ -144,9 +138,7 @@ Docker adalah platform *containerization* yang membungkus aplikasi beserta selur
 
 Perbedaan utama Docker dengan cara lama adalah pemisahan antara apa yang ada di kode dan apa yang ada di komputer. Pada pendekatan lama, setiap orang memasang PostgreSQL dan Keycloak dengan versi masing-masing, dan versi yang berbeda sering menyebabkan program berjalan di satu komputer tetapi gagal di komputer lain. Dengan Docker, versi PostgreSQL dan Keycloak dituliskan di satu berkas konfigurasi, lalu dijalankan apa adanya di mana saja.
 
-Docker Compose adalah kelanjutannya. Compose membaca satu berkas yang menjelaskan beberapa container sekaligus, lalu menjalankan semuanya dengan satu perintah. PA ini punya tiga komponen yang harus jalan bersamaan: backend NestJS, basis data PostgreSQL, dan Keycloak. Compose dipakai agar ketiganya bisa dijalankan, dihentikan, dan dibuild ulang tanpa langkah manual yang berbeda-beda [41].
-
-> **Gambar 2.10 — Komposisi Container pada Sistem Manajemen Rumah Kost:** belum tersedia. Diagram ini masih perlu dibuat.
+Docker Compose adalah kelanjutannya. Compose membaca satu berkas yang menjelaskan beberapa container sekaligus, lalu menjalankan semuanya dengan satu perintah. PA ini punya tiga komponen yang harus jalan bersamaan: backend NestJS, basis data PostgreSQL, dan Keycloak. Compose dipakai agar ketiganya bisa dijalankan, dihentikan, dan dibuild ulang tanpa langkah manual yang berbeda-beda.
 
 ---
 
@@ -158,7 +150,7 @@ Integrasi berjalan dua arah. Dari sisi sistem, backend meminta token pembayaran 
 
 Ada dua perlindungan yang dipakai pada sistem ini. Yang pertama, penomoran pesanan. Setiap permintaan pembayaran diberi nomor unik, sehingga ketika jaringan membuatkan permintaan terkirim ulang, Midtrans mengenali bahwa itu transaksi yang sama dan tidak membuat tagihan ganda. Yang kedua, verifikasi tanda tangan. Setiap *webhook* disertai tanda tangan yang dihitung dari nomor pesanan, kode status, jumlah pembayaran, dan kunci rahasia. Backend menghitung ulang tanda tangan itu; kalau tidak cocok, permintaan ditolak dan status tagihan tidak diubah. Tanpa dua perlindungan ini, siapa pun yang mengetahui alamat *webhook* bisa memalsukan pembayaran.
 
-> **Gambar 2.11 — Alur Pembayaran dan Verifikasi Webhook:** belum tersedia. Diagram ini masih perlu dibuat.
+> **Gambar 2.7 — Alur Transaksi dan Pembayaran Digital via Midtrans SNAP:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_11_midtrans_webhook.png`
 
 ---
 
@@ -166,7 +158,7 @@ Ada dua perlindungan yang dipakai pada sistem ini. Yang pertama, penomoran pesan
 
 REST API adalah gaya komunikasi yang paling umum dipakai antar aplikasi web. Yang dikirim berupa permintaan HTTP, dan jawabannya berupa *response* dengan kode status yang menyatakan berhasil atau gagal. Kelemahannya, setiap pengembang bebas membuat format jawabannya sendiri, sehingga satu endpoint bisa berbeda dengan endpoint lain. Pengembang yang membuat program harusnya mengelola semua kemungkinan format itu.
 
-Standar yang dipakai pada sistem ini mengatasi masalah tersebut: setiap *endpoint* mengembalikan *response* dengan lima kunci yang selalu sama. Kunci `status` menyatakan berhasil atau gagal, `message` berisi keterangan yang bisa dibaca manusia, `data` berisi isi jawaban, `meta` berisi informasi tambahan seperti penomoran halaman, dan `errors` berisi rincian kesalahan validasi. Format kesalahan mengikuti kebiasaan *Problem Details* [36]. Contoh jawaban berhasil:
+Standar yang dipakai pada sistem ini mengatasi masalah tersebut: setiap *endpoint* mengembalikan *response* dengan lima kunci yang selalu sama. Kunci `status` menyatakan berhasil atau gagal, `message` berisi keterangan yang bisa dibaca manusia, `data` berisi isi jawaban, `meta` berisi informasi tambahan seperti penomoran halaman, dan `errors` berisi rincian kesalahan validasi. Format kesalahan mengikuti kebiasaan *Problem Details*. Contoh jawaban berhasil:
 
 ```json
 {
@@ -197,8 +189,6 @@ Contoh jawaban gagal karena masukan tidak sesuai:
 
 Kode status yang dipakai mengikuti ketetapan umum HTTP. Kode 200 dan 201 berarti permintaan berhasil diproses atau data baru dibuat. Kode 400 berarti permintaan tidak sesuai format. Kode 401 berarti token tidak ada atau sudah kedaluwarsa. Kode 403 berarti pengguna tidak berhak mengakses data gedung tersebut. Kode 404 berarti data tidak ditemukan. Kode 422 berarti masukan melanggar aturan bisnis, misalnya durasi sewa di bawah minimal. Dengan seluruh kemungkinan kesalahan mengikuti pola yang sama, sisi antarmuka cukup menulis satu fungsi untuk menangani semuanya.
 
-> **Gambar 2.12 — Bentuk Standar Respons API:** belum tersedia. Diagram ini masih perlu dibuat.
-
 ---
 
 ### 2.2.13 Pengujian Perangkat Lunak Otomatis
@@ -211,7 +201,7 @@ Jumlah pengujian berbanding terbalik dengan tingginya. Makin ke atas, makin sedi
 
 PA ini memakai susunan itu dengan target cakupan kode minimal 80 persen. Ada satu jenis pengujian yang khas untuk sistem ini, yaitu uji isolasi gedung. Tujuannya membuktikan bahwa pengelola gedung satu tidak dapat membaca data gedung lain, termasuk ketika keduanya mencoba mengakses pada saat bersamaan.
 
-> **Gambar 2.13 — Piramida Pengujian beserta Komposisinya:** belum tersedia. Diagram ini masih perlu dibuat.
+> **Gambar 2.8 — Piramida Pengujian Perangkat Lunak (Testing Pyramid):** `PA/docs/System design/06-Teori-Penunjang/gambar_2_13_piramida_pengujian.png`
 
 ---
 
@@ -225,7 +215,7 @@ Server MCP mengekspos tiga jenis kemampuan. *Resources* berisi data yang bisa di
 
 Oleh karena itu, pada sistem ini semua *tools* yang diekspos hanya berfungsi membaca. Tidak ada satu pun fungsi yang mengubah data. Dengan begitu, jawaban yang muncul di kolom tanya-jawab pasti berdasarkan angka yang benar-benar ada di basis data, dan keputusan penting tetap diambil manusia.
 
-> **Gambar 2.14 — Alur Jawaban Cepat lewat Asisten Artificial Intelligence dan MCP:** `PA/docs/System design/02-BPMN/09_konsultasi_ai_mcp/bpmn_konsultasi_ai_mcp.mmd` (sumber notasi Mermaid, hasil render `.png`)
+> **Gambar 2.9 — Integrasi Model Context Protocol (MCP) dengan Basis Data Operasional:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_14_mcp.png`
 
 ---
 

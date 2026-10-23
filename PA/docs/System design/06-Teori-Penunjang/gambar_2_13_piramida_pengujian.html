@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gambar 2.13 — Piramida Pengujian beserta Komposisinya</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f8fafc; color: #0f172a; padding: 12px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .bar {
+    width: 100%; max-width: 704px; display: flex; justify-content: space-between;
+    align-items: center; background: #ffffff; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 8px 14px; margin-bottom: 8px;
+  }
+  .bar h1 { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+  .bar p { font-size: 0.75rem; color: #64748b; margin-top: 1px; }
+  .tb { display: flex; gap: 8px; }
+  .btn {
+    padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;
+  }
+  .btn:hover { background: #f1f5f9; }
+  .btn.primary { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+  .btn.primary:hover { background: #1d4ed8; }
+  .wrap {
+    background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 10px; max-width: 704px; overflow-x: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  svg { display: block; user-select: none; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div>
+    <h1>Gambar 2.13 — Piramida Pengujian beserta Komposisinya</h1>
+    <p>Tingkatan piramida pengujian perangkat lunak dari unit terisolasi hingga pengujian menyeluruh (E2E)</p>
+  </div>
+  <div class="tb">
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+<div class="wrap">
+  <svg id="fig-svg" width="680" height="215" viewBox="0 0 680 215" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <rect width="680" height="215" fill="#ffffff"/>
+    <defs>
+      <marker id="arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#2563eb" />
+      </marker>
+      <marker id="arr-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#16a34a" />
+      </marker>
+      <marker id="arr-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#dc2626" />
+      </marker>
+      <marker id="arr-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#d97706" />
+      </marker>
+      <marker id="arr-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#7c3aed" />
+      </marker>
+      <marker id="arr-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#475569" />
+      </marker>
+    </defs>
+    
+    <!-- Segitiga Piramida -->
+    <!-- Tier 1: UI / E2E (Puncak) -->
+    <polygon points="230,15 175,65 285,65" fill="#fef2f2" stroke="#ef4444" stroke-width="1.4"/>
+    <text x="230" y="45" font-size="10" font-weight="700" fill="#991b1b" text-anchor="middle">UI / E2E</text>
+    <text x="230" y="58" font-size="8" font-weight="600" fill="#b91c1c" text-anchor="middle">±10%</text>
+
+    <!-- Tier 2: Integrasi (Tengah) -->
+    <polygon points="175,65 285,65 340,125 120,125" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.4"/>
+    <text x="230" y="92" font-size="10.5" font-weight="700" fill="#92400e" text-anchor="middle">Integration / Service</text>
+    <text x="230" y="107" font-size="8" font-weight="600" fill="#b45309" text-anchor="middle">±20%</text>
+
+    <!-- Tier 3: Unit (Dasar) -->
+    <polygon points="120,125 340,125 400,185 60,185" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.4"/>
+    <text x="230" y="152" font-size="11" font-weight="700" fill="#166534" text-anchor="middle">Unit Tests</text>
+    <text x="230" y="167" font-size="8" font-weight="600" fill="#15803d" text-anchor="middle">±70% (Fondasi Utama)</text>
+
+    <!-- Indikator Kiri: Kecepatan & Biaya -->
+    <line x1="32" y1="180" x2="32" y2="25" stroke="#475569" stroke-width="1.5" marker-end="url(#arr-slate)"/>
+    <text transform="translate(22, 105) rotate(-90)" font-size="8.5" font-weight="700" fill="#334155" text-anchor="middle">Biaya & Waktu Eksekusi Meningkat</text>
+
+    <!-- Penjelasan Tiap Lapisan (Kanan) -->
+    <!-- Card E2E -->
+    <rect x="420" y="20" width="245" height="45" rx="5" fill="#ffffff" stroke="#fca5a5" stroke-width="1"/>
+    <rect x="420" y="20" width="6" height="45" rx="2" fill="#ef4444"/>
+    <text x="435" y="36" font-size="9.5" font-weight="700" fill="#991b1b">End-to-End / UI Tests (Paling Sedikit)</text>
+    <text x="435" y="52" font-size="8" fill="#64748b">Menguji alur sistem lengkap dari antarmuka; lambat & rapuh.</text>
+
+    <!-- Card Integrasi -->
+    <rect x="420" y="75" width="245" height="45" rx="5" fill="#ffffff" stroke="#fde68a" stroke-width="1"/>
+    <rect x="420" y="75" width="6" height="45" rx="2" fill="#f59e0b"/>
+    <text x="435" y="91" font-size="9.5" font-weight="700" fill="#92400e">Integration Tests (Jumlah Sedang)</text>
+    <text x="435" y="107" font-size="8" fill="#64748b">Menguji komunikasi antar-modul, database, dan API endpoint.</text>
+
+    <!-- Card Unit -->
+    <rect x="420" y="130" width="245" height="45" rx="5" fill="#ffffff" stroke="#86efac" stroke-width="1"/>
+    <rect x="420" y="130" width="6" height="45" rx="2" fill="#22c55e"/>
+    <text x="435" y="146" font-size="9.5" font-weight="700" fill="#166534">Unit Tests (Porsi Terbesar)</text>
+    <text x="435" y="162" font-size="8" fill="#64748b">Menguji fungsi & aturan bisnis secara terisolasi; sangat cepat.</text>
+
+    <text x="230" y="204" font-size="8" fill="#64748b" text-anchor="middle">*Rasio 70/20/10 merupakan acuan umum industri (Mike Cohn & Google Testing Guide)</text>
+    
+  </svg>
+</div>
+<script>
+const NAME = 'gambar_2_13_piramida_pengujian_simple';
+function getSVG() {
+  return new XMLSerializer().serializeToString(document.getElementById('fig-svg'));
+}
+function download(href, filename) {
+  const a = document.createElement('a'); a.href = href; a.download = filename;
+  document.body.appendChild(a); a.click(); setTimeout(() => a.remove(), 100);
+}
+function exportSVG() {
+  const blob = new Blob([getSVG()], { type: 'image/svg+xml;charset=utf-8' });
+  download(URL.createObjectURL(blob), NAME + '.svg');
+}
+function exportPNG(scale = 2) {
+  const svg = document.getElementById('fig-svg');
+  const w = +svg.getAttribute('width'), h = +svg.getAttribute('height');
+  const canvas = document.createElement('canvas');
+  canvas.width = w * scale; canvas.height = h * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(scale, scale);
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0);
+    download(canvas.toDataURL('image/png'), NAME + '@' + scale + 'x.png');
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getSVG());
+}
+</script>
+</body>
+</html>
