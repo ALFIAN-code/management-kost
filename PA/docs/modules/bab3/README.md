@@ -14,7 +14,7 @@ Solusi ini menjawab permasalahan pada BAB 1 melalui enam hal berikut.
 
 2. **Backend dibagi menjadi sembilan modul yang terpisah tegas.** Backend dibangun dengan NestJS dan dibagi menjadi modul Auth, Building, Room, Lease, Finance, Maintenance, Guest, Inventory, dan Notification. Setiap modul hanya mengelola tabel miliknya sendiri. Jika satu modul perlu memicu perubahan di modul lain, misalnya kontrak sewa baru yang harus menghasilkan tagihan, modul tersebut mengirim *event* dan tidak mengakses tabel modul lain secara langsung. Dengan cara ini, kesalahan pada satu modul tidak merembet ke modul lain, dan setiap modul dapat diuji sendiri.
 
-3. **Sewa bulanan dengan aturan per gedung.** Sistem hanya melayani sewa dalam satuan bulan penuh. Durasi minimum sewa diatur oleh masing-masing gedung, bukan ditanam di kode, sehingga gedung yang mewajibkan sewa minimal tiga bulan dan gedung yang mengizinkan sewa satu bulan dapat berjalan di sistem yang sama. Penyederhanaan ini memangkas skema basis data dari 41 tabel menjadi 13 tabel. Sistem juga mengakomodasi kebijakan pemesanan fleksibel (bayar penuh bulan pertama atau uang tanda jadi/DP flat) per gedung melalui pola *Two-Phase Invoicing* tanpa menambah tabel cicilan baru. Untuk mencegah pemesanan ganda, kamar dikunci selama proses pemesanan berlangsung, sehingga dua penghuni tidak dapat menyewa kamar yang sama pada periode yang sama.
+3. **Sewa bulanan dengan aturan per gedung.** Sistem hanya melayani sewa dalam satuan bulan penuh. Durasi minimum sewa diatur oleh masing-masing gedung, bukan ditanam di kode, sehingga gedung yang mewajibkan sewa minimal tiga bulan dan gedung yang mengizinkan sewa satu bulan dapat berjalan di sistem yang sama. Penyederhanaan ini memangkas skema basis data dari 41 tabel menjadi skema 21 tabel domain. Sistem juga mengakomodasi kebijakan pemesanan fleksibel (bayar penuh bulan pertama atau uang tanda jadi/DP flat) per gedung melalui pola *Two-Phase Invoicing* tanpa menambah tabel cicilan baru. Untuk mencegah pemesanan ganda, kamar dikunci selama proses pemesanan berlangsung, sehingga dua penghuni tidak dapat menyewa kamar yang sama pada periode yang sama.
 
 4. **Tagihan dan pembayaran berjalan otomatis.** Begitu kontrak sewa tercatat, sistem menerbitkan tagihan, dan penghuni dapat membayar melalui Midtrans dengan Virtual Account atau QRIS. Status pembayaran diperbarui otomatis setelah notifikasi dari Midtrans diverifikasi. Pesan tagihan, pengingat jatuh tempo, dan bukti lunas dikirim lewat WhatsApp, serta dilengkapi tombol aksi kirim pengingat manual bagi pengelola. Bagi calon penghuni yang membatalkan pemesanan sebelum tanggal mulai sewa, sistem memfasilitasi pengajuan pengembalian dana (*refund*) semi-manual yang diselesaikan via transfer m-banking pengelola berlampiran bukti transfer resmi.
 
@@ -68,7 +68,7 @@ Gambar 3.1 memperlihatkan hubungan kerja antara keempat lapisan tersebut:
    - **REST API NestJS:** Menyediakan antarmuka komunikasi data HTTP yang terstandarisasi dengan amplop JSON seragam, validasi ketat DTO (*Data Transfer Object*), dan dokumentasi interaktif Swagger.
    - **MCP Server & Klien MCP:** Menjalankan protokol *Model Context Protocol* (MCP) berbasis format JSON-RPC 2.0. Klien AI (model bahasa besar/LLM) mengirimkan permintaan pemanggilan alat (*tool call*), lalu modul MCP mengeksekusi kueri agregasi baca secara terukur dan mengembalikan data faktual operasional.
 3. **Lapisan Backend Modular Monolith.** Inti pemrosesan sistem dibangun dengan kerangka kerja NestJS yang membagi fungsi bisnis ke dalam sembilan modul terenkapsulasi. Antar-modul berkomunikasi melalui *event bus* untuk aksi mutasi data dan melalui *query gateway* untuk pembacaan lintas domain, tanpa relasi fisik antar-tabel. Di bagian luar, backend terhubung ke penyedia gerbang pembayaran Midtrans melalui `MidtransAdapter` dan ke penyedia WhatsApp Gateway melalui `WhatsAppAdapter`.
-4. **Lapisan Data (PostgreSQL).** Berupa basis data relasional tunggal (*shared database*) yang menyimpan 13 tabel domain. Seluruh data operasional diisolasi per gedung menggunakan penyaring baris (*row-level scoping*) berbasis kolom `building_id`.
+4. **Lapisan Data (PostgreSQL).** Berupa basis data relasional tunggal (*shared database*) yang menyimpan 21 tabel domain utama. Seluruh data operasional diisolasi per gedung menggunakan penyaring baris (*row-level scoping*) berbasis kolom `building_id`.
 
 ---
 
@@ -373,37 +373,57 @@ Aturan isolasi data ditegakkan secara ketat pada DFD Level 1: tidak ada proses y
 
 ## 3.6 Rancangan Basis Data
 
-Sistem menggunakan sistem manajemen basis data relasional (*Relational Database Management System* / RDBMS) PostgreSQL. Seluruh modul backend berbagi satu basis data bersama (*shared database*) yang telah disederhanakan menjadi 13 tabel domain utama. Isolasi data antar-gedung ditegakkan di level baris (*row-level scoping*) menggunakan kolom penanda `building_id`, sehingga seluruh kueri operasional terisolasi per properti secara aman dan efisien.
+Sistem menggunakan sistem manajemen basis data relasional (*Relational Database Management System* / RDBMS) PostgreSQL. Seluruh modul backend berbagi satu basis data bersama (*shared database*) yang menggunakan skema 21 tabel domain utama. Isolasi data antar-gedung ditegakkan di level baris (*row-level scoping*) menggunakan kolom penanda `building_id`, sehingga seluruh kueri operasional terisolasi per properti secara aman dan efisien.
 
-### 3.6.1 Entity Relationship Diagram (ERD 13 Tabel)
+### 3.6.1 Entity Relationship Diagram (ERD Skema 21 Tabel)
 
 Model data dirancang dengan menegakkan batas modul (*modular boundaries*). Untuk menjaga agar modul backend tetap independen dan tidak saling terikat kaku di level skema fisik, ketergantungan relasi *Foreign Key* (FK) fisik antar-tabel dibatasi seminimal mungkin. Hubungan lintas domain dikelola melalui referensi logis (*soft reference*) yang diperkuat oleh indeks kolom.
 
-> **Gambar 3.18 — Entity Relationship Diagram:** `PA/docs/System design/04-ERD/erd_13_tabel.png`
+> **Gambar 3.18 — Entity Relationship Diagram:** `PA/docs/System design/04-ERD/erd_sistem_dinamis.png`
 
-Gambar 3.18 mengelompokkan 13 tabel domain ke dalam sembilan modul pemiliknya:
-1. **Modul Auth (Identitas Pengguna):**
-   - Tabel `users`: Menyimpan identitas akun pengguna, peran Keycloak (`owner`, `admin`, `resident`), surel, dan penanda gedung binaan bagi pengelola.
-   - Tabel `user_profiles`: Menyimpan biodata tambahan pengguna (nomor KTP/identitas, telepon, dan alamat asal). Memiliki relasi fisik *One-to-One* ke tabel `users`.
-2. **Modul Building (Master Properti & Kebijakan):**
-   - Tabel `buildings`: Menyimpan data induk properti gedung (nama, alamat, kontak). Terhubung ke tabel `users` via relasi kepemilikan pemilik properti (`owner_id`).
-   - Tabel `building_settings`: Menyimpan pasangan kunci-nilai konfigurasi dinamis per gedung, seperti durasi minimal sewa (`min_rental_months`), aturan denda keterlambatan (`fine_flat_amount`), dan kebijakan biaya tamu menginap (`guest_fee_enabled`).
-3. **Modul Room (Fisik Kamar):**
-   - Tabel `rooms`: Menyimpan data unit fisik kamar (nomor unit, lantai, tipe, kapasitas ranjang/orang, harga dasar bulanan, dan status fisik: `kosong`, `terisi`, `maintenance`).
-4. **Modul Lease (Kontrak Huni):**
-   - Tabel `leases`: Menyimpan transaksi kontrak sewa bulanan, tanggal mulai, durasi sewa, salinan harga bulanan saat transaksi (*price snapshot*), serta status sewa (`pending_payment`, `confirmed`, `active`, `completed`).
-5. **Modul Finance (Keuangan & Pembayaran):**
-   - Tabel `invoices`: Menyimpan lembar tagihan berkala yang diterbitkan untuk setiap periode kontrak sewa.
-   - Tabel `payments`: Menyimpan catatan transaksi pelunasan, kanal bayar, token SNAP Midtrans, dan nomor referensi transaksi. Memiliki relasi fisik *Foreign Key* ke tabel `invoices`.
-   - Tabel `fines`: Menyimpan data denda keterlambatan pembayaran sewa yang dikenakan secara otomatis.
-6. **Modul Maintenance (Tiket Fasilitas):**
-   - Tabel `damage_reports`: Menyimpan tiket keluhan kerusakan fasilitas kamar, keterangan masalah, tautan foto bukti, penugasan teknisi, dan status penyelesaian.
-7. **Modul Guest (Buku Tamu):**
-   - Tabel `guests`: Menyimpan riwayat tamu berkunjung pada suatu kontrak huni, waktu masuk riil, waktu kepulangan, serta tanda pembebanan biaya menginap.
-8. **Modul Inventory (Inventaris Barang):**
-   - Tabel `inventories`: Menyimpan daftar aset perabot kamar (nama barang, kode inventaris, jumlah unit, dan kondisi fisik barang: *baik*, *rusak ringan*, *rusak berat*, *hilang*).
+Gambar 3.18 mengelompokkan 21 tabel domain ke dalam sembilan modul pemiliknya:
+
+1. **Modul User & Access Control (Identitas dan Hak Akses):**
+   - Tabel `users`: Menyimpan identitas akun pengguna, surel, nomor telepon, penanda gedung binaan, status aktif, dan waktu login terakhir.
+   - Tabel `user_profiles`: Menyimpan biodata tambahan pengguna (NIK KTP, jenis kelamin, alamat asal, kontak darurat, dan foto profil). Memiliki relasi fisik *One-to-One* ke tabel `users`.
+   - Tabel `roles`: Menyimpan daftar peran sistem bawaan maupun peran kustom yang dibuat secara dinamis oleh Pemilik melalui *Role Builder*.
+   - Tabel `user_roles`: Tabel perantara (*junction*) yang menghubungkan penugasan peran kepada pengguna.
+   - Tabel `permissions`: Menyimpan daftar hak akses modular granular (seperti `room:read`, `finance:verify`).
+   - Tabel `role_permissions`: Tabel perantara yang mengaitkan izin-izin modular ke dalam suatu peran tertentu.
+
+2. **Modul Property & Building (Master Properti & Kebijakan):**
+   - Tabel `buildings`: Menyimpan data induk fisik gedung (kode gedung, nama, alamat, dan total unit kamar).
+   - Tabel `building_settings`: Menyimpan konfigurasi operasional dinamis per gedung, mencakup durasi minimal sewa (`min_rental_months`), saklar modul aktif (keuangan, perawatan, buku tamu, inventaris), jam malam, serta tarif denda.
+
+3. **Modul Room Management (Fisik Kamar & Fasilitas):**
+   - Tabel `room_types`: Menyimpan tipe kategori kamar beserta spesifikasi fasilitas bawaan dalam format JSON.
+   - Tabel `rooms`: Menyimpan data unit fisik kamar (nomor kamar, lantai, kapasitas ranjang/orang, status fisik, tarif dasar bulanan, dan deskripsi). Memiliki relasi fisik ke `room_types`.
+   - Tabel `room_images`: Menyimpan galeri foto kamar dengan penanda foto utama dan urutan tampilan. Memiliki relasi fisik ke `rooms`.
+
+4. **Modul Occupancy & Schedule (Alokasi Penempatan Hunian):**
+   - Tabel `occupancies`: Menyimpan transaksi alokasi huni, kamar yang dipesan, penghuni utama, rentang tanggal sewa, harga yang disepakati, dan status sewa.
+   - Tabel `occupancy_members`: Menyimpan daftar anggota penghuni pada satu kontrak huni (slot ranjang, waktu check-in, dan check-out), memfasilitasi skenario sewa kamar berbagi (*multi-slot*).
+
+5. **Modul Finance & Billing (Keuangan & Pembayaran):**
+   - Tabel `invoices`: Menyimpan lembar tagihan berkala dan tagihan uang muka (DP) yang diterbitkan per siklus sewa.
+   - Tabel `payments`: Menyimpan riwayat pelunasan, kanal bayar, token SNAP Midtrans, dan nomor referensi transaksi. Memiliki relasi fisik ke `invoices`.
+   - Tabel `fines`: Menyimpan data denda keterlambatan pembayaran sewa yang dibubuhkan secara otomatis.
+   - Tabel `expenses`: Menyimpan rekam transaksi kas keluar operasional gedung (listrik PLN, PDAM, WiFi, gaji, servis fasilitas) beserta tautan foto kuitansi/nota riil.
+
+6. **Modul Maintenance (Tiket Fasilitas & Pemeliharaan):**
+   - Tabel `damage_reports`: Menyimpan tiket komplain kerusakan fasilitas dari penghuni, keterangan masalah, estimasi biaya, penugasan teknisi, dan tautan foto bukti.
+   - Tabel `damage_report_logs`: Menyimpan rekam jejak riwayat penanganan tiket (perubahan status dan catatan teknis) dari waktu ke waktu. Memiliki relasi fisik ke `damage_reports`.
+   - Tabel `maintenance_schedules`: Menyimpan agenda pemeliharaan preventif fasilitas gedung (servis AC berkala, kuras tandon, fogging) berbasis interval hari dan tanggal target berikutnya.
+
+7. **Modul Asset & Inventory (Inventaris Barang):**
+   - Tabel `inventories`: Menyimpan katalog aset perabot (kode barang, nama barang, merk, tanggal pembelian, harga beli, dan total stok).
+   - Tabel `room_inventories`: Menyimpan penempatan fisik barang inventaris di dalam kamar tertentu, jumlah unit, kondisi fisik barang, dan tanggal audit terakhir. Memiliki relasi fisik ke `inventories`.
+
+8. **Modul Guest Logging (Buku Tamu):**
+   - Tabel `guests`: Menyimpan log kunjungan tamu dari luar, jam kedatangan, jam kepulangan, tanda menginap, serta pembebanan tarif inap jika melewati batas jam malam.
+
 9. **Modul Notification (Log Pesan):**
-   - Tabel `notification_logs`: Menyimpan riwayat pengiriman notifikasi transaksi otomatis (jenis notifikasi, nomor WhatsApp tujuan, muatan pesan, status terkirim).
+   - Tabel `notification_logs`: Menyimpan riwayat transmisi pesan otomatis (saluran WhatsApp/Email, muatan pesan JSON, status pengiriman, dan waktu terkirim).
 
 ---
 
@@ -423,6 +443,86 @@ Untuk menjamin konsistensi dan keamanan data pada basis data bersama (*shared da
 
 ---
 
+### 3.6.3 Klasifikasi Modul: Core dan Opsional
+
+Sistem dibangun dengan arsitektur Modular Monolith menggunakan NestJS. Setiap modul terenkapsulasi dan tidak saling terikat melalui Foreign Key fisik lintas modul. Komunikasi antar modul dilakukan melalui *event bus* untuk aksi mutasi dan *module gateway* untuk pembacaan lintas domain.
+
+Modul dalam sistem ini diklasifikasikan menjadi dua jenis berdasarkan ADR-008 dan DAFTAR_FITUR:
+
+| Klasifikasi | Modul (Istilah Teknis) | Nama Fungsi Awam | Tabel Utama | Karakteristik |
+|-------------|------------------------|------------------|-------------|---------------|
+| **Core (Wajib Aktif)** | User & Access Control | Pengguna & Akses | `users`, `user_profiles`, `roles`, `permissions`, `role_permissions` | Konteks identitas dan peran pengguna. Harus selalu aktif. |
+| | Property & Building | Gedung | `buildings`, `building_settings` | Master gedung dan konfigurasi kebijakan per gedung. |
+| | Room Management | Kamar | `rooms` | Data fisik unit kamar. |
+| | Occupancy & Schedule | Sewa & Penempatan | `leases` | Kontrak sewa dan alokasi hunian. |
+| | Occupancy Dashboard | Pantau Kamar | — (tanpa tabel fisik) | Visualisasi denah dan ketersediaan kamar. |
+| **Opsional (Plug & Play)** | Finance & Billing | Keuangan & Tagihan | `invoices`, `payments`, `fines`, `expenses` | Aktif untuk properti berbayar; bisa dinonaktifkan pada asrama/mes gratis. |
+| | Maintenance & Facility | Perawatan | `damage_reports`, `maintenance_schedules` | Aktif jika gedung butuh tiket kerusakan dan jadwal perawatan. |
+| | Asset & Inventory | Inventaris | `inventories`, `room_inventories` | Aktif jika gedung memiliki inventaris perabot. |
+| | Guest Logging | Buku Tamu | `guests` | Aktif jika properti mencatat tamu. |
+| | Notification Service | Notifikasi | `notification_logs` | Aktif jika terhubung ke gateway pesan. |
+
+**Aturan utama:** Lima modul inti (*core*) wajib aktif di semua kombinasi skenario. Modul tambahan (*opsional*) dapat diaktifkan atau dinonaktifkan per gedung tanpa memutus modul lain.
+
+Untuk memudahkan pemahaman bagi orang awam maupun penguji, konsep modularitas ini diilustrasikan dengan analogi susunan balok Lego pada Gambar 3.19.
+
+> **Gambar 3.19 — Ilustrasi Konsep Modular Monolith dengan Analogi Susunan Balok Lego:** `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.png`
+
+Berdasarkan Gambar 3.19, cara kerja modularitas sistem dapat dianalogikan sebagai berikut:
+1. **Module Gateway sebagai Papan Alas (*Baseplate* ungu):** Bertindak sebagai penghubung komunikasi pusat. Semua modul hanya menancap pada alas ini dan tidak saling mengikat secara langsung antar-balok.
+2. **Modul Inti sebagai Balok Pondasi (Balok biru di bawah):** Lima modul inti terpasang permanen pada papan alas. Tanpa kelima balok ini, struktur sistem tidak dapat berdiri.
+3. **Modul Tambahan sebagai Balok Bongkar-Pasang (Balok hijau di atas):** Lima modul bisnis dapat dipasang (*ON*) atau dicabut (*OFF*) secara fleksibel sesuai profil operasional masing-masing gedung.
+4. **Independensi saat Modul Dilepas:** Balok *Keuangan & Tagihan* digambarkan terangkat dari posisinya untuk mencontohkan kondisi asrama mahasiswa atau mes karyawan gratis yang tidak memungut biaya sewa. Ketika balok keuangan dilepas, papan alas dan balok lainnya tetap kokoh berdiri tanpa memicu kesalahan (*crash* atau galat basis data).
+
+#### Konteks Data Antar-Modul (Tanpa FK Fisik)
+
+Seluruh modul berbagi satu basis data PostgreSQL dengan isolasi baris (*row-level scoping*) melalui kolom `building_id`. Modul yang membutuhkan konteks gedung atau pengguna **tidak mengakses tabel modul lain secara langsung**, melainkan memperolehnya dari klaim token akses JWT yang divalidasi oleh backend.
+
+Contoh:
+- Modul Keuangan mengetahui `building_id` dari klaim token, bukan dengan *join* langsung ke tabel `buildings`.
+- Modul Kamar menerima `building_id` dari parameter permintaan yang telah divalidasi terhadap klaim token, bukan melalui relasi FK fisik ke tabel `buildings`.
+
+Dengan pola ini, menonaktifkan satu modul opsional tidak memicu kesalahan integritas data pada modul lain.
+
+---
+
+### 3.6.4 Scenario Pengujian Kombinasi Modul
+
+Untuk memastikan setiap modul independen dan tidak terpengaruh langsung saat modul lain dimatikan, sistem diuji dengan pendekatan **dasar modul utama**: lima modul utama selalu aktif, dan setiap modul tambahan diuji satu per satu terhadap dasar tersebut. Tidak perlu menguji semua kombinasi modul; cukup memastikan setiap modul tambahan dapat dinyalakan dan dimatikan tanpa mengganggu inti sistem.
+
+#### 4.1 Aturan Pengujian
+
+1. **Lima modul utama wajib aktif.** Setiap pengujian harus menyertakan semua lima modul utama. Tanpa modul ini, sistem tidak bisa dijalankan.
+2. **Setiap modul tambahan diuji satu per satu.** Tidak perlu menguji semua modul tambahan sekaligus.
+3. **Modul tambahan harus dapat dinyalakan dan dimatikan secara bebas.** Matikan satu modul tambahan → pastikan inti sistem tetap jalan → nyalakan kembali → pastikan tidak ada gangguan pada modul lain.
+4. **Tidak ada keterkaitan fisik antar-modul.** Semua hubungan antar-modul hanya melalui data identitas pengguna dan gedung, bukan melalui hubungan basis data langsung yang kaku.
+
+#### 4.2 Tabel Pengujian
+
+| No | Modul Utama Aktif | Modul Tambahan Aktif | Modul Tambahan Dimatikan | Tujuan Pengujian |
+|----|-------------------|----------------------|--------------------------|------------------|
+| 1 | Lima modul utama | Tidak ada | Semua modul tambahan | Memastikan inti sistem bisa berjalan sendiri |
+| 2 | Lima modul utama | Keuangan & Tagihan | Empat modul tambahan lain | Modul keuangan berjalan, inti tidak terganggu |
+| 3 | Lima modul utama | Perawatan | Empat modul tambahan lain | Modul perawatan berjalan, inti tidak terganggu |
+| 4 | Lima modul utama | Inventaris | Empat modul tambahan lain | Modul inventaris berjalan, inti tidak terganggu |
+| 5 | Lima modul utama | Buku Tamu | Empat modul tambahan lain | Modul buku tamu berjalan, inti tidak terganggu |
+| 6 | Lima modul utama | Notifikasi | Empat modul tambahan lain | Modul notifikasi berjalan, inti tidak terganggu |
+
+#### 4.3 Contoh: Pengujian Modul Keuangan & Tagihan
+
+| Langkah | Aksi | Apa yang Harus Terjadi |
+|---------|------|------------------------|
+| 1 | Nyalakan hanya lima modul utama | Masuk, kelola gedung, kamar, dan sewa berjalan normal |
+| 2 | Nyalakan modul Keuangan & Tagihan | Membuat tagihan dan mencatat pembayaran berfungsi |
+| 3 | **Matikan modul Keuangan & Tagihan** | **Inti sistem tetap berjalan** (masuk, kamar, sewa tidak error) |
+| 4 | Periksa basis data | Tidak ada gangguan hubungan data saat modul keuangan mati |
+| 5 | Nyalakan kembali modul Keuangan & Tagihan | Modul keuangan berfungsi seperti semula, inti tidak perlu diulang |
+| 6 | Nyalakan Perawatan sambil Keuangan mati | Perawatan tetap bisa diakses, tidak tergantung keuangan |
+
+**Kesimpulan:** Setiap modul tambahan bisa dinyalakan dan dimatikan tanpa memecah inti sistem atau mengganggu modul tambahan lainnya.
+
+---
+
 ## 3.7 Rancangan Antarmuka Pengguna
 
 Antarmuka pengguna dikembangkan berbasis web responsif menggunakan Flutter Web untuk memberikan pengalaman visual yang konsisten bagi seluruh kategori pengguna di peramban desktop dan tablet. Rancangan tata letak antarmuka dibagi menjadi tiga dasbor utama yang disesuaikan dengan kebutuhan peran masing-masing.
@@ -431,7 +531,7 @@ Antarmuka pengguna dikembangkan berbasis web responsif menggunakan Flutter Web u
 
 Halaman ini dirancang khusus bagi pemilik properti untuk menyajikan ikhtisar manajerial seluruh gedung kost yang dimiliki dalam satu tampilan terpadu.
 
-[PLACEHOLDER DIAGRAM] Gambar 3.19 — Mockup Dasbor Peran Pemilik: [GAMBAR BELUM ADA]
+[PLACEHOLDER DIAGRAM] Gambar 3.20 — Mockup Dasbor Peran Pemilik: [GAMBAR BELUM ADA]
 
 Fitur unggulan pada antarmuka Pemilik meliputi:
 - **Komponen Pemilih Gedung (*Building Switcher*):** Tombol pemilih gedung yang memungkinkan pemilik melihat statistik satu properti tertentu atau melihat rekapitulasi gabungan seluruh properti secara serentak.
@@ -442,7 +542,7 @@ Fitur unggulan pada antarmuka Pemilik meliputi:
 
 Halaman operasional harian yang dirancang bagi staf pengelola untuk memantau aktivitas satu gedung binaan yang ditugaskan kepadanya.
 
-[PLACEHOLDER DIAGRAM] Gambar 3.20 — Mockup Dasbor Peran Pengelola: [GAMBAR BELUM ADA]
+[PLACEHOLDER DIAGRAM] Gambar 3.21 — Mockup Dasbor Peran Pengelola: [GAMBAR BELUM ADA]
 
 Fitur unggulan pada antarmuka Pengelola meliputi:
 - **Matriks Denah Kamar (*Room Grid Status*):** Tampilan visual denah kamar per lantai dengan penanda warna status yang jelas: hijau (*kosong*), biru (*terisi*), dan kuning (*dalam perbaikan/maintenance*).
@@ -453,7 +553,7 @@ Fitur unggulan pada antarmuka Pengelola meliputi:
 
 Halaman mandiri (*self-service portal*) yang memberikan kenyamanan bagi penghuni dalam mengakses seluruh layanan hunian kost.
 
-[PLACEHOLDER DIAGRAM] Gambar 3.21 — Mockup Portal Peran Penghuni: [GAMBAR BELUM ADA]
+[PLACEHOLDER DIAGRAM] Gambar 3.22 — Mockup Portal Peran Penghuni: [GAMBAR BELUM ADA]
 
 Fitur unggulan pada antarmuka Penghuni meliputi:
 - **Katalog Pemilihan Kamar:** Tampilan foto unit kamar, spesifikasi fasilitas, tarif bulanan, dan kalender ketersediaan kamar.

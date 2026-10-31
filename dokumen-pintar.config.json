@@ -1,0 +1,11 @@
+{
+  "roots": [
+    { "name": "docs", "path": "/Users/allvvnt/alfianSpace/Kampus/PA-Management-kost/Docs", "writable": true },
+    { "name": "pa-docs", "path": "/Users/allvvnt/alfianSpace/Kampus/PA-Management-kost/PA/docs", "writable": true },
+    { "name": "project-docs", "path": "/Users/allvvnt/alfianSpace/Kampus/PA-Management-kost/Project/docs", "writable": true }
+  ],
+  "versioning": { "enabled": true, "max_versions": 50 },
+  "audit_log": { "enabled": true, "path": ".mcpdocs/audit.jsonl" },
+  "search": { "enabled": true, "index_on_startup": true },
+  "semantic_search": { "enabled": false }
+}

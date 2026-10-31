@@ -30,3 +30,13 @@
 **Status:** Accepted (sementara, konfirmasi pembimbing)
 **Konteks:** Semua 4 proposal pakai numeric IEEE-like, bukan APA.
 **Keputusan:** Pertahankan numeric urut kemunculan. Jika pembimbing minta APA, buat ADR baru + konversi via skill.
+
+---
+
+## PA-DEC-004: Ratifikasi Skema Basis Data 21 Tabel Domain Utama (Modular Monolith)
+
+**Tanggal:** 2026-10-29  
+**Status:** Accepted  
+**Konteks:** Naskah BAB 3 membutuhkan konsistensi antara 17 fitur yang diratifikasi, pemodelan proses bisnis, dan skema ERD. Skema sementara 13 tabel (ADR-007) tidak memuat Dynamic RBAC, Pengeluaran, dan Servis Berkala.  
+**Keputusan:** Menetapkan skema 21 tabel domain utama (24 entitas fisik) dari `erd_sistem_dinamis.html` / `erd_sistem_dinamis.png` sebagai dasar perancangan ERD pada BAB 3 §3.6.1 (Gambar 3.18).  
+**Konsekuensi:** Menggantikan Gambar 3.18 dengan `erd_sistem_dinamis.png`, merinci 21 tabel pada 9 modul di teks §3.6.1, dan menyelaraskan referensi di seluruh naskah BAB 1–3.

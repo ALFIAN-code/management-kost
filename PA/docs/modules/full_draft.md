@@ -72,7 +72,7 @@ Tujuan yang ingin dicapai melalui Proyek Akhir ini adalah:
 4. Menerapkan **kontrak API yang seragam dan type-safe** yang tersinkronisasi otomatis dengan dokumentasi OpenAPI.
 5. Menyediakan modul *MCP Server* yang terhubung dengan model *Artificial Intelligence* agar pemilik dan pengelola memperoleh jawaban operasional secara instan.
 6. Menerapkan sistem **Single Sign-On (SSO) berbasis Keycloak OpenID Connect** guna menyediakan autentikasi terpusat yang aman, menangani verifikasi email dan reset kata sandi secara otomatis, serta terintegrasi dengan pembatasan hak akses per gedung.
-7. Menerapkan **skema basis data 13 tabel** untuk mengakomodasi sewa bulanan dan aturan fleksibel per gedung tanpa duplikasi data.
+7. Menerapkan **skema basis data 21 tabel** untuk mengakomodasi sewa bulanan dan aturan fleksibel per gedung tanpa duplikasi data.
 8. Membangun integrasi **Midtrans yang aman dan idempoten** serta membuktikan stabilitas sistem melalui pengujian berlapis dengan tingkat kelulusan yang terukur.
 
 ---
@@ -105,16 +105,16 @@ Ruang lingkup dan batasan dalam penelitian Proyek Akhir ini mencakup:
 
 ### 1.5.3 Manfaat Bagi Penulis dan Akademisi
 - Memberikan studi empiris mengenai tahapan refaktorisasi arsitektur perangkat lunak dari sistem lama yang terfragmentasi menjadi Modular Monolith berbasis NestJS.
-- Memberikan rujukan teknis mengenai reduksi kompleksitas basis data dari 41 tabel menjadi 13 tabel domain bersih tanpa mengorbankan fungsionalitas bisnis utama.
+- Memberikan rujukan teknis mengenai reduksi kompleksitas basis data dari 41 tabel menjadi skema 21 tabel domain tanpa mengorbankan fungsionalitas bisnis utama.
 
 ---
 
 ## 1.6 Sistematika Penulisan
 
 Laporan Proyek Akhir ini disusun dalam lima bab:
-- **BAB 1 PENDAHULUAN:** Berisi latar belakang masalah operasional kost multi-gedung, telaah kritis atas kelemahan sistem lama, rasionalisasi penulisan ulang ke NestJS 13 tabel, rumusan masalah, tujuan, batasan, manfaat, serta sistematika penulisan.
+- **BAB 1 PENDAHULUAN:** Berisi latar belakang masalah operasional kost multi-gedung, telaah kritis atas kelemahan sistem lama, rasionalisasi penulisan ulang ke NestJS skema 21 tabel, rumusan masalah, tujuan, batasan, manfaat, serta sistematika penulisan.
 - **BAB 2 KAJIAN PUSTAKA:** Membahas landasan teori mengenai Sistem Informasi Manajemen Properti, arsitektur Modular Monolith pada ekosistem Node.js/NestJS, manajemen identitas Keycloak OIDC, protokol integrasi kecerdasan buatan Model Context Protocol (MCP), Clean Architecture pada Flutter Web, isolasi data Multi-Tenancy, integritas basis data relasional MySQL, integrasi gerbang pembayaran Midtrans, dan piramida pengujian perangkat lunak.
-- **BAB 3 METODOLOGI DAN PERANCANGAN SISTEM:** Menguraikan metodologi Scrum (peran, siklus 4 sprint, backlog), perancangan arsitektur Modular Monolith 9 modul NestJS, pemodelan proses bisnis (BPMN), use case, Data Flow Diagram (DFD), perancangan 13 tabel basis data beserta kamus data lengkap, alur otentikasi Keycloak OIDC via JWKS, spesifikasi teknis tool server MCP, rancangan antarmuka Flutter Web, spesifikasi kontrak REST API, dan skenario pengujian.
+- **BAB 3 METODOLOGI DAN PERANCANGAN SISTEM:** Menguraikan metodologi Scrum (peran, siklus 4 sprint, backlog), perancangan arsitektur Modular Monolith 9 modul NestJS, pemodelan proses bisnis (BPMN), use case, Data Flow Diagram (DFD), perancangan skema 21 tabel basis data beserta kamus data lengkap, alur otentikasi Keycloak OIDC via JWKS, spesifikasi teknis tool server MCP, rancangan antarmuka Flutter Web, spesifikasi kontrak REST API, dan skenario pengujian.
 - **BAB 4 IMPLEMENTASI DAN EVALUASI:** Mendokumentasikan implementasi backend NestJS, integrasi Keycloak OIDC, integrasi modul server MCP, frontend Flutter Web, integrasi Midtrans dan WhatsApp, serta menyajikan hasil pengujian sistem (*unit test*, *contract test*, *tenant isolation test*, dan *integration test*).
 - **BAB 5 PENUTUP:** Menyajikan kesimpulan atas hasil refaktorisasi sistem dan pencapaian tujuan penelitian, serta memaparkan saran pengembangan untuk penambahan fitur pada masa mendatang.
 
@@ -439,7 +439,7 @@ Proyek Akhir ini merancang dan merefaktorisasi sistem informasi pengelolaan huni
 
 1. **Lapis antarmuka.** Flutter Web dengan Clean Architecture, yaitu lapisan presentasi, lapisan domain, dan lapisan data. Lapis ini hanya menyajikan masukan pengguna dan menampilkan keluaran sistem, bukan memuat aturan bisnis [15][16].
 2. **Lapis backend.** Modular Monolith berbasis NestJS dengan sembilan modul terenkapsulasi, komunikasi antar modul lewat event bus untuk mutasi dan *module gateway* untuk agregasi baca [13][14].
-3. **Lapis data.** PostgreSQL dengan skema 13 tabel bulanan, seluruh referensi antar tabel bersifat logis kecuali dua pengecualian yang dinyatakan eksplisit [17].
+3. **Lapis data.** PostgreSQL dengan skema 21 tabel bulanan, seluruh referensi antar tabel bersifat logis kecuali dua pengecualian yang dinyatakan eksplisit [17].
 4. **Lapis integrasi eksternal.** Midtrans SNAP, WhatsApp Gateway, dan Keycloak OIDC, semuanya dijangkau lewat *adapter* sehingga logika bisnis tidak bergantung pada vendor tertentu [23][25].
 
 ![Gambar 3.1 — Arsitektur Sistem Terpadu (Modular Monolith NestJS, 9 Modul)](../System%20design/01-Gambaran-umum/01_arsitektur_keseluruhan/arsitektur_terpadu.png){width=15cm}
@@ -448,7 +448,7 @@ Enam keputusan arsitektural menjadi landasan sistem ini.
 
 **Pertama, Modular Monolith pada NestJS.** Backend dibagi ke dalam sembilan modul yang masing-masing dibungkus dekorator `@Module()`. Batas modul ditegakkan oleh kerangka kerja, bukan oleh kesepakatan tertulis: layanan yang tidak diekspor modul tidak dapat disuntik modul lain, sehingga pelanggaran batas menjadi kesalahan teknis yang tertangkap saat proses build [13][14]. Pola ketergantungan yang rapat pada sistem lama, ketika modul keuangan membaca langsung tabel milik modul kamar, hilang karena dependensi hanya boleh masuk lewat antarmuka yang diekspor.
 
-**Kedua, skema data disederhanakan menjadi 13 tabel bulanan.** Skema lama membengkak hingga empat puluh satu tabel dengan banyak kolom mati, tabel turunan yang menggandakan data tagihan, serta cabang durasi sewa harian, mingguan, bulanan, dan tahunan sekaligus. Skema baru menyimpan satu model sewa bulanan murni, dengan aturan minimum durasi disimpan sebagai konfigurasi per gedung sehingga variability kebijakan huni tidak menuntut skema baru [11][12].
+**Kedua, skema data 21 tabel bulanan.** Skema lama membengkak hingga empat puluh satu tabel dengan banyak kolom mati, tabel turunan yang menggandakan data tagihan, serta cabang durasi sewa harian, mingguan, bulanan, dan tahunan sekaligus. Skema baru menyimpan satu model sewa bulanan murni, dengan aturan minimum durasi disimpan sebagai konfigurasi per gedung sehingga variability kebijakan huni tidak menuntut skema baru [11][12].
 
 **Ketiga, model sewa dibatasi pada satuan bulan penuh.** Durasi minimum sewa ditetapkan per gedung melalui `building_settings.min_rental_months`. Nilai inilah yang dipakai modul `Lease` saat memvalidasi permintaan sewa, sehingga variability antar gedung tertangani di lapisan konfigurasi, bukan di percabangan kode.
 
@@ -502,7 +502,7 @@ Sprint pertama dipakai membangun fondasi: orkestrasi proyek, basis data, dan sta
 
 | Sprint | Durasi | Fokus Utama dan Hasil | Story Points | Definition of Done |
 |---|---|---|---|---|
-| 1 | Minggu 1–2 | Fondasi: orkestrasi NestJS 9 modul, Docker Compose, PostgreSQL, realm Keycloak beserta peran, envelope JSON dan Swagger | 21 | 9 modul terpasang, migrasi 13 tabel jalan, peran Keycloak aktif, endpoint kesehatan terlayani |
+| 1 | Minggu 1–2 | Fondasi: orkestrasi NestJS 9 modul, Docker Compose, PostgreSQL, realm Keycloak beserta peran, envelope JSON dan Swagger | 21 | 9 modul terpasang, migrasi skema 21 tabel jalan, peran Keycloak aktif, endpoint kesehatan terlayani |
 | 2 | Minggu 3–4 | Domain inti: Building, Room, Lease, alokasi hunian, penguncian baris anti-bentrok, penjaga tenant | 21 | Alokasi sewa tervalidasi, uji bentrok paralel lulus, seluruh kueri terfilter `building_id` |
 | 3 | Minggu 5–6 | Modul bisnis: Finance (Midtrans SNAP, tanda tangan webhook, idempotensi), Maintenance, Guest, Inventory, Notification | 27 | Tagihan terbit otomatis, webhook palsu ditolak, pesan WhatsApp terkirim, notifikasi tercatat |
 | 4 | Minggu 7–8 | Antarmuka Flutter Web tiga peran, modul MCP *read-only*, pengujian berlapis, UAT | 26 | Ketiga dasbor berfungsi, empat tool MCP terukur, cakupan kode minimal 80 persen, UAT selesai |
@@ -513,7 +513,7 @@ Sprint pertama dipakai membangun fondasi: orkestrasi proyek, basis data, dan sta
 | No | ID | Sprint | User Story atau Item | Task Teknis Utama | SP | Status |
 |---|---|---|---|---|---|---|
 | 1 | US-01 | 1 | Orkes backend 9 modul | Dekorator `@Module()`, barrel export, module gateway | 3 | Selesai |
-| 2 | US-02 | 1 | Basis data 13 tabel | Migration PostgreSQL, seeder, *partial index* tagihan | 5 | Selesai |
+| 2 | US-02 | 1 | Basis data skema 21 tabel domain | Migration PostgreSQL, seeder, *partial index* tagihan | 5 | Selesai |
 | 3 | US-03 | 1 | Standar kontrak API | Envelope `{status, message, data, meta, errors}`, DTO `class-validator`, Swagger | 5 | Selesai |
 | 4 | US-04 | 1 | Identitas terpusat | Realm Keycloak, peran, klien OIDC, verifikasi JWKS | 5 | Selesai |
 | 5 | US-05 | 1 | Lingkungan pengembangan | `docker-compose.yml` untuk NestJS, PostgreSQL, Keycloak | 3 | Selesai |
@@ -881,7 +881,7 @@ erDiagram
 
 ### 3.6.3 Aturan Validasi dan Integritas Data
 
-> **Catatan cakupan fitur:** tiga fitur pada Tabel 3.1 belum memiliki tabel tersendiri pada skema 13 tabel, yaitu F02 Dynamic RBAC (peran kustom), F11 Pengeluaran Operasional, dan F13 Pemeliharaan Rutin Berkala. Ketiganya memerlukan tabel di luar skema inti dan akan ditangani pada tahap perluasan skema.
+> **Catatan cakupan fitur:** tiga fitur pada Tabel 3.1 (F02 Dynamic RBAC, F11 Pengeluaran Operasional, dan F13 Pemeliharaan Rutin Berkala) kini memiliki tabel tersendiri pada skema 21 tabel domain, yaitu `roles`/`permissions`/`user_roles`/`role_permissions`, `expenses`, dan `maintenance_schedules`.
 
 **Tabel 3.14 — Aturan Validasi dan Kode Kesalahan**
 
@@ -1017,7 +1017,7 @@ Contoh permintaan dan jawaban pada penambahan unit kamar:
 | `GET /api/invoices`, `GET /api/invoices/{id}` | Finance | Tagihan sesuai cakupan gedung | 200 |
 | `GET/POST /api/fines`, `POST /api/fines/{id}/waive` | Finance | Denda flat mengikuti aturan gedung, dapat dihapus oleh pengelola | 200, 201 |
 | `POST /api/invoices/{id}/pay-manual` | Finance | Verifikasi pembayaran tunai oleh pengelola | 200, 422 |
-| `POST /api/expenses` | Finance | Pencatatan pengeluaran operasional, perlu tabel di luar skema 13 tabel | 201 |
+| `POST /api/expenses` | Finance | Pencatatan pengeluaran operasional pada tabel `expenses` di skema 21 tabel domain | 201 |
 | `POST /api/payments/snap` | Finance | Mengembalikan token SNAP | 200, 422 |
 | `POST /api/payments/midtrans/webhook` | Finance | Wajib tanda tangan sah, tahan permintaan ganda | 200, 403, 409 |
 | `GET/POST /api/damage-reports` | Maintenance | Menyertakan satu foto bukti | 200, 201 |
@@ -1042,7 +1042,7 @@ Seluruh komponen sistem dibungkus menjadi citra kontainer agar lingkungan pengem
 | Layanan | Citra | Port | Peran |
 |---|---|---|---|
 | `api` | Citra NestJS dibangun sendiri | 3000 | Backend Modular Monolith |
-| `db` | `postgres:16` | 5432 | Basis data 13 tabel domain |
+| `db` | `postgres:16` | 5432 | Basis data skema 21 tabel domain |
 | `keycloak` | `quay.io/keycloak/keycloak` | 8080 | Penyedia identitas OIDC |
 | `mcp` | Citra NestJS Mode MCP | 3100 | Layanan tool baca untuk model AI |
 
@@ -1131,7 +1131,7 @@ Pengujian disusun mengikuti piramida pengujian: pengujian unit di dasar, penguji
 | Minggu | Aktivitas | Hasil yang Dihasilkan | Milestone |
 |---|---|---|---|
 | 1 | Perancangan, pembagian peran, setup lingkungan | Orkestrasi proyek, docker compose,realm Keycloak | Fondasi siap |
-| 2 | Skema 13 tabel dan kontrak API | Migration, seeder, Swagger | Kontrak terkunci |
+| 2 | Skema 21 tabel domain dan kontrak API | Migration, seeder, Swagger | Kontrak terkunci |
 | 3 | Modul Building, Room, dan pengaturan gedung | Master gedung dan kamar | Data master siap |
 | 4 | Modul Lease, penguncian baris, penjaga tenant | Alokasi sewa tervalidasi | Domain inti selesai |
 | 5 | Modul Finance dan integrasi Midtrans | Tagihan dan pembayaran digital | Modul bisnis utama |

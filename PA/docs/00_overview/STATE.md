@@ -15,7 +15,7 @@
 
 1. **Generalisasi Domain Kost Multi-Gedung**: Solusi umum pengelolaan kost komersial multi-gedung tanpa keterikatan kaku pada satu nama properti.
 2. **Modular Monolith NestJS**: 9 modul mandiri, penegakan batas modul bawaan framework, komunikasi event-driven, dan nol FK fisik lintas modul.
-3. **Penyederhanaan Skema 13 Tabel**: Fokus sewa bulanan murni, konfigurasi per gedung (`building_settings`), mengeliminasi 28 tabel warisan.
+3. **Skema Basis Data 21 Tabel Domain (ADR-014 / PA-DEC-004)**: Mengadopsi skema 21 tabel domain utama (24 entitas fisik) dari `erd_sistem_dinamis.html` / `erd_sistem_dinamis.png`, mencakup 9 modul dengan penegakan nol FK fisik lintas modul via soft-reference.
 4. **Antarmuka Web-First (Flutter Web)**: Prioritas implementasi dan evaluasi fungsional pada Web, dengan arsitektur Clean Architecture yang siap ekspansi ke Mobile.
 5. **Standar Kontrak REST API & DTO**: Response envelope seragam, validasi ketat `class-validator`, dan dokumentasi otomatis OpenAPI Swagger.
 6. **Identity & Access Management (Keycloak SSO OIDC)**: Integrasi Keycloak untuk menangani email validation, forgot password, dan session out-of-the-box; backend NestJS verifikasi stateless JWT via JWKS.
@@ -27,7 +27,7 @@
 - ✅ **BAB 1 Naskah Diperbarui**: Ditulis ulang dengan gaya bahasa natural Indonesia, bebas dari istilah kaku dan dependensi wisma tunggal.
 - ✅ **BAB 3 Rekonstruksi Desain Sistem Selesai**: Naskah ditulis ulang berfokus murni pada perancangan sistem sesuai struktur proposal PENS (Arsitektur Terpadu 4 lapis, 9 Modul 3-Tier, Flutter Web Clean Architecture, 9 Alur Proses Bisnis, Use Case, DFD Level 0 & 1, Activity Diagram, ERD 13 Tabel & Kamus Data, serta Mockup Antarmuka). Detail teknis non-desain (endpoint mentah, docker-compose, JSON schema) telah dipangkas dan diarsipkan ke `DRAFT_v1_2026-10-21.md`.
 - ✅ **Diagram BAB 3 terintegrasi**: 15 diagram aktif (HTML & Mermaid PNG) tertanam secara otomatis via `figures_to_images.py`, dengan 6 placeholder untuk diagram visual yang belum dibuat.
-- 🟡 **Cakupan fitur**: F02 peran kustom, F11 pengeluaran operasional, dan F13 pemeliharaan rutin berkala belum memiliki tabel pada skema 13 tabel dan ditandai sebagai perluasan skema.
+- ✅ **Cakupan fitur & Skema 18–19 Tabel (ADR-014)**: F02, F11, dan F13 diakomodasi melalui perluasan skema tabel domain, dengan Diagram Klasifikasi Modul disahkan sebagai Gambar 3.19.
 - ✅ **Pipeline docx**: `PA/docs/modules/build-docx.sh` merender seluruh diagram (Mermaid dan HTML) menjadi PNG lalu menyisipkannya ke naskah sebelum konversi. `template_pens.docx` belum ada, sehingga style bawaan Pandoc masih dipakai.
 - 🟡 **Blocker sitasi**: `[36]` dan `[41]` dipakai di BAB 2 tetapi tidak ada di daftar pustaka; urutan kemunculan di BAB 1 masih mulai dari `[2]`.
 

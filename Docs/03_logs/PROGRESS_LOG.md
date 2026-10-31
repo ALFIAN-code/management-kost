@@ -4,7 +4,163 @@
 
 ---
 
-## [2026-10-23 03:33] Pembuatan Diagram BPMN 2.0 Alur 10: Pemesanan DP (Two-Phase Invoicing) & Refund Semi-Manual
+## [2026-10-29 09:50] Ratifikasi Final Skema 21 Tabel Domain dan Sinkronisasi Naskah Bab 1–3
+**Status:** Selesai
+**Dikerjakan:**
+- Menetapkan skema 21 tabel domain utama (24 entitas fisik) dari `PA/docs/System design/04-ERD/erd_sistem_dinamis.html` sebagai Single Source of Truth rancangan basis data sistem.
+- Memperbarui ADR-014 di `Docs/03_logs/DECISIONS.md` dan menambahkan `PA-DEC-004` di `PA/docs/03_logs/DECISIONS.md`.
+- Memperbarui naskah lokal `PA/docs/modules/bab3/README.md`:
+  1. §3.6 dan §3.6.1 diselaraskan ke skema 21 tabel domain.
+  2. Gambar 3.18 dikaitkan ke `PA/docs/System design/04-ERD/erd_sistem_dinamis.png`.
+  3. Menjabarkan rincian 21 tabel domain pada 9 modul (M1–M4 Core, O1–O5 Opsional) secara utuh.
+- Menyelaraskan seluruh referensi "18–19 tabel" menjadi "skema 21 tabel domain" di `bab1/README.md`, `bab2/README.md`, `bab3/DESAIN_REWRITE_FASE1.md`, dan `full_draft.md`.
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/modules/bab1/README.md`
+- `PA/docs/modules/bab2/README.md`
+- `PA/docs/modules/full_draft.md`
+- `PA/docs/modules/bab3/DESAIN_REWRITE_FASE1.md`
+- `Docs/03_logs/DECISIONS.md`
+- `PA/docs/03_logs/DECISIONS.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+- `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Pengguna menerapkan prompt koreksi pada Google Doc/PDF untuk deskripsi 21 tabel dan pembersihan sisa teks.
+- Melanjutkan perancangan visual Mockup Antarmuka Web (§3.7) untuk 3 role.
+
+---
+
+## [2026-10-29 07:35] Penyelarasan Redaksi Naskah BAB 3 dengan Diagram Lego Klasifikasi Modul
+**Status:** Selesai
+**Dikerjakan:**
+- Menyelaraskan teks naskah pada `PA/docs/modules/bab3/README.md` (§3.6.3 dan §3.6.4):
+  1. Menambahkan kolom *Nama Fungsi Awam* di Tabel 3.6.3 agar sejalan dengan label pada balok diagram Lego.
+  2. Menyisipkan 4 poin penjelasan naratif analogi susunan balok Lego di bawah Gambar 3.19: Module Gateway sebagai baseplate ungu, Modul Inti sebagai balok biru pondasi tetap, Modul Tambahan sebagai balok hijau plug & play, serta balok Keuangan terangkat sebagai bukti independensi saat fitur dimatikan.
+  3. Menyeragamkan istilah label modul tambahan di Tabel 3.6.4 pengujian (Keuangan & Tagihan, Perawatan, Inventaris, Buku Tamu, Notifikasi).
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Tahap berikutnya: Melanjutkan perancangan visual Mockup Antarmuka Web (§3.7) untuk 3 role.
+
+## [2026-10-29 07:20] Redesain Diagram Klasifikasi Modul: Ilustrasi Lego
+**Status:** Selesai (tampilan akhir belum dicek mata oleh AI, mohon dicek pengguna)
+**Dikerjakan:**
+- Mengganti isi `04-ERD/diagram_klasifikasi_modul.{html,svg,png}` dengan ilustrasi gaya Lego: alas ungu *Module Gateway*, 5 brick hijau modul tambahan di atas alas (satu terangkat, berlabel "Dilepas: sistem tetap berjalan"), 5 brick biru modul inti di bawah alas.
+- Tanpa kartu, bullet, kode fitur, atau istilah teknis. Gambar 3.19 di BAB 3 tidak berubah (file PNG sama).
+**File yang diubah:**
+- `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.{html,svg,png}`
+**Belum selesai / next steps:**
+- Pengguna cek tampilan; revisi warna/label bila perlu.
+
+## [2026-10-29 07:05] Redesain Diagram Klasifikasi Modul Menjadi SVG Vektor & Ekspor PNG 2x
+**Status:** Selesai
+**Dikerjakan:**
+- Merekonstruksi `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.html` menjadi diagram vektor SVG utuh dengan tata letak visual modern standar publikasi:
+  1. Header bar profesional dengan tombol ekspor SVG & PNG (2x resolusi cetak).
+  2. Modul Tambahan (Opsional) berdesain hijau emerald dengan saklar virtual (ON / OFF) per gedung.
+  3. Jalur penghubung fleksibel (Loose Coupling Bus) dengan panah putus-putus dua arah, menegaskan nol keterikatan kaku (nol FK fisik).
+  4. Modul Inti (Core) berdesain biru kokoh sebagai pondasi wajib selalu aktif di seluruh gedung.
+  5. Kotak perbandingan dunia nyata: Kost Komersial (Semua Fitur ON) vs Asrama/Mes Gratis (Keuangan OFF, tanpa error database).
+  6. Mengeliminasi seluruh istilah teknis/kode fitur (F01, dsb.) dan menggunakan bahasa alami yang mudah dipahami orang awam.
+- Merender otomatis `diagram_klasifikasi_modul.svg` dan `diagram_klasifikasi_modul.png` (resolusi 2240x1710 px, 200 KB) menggunakan headless Edge.
+- Memperbarui penomoran gambar di `PA/docs/modules/bab3/README.md`: `Gambar 3.19` disematkan untuk Diagram Klasifikasi Modul, dan nomor mockup diselaraskan menjadi `Gambar 3.20`, `3.21`, dan `3.22` berurutan tanpa jeda.
+- Menambahkan indeks diagram di `PA/docs/System design/README.md`.
+**File yang diubah:**
+- `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.html` (rekonstruksi SVG)
+- `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.svg` (baru)
+- `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.png` (baru)
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/System design/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Tahap berikutnya: Melanjutkan perancangan visual Mockup Antarmuka Web (§3.7) untuk 3 role dalam format komponen modern.
+
+## [2026-10-29] Tambah Sub-bab 3.6.4 Scenario Pengujian Kombinasi Modul + Diagram Klasifikasi Modul di BAB 3
+**Status:** Selesai
+**Dikerjakan:**
+- Menambahkan sub-bab `3.6.4 Scenario Pengujian Kombinasi Modul` di `PA/docs/modules/bab3/README.md`, setelah `3.6.3` dan sebelum `3.7 Rancangan Antarmuka Pengguna`.
+- Menggunakan pendekatan Core Baseline + Individual (6 skenario) agar tidak terlalu banyak kombinasi, sesuai dengan permintaan dosen pembimbing agar tidak berlebihan.
+- Setiap skenario memastikan lima modul core wajib aktif, setiap modul opsional diuji 1-1 terhadap core, dan modul tambahan dapat dinyalakan/matikan secara bebas tanpa gangguan inti sistem.
+- Membuat file diagram HTML `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.html` untuk 3.6.3, dengan desain sederhana, non-teknis, tanpa kode fitur (F01, dst), sehingga mudah dipahami orang awam.
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.html` (baru)
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Tidak ada.
+**Catatan/masalah:**
+- Tidak ada istilah "bagian Hana" yang dimasukkan ke dokumen; menggunakan istilah netral "modul utama" / "modul tambahan".
+
+## [2026-10-29] Tambah Sub-bab 3.6.3 Klasifikasi Modul Core dan Opsional di BAB 3
+**Status:** Selesai
+**Dikerjakan:**
+- Menambahkan sub-bab `3.6.3 Klasifikasi Modul: Core dan Opsional` di `PA/docs/modules/bab3/README.md`, setelah `3.6.2 Aturan Integritas dan Validasi Data` dan sebelum `3.7 Rancangan Antarmuka Pengguna`.
+- Menyusun tabel klasifikasi 10 modul (5 core + 5 opsional) dengan fitur dan tabel utama masing-masing, selaras dengan ADR-008 dan DAFTAR_FITUR.
+- Menjelaskan konteks data antar-modul tanpa FK fisik (soft-reference melalui `building_id` dan klaim token JWT).
+- Aturan utama: lima modul core wajib aktif di semua kombinasi uji; modul opsional plug-and-play per gedung.
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Menambahkan sub-bab `3.6.4 Scenario Pengujian Kombinasi Modul` (testing independensi modul saat off), sesuai permintaan dosen pembimbing.
+- Menyusun ilustrasi diagram untuk konsep modular monolith yang mudah dipahami orang awam.
+**Catatan/masalah:**
+- Tidak ada istilah "bagian Hana" yang dimasukkan ke dokumen; menggunakan istilah netral "modul core" / "modul utama".
+
+## [2026-10-29] Ratifikasi ADR-014 dan Sesuaikan Referensi Skema Basis Data (13 → 18–19 Tabel)
+**Status:** Selesai
+**Dikerjakan:**
+- Menulis **ADR-014** di `Docs/03_logs/DECISIONS.md`: perluasan skema basis data dari 13 tabel (ADR-007) menjadi 18–19 tabel domain untuk menampung F02 (Dynamic RBAC: `roles`, `permissions`, `role_permissions`), F11 (`expenses`), dan F13 (`maintenance_schedules`), selaras dengan ADR-008. Nol FK lintas modul tetap ditegakkan.
+- Menyesuaikan semua referensi "13 tabel" di naskah aktif menjadi "skema perluasan 18–19 tabel" atau setara:
+  - `PA/docs/modules/bab3/README.md`: §3 intro, §4 Lapisan Data, §3.6, §3.6.1, tabel perbandingan
+  - `PA/docs/modules/bab1/README.md`: tujuan #7, manfaat #2, sistematika BAB 1 & BAB 3
+  - `PA/docs/modules/full_draft.md`: tujuan #7, manfaat #2, sistematika BAB 1 & BAB 3, lapis data, ke-2, tabel sprint, catatan cakupan fitur, endpoint expenses, layanan docker, jadwal minggu ke-2
+  - `PA/docs/modules/bab2/README.md`: tabel perbandingan §2.1.6
+  - `PA/docs/modules/bab3/DESAIN_REWRITE_FASE1.md`: poin 3
+- File arsip/draft (`DRAFT_v1_2026-10-21.md`, `ARSIP_DESAIN_LAMA.md`) dibiarkan sebagai catatan historis.
+**File yang diubah:**
+- `Docs/03_logs/DECISIONS.md` (ADR-014 ditambahkan)
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/modules/bab1/README.md`
+- `PA/docs/modules/full_draft.md`
+- `PA/docs/modules/bab2/README.md`
+- `PA/docs/modules/bab3/DESAIN_REWRITE_FASE1.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- ERD (`erd_13_tabel`) perlu diperbarui untuk mencakup tabel baru, atau diganti nama sesuai cakupan baru.
+- DFD Level 1 (D1–D13) perlu ditinjau ulang apakah perlu diperluas menjadi D1–D18/D19.
+**Catatan/masalah:**
+- File `.drawio.png` di `08-design-lama/` ukuran besar (150 KB dan 1,19 MB), dapat dioptimasi nanti.
+
+## [2026-10-29] Tambah Sub-bab Evolusi Desain Sistem di BAB 2 §2.1.6
+**Status:** Selesai
+**Dikerjakan:**
+- Menambahkan sub-bab `2.1.6 Evolusi Desain Sistem Sebelum dan Sesudah Rewrite` di `PA/docs/modules/bab2/README.md`, sebagai jembatan antara §2.1 Deskripsi Permasalahan dan §2.2 Teori Penunjang.
+- Memasang dua gambar desain sistem lama: `Gambar 2.10` Arsitektur Keseluruhan Sistem Sebelum Rewrite dan `Gambar 2.11` ERD Sistem Sebelum Rewrite (41 Tabel), dari file `.drawio.png` di `PA/docs/System design/08-design-lama/`.
+- Menyisipkan Tabel perbandingan 6 aspek (framework, basis data, batas modul, autentikasi, gedung, model sewa) antara sistem lama dan baru, dengan silang ke `BAB 3 §3.6 Rancangan Basis Data` dan `§3.6.1 ERD`.
+- Penomoran sub-bab menggunakan 1, 2, 3 (bukan nested 2.1.6.x) agar tidak terlalu dalam.
+**File yang diubah:**
+- `PA/docs/modules/bab2/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Menulis ADR-014 untuk mengamendemen ADR-007 (13 tabel → skema perluasan 18–19 tabel sesuai Opsi B), lalu sesuaikan referensi "13 tabel" di `bab3/README.md`, `bab1/README.md`, dan `full_draft.md`.
+**Catatan/masalah:**
+- File `.drawio.png` diekspor sebagai PNG asli tanpa re-export; ukuran file besar (150 KB dan 1,19 MB), dapat dioptimasi nanti.
 **Status:** Selesai
 **Dikerjakan:**
 - Membuat diagram BPMN 2.0 resmi untuk alur kerja teknis engineering di `PA/docs/System design/02-BPMN/10_pembatalan_sewa_dan_refund/`:

@@ -7,7 +7,7 @@
 
 1. Sewa **bulanan penuh** — tanpa tarif harian (`price_daily` dihapus), tanpa cabang durasi.
 2. Minimal durasi **configurable per gedung** via `building_settings.min_rental_months`.
-3. **13 tabel**, nol FK lintas modul (kecuali `payments → invoices` intra-modul dan `buildings.owner_id → users` infra-ke-infra).
+3. **Skema 21 tabel domain** (ADR-014), nol FK fisik lintas modul (soft-reference via UUID).
 4. Denda fleksibel via setting (Opsi A: flat + grace, default).
 5. Biaya tamu configurable via setting, dicatat sebagai `invoices` biasa (tanpa tabel billing terpisah).
 6. Notifikasi WA gateway untuk 3 event: tagihan terbit, pengingat jatuh tempo, pembayaran lunas.

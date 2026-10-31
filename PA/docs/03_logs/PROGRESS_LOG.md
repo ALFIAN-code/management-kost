@@ -4,6 +4,88 @@
 
 ---
 
+## [2026-10-29 09:50] Ratifikasi Final Skema 21 Tabel Domain dan Sinkronisasi Naskah Bab 1–3
+**Status:** Selesai
+**Dikerjakan:**
+- Menetapkan skema 21 tabel domain utama (24 entitas fisik) dari `PA/docs/System design/04-ERD/erd_sistem_dinamis.html` sebagai Single Source of Truth rancangan basis data sistem.
+- Memperbarui ADR-014 di `Docs/03_logs/DECISIONS.md` dan menambahkan `PA-DEC-004` di `PA/docs/03_logs/DECISIONS.md`.
+- Memperbarui naskah lokal `PA/docs/modules/bab3/README.md`:
+  1. §3.6 dan §3.6.1 diselaraskan ke skema 21 tabel domain.
+  2. Gambar 3.18 dikaitkan ke `PA/docs/System design/04-ERD/erd_sistem_dinamis.png`.
+  3. Menjabarkan rincian 21 tabel domain pada 9 modul (M1–M4 Core, O1–O5 Opsional) secara utuh.
+- Menyelaraskan seluruh referensi "18–19 tabel" menjadi "skema 21 tabel domain" di `bab1/README.md`, `bab2/README.md`, `bab3/DESAIN_REWRITE_FASE1.md`, dan `full_draft.md`.
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/modules/bab1/README.md`
+- `PA/docs/modules/bab2/README.md`
+- `PA/docs/modules/full_draft.md`
+- `PA/docs/modules/bab3/DESAIN_REWRITE_FASE1.md`
+- `Docs/03_logs/DECISIONS.md`
+- `PA/docs/03_logs/DECISIONS.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+- `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Pengguna menerapkan prompt koreksi pada Google Doc/PDF untuk deskripsi 21 tabel dan pembersihan sisa teks.
+- Melanjutkan perancangan visual Mockup Antarmuka Web (§3.7) untuk 3 role.
+
+---
+
+## [2026-10-29 07:35] Penyelarasan Redaksi Naskah BAB 3 dengan Diagram Lego Klasifikasi Modul
+**Status:** Selesai
+**Dikerjakan:**
+- Menyelaraskan teks naskah pada `PA/docs/modules/bab3/README.md` (§3.6.3 dan §3.6.4):
+  1. Menambahkan kolom *Nama Fungsi Awam* di Tabel 3.6.3 agar sejalan dengan label pada balok diagram Lego.
+  2. Menyisipkan 4 poin penjelasan naratif analogi susunan balok Lego di bawah Gambar 3.19: Module Gateway sebagai baseplate ungu, Modul Inti sebagai balok biru pondasi tetap, Modul Tambahan sebagai balok hijau plug & play, serta balok Keuangan terangkat sebagai bukti independensi saat fitur dimatikan.
+  3. Menyeragamkan istilah label modul tambahan di Tabel 3.6.4 pengujian (Keuangan & Tagihan, Perawatan, Inventaris, Buku Tamu, Notifikasi).
+**File yang diubah:**
+- `PA/docs/modules/bab3/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Tahap berikutnya: Melanjutkan perancangan visual Mockup Antarmuka Web (§3.7) untuk 3 role.
+
+## [2026-10-29 07:20] Redesain Diagram Klasifikasi Modul: Ilustrasi Lego
+**Status:** Selesai (tampilan akhir belum dicek mata oleh AI, mohon dicek pengguna)
+**Dikerjakan:**
+- Mengganti isi `04-ERD/diagram_klasifikasi_modul.{html,svg,png}` dengan ilustrasi gaya Lego: alas ungu *Module Gateway*, 5 brick hijau modul tambahan di atas alas (satu terangkat, berlabel "Dilepas: sistem tetap berjalan"), 5 brick biru modul inti di bawah alas.
+- Tanpa kartu, bullet, kode fitur, atau istilah teknis. Gambar 3.19 di BAB 3 tidak berubah (file PNG sama).
+**File yang diubah:**
+- `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.{html,svg,png}`
+**Belum selesai / next steps:**
+- Pengguna cek tampilan; revisi warna/label bila perlu.
+
+## [2026-10-29 07:05] Redesain Diagram Klasifikasi Modul Menjadi SVG Vektor & Ekspor PNG 2x
+**Status:** Selesai
+**Dikerjakan:**
+- Merekonstruksi `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.html` menjadi diagram vektor SVG utuh dengan tata letak visual modern standar publikasi:
+  1. Header bar profesional dengan tombol ekspor SVG & PNG (2x resolusi cetak).
+  2. Modul Tambahan (Opsional) berdesain hijau emerald dengan saklar virtual (ON / OFF) per gedung.
+  3. Jalur penghubung fleksibel (Loose Coupling Bus) dengan panah putus-putus dua arah, menegaskan nol keterikatan kaku (nol FK fisik).
+  4. Modul Inti (Core) berdesain biru kokoh sebagai pondasi wajib selalu aktif di seluruh gedung.
+  5. Kotak perbandingan dunia nyata: Kost Komersial (Semua Fitur ON) vs Asrama/Mes Gratis (Keuangan OFF, tanpa error database).
+  6. Mengeliminasi seluruh istilah teknis/kode fitur (F01, dsb.) dan menggunakan bahasa alami yang mudah dipahami orang awam.
+- Merender otomatis `diagram_klasifikasi_modul.svg` dan `diagram_klasifikasi_modul.png` (resolusi 2240x1710 px, 200 KB) menggunakan headless Edge.
+- Memperbarui penomoran gambar di `PA/docs/modules/bab3/README.md`: `Gambar 3.19` disematkan untuk Diagram Klasifikasi Modul, dan nomor mockup diselaraskan menjadi `Gambar 3.20`, `3.21`, dan `3.22` berurutan tanpa jeda.
+- Menambahkan indeks diagram di `PA/docs/System design/README.md`.
+**File yang diubah:**
+- `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.html` (rekonstruksi SVG)
+- `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.svg` (baru)
+- `PA/docs/System design/04-ERD/diagram_klasifikasi_modul.png` (baru)
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/System design/README.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Tahap berikutnya: Melanjutkan perancangan visual Mockup Antarmuka Web (§3.7) untuk 3 role dalam format komponen modern.
+
+---
+
 ## [2026-10-23 03:33] Pembuatan Diagram BPMN 2.0 Alur 10: Pemesanan DP (Two-Phase Invoicing) & Refund Semi-Manual
 **Status:** Selesai
 **Dikerjakan:**

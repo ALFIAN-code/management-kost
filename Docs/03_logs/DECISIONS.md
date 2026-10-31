@@ -289,3 +289,43 @@ Mengadopsi pendekatan **Hexagonal Architecture (Ports and Adapters) / Dependency
 
 
 
+## ADR-014: Ratifikasi Skema Basis Data 21 Tabel Domain (Modular Monolith) Berdasarkan erd_sistem_dinamis.html
+
+**Tanggal:** 2026-10-29  
+**Status:** Accepted  
+**Mengubah:** ADR-007 (skema sementara 13 tabel) dan menyempurnakan ADR-008 (arsitektur dinamis)
+
+**Konteks:**
+1. ADR-007 sebelumnya menetapkan skema minimalis 13 tabel untuk menyederhanakan skema lama 41 tabel. Namun, skema 13 tabel tersebut terbukti terlalu banyak memotong entitas esensial sehingga tidak mampu menampung fitur yang telah disepakati pada `DAFTAR_FITUR.md` dan Tabel 3.1: F02 Dynamic RBAC (`roles`, `permissions`), F11 Pengeluaran Kas (`expenses`), F13 Servis Berkala (`maintenance_schedules`), `room_types`, `room_images`, `occupancy_members`, dan `room_inventories`.
+2. Di sisi lain, desain arsitektur hunian dinamis pada `PA/docs/System design/04-ERD/erd_sistem_dinamis.html` telah dirancang secara matang mencakup 21 tabel domain utama (24 entitas fisik termasuk junction tables) yang terbagi rapi ke dalam 9 modul.
+3. Desain `erd_sistem_dinamis.html` memiliki pemetaan 1-ke-1 sempurna terhadap seluruh 17 fitur sistem, menegakkan *zero physical foreign key* lintas modul via *soft-reference* (ditandai tag oranye `→ tabel`), serta telah memiliki aset grafis resolusi tinggi (`erd_sistem_dinamis.png`).
+4. Pengguna dan pengembang menyepakati bahwa skema pada `erd_sistem_dinamis.html` merupakan rancangan yang paling realistis, masuk akal, dan utuh untuk Proyek Akhir ini.
+
+**Keputusan:**
+1. **Ratifikasi Skema 21 Tabel Domain sebagai Single Source of Truth:**
+   Menetapkan skema basis data pada `PA/docs/System design/04-ERD/erd_sistem_dinamis.html` sebagai rancangan ERD final sistem:
+   - **M1 User & Access Control (Core):** `users`, `user_profiles`, `roles`, `permissions`, `user_roles`, `role_permissions`
+   - **M2 Property & Building (Core):** `buildings`, `building_settings`
+   - **M3 Room Management (Core):** `room_types`, `rooms`, `room_images`
+   - **M4 Occupancy & Schedule (Core):** `occupancies`, `occupancy_members`
+   - **O1 Finance & Billing (Opsional):** `invoices`, `payments`, `fines`, `expenses`
+   - **O2 Maintenance (Opsional):** `damage_reports`, `damage_report_logs`, `maintenance_schedules`
+   - **O3 Asset & Inventory (Opsional):** `inventories`, `room_inventories`
+   - **O4 Guest Logging (Opsional):** `guests`
+   - **O5 Notification (Opsional):** `notification_logs`
+2. **Pemasangan Gambar ERD:**
+   Menggunakan file `PA/docs/System design/04-ERD/erd_sistem_dinamis.png` sebagai Gambar 3.18 pada naskah BAB 3 §3.6.1.
+3. **Penegakan Batas Modular Monolith:**
+   Relasi Foreign Key fisik hanya diperbolehkan di dalam satu modul yang sama (*intra-modul*). Seluruh relasi antar-modul wajib berupa referensi logis (*soft reference* tanpa constraint fisik).
+
+**Alternatif:**
+- *Mempertahankan skema 13 tabel* (ditolak — membatalkan fitur penting F02, F11, F13 yang sudah disetujui).
+- *Kembali ke skema 41 tabel sistem lama* (ditolak — membawa kembali duplikasi tagihan, sewa harian, dan kolom mati).
+
+**Konsekuensi:**
+- Seluruh referensi skema basis data di naskah (BAB 1, BAB 2, BAB 3) diselaraskan menjadi "skema 21 tabel domain".
+- Gambar 3.18 dan teks penjabaran tabel di §3.6.1 merefleksikan 21 tabel domain ini secara presisi.
+
+
+
+

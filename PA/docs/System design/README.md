@@ -25,7 +25,7 @@
 3. **[Diagram Aliran Data Sistem (`03-DFD/`)](03-DFD/README.md):**
    * Diagram Konteks Level 0 (`dfd_level_0_context.html`) dan Diagram Dekomposisi Fungsional Level 1 (`dfd_level_1_dekomposisi.html`) membagi 10 proses domain dan 13 data store terisolasi.
 4. **[Model Data Terpadu & Kamus Data (`04-ERD/`)](04-ERD/README.md):**
-   * Diagram Entity-Relationship terpadu 13 tabel domain sewa bulanan murni (`erd_13_tabel.html`) dan ERD sistem dinamis (`erd_sistem_dinamis.html`).
+   * Diagram Entity-Relationship terpadu 13 tabel domain sewa bulanan murni (`erd_13_tabel.html`), ERD sistem dinamis (`erd_sistem_dinamis.html`), serta Diagram Klasifikasi Modul Inti vs Tambahan (`diagram_klasifikasi_modul.html`).
 5. **[UML 2.5 Use Case Diagram (`05-Use-Case/`)](05-Use-Case/README.md):**
    * Pemodelan batasan fungsionalitas aktor manusia (*Default Seed Roles* & *Dynamic RBAC*) dan sistem eksternal (Keycloak, Midtrans, WhatsApp, AI MCP). Tersedia dalam HTML interaktif, SVG, dan PNG 2x resolusi cetak.
 6. **[Diagram Teori Penunjang BAB 2 (`06-Teori-Penunjang/`)](06-Teori-Penunjang/README.md):**

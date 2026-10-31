@@ -26,6 +26,41 @@ Penelitian ini berfokus pada **refactoring** sistem informasi manajemen rumah ko
 
 ---
 
+### 2.1.6 Evolusi Desain Sistem Sebelum dan Sesudah Rewrite
+
+Bagian ini menjelaskan bagaimana desain sistem berkembang dari versi lama ke versi baru, agar pembaca memahami konteks di balik setiap keputusan arsitektur di BAB 3. Dua gambar berikut adalah artefak desain sistem sebelum rewrite.
+
+#### 1. Arsitektur Sebelum Rewrite (Sistem Lama)
+
+Sistem yang sebelumnya telah dikembangkan berbasis Laravel dengan basis data MySQL. Sistem dibagi ke dalam 12 modul sesuai domain bisnis, tetapi pemisahan itu hanya bersifat struktural (struktur folder), bukan ditegakkan oleh kerangka kerja. Hasilnya, modul keuangan masih dapat memanggil langsung model milik modul kamar, dan relasi Foreign Key fisik dipasang melintasi batas domain. Semua komponen berjalan dalam satu aplikasi monolitik tanpa batas teknis antar modul.
+
+Desain arsitektur keseluruhan sistem lama ditunjukkan pada Gambar 2.10. Dalam desain ini, tidak ada isolasi antar modul yang dipaksakan oleh kode, dan seluruh data tersimpan dalam satu basis data MySQL.
+
+> **Gambar 2.10 — Arsitektur Keseluruhan Sistem Sebelum Rewrite:** `PA/docs/System design/08-design-lama/desain_sistem-1. Arsitektur Keseluruhan.drawio.png`
+
+#### 2. Basis Data Sebelum Rewrite (ERD Sistem Lama)
+
+Basis data sistem lama dirancang untuk mendukung berbagai varian sewa — harian, mingguan, bulanan, dan tahunan — sekaligus, lengkap dengan mekanisme uang muka (*down payment*) dan pengembalian dana (*refund*). Model ini menyebabkan skema basis data membengkak hingga 41 tabel, dengan banyak tabel turunan yang saling menggandakan, dua mekanisme penerbitan tagihan, dua cache penghuni aktif, dan dua tabel penguncian kamar. Banyak kolom juga sudah tidak lagi digunakan oleh pemiliknya.
+
+ERD sistem lama ditunjukkan pada Gambar 2.11. Dengan jumlah tabel yang besar dan relasi yang kompleks, pemeliharaan skema serta pelacakan riwayat transaksi menjadi sulit dilakukan.
+
+> **Gambar 2.11 — Entity Relationship Diagram Sistem Sebelum Rewrite (41 Tabel):** `PA/docs/System design/08-design-lama/erd_fix_2.drawio.png`
+
+#### 3. Perubahan Desain dari Sistem Lama ke Baru
+
+Dari titik lemah sistem lama, desain baru dirancang ulang dengan pendekatan yang berbeda. Detail spesifikasi teknis basis data baru dijelaskan lebih lanjut pada **BAB 3 §3.6 Rancangan Basis Data** dan **§3.6.1 ERD**. Ringkasan perubahannya dapat dilihat pada Tabel 2.x.
+
+| No | Aspek | Sistem Sebelum Rewrite | Sistem Baru |
+|---|---|---|---|
+| 1 | Framework backend | Laravel (paket modular pihak ketiga) | NestJS (modular monolith native) |
+| 2 | Basis data | MySQL, 41 tabel | PostgreSQL, skema 21 tabel domain utama (ADR-014 / `erd_sistem_dinamis.html`) |
+| 3 | Batas modul | Struktur folder saja, mudah dilanggar | Ditegakkan oleh kerangka NestJS (nol FK lintas modul) |
+| 4 | Autentikasi | Email + kata sandi, bawaan aplikasi | Keycloak OIDC / SSO |
+| 5 | Dukungan gedung | Satu gedung | Multi-gedung dengan row-level scoping |
+| 6 | Model sewa | Harian, mingguan, bulanan, tahunan | Bulanan, aturan per gedung |
+
+---
+
 ## 2.2 Teori Penunjang
 
 ### 2.2.1 Sistem Informasi Manajemen

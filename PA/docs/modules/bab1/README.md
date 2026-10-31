@@ -72,7 +72,7 @@ Tujuan yang ingin dicapai melalui Proyek Akhir ini adalah:
 4. Menerapkan **kontrak API yang seragam dan type-safe** yang tersinkronisasi otomatis dengan dokumentasi OpenAPI.
 5. Menyediakan modul *MCP Server* yang terhubung dengan model *Artificial Intelligence* agar pemilik dan pengelola memperoleh jawaban operasional secara instan.
 6. Menerapkan sistem **Single Sign-On (SSO) berbasis Keycloak OpenID Connect** guna menyediakan autentikasi terpusat yang aman, menangani verifikasi email dan reset kata sandi secara otomatis, serta terintegrasi dengan pembatasan hak akses per gedung.
-7. Menerapkan **skema basis data 13 tabel** untuk mengakomodasi sewa bulanan dan aturan fleksibel per gedung tanpa duplikasi data.
+7. Menerapkan **skema basis data 21 tabel** untuk mengakomodasi sewa bulanan dan aturan fleksibel per gedung tanpa duplikasi data.
 8. Membangun integrasi **Midtrans yang aman dan idempoten** serta membuktikan stabilitas sistem melalui pengujian berlapis dengan tingkat kelulusan yang terukur.
 
 ---
@@ -105,15 +105,15 @@ Ruang lingkup dan batasan dalam penelitian Proyek Akhir ini mencakup:
 
 ### 1.5.3 Manfaat Bagi Penulis dan Akademisi
 - Memberikan studi empiris mengenai tahapan refaktorisasi arsitektur perangkat lunak dari sistem lama yang terfragmentasi menjadi Modular Monolith berbasis NestJS.
-- Memberikan rujukan teknis mengenai reduksi kompleksitas basis data dari 41 tabel menjadi 13 tabel domain bersih tanpa mengorbankan fungsionalitas bisnis utama.
+- Memberikan rujukan teknis mengenai reduksi kompleksitas basis data dari 41 tabel menjadi skema 21 tabel domain tanpa mengorbankan fungsionalitas bisnis utama.
 
 ---
 
 ## 1.6 Sistematika Penulisan
 
 Laporan Proyek Akhir ini disusun dalam lima bab:
-- **BAB 1 PENDAHULUAN:** Berisi latar belakang masalah operasional kost multi-gedung, telaah kritis atas kelemahan sistem lama, rasionalisasi penulisan ulang ke NestJS 13 tabel, rumusan masalah, tujuan, batasan, manfaat, serta sistematika penulisan.
+- **BAB 1 PENDAHULUAN:** Berisi latar belakang masalah operasional kost multi-gedung, telaah kritis atas kelemahan sistem lama, rasionalisasi penulisan ulang ke NestJS skema 21 tabel, rumusan masalah, tujuan, batasan, manfaat, serta sistematika penulisan.
 - **BAB 2 KAJIAN PUSTAKA:** Membahas landasan teori mengenai Sistem Informasi Manajemen Properti, arsitektur Modular Monolith pada ekosistem Node.js/NestJS, manajemen identitas Keycloak OIDC, protokol integrasi kecerdasan buatan Model Context Protocol (MCP), Clean Architecture pada Flutter Web, isolasi data Multi-Tenancy, integritas basis data relasional MySQL, integrasi gerbang pembayaran Midtrans, dan piramida pengujian perangkat lunak.
-- **BAB 3 METODOLOGI DAN PERANCANGAN SISTEM:** Menguraikan metodologi Scrum (peran, siklus 4 sprint, backlog), perancangan arsitektur Modular Monolith 9 modul NestJS, pemodelan proses bisnis (BPMN), use case, Data Flow Diagram (DFD), perancangan 13 tabel basis data beserta kamus data lengkap, alur otentikasi Keycloak OIDC via JWKS, spesifikasi teknis tool server MCP, rancangan antarmuka Flutter Web, spesifikasi kontrak REST API, dan skenario pengujian.
+- **BAB 3 METODOLOGI DAN PERANCANGAN SISTEM:** Menguraikan metodologi Scrum (peran, siklus 4 sprint, backlog), perancangan arsitektur Modular Monolith 9 modul NestJS, pemodelan proses bisnis (BPMN), use case, Data Flow Diagram (DFD), perancangan skema 21 tabel basis data beserta kamus data lengkap, alur otentikasi Keycloak OIDC via JWKS, spesifikasi teknis tool server MCP, rancangan antarmuka Flutter Web, spesifikasi kontrak REST API, dan skenario pengujian.
 - **BAB 4 IMPLEMENTASI DAN EVALUASI:** Mendokumentasikan implementasi backend NestJS, integrasi Keycloak OIDC, integrasi modul server MCP, frontend Flutter Web, integrasi Midtrans dan WhatsApp, serta menyajikan hasil pengujian sistem (*unit test*, *contract test*, *tenant isolation test*, dan *integration test*).
 - **BAB 5 PENUTUP:** Menyajikan kesimpulan atas hasil refaktorisasi sistem dan pencapaian tujuan penelitian, serta memaparkan saran pengembangan untuk penambahan fitur pada masa mendatang.
