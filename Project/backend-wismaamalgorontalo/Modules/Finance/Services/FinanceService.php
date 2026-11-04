@@ -423,14 +423,11 @@ class FinanceService
     /**
      * Get payment status for multiple schedules
      * Returns an array mapping schedule_id to 'Paid' or 'Unpaid'
-     *
-     * @param array $scheduleIds
-     * @return array
      */
     public static function getPaymentStatusByScheduleIds(array $scheduleIds): array
     {
         $invoices = \Modules\Finance\Models\Invoice::whereIn('schedule_id', $scheduleIds)->get();
-        
+
         $statusMap = [];
         foreach ($scheduleIds as $id) {
             $scheduleInvoices = $invoices->where('schedule_id', $id);
@@ -438,7 +435,7 @@ class FinanceService
             $hasInvoices = $scheduleInvoices->count() > 0;
             $statusMap[$id] = ($hasInvoices && ! $hasUnpaid) ? 'Paid' : 'Unpaid';
         }
-        
+
         return $statusMap;
     }
 

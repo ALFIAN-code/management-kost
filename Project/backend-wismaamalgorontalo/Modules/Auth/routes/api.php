@@ -13,11 +13,25 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/permissions', [AuthController::class, 'myPermissions']);
 
+// Password Recovery & SSO (Public)
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/google-login', [AuthController::class, 'googleLogin']);
+
+// Email Verification (Public OTP)
+Route::post('/email/verify-otp', [AuthController::class, 'verifyEmailPublic']);
+Route::post('/email/resend-otp', [AuthController::class, 'resendEmailVerification']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::put('/change-password', [AuthController::class, 'changePassword']);
+
+    // Email verification
+    Route::post('/email/send-verification', [AuthController::class, 'sendEmailVerification']);
+    Route::post('/email/verify', [AuthController::class, 'verifyEmail']);
 
     Route::get('/resident/profile', [UserProfileController::class, 'show']);
     Route::post('/resident/profile', [UserProfileController::class, 'store']);

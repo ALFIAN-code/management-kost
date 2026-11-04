@@ -54,9 +54,14 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.grey.shade300,
+      backgroundColor: isDark
+          ? Theme.of(context).scaffoldBackgroundColor
+          : Colors.grey.shade300,
       appBar: CustomAppbar(
-        icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
+        icon: Icon(
+          Icons.arrow_back,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
         title: 'Back',
       ),
       body: Stack(
@@ -85,7 +90,9 @@ class _LoginPageState extends State<LoginPage> {
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 30, horizontal: 40),
                 decoration: BoxDecoration(
-                  color: isDark ? Theme.of(context).colorScheme.surface : Colors.white,
+                  color: isDark
+                      ? Theme.of(context).colorScheme.surface
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -120,9 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                         final perms = state.userInfo?.permissions;
                         if (perms?.can('view-dashboard') ?? false) {
                           await context.router.replaceAll([
-                            const AppLayoutRoute(
-                              children: [DashboardRoute()],
-                            ),
+                            const AppLayoutRoute(children: [DashboardRoute()]),
                           ]);
                         } else if (perms?.can('view-resident-dashboard') ??
                             false) {
@@ -133,9 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                           ]);
                         } else {
                           await context.router.replaceAll([
-                            const AppLayoutRoute(
-                              children: [RoomRoute()],
-                            ),
+                            const AppLayoutRoute(children: [RoomRoute()]),
                           ]);
                         }
                       }
@@ -159,7 +162,9 @@ class _LoginPageState extends State<LoginPage> {
                           'Enter your email and password to continue',
                           style: StyleConstant.customTextStyle.copyWith(
                             fontSize: 16,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.8),
                           ),
                         ),
                         SizedBox(height: 40),
@@ -190,7 +195,24 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 10),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              context.router.push(const ForgotPasswordRoute());
+                            },
+                            child: Text(
+                              'Lupa kata sandi?',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
                         EnterKeyListener(
                           onEnter: () {
                             print('Login pressed');
@@ -226,6 +248,84 @@ class _LoginPageState extends State<LoginPage> {
                                 : 'Login',
                           ),
                         ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                color: Theme.of(
+                                  context,
+                                ).dividerColor.withOpacity(0.3),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Text(
+                                'atau lanjutkan dengan',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.6),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                color: Theme.of(
+                                  context,
+                                ).dividerColor.withOpacity(0.3),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        OutlinedButton(
+                          onPressed: state.status.isInProgress
+                              ? null
+                              : () {
+                                  context.read<AuthBloc>().add(
+                                    const GoogleLoginEvent(
+                                      idToken:
+                                          'mock-google-token-client@google.com',
+                                    ),
+                                  );
+                                },
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(48),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            side: BorderSide(
+                              color: Theme.of(
+                                context,
+                              ).dividerColor.withOpacity(0.5),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.g_mobiledata,
+                                size: 28,
+                                color: Colors.blueAccent,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Masuk dengan Google',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(height: 30),
                         if (context.isFeatureEnabled('auth_registration'))
                           Row(
@@ -234,7 +334,9 @@ class _LoginPageState extends State<LoginPage> {
                               Text(
                                 "Don't have an account?",
                                 style: StyleConstant.customTextStyle.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                               TextButton(

@@ -87,4 +87,96 @@ class AuthDatasource {
       rethrow;
     }
   }
+
+  Future<BaseResponseModel<dynamic>> forgotPassword(String email) async {
+    try {
+      final response = await dioClient.post(
+        EndpointConstant.forgotPasswordEndpoint,
+        data: {'email': email},
+      );
+      return BaseResponseModel.fromJson(response.data, (json) => json);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<BaseResponseModel<dynamic>> verifyOtp(String email, String otp) async {
+    try {
+      final response = await dioClient.post(
+        EndpointConstant.verifyOtpEndpoint,
+        data: {'email': email, 'otp': otp},
+      );
+      return BaseResponseModel.fromJson(response.data, (json) => json);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<BaseResponseModel<dynamic>> resetPassword({
+    required String email,
+    required String otp,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    try {
+      final response = await dioClient.post(
+        EndpointConstant.resetPasswordEndpoint,
+        data: {
+          'email': email,
+          'otp': otp,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+        },
+      );
+      return BaseResponseModel.fromJson(response.data, (json) => json);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<BaseResponseModel<AuthResponseModel>> loginWithGoogle(
+    String idToken,
+  ) async {
+    try {
+      final response = await dioClient.post(
+        EndpointConstant.googleLoginEndpoint,
+        data: {'id_token': idToken},
+      );
+      return BaseResponseModel<AuthResponseModel>.fromJson(
+        response.data,
+        (json) => AuthResponseModel.fromJson(json),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<BaseResponseModel<dynamic>> verifyEmailOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      final response = await dioClient.post(
+        EndpointConstant.verifyEmailOtpEndpoint,
+        data: {'email': email, 'otp': otp},
+      );
+      return BaseResponseModel.fromJson(response.data, (json) => json);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<BaseResponseModel<dynamic>> resendEmailOtp({
+    required String email,
+  }) async {
+    try {
+      final response = await dioClient.post(
+        EndpointConstant.resendEmailOtpEndpoint,
+        data: {'email': email},
+      );
+      return BaseResponseModel.fromJson(response.data, (json) => json);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

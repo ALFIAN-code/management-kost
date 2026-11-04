@@ -151,4 +151,100 @@ class RoomController extends Controller
 
         return $this->apiSuccess(null, 'Foto berhasil dihapus');
     }
+
+    /**
+     * Generator Batch Kamar (Rentang Nomor)
+     *
+     * Membuat serangkaian kamar baru secara otomatis berdasarkan pola (misal: 101 s/d 115).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function batchGenerate(Request $request)
+    {
+        $validated = $request->validate([
+            'prefix' => 'nullable|string|max:20',
+            'start_number' => 'required|integer|min:1',
+            'end_number' => 'required|integer|gte:start_number',
+            'pad_length' => 'nullable|integer|min:0|max:10',
+            'title_template' => 'nullable|string|max:100',
+            'price' => 'required|numeric|min:0',
+            'price_daily' => 'nullable|numeric|min:0',
+            'facilities' => 'nullable|array',
+            'facilities.*' => 'string',
+            'description' => 'nullable|string',
+            'building_id' => 'nullable|integer',
+            'skip_existing' => 'nullable|boolean',
+        ]);
+
+        try {
+            $result = $this->roomService->generateRoomsBatch($validated);
+
+            return $this->apiSuccess(
+                $result,
+                "Berhasil men-generate {$result['created_count']} kamar baru."
+            );
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), 422);
+        }
+    }
+
+    /**
+     * Batch Store Kamar (Array Data)
+     *
+     * Menyimpan banyak kamar sekaligus dari payload JSON array.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function batchStore(Request $request)
+    {
+        $validated = $request->validate([
+            'rooms' => 'required|array|min:1',
+            'rooms.*.number' => 'required|string|max:50',
+            'rooms.*.title' => 'nullable|string|max:255',
+            'rooms.*.price' => 'required|numeric|min:0',
+            'rooms.*.price_daily' => 'nullable|numeric|min:0',
+            'rooms.*.facilities' => 'nullable|array',
+            'rooms.*.description' => 'nullable|string',
+        ]);
+
+        try {
+            $result = $this->roomService->bulkCreateRooms($validated['rooms']);
+
+            return $this->apiSuccess(
+                $result,
+                "Berhasil menambahkan {$result['created_count']} kamar baru secara massal."
+            );
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), 422);
+        }
+    }
+
+    /**
+     * Import Kamar via CSV / Spreadsheet
+     *
+     * Mengunggah file CSV untuk mengimpor data kamar secara massal.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:5120',
+            'building_id' => 'nullable|integer',
+        ]);
+
+        try {
+            $result = $this->roomService->importRoomsCsv(
+                $request->file('file'),
+                $request->input('building_id')
+            );
+
+            return $this->apiSuccess(
+                $result,
+                "Berhasil mengimpor {$result['created_count']} kamar dari file CSV."
+            );
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), 422);
+        }
+    }
 }

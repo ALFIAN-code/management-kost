@@ -14,6 +14,8 @@ import 'package:frontend/presentation/pages/room_list/widget/room_card.dart';
 import 'package:frontend/presentation/widget/core/appbar/app_topbar.dart';
 import 'package:frontend/presentation/widget/core/card/summary_stat_card.dart';
 import 'package:frontend/presentation/widget/core/dialog/app_dialog.dart';
+import 'package:frontend/presentation/pages/room_list/widget/batch_room_generator_dialog.dart';
+import 'package:frontend/presentation/widget/core/tenant/property_selector_widget.dart';
 import 'package:frontend/core/theme/app_colors.dart';
 import 'package:frontend/core/theme/app_theme.dart';
 import 'package:frontend/core/theme/app_spacing.dart';
@@ -76,18 +78,68 @@ class _RoomViewState extends State<RoomView>
                     title: isAdmin ? 'Manage Rooms' : 'Available Room List',
                     breadcrumb: 'Rooms & Reservations / Manage Rooms',
                     action: isAdmin
-                        ? ElevatedButton.icon(
-                            onPressed: () async {
-                              final result = await context.router.push(
-                                const AddRoomRoute(),
-                              );
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              PropertySelectorWidget(
+                                onPropertySwitched: () {
+                                  context.read<RoomBloc>().add(GetRoomsEvent());
+                                },
+                              ),
+                              const SizedBox(width: 8),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  BatchRoomGeneratorDialog.show(
+                                    context,
+                                    onSuccess: () {
+                                      context.read<RoomBloc>().add(
+                                        GetRoomsEvent(),
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.auto_awesome,
+                                  size: 16,
+                                  color: Color(0xFF0D9488),
+                                ),
+                                label: const Text(
+                                  'Batch Generator',
+                                  style: TextStyle(
+                                    color: Color(0xFF0D9488),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(
+                                    color: Color(0xFF0D9488),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              ElevatedButton.icon(
+                                onPressed: () async {
+                                  final result = await context.router.push(
+                                    const AddRoomRoute(),
+                                  );
 
-                              if (result == true && context.mounted) {
-                                context.read<RoomBloc>().add(GetRoomsEvent());
-                              }
-                            },
-                            icon: const Icon(Icons.add, size: 18),
-                            label: const Text('Add Room'),
+                                  if (result == true && context.mounted) {
+                                    context.read<RoomBloc>().add(
+                                      GetRoomsEvent(),
+                                    );
+                                  }
+                                },
+                                icon: const Icon(Icons.add, size: 18),
+                                label: const Text('Add Room'),
+                              ),
+                            ],
                           )
                         : null,
                   ),

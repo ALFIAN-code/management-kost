@@ -169,9 +169,7 @@ class AppRouter extends RootStackRouter {
           page: PaymentVerificationRoute.page,
         ),
         AutoRoute(
-          guards: [
-            AuthGuard(serviceLocator.get<AuthRepository>()),
-          ],
+          guards: [AuthGuard(serviceLocator.get<AuthRepository>())],
           path: RouteConstant.refundRequestName,
           page: RefundRequestRoute.page,
         ),
@@ -381,5 +379,10 @@ class AppRouter extends RootStackRouter {
     ),
     AutoRoute(path: RouteConstant.loginName, page: LoginRoute.page),
     AutoRoute(path: RouteConstant.registerName, page: RegisterRoute.page),
+    AutoRoute(
+      path: RouteConstant.forgotPasswordName,
+      page: ForgotPasswordRoute.page,
+    ),
+    AutoRoute(path: RouteConstant.verifyEmailName, page: VerifyEmailRoute.page),
   ];
 }

@@ -10,6 +10,8 @@ class RouteConstant {
   // auth page
   static const String loginName = '/login';
   static const String registerName = '/register';
+  static const String forgotPasswordName = '/forgot-password';
+  static const String verifyEmailName = '/verify-email';
 
   // dashboard and admin panel
   static const String dashboardName = 'dashboard';

@@ -1,12 +1,13 @@
 <?php
+
 require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
+use Illuminate\Support\Facades\Gate;
 use Modules\Auth\Models\User;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Gate;
 
 // Migrate and setup
 Artisan::call('migrate:fresh');

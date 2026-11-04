@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'email_verified_at',
         'keycloak_id',
         'auth_provider',
         'assigned_building_id',

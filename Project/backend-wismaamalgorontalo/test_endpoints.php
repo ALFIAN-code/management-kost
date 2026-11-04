@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Endpoint Matrix Testing Script
  * Tests all GET endpoints from the Flutter endpoint list against the running server.
@@ -7,21 +8,21 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Modules\Auth\Models\User;
-use Modules\Room\Models\Room;
-use Modules\Schedule\Models\Schedule;
 use Modules\Finance\Models\Invoice;
 use Modules\Inventory\Models\Inventory;
+use Modules\Room\Models\Room;
+use Modules\Schedule\Models\Schedule;
 
 // === SETUP ===
 echo "\n=== ENDPOINT MATRIX TESTING ===\n";
-echo "Date: " . now()->toDateTimeString() . "\n\n";
+echo 'Date: '.now()->toDateTimeString()."\n\n";
 
 // Get or create admin user
 $admin = User::role('admin')->first();
-if (!$admin) {
+if (! $admin) {
     $admin = User::role('super-admin')->first();
 }
-if (!$admin) {
+if (! $admin) {
     echo "ERROR: No admin user found. Run seeders first.\n";
     exit(1);
 }
@@ -30,7 +31,7 @@ echo "Admin: {$admin->name} (ID: {$admin->id})\n";
 
 // Get or create resident user
 $resident = User::role('resident')->first();
-if (!$resident) {
+if (! $resident) {
     $resident = User::role('member')->first();
 }
 $residentToken = null;
@@ -50,36 +51,37 @@ $inventoryId = Inventory::first()?->id ?? 0;
 echo "Sample IDs - Room: {$roomId}, Schedule: {$scheduleId}, Invoice: {$invoiceId}, Inventory: {$inventoryId}\n\n";
 
 // === TEST FUNCTION ===
-function testEndpoint(string $method, string $uri, string $token, string $label = '', array $data = []): array {
+function testEndpoint(string $method, string $uri, string $token, string $label = '', array $data = []): array
+{
     $client = new \GuzzleHttp\Client([
         'base_uri' => 'http://localhost:8000',
         'http_errors' => false,
         'timeout' => 5,
     ]);
-    
+
     try {
         $headers = ['Accept' => 'application/json'];
         if ($token) {
-            $headers['Authorization'] = 'Bearer ' . $token;
+            $headers['Authorization'] = 'Bearer '.$token;
         }
-        
+
         $options = ['headers' => $headers];
-        if (!empty($data)) {
+        if (! empty($data)) {
             $options['json'] = $data;
         }
-        
+
         $response = $client->request($method, ltrim($uri, '/'), $options);
         $statusCode = $response->getStatusCode();
         $body = $response->getBody()->getContents();
         $content = json_decode($body, true);
-        
+
         $keys = [];
         if (is_array($content)) {
             $keys = array_keys($content);
         }
-        
+
         $ok = $statusCode >= 200 && $statusCode < 500;
-        
+
         return [
             'method' => $method,
             'uri' => $uri,
@@ -87,7 +89,7 @@ function testEndpoint(string $method, string $uri, string $token, string $label 
             'status' => $statusCode,
             'ok' => $ok,
             'keys' => implode(', ', array_slice($keys, 0, 6)),
-            'note' => $ok ? '' : 'ERROR: ' . ($content['message'] ?? substr($body, 0, 100)),
+            'note' => $ok ? '' : 'ERROR: '.($content['message'] ?? substr($body, 0, 100)),
         ];
     } catch (\Throwable $e) {
         return [
@@ -97,7 +99,7 @@ function testEndpoint(string $method, string $uri, string $token, string $label 
             'status' => 'EXC',
             'ok' => false,
             'keys' => '',
-            'note' => 'EXCEPTION: ' . substr($e->getMessage(), 0, 80),
+            'note' => 'EXCEPTION: '.substr($e->getMessage(), 0, 80),
         ];
     }
 }
@@ -117,7 +119,7 @@ $results[] = testEndpoint('GET', '/api/admin/permissions', $adminToken, 'Admin:p
 $results[] = testEndpoint('GET', '/api/admin/roles', $adminToken, 'Admin:roles.index');
 $results[] = testEndpoint('GET', '/api/admin/users', $adminToken, 'Admin:users.index');
 if ($admin->id) {
-    $results[] = testEndpoint('GET', '/api/admin/users/' . $admin->id, $adminToken, 'Admin:users.show');
+    $results[] = testEndpoint('GET', '/api/admin/users/'.$admin->id, $adminToken, 'Admin:users.show');
 }
 
 // === RESIDENT ENDPOINTS ===
@@ -125,7 +127,7 @@ echo "--- Testing Resident endpoints ---\n";
 if ($residentToken) {
     $results[] = testEndpoint('GET', '/api/resident/profile', $residentToken, 'Resident:profile');
 } else {
-    $results[] = ['method'=>'GET','uri'=>'/api/resident/profile','label'=>'Resident:profile','status'=>'SKIP','ok'=>true,'keys'=>'','note'=>'No resident user'];
+    $results[] = ['method' => 'GET', 'uri' => '/api/resident/profile', 'label' => 'Resident:profile', 'status' => 'SKIP', 'ok' => true, 'keys' => '', 'note' => 'No resident user'];
 }
 $results[] = testEndpoint('GET', '/api/v1/admin/residents', $adminToken, 'Admin:residents.index');
 
@@ -133,7 +135,7 @@ $results[] = testEndpoint('GET', '/api/v1/admin/residents', $adminToken, 'Admin:
 echo "--- Testing Room endpoints ---\n";
 $results[] = testEndpoint('GET', '/api/rooms', $adminToken, 'Room:index');
 if ($roomId) {
-    $results[] = testEndpoint('GET', '/api/rooms/' . $roomId, $adminToken, 'Room:show');
+    $results[] = testEndpoint('GET', '/api/rooms/'.$roomId, $adminToken, 'Room:show');
 }
 $results[] = testEndpoint('GET', '/api/rooms-schedules', $adminToken, 'Room:schedules');
 
@@ -141,15 +143,15 @@ $results[] = testEndpoint('GET', '/api/rooms-schedules', $adminToken, 'Room:sche
 echo "--- Testing Schedule endpoints ---\n";
 $results[] = testEndpoint('GET', '/api/v1/room-schedules', $adminToken, 'Schedule:index');
 if ($scheduleId) {
-    $results[] = testEndpoint('GET', '/api/v1/room-schedules/' . $scheduleId, $adminToken, 'Schedule:show');
+    $results[] = testEndpoint('GET', '/api/v1/room-schedules/'.$scheduleId, $adminToken, 'Schedule:show');
 }
 if ($residentToken) {
     $results[] = testEndpoint('GET', '/api/v1/room-schedules/my', $residentToken, 'Schedule:my');
 } else {
-    $results[] = ['method'=>'GET','uri'=>'/api/v1/room-schedules/my','label'=>'Schedule:my','status'=>'SKIP','ok'=>true,'keys'=>'','note'=>'No resident user'];
+    $results[] = ['method' => 'GET', 'uri' => '/api/v1/room-schedules/my', 'label' => 'Schedule:my', 'status' => 'SKIP', 'ok' => true, 'keys' => '', 'note' => 'No resident user'];
 }
 if ($roomId) {
-    $results[] = testEndpoint('GET', '/api/v1/room-schedules/kamar/' . $roomId, $adminToken, 'Schedule:byRoom');
+    $results[] = testEndpoint('GET', '/api/v1/room-schedules/kamar/'.$roomId, $adminToken, 'Schedule:byRoom');
 }
 
 // === FINANCE ENDPOINTS (cross-module: Finance<->Schedule) ===
@@ -162,7 +164,7 @@ $results[] = testEndpoint('GET', '/api/finance/expenses', $adminToken, 'Finance:
 $results[] = testEndpoint('GET', '/api/finance/payments', $adminToken, 'Finance:payments.index');
 $results[] = testEndpoint('GET', '/api/finance/invoices', $adminToken, 'Finance:invoices.index [X-MODULE]');
 if ($invoiceId) {
-    $results[] = testEndpoint('GET', '/api/finance/invoices/' . $invoiceId, $adminToken, 'Finance:invoices.show [X-MODULE]');
+    $results[] = testEndpoint('GET', '/api/finance/invoices/'.$invoiceId, $adminToken, 'Finance:invoices.show [X-MODULE]');
 }
 if ($residentToken) {
     $results[] = testEndpoint('GET', '/api/finance/me/summary', $residentToken, 'Finance:me.summary [X-MODULE]');
@@ -170,10 +172,10 @@ if ($residentToken) {
     $results[] = testEndpoint('GET', '/api/finance/me/payments', $residentToken, 'Finance:me.payments');
     $results[] = testEndpoint('GET', '/api/finance/me/fines', $residentToken, 'Finance:me.fines [X-MODULE]');
 } else {
-    $results[] = ['method'=>'GET','uri'=>'/api/finance/me/summary','label'=>'Finance:me.summary','status'=>'SKIP','ok'=>true,'keys'=>'','note'=>'No resident user'];
-    $results[] = ['method'=>'GET','uri'=>'/api/finance/me/invoices','label'=>'Finance:me.invoices','status'=>'SKIP','ok'=>true,'keys'=>'','note'=>'No resident user'];
-    $results[] = ['method'=>'GET','uri'=>'/api/finance/me/payments','label'=>'Finance:me.payments','status'=>'SKIP','ok'=>true,'keys'=>'','note'=>'No resident user'];
-    $results[] = ['method'=>'GET','uri'=>'/api/finance/me/fines','label'=>'Finance:me.fines','status'=>'SKIP','ok'=>true,'keys'=>'','note'=>'No resident user'];
+    $results[] = ['method' => 'GET', 'uri' => '/api/finance/me/summary', 'label' => 'Finance:me.summary', 'status' => 'SKIP', 'ok' => true, 'keys' => '', 'note' => 'No resident user'];
+    $results[] = ['method' => 'GET', 'uri' => '/api/finance/me/invoices', 'label' => 'Finance:me.invoices', 'status' => 'SKIP', 'ok' => true, 'keys' => '', 'note' => 'No resident user'];
+    $results[] = ['method' => 'GET', 'uri' => '/api/finance/me/payments', 'label' => 'Finance:me.payments', 'status' => 'SKIP', 'ok' => true, 'keys' => '', 'note' => 'No resident user'];
+    $results[] = ['method' => 'GET', 'uri' => '/api/finance/me/fines', 'label' => 'Finance:me.fines', 'status' => 'SKIP', 'ok' => true, 'keys' => '', 'note' => 'No resident user'];
 }
 $results[] = testEndpoint('GET', '/api/finance/payment-methods', $adminToken, 'Finance:paymentMethods');
 $results[] = testEndpoint('GET', '/api/finance/refund-requests', $adminToken, 'Finance:refundRequests');
@@ -183,7 +185,7 @@ echo "--- Testing Guest endpoints ---\n";
 if ($residentToken) {
     $results[] = testEndpoint('GET', '/api/guests', $residentToken, 'Guest:index [X-MODULE]');
 } else {
-    $results[] = ['method'=>'GET','uri'=>'/api/guests','label'=>'Guest:index','status'=>'SKIP','ok'=>true,'keys'=>'','note'=>'No resident user'];
+    $results[] = ['method' => 'GET', 'uri' => '/api/guests', 'label' => 'Guest:index', 'status' => 'SKIP', 'ok' => true, 'keys' => '', 'note' => 'No resident user'];
 }
 $results[] = testEndpoint('GET', '/api/admin/guests', $adminToken, 'Guest:admin.index [X-MODULE]');
 $results[] = testEndpoint('GET', '/api/admin/guest-bills', $adminToken, 'Guest:admin.bills [X-MODULE]');
@@ -193,7 +195,7 @@ echo "--- Testing Maintenance endpoints ---\n";
 if ($residentToken) {
     $results[] = testEndpoint('GET', '/api/v1/damage-reports/my-reports', $residentToken, 'Maint:myReports');
 } else {
-    $results[] = ['method'=>'GET','uri'=>'/api/v1/damage-reports/my-reports','label'=>'Maint:myReports','status'=>'SKIP','ok'=>true,'keys'=>'','note'=>'No resident user'];
+    $results[] = ['method' => 'GET', 'uri' => '/api/v1/damage-reports/my-reports', 'label' => 'Maint:myReports', 'status' => 'SKIP', 'ok' => true, 'keys' => '', 'note' => 'No resident user'];
 }
 $results[] = testEndpoint('GET', '/api/v1/damage-reports/admin', $adminToken, 'Maint:admin.index');
 $results[] = testEndpoint('GET', '/api/v1/schedules', $adminToken, 'Maint:schedules.index');
@@ -202,7 +204,7 @@ $results[] = testEndpoint('GET', '/api/v1/schedules', $adminToken, 'Maint:schedu
 echo "--- Testing Inventory endpoints ---\n";
 $results[] = testEndpoint('GET', '/api/inventory', $adminToken, 'Inventory:index');
 if ($inventoryId) {
-    $results[] = testEndpoint('GET', '/api/inventory/' . $inventoryId, $adminToken, 'Inventory:show');
+    $results[] = testEndpoint('GET', '/api/inventory/'.$inventoryId, $adminToken, 'Inventory:show');
 }
 
 // === NOTIFICATION ENDPOINTS ===
@@ -227,13 +229,13 @@ $results[] = testEndpoint('GET', '/api/dashboard/admin', $adminToken, 'Dashboard
 if ($residentToken) {
     $results[] = testEndpoint('GET', '/api/dashboard/resident', $residentToken, 'Dashboard:residentStats [X-MODULE]');
 } else {
-    $results[] = ['method'=>'GET','uri'=>'/api/dashboard/resident','label'=>'Dashboard:residentStats','status'=>'SKIP','ok'=>true,'keys'=>'','note'=>'No resident user'];
+    $results[] = ['method' => 'GET', 'uri' => '/api/dashboard/resident', 'label' => 'Dashboard:residentStats', 'status' => 'SKIP', 'ok' => true, 'keys' => '', 'note' => 'No resident user'];
 }
 
 // === PRINT RESULTS ===
 echo "\n\n=== ENDPOINT MATRIX RESULTS ===\n";
-echo str_pad('Label', 42) . ' | ' . str_pad('Method', 6) . ' | ' . str_pad('URI', 52) . ' | ' . str_pad('Status', 6) . ' | OK? | Note' . "\n";
-echo str_repeat('-', 170) . "\n";
+echo str_pad('Label', 42).' | '.str_pad('Method', 6).' | '.str_pad('URI', 52).' | '.str_pad('Status', 6).' | OK? | Note'."\n";
+echo str_repeat('-', 170)."\n";
 
 $totalOk = 0;
 $totalFail = 0;
@@ -250,15 +252,15 @@ foreach ($results as $r) {
     } else {
         $totalFail++;
     }
-    
-    echo str_pad($r['label'], 42) . ' | ' . str_pad($r['method'], 6) . ' | ' . str_pad($r['uri'], 52) . ' | ' . str_pad((string)$r['status'], 6) . ' | ' . $okStr . '  | ' . $r['note'] . "\n";
-    
+
+    echo str_pad($r['label'], 42).' | '.str_pad($r['method'], 6).' | '.str_pad($r['uri'], 52).' | '.str_pad((string) $r['status'], 6).' | '.$okStr.'  | '.$r['note']."\n";
+
     if (str_contains($r['label'], '[X-MODULE]')) {
         $crossModuleResults[] = $r;
     }
 }
 
-echo str_repeat('-', 170) . "\n";
+echo str_repeat('-', 170)."\n";
 echo "TOTAL: {$totalOk} OK, {$totalFail} FAILED, {$totalSkip} SKIPPED\n";
 
 echo "\n=== CROSS-MODULE ENDPOINTS (High Risk) ===\n";

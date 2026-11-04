@@ -4,16 +4,16 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
-use Modules\Finance\Models\Invoice;
 use Modules\Finance\Enums\InvoiceStatus;
 use Modules\Finance\Enums\InvoiceType;
-use Modules\Inventory\Models\Inventory;
+use Modules\Finance\Models\Invoice;
 use Modules\Inventory\Enums\ItemCondition;
-use Modules\Room\Models\Room;
+use Modules\Inventory\Models\Inventory;
 use Modules\Room\Enums\RoomStatus;
-use Modules\Schedule\Models\Schedule;
+use Modules\Room\Models\Room;
 use Modules\Schedule\Enums\ScheduleStatus;
 use Modules\Schedule\Enums\ScheduleType;
+use Modules\Schedule\Models\Schedule;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -22,10 +22,15 @@ class EndpointMatrixTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $resident;
+
     private Room $room;
+
     private ?Schedule $schedule = null;
+
     private ?Invoice $invoice = null;
+
     private ?Inventory $inventory = null;
 
     protected function setUp(): void
@@ -52,9 +57,9 @@ class EndpointMatrixTest extends TestCase
             'finance-me-fine-view',
             'view-my-damage-report',
             'view-resident-dashboard',
-            'view-my-guest'
+            'view-my-guest',
         ];
-        
+
         foreach ($residentPermissions as $perm) {
             $permission = \Spatie\Permission\Models\Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'api']);
             $residentRole->givePermissionTo($permission);
@@ -155,7 +160,7 @@ class EndpointMatrixTest extends TestCase
     public function test_admin_users_show_returns_200(): void
     {
         \Laravel\Sanctum\Sanctum::actingAs($this->admin, ['*']);
-        $response = $this->getJson('/api/admin/users/' . $this->admin->id);
+        $response = $this->getJson('/api/admin/users/'.$this->admin->id);
         $response->assertStatus(200);
     }
 
@@ -196,7 +201,7 @@ class EndpointMatrixTest extends TestCase
     public function test_rooms_show_returns_200(): void
     {
         \Laravel\Sanctum\Sanctum::actingAs($this->admin, ['*']);
-        $response = $this->getJson('/api/rooms/' . $this->room->id);
+        $response = $this->getJson('/api/rooms/'.$this->room->id);
         $response->assertStatus(200);
     }
 
@@ -220,7 +225,7 @@ class EndpointMatrixTest extends TestCase
     public function test_schedule_show_returns_200(): void
     {
         \Laravel\Sanctum\Sanctum::actingAs($this->admin, ['*']);
-        $response = $this->getJson('/api/v1/room-schedules/' . $this->schedule->id);
+        $response = $this->getJson('/api/v1/room-schedules/'.$this->schedule->id);
         $response->assertStatus(200);
     }
 
@@ -234,7 +239,7 @@ class EndpointMatrixTest extends TestCase
     public function test_schedule_by_room_returns_200(): void
     {
         \Laravel\Sanctum\Sanctum::actingAs($this->admin, ['*']);
-        $response = $this->getJson('/api/v1/room-schedules/kamar/' . $this->room->id);
+        $response = $this->getJson('/api/v1/room-schedules/kamar/'.$this->room->id);
         $response->assertStatus(200);
     }
 
@@ -293,7 +298,7 @@ class EndpointMatrixTest extends TestCase
     public function test_finance_invoices_show_returns_200_cross_module(): void
     {
         \Laravel\Sanctum\Sanctum::actingAs($this->admin, ['*']);
-        $response = $this->getJson('/api/finance/invoices/' . $this->invoice->id);
+        $response = $this->getJson('/api/finance/invoices/'.$this->invoice->id);
         $response->assertStatus(200);
     }
 
@@ -417,7 +422,7 @@ class EndpointMatrixTest extends TestCase
     public function test_inventory_show_returns_200(): void
     {
         \Laravel\Sanctum\Sanctum::actingAs($this->admin, ['*']);
-        $response = $this->getJson('/api/inventory/' . $this->inventory->id);
+        $response = $this->getJson('/api/inventory/'.$this->inventory->id);
         $response->assertStatus(200);
     }
 

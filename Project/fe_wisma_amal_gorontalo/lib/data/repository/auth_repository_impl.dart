@@ -114,4 +114,57 @@ class AuthRepositoryImpl implements AuthRepository {
     final token = await secureStorage.get(StorageConstant.token);
     return token != null;
   }
+
+  @override
+  Future<void> forgotPassword(String email) async {
+    await datasource.forgotPassword(email);
+  }
+
+  @override
+  Future<void> verifyOtp(String email, String otp) async {
+    await datasource.verifyOtp(email, otp);
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String email,
+    required String otp,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    await datasource.resetPassword(
+      email: email,
+      otp: otp,
+      password: password,
+      passwordConfirmation: passwordConfirmation,
+    );
+  }
+
+  @override
+  Future<UserEntity> loginWithGoogle(String idToken) async {
+    final response = await datasource.loginWithGoogle(idToken);
+    final token = response.data.token.split('|').last;
+    await secureStorage.set(StorageConstant.token, token);
+    final permData = await datasource.getPermissions();
+    final permList = List<String>.from(permData.data['permissions'] ?? []);
+    UserEntity userEntity = response.data.toEntity();
+    userEntity.permissions = Permissions(permList.toSet());
+    if (response.status) {
+      await _saveUserInfo(userEntity);
+    }
+    return userEntity;
+  }
+
+  @override
+  Future<void> verifyEmailOtp({
+    required String email,
+    required String otp,
+  }) async {
+    await datasource.verifyEmailOtp(email: email, otp: otp);
+  }
+
+  @override
+  Future<void> resendEmailOtp(String email) async {
+    await datasource.resendEmailOtp(email: email);
+  }
 }

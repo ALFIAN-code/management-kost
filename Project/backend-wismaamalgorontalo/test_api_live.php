@@ -1,15 +1,18 @@
 <?php
+
 require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
-use Modules\Auth\Models\User;
 use GuzzleHttp\Client;
+use Modules\Auth\Models\User;
 
 $admin = User::role('admin')->first() ?? User::role('super-admin')->first();
 $resident = User::role('resident')->first();
 
-if (!$admin) die("No admin found\n");
+if (! $admin) {
+    exit("No admin found\n");
+}
 $adminToken = $admin->createToken('live-test-admin')->plainTextToken;
 
 $residentToken = null;
@@ -19,18 +22,21 @@ if ($resident) {
 
 $client = new Client(['base_uri' => 'http://localhost:8000/', 'http_errors' => false]);
 
-function testApi(Client $client, $method, $uri, $token = null) {
+function testApi(Client $client, $method, $uri, $token = null)
+{
     $headers = ['Accept' => 'application/json'];
-    if ($token) $headers['Authorization'] = 'Bearer ' . $token;
-    
+    if ($token) {
+        $headers['Authorization'] = 'Bearer '.$token;
+    }
+
     $start = microtime(true);
     $response = $client->request($method, $uri, ['headers' => $headers]);
     $duration = round((microtime(true) - $start) * 1000, 2);
-    
+
     $status = $response->getStatusCode();
-    echo str_pad("[$method] $uri", 50) . " => Status: $status ($duration ms)\n";
+    echo str_pad("[$method] $uri", 50)." => Status: $status ($duration ms)\n";
     if ($status >= 500) {
-        echo "ERROR RESPONSE: " . substr($response->getBody()->getContents(), 0, 500) . "\n";
+        echo 'ERROR RESPONSE: '.substr($response->getBody()->getContents(), 0, 500)."\n";
     }
 }
 

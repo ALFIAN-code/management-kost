@@ -173,4 +173,196 @@ class AuthController extends Controller
 
         return $this->apiSuccess(null, 'Password berhasil diubah');
     }
+
+    /**
+     * Minta OTP Lupa Password
+     *
+     * Mengirimkan kode 6 digit OTP ke alamat email terdaftar melalui SMTP.
+     *
+     * @unauthenticated
+     */
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        try {
+            $this->authService->sendForgotPasswordOtp($request->email);
+
+            return $this->apiSuccess(
+                ['email' => $request->email],
+                'Kode verifikasi OTP telah dikirimkan ke email Anda. Silakan periksa kotak masuk atau spam.'
+            );
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 500);
+        }
+    }
+
+    /**
+     * Verifikasi OTP Reset Password
+     *
+     * Memeriksa apakah OTP yang dimasukkan valid dan belum kadaluarsa.
+     *
+     * @unauthenticated
+     */
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|string|size:6',
+        ]);
+
+        try {
+            $this->authService->verifyResetOtp($request->email, $request->otp);
+
+            return $this->apiSuccess(
+                ['valid' => true],
+                'Kode OTP valid. Silakan lanjutkan pembuatan password baru.'
+            );
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 422);
+        }
+    }
+
+    /**
+     * Reset Password dengan OTP
+     *
+     * Menyimpan password baru setelah verifikasi OTP berhasil.
+     *
+     * @unauthenticated
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|string|size:6',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        try {
+            $this->authService->resetPasswordWithOtp($request->email, $request->otp, $request->password);
+
+            return $this->apiSuccess(
+                null,
+                'Kata sandi Anda berhasil diperbarui. Silakan masuk menggunakan kata sandi baru.'
+            );
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 422);
+        }
+    }
+
+    /**
+     * Kirim Ulang OTP Verifikasi Email
+     *
+     * Mengirimkan kode verifikasi email untuk akun yang sedang login.
+     */
+    public function sendEmailVerification(Request $request)
+    {
+        try {
+            $this->authService->sendEmailVerificationOtp($request->user());
+
+            return $this->apiSuccess(
+                null,
+                'Kode verifikasi email berhasil dikirim ke '.$request->user()->email
+            );
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Verifikasi Email dengan OTP
+     */
+    public function verifyEmail(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|string|size:6',
+        ]);
+
+        try {
+            $this->authService->verifyEmailWithOtp($request->user(), $request->otp);
+
+            return $this->apiSuccess(
+                ['email_verified_at' => now()],
+                'Alamat email berhasil diverifikasi.'
+            );
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 422);
+        }
+    }
+
+    /**
+     * Verifikasi Email dengan OTP (Bisa Public dengan input email & OTP)
+     *
+     * @unauthenticated
+     */
+    public function verifyEmailPublic(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|string|size:6',
+        ]);
+
+        try {
+            $user = $this->authService->verifyEmailOtpByEmail($request->email, $request->otp);
+
+            return $this->apiSuccess(
+                [
+                    'email' => $user->email,
+                    'email_verified_at' => $user->email_verified_at,
+                ],
+                'Alamat email berhasil diverifikasi. Akun Anda kini aktif sepenuhnya.'
+            );
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 422);
+        }
+    }
+
+    /**
+     * Kirim Ulang OTP Verifikasi Email (Bisa Public dengan email)
+     *
+     * @unauthenticated
+     */
+    public function resendEmailVerification(Request $request)
+    {
+        $email = $request->email ?? $request->user()?->email;
+        if (! $email) {
+            return $this->apiError('Alamat email wajib disertakan.', 422);
+        }
+
+        try {
+            $this->authService->resendVerificationOtpByEmail($email);
+
+            return $this->apiSuccess(
+                null,
+                'Kode verifikasi baru telah dikirimkan ke '.$email
+            );
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 422);
+        }
+    }
+
+    /**
+     * SSO Google Sign-In
+     *
+     * Menerima id_token dari Google Sign-In (Flutter/Web), memverifikasi,
+     * dan menerbitkan token otentikasi Sanctum (JIT Provisioning).
+     *
+     * @unauthenticated
+     */
+    public function googleLogin(Request $request)
+    {
+        $request->validate([
+            'id_token' => 'required|string',
+        ]);
+
+        try {
+            $data = $this->authService->loginWithGoogle($request->id_token);
+
+            return $this->apiSuccess($data, 'Berhasil masuk dengan akun Google.');
+        } catch (\Exception $e) {
+            return $this->apiError($e->getMessage(), $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 401);
+        }
+    }
 }

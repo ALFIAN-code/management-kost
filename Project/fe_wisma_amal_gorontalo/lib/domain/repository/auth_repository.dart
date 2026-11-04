@@ -7,4 +7,15 @@ abstract class AuthRepository {
   Future<UserEntity> login(dynamic request);
   Future<bool> logout();
   Future<bool> isLoggedIn();
+  Future<void> forgotPassword(String email);
+  Future<void> verifyOtp(String email, String otp);
+  Future<void> resetPassword({
+    required String email,
+    required String otp,
+    required String password,
+    required String passwordConfirmation,
+  });
+  Future<UserEntity> loginWithGoogle(String idToken);
+  Future<void> verifyEmailOtp({required String email, required String otp});
+  Future<void> resendEmailOtp(String email);
 }

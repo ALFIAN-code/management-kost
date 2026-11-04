@@ -14,6 +14,7 @@ import 'package:frontend/domain/usecase/auth/login_usecase.dart';
 import 'package:frontend/domain/usecase/auth/logout_usecase.dart';
 import 'package:frontend/domain/usecase/auth/register_usecase.dart';
 import 'package:frontend/domain/usecase/usecase.dart';
+import 'package:frontend/domain/repository/auth_repository.dart';
 import 'package:frontend/domain/entity/permission_entity.dart';
 import 'package:frontend/domain/entity/user_entity.dart';
 import 'package:frontend/presentation/bloc/auth/auth_event.dart';
@@ -64,6 +65,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GetPermissionsEvent>(_onGetPermissions);
     on<ToggleObscureTextEvent>(_onToggleObscureText);
     on<SessionExpiredEvent>(_onSessionExpired);
+    on<GoogleLoginEvent>(_onGoogleLogin);
+    on<ForgotPasswordEvent>(_onForgotPassword);
+    on<VerifyOtpEvent>(_onVerifyOtp);
+    on<ResetPasswordEvent>(_onResetPassword);
+    on<VerifyEmailOtpEvent>(_onVerifyEmailOtp);
+    on<ResendEmailOtpEvent>(_onResendEmailOtp);
     on<ResetStateEvent>((event, emit) {
       emit(const AuthState());
     });
@@ -85,8 +92,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final currentUser = state.userInfo;
       if (currentUser == null) return;
 
-      final newPermissions = Permissions(storage.getPermissions()?.toSet() ?? {});
-      final newRoles = storage.getList(StorageConstant.roleActive) ?? currentUser.roles;
+      final newPermissions = Permissions(
+        storage.getPermissions()?.toSet() ?? {},
+      );
+      final newRoles =
+          storage.getList(StorageConstant.roleActive) ?? currentUser.roles;
 
       final permissionsChanged = !_setsEqual(
         currentUser.permissions?.raw ?? {},
@@ -121,7 +131,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final isValid = await checkSessionUseCase(NoParams());
       if (!isValid) {
         add(const LogoutEvent());
-        AppSnackbar.showError('Your session has expired. Please sign in again.');
+        AppSnackbar.showError(
+          'Your session has expired. Please sign in again.',
+        );
       } else {
         // Refresh permissions every time the session is checked (every 5 minutes)
         add(const GetPermissionsEvent());
@@ -322,7 +334,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // Actually, better to use the repository functionality if possible
       // but logoutUseCase might call the API.
       // Let's just reset the state and let the session initialization handle it.
-      
+
       // Emit guest state
       emit(
         const AuthState(
@@ -330,12 +342,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           isLoggedIn: false,
         ),
       );
-      
+
       loginStatusNotifier.isLoggedIn = false;
-      
+
       // Update permissions as guest
       await getPermissionsUseCase(NoParams());
-      
+
       AppSnackbar.showError('Your session has expired. Please sign in again.');
     } catch (e) {
       print('Error during session expiration handling: $e');
@@ -360,9 +372,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       emit(state.copyWith(userInfo: userInfo));
     } on AppException catch (e) {
-      AppSnackbar.showError(
-        'Failed to get user information: ${e.message}',
-      );
+      AppSnackbar.showError('Failed to get user information: ${e.message}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -371,9 +381,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (e) {
-      AppSnackbar.showError(
-        'Failed to get user information: ${e.toString()}',
-      );
+      AppSnackbar.showError('Failed to get user information: ${e.toString()}');
       emit(
         state.copyWith(
           status: FormzSubmissionStatus.failure,
@@ -389,6 +397,266 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) {
     emit(state.copyWith(obscureText: !state.obscureText));
+  }
+
+  Future<void> _onGoogleLogin(
+    GoogleLoginEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: FormzSubmissionStatus.inProgress,
+        errorMessage: null,
+      ),
+    );
+    try {
+      final authRepo = serviceLocator.get<AuthRepository>();
+      final user = await authRepo.loginWithGoogle(event.idToken);
+      final isLoggedIn = await isLoggedInUseCase(NoParams());
+      if (isLoggedIn) {
+        add(const GetUserInfoEvent());
+        serviceLocator<FeatureToggleBloc>().add(FetchFeatureToggles());
+        emit(
+          state.copyWith(
+            isLoggedIn: true,
+            userInfo: user,
+            status: FormzSubmissionStatus.success,
+            successMessage: 'Berhasil masuk dengan Google!',
+          ),
+        );
+      }
+      AppSnackbar.showSuccess('Berhasil masuk dengan Google!');
+    } on AppException catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.message,
+        ),
+      );
+      AppSnackbar.showError(e.message);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+      AppSnackbar.showError(e.toString());
+    }
+  }
+
+  Future<void> _onForgotPassword(
+    ForgotPasswordEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: FormzSubmissionStatus.inProgress,
+        errorMessage: null,
+        forgotPasswordSent: false,
+      ),
+    );
+    try {
+      final authRepo = serviceLocator.get<AuthRepository>();
+      await authRepo.forgotPassword(event.email);
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.success,
+          forgotPasswordSent: true,
+          successMessage: 'Kode OTP telah dikirimkan ke email Anda.',
+        ),
+      );
+      AppSnackbar.showSuccess('Kode OTP telah dikirimkan ke email Anda.');
+    } on AppException catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.message,
+        ),
+      );
+      AppSnackbar.showError(e.message);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+      AppSnackbar.showError(e.toString());
+    }
+  }
+
+  Future<void> _onVerifyOtp(
+    VerifyOtpEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: FormzSubmissionStatus.inProgress,
+        errorMessage: null,
+        otpVerified: false,
+      ),
+    );
+    try {
+      final authRepo = serviceLocator.get<AuthRepository>();
+      await authRepo.verifyOtp(event.email, event.otp);
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.success,
+          otpVerified: true,
+          successMessage: 'Kode OTP terverifikasi.',
+        ),
+      );
+      AppSnackbar.showSuccess('Kode OTP berhasil diverifikasi.');
+    } on AppException catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.message,
+        ),
+      );
+      AppSnackbar.showError(e.message);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+      AppSnackbar.showError(e.toString());
+    }
+  }
+
+  Future<void> _onResetPassword(
+    ResetPasswordEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: FormzSubmissionStatus.inProgress,
+        errorMessage: null,
+        passwordResetSuccess: false,
+      ),
+    );
+    try {
+      final authRepo = serviceLocator.get<AuthRepository>();
+      await authRepo.resetPassword(
+        email: event.email,
+        otp: event.otp,
+        password: event.password,
+        passwordConfirmation: event.passwordConfirm,
+      );
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.success,
+          passwordResetSuccess: true,
+          successMessage:
+              'Kata sandi berhasil direset! Silakan login dengan kata sandi baru.',
+        ),
+      );
+      AppSnackbar.showSuccess('Kata sandi berhasil direset! Silakan login.');
+    } on AppException catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.message,
+        ),
+      );
+      AppSnackbar.showError(e.message);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+      AppSnackbar.showError(e.toString());
+    }
+  }
+
+  Future<void> _onVerifyEmailOtp(
+    VerifyEmailOtpEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: FormzSubmissionStatus.inProgress,
+        errorMessage: null,
+        emailVerified: false,
+      ),
+    );
+    try {
+      final authRepo = serviceLocator.get<AuthRepository>();
+      await authRepo.verifyEmailOtp(email: event.email, otp: event.otp);
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.success,
+          emailVerified: true,
+          successMessage: 'Alamat email berhasil diverifikasi!',
+        ),
+      );
+      AppSnackbar.showSuccess('Alamat email berhasil diverifikasi!');
+    } on AppException catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.message,
+        ),
+      );
+      AppSnackbar.showError(e.message);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+      AppSnackbar.showError(e.toString());
+    }
+  }
+
+  Future<void> _onResendEmailOtp(
+    ResendEmailOtpEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: FormzSubmissionStatus.inProgress,
+        errorMessage: null,
+        emailVerificationSent: false,
+      ),
+    );
+    try {
+      final authRepo = serviceLocator.get<AuthRepository>();
+      await authRepo.resendEmailOtp(event.email);
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.success,
+          emailVerificationSent: true,
+          successMessage:
+              'Kode verifikasi baru telah dikirimkan ke email Anda.',
+        ),
+      );
+      AppSnackbar.showSuccess(
+        'Kode verifikasi baru telah dikirimkan ke email Anda.',
+      );
+    } on AppException catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.message,
+        ),
+      );
+      AppSnackbar.showError(e.message);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+      AppSnackbar.showError(e.toString());
+    }
   }
 
   @override

@@ -2,6 +2,7 @@
 
 namespace Modules\Room\Models;
 
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Room\database\factories\RoomFactory;
@@ -11,7 +12,7 @@ use Modules\Schedule\Models\Schedule;
 
 class Room extends Model
 {
-    use HasFactory;
+    use BelongsToTenant, HasFactory;
 
     protected $guarded = ['id'];
 

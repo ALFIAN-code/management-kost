@@ -18,10 +18,13 @@ class ApiConfig {
 
   // static const String localURl = 'http://localhost:8000';
   static const String localURl = 'http://127.0.0.1:8000';
-  static const String productionURL = String.fromEnvironment(
+  static final String _rawProductionURL = const String.fromEnvironment(
     'BASE_URL',
-    defaultValue: 'https://api-wismaamal.allvvnt.my.id/',
+    defaultValue: 'https://api-wismaamal.allvvnt.my.id',
   );
+  static String get productionURL => _rawProductionURL.endsWith('/')
+      ? _rawProductionURL.substring(0, _rawProductionURL.length - 1)
+      : _rawProductionURL;
 
   factory ApiConfig.getServerUrl() {
     if (kReleaseMode) {

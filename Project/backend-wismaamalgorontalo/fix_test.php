@@ -1,4 +1,5 @@
 <?php
+
 $file = 'tests/Feature/EndpointMatrixTest.php';
 $content = file_get_contents($file);
 

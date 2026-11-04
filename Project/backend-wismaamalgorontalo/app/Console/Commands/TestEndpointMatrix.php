@@ -5,14 +5,15 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Http\Request;
 use Modules\Auth\Models\User;
-use Modules\Room\Models\Room;
-use Modules\Schedule\Models\Schedule;
 use Modules\Finance\Models\Invoice;
 use Modules\Inventory\Models\Inventory;
+use Modules\Room\Models\Room;
+use Modules\Schedule\Models\Schedule;
 
 class TestEndpointMatrix extends Command
 {
     protected $signature = 'test:endpoints';
+
     protected $description = 'Test all API endpoints for regression check';
 
     private array $results = [];
@@ -20,12 +21,13 @@ class TestEndpointMatrix extends Command
     public function handle(): int
     {
         $this->info("\n=== ENDPOINT MATRIX TESTING ===");
-        $this->info("Date: " . now()->toDateTimeString());
+        $this->info('Date: '.now()->toDateTimeString());
 
         // Get admin user
         $admin = User::role('admin')->first() ?? User::role('super-admin')->first();
         if (! $admin) {
-            $this->error("No admin user found.");
+            $this->error('No admin user found.');
+
             return 1;
         }
         $adminToken = $admin->createToken('test-admin')->plainTextToken;
@@ -38,7 +40,7 @@ class TestEndpointMatrix extends Command
             $residentToken = $resident->createToken('test-resident')->plainTextToken;
             $this->info("Resident: {$resident->name} (ID: {$resident->id})");
         } else {
-            $this->warn("No resident/member user found. Resident endpoints will be skipped.");
+            $this->warn('No resident/member user found. Resident endpoints will be skipped.');
         }
 
         // Sample IDs
@@ -162,15 +164,15 @@ class TestEndpointMatrix extends Command
         // === OUTPUT ===
         $this->newLine(2);
         $this->info('=== ENDPOINT MATRIX RESULTS ===');
-        
+
         $totalOk = 0;
         $totalFail = 0;
         $totalSkip = 0;
         $crossModule = [];
-        
+
         $headers = ['Label', 'Method', 'URI', 'Status', 'OK?', 'Keys', 'Note'];
         $rows = [];
-        
+
         foreach ($this->results as $r) {
             $ok = '✅';
             if ($r['status'] === 'SKIP') {
@@ -183,35 +185,35 @@ class TestEndpointMatrix extends Command
                 $ok = '❌';
                 $totalFail++;
             }
-            
+
             $rows[] = [$r['label'], $r['method'], $r['uri'], $r['status'], $ok, substr($r['keys'], 0, 35), substr($r['note'], 0, 50)];
-            
+
             if (str_contains($r['label'], '[X-MODULE]')) {
                 $crossModule[] = $r;
             }
         }
-        
+
         $this->table($headers, $rows);
-        
+
         $this->newLine();
         $this->info("TOTAL: {$totalOk} OK, {$totalFail} FAILED, {$totalSkip} SKIPPED");
-        
+
         $this->newLine();
         $this->info('=== CROSS-MODULE ENDPOINTS (High Risk) ===');
         foreach ($crossModule as $r) {
             $icon = $r['ok'] ? '✅' : '❌';
             $this->line("  {$icon} [{$r['status']}] {$r['label']} → {$r['uri']}");
         }
-        
+
         // Cleanup
         $admin->tokens()->where('name', 'test-admin')->delete();
         if ($resident) {
             $resident->tokens()->where('name', 'test-resident')->delete();
         }
-        
+
         $this->newLine();
         $this->info('=== DONE ===');
-        
+
         return $totalFail > 0 ? 1 : 0;
     }
 
@@ -220,15 +222,15 @@ class TestEndpointMatrix extends Command
         try {
             $request = Request::create($uri, 'GET');
             if ($token) {
-                $request->headers->set('Authorization', 'Bearer ' . $token);
+                $request->headers->set('Authorization', 'Bearer '.$token);
             }
             $request->headers->set('Accept', 'application/json');
-            
+
             $kernel = app(\Illuminate\Contracts\Http\Kernel::class);
             $response = $kernel->handle($request);
             $statusCode = $response->getStatusCode();
             $content = json_decode($response->getContent(), true);
-            
+
             $keys = is_array($content) ? implode(', ', array_slice(array_keys($content), 0, 6)) : '';
             $ok = $statusCode >= 200 && $statusCode < 500;
             $note = '';
@@ -236,14 +238,14 @@ class TestEndpointMatrix extends Command
                 $note = 'Forbidden (permission)';
                 $ok = true; // 403 is expected behavior, not a crash
             } elseif ($statusCode >= 500) {
-                $note = 'SERVER ERROR: ' . ($content['message'] ?? 'Unknown');
+                $note = 'SERVER ERROR: '.($content['message'] ?? 'Unknown');
             }
-            
-            $this->results[] = compact('label', 'uri', 'statusCode', 'ok', 'keys', 'note') + ['method' => 'GET', 'status' => (string)$statusCode];
-            
+
+            $this->results[] = compact('label', 'uri', 'statusCode', 'ok', 'keys', 'note') + ['method' => 'GET', 'status' => (string) $statusCode];
+
             // Reset app state
             $kernel->terminate($request, $response);
-            
+
         } catch (\Throwable $e) {
             $this->results[] = [
                 'method' => 'GET',
@@ -252,7 +254,7 @@ class TestEndpointMatrix extends Command
                 'status' => 'EXC',
                 'ok' => false,
                 'keys' => '',
-                'note' => 'EXCEPTION: ' . substr($e->getMessage(), 0, 80),
+                'note' => 'EXCEPTION: '.substr($e->getMessage(), 0, 80),
             ];
         }
     }

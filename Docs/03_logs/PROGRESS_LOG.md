@@ -4,6 +4,44 @@
 
 ---
 
+## [2026-11-04 12:35] Implementasi Fitur Client (SSO, Multi-Tenant, Batch Kamar) & Update Deployment Server ALLVVNT
+**Status:** Selesai
+**Dikerjakan:**
+- Membuat branch terpisah `client/saas-multitenant` untuk pekerjaan kustom klien tanpa mengganggu branch `develop`.
+- Backend:
+  1. Menambahkan siklus pemulihan akun & email via SMTP: endpoint `forgot-password`, `verify-otp`, `reset-password`, serta migrasi `email_verification_tokens`.
+  2. Menambahkan alur verifikasi email otomatis saat pendaftaran (`AuthService::register` memicu `sendEmailVerificationOtp`) serta endpoint `POST /api/email/verify-otp` dan `POST /api/email/resend-otp`.
+  3. Menambahkan template email HTML modern untuk OTP reset password & verifikasi email.
+  4. Menambahkan SSO Google Login via endpoint `google-login` dengan verifikasi token & JIT Provisioning.
+  5. Menambahkan Multi-Tenancy (Row-Level Scoping `building_id`, `TenantContext`, `TenantScope`, `BelongsToTenant`, `TenantResolverMiddleware`, serta `BuildingController`).
+  6. Menambahkan fitur kamar massal (Batch Generator rentang nomor `rooms/batch-generate`, bulk store, dan import CSV).
+  7. Menulis automated tests `AuthLifecycleTest` dan `BatchRoomAndTenancyTest` (100% Passed).
+- Frontend:
+  1. Redesain halaman `ChangePasswordPage`: memperbaiki teks judul yang sebelumnya buram/samar (low contrast) di dark mode, membatasi lebar form (`maxWidth: 580`) agar proporsional di layar lebar, menambahkan panduan kekuatan sandi real-time, dan menggunakan tombol emerald primer.
+  2. Redesain halaman `RegisterPage`: mendukung pendaftaran terintegrasi dengan Google SSO dan langsung mengarahkan ke halaman verifikasi email.
+  3. Menambahkan halaman baru `VerifyEmailPage` (`/verify-email`): input OTP 6 digit berfont monospace, hitung mundur kirim ulang 60 detik, dan navigasi otomatis setelah akun terverifikasi.
+  4. Menambahkan halaman pemulihan akun 3 langkah (`ForgotPasswordPage`) berbasis token desain studio.
+  5. Menambahkan tombol Google Sign-in dan link "Lupa kata sandi?" di `LoginPage`.
+  6. Menambahkan modal generator kamar massal (`BatchRoomGeneratorDialog`) dengan live dynamic preview kamar.
+  7. Menambahkan widget pemilihan properti/cabang (`PropertySelectorWidget`).
+  8. Membangun bundle release Flutter Web (`flutter build web --release`).
+- Server Deployment:
+  1. Sinkronisasi source code backend dan bundle prebuilt frontend web ke server ALLVVNT (`/home/alfian/wismaamal-deploy/`).
+  2. Menjalankan Docker build dan recreate container (`wismaamal_backend_app`, `wismaamal_frontend_web`, `wismaamal_queue_worker`).
+  3. Menjalankan migrasi database di container produksi (`email_verification_tokens_table`).
+  4. Verifikasi live HTTP 200 untuk `https://api-wismaamal.allvvnt.my.id/up`, `https://wismaamal.allvvnt.my.id/`, dan endpoint publik baru.
+**File yang diubah:**
+- `Project/backend-wismaamalgorontalo/*`
+- `Project/fe_wisma_amal_gorontalo/*`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Pengujian interaktif end-to-end oleh pengguna/klien pada browser.
+**Catatan/masalah:**
+- Tidak ada kendala teknis; seluruh layanan Docker dan database di server ALLVVNT berjalan sehat.
+
+---
+
 ## [2026-10-29 09:50] Ratifikasi Final Skema 21 Tabel Domain dan Sinkronisasi Naskah Bab 1–3
 **Status:** Selesai
 **Dikerjakan:**
