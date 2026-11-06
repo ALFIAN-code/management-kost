@@ -4,6 +4,35 @@
 
 ---
 
+## [2026-11-05 01:35] Pembuatan Slide Presentasi PPTX & HTML Deck untuk Sidang/Presentasi Proyek Akhir
+**Status:** Selesai
+**Dikerjakan:**
+- Membuat slide presentasi 15 menit (12 slide komprehensif) dalam Bahasa Inggris lengkap dengan teks/reading script langsung pada slide tanpa perlu contekan skrip terpisah.
+- Mengintegrasikan artefak visual sistem ke dalam slide:
+  1. Penjelasan Modular Monolith dengan visualisasi analogi Lego (`01_arsitektur_keseluruhan/image.png`).
+  2. Perbandingan arsitektur Before vs. After (Legacy Laravel Monolith vs. New NestJS Modulith terisolasi Event Bus & Module Gateway).
+  3. Perbandingan skema database ERD Before vs. After (41 tabel membengkak vs. 13 tabel domain bersih dengan 0 Foreign Key fisik lintas modul).
+  4. Penjelasan Model Context Protocol (MCP) untuk analitik data operasional AI *read-only*.
+  5. Penjelasan Clean Architecture pada Flutter Web dan tampilan 3 dasbor peran (Owner, Admin, Resident).
+  6. Matriks 17 fitur sistem (Core, Optional Plug & Play, AI Extension) berdasarkan ADR-008 & ADR-009.
+  7. Hasil pengujian modularitas Lego 4 skenario dengan kelulusan 100%.
+- Menghasilkan 2 format output siap pakai:
+  1. `Presentation_PA_Bagus_Alfian.pptx`: File PowerPoint (16:9 Widescreen) dengan styling card modern dan visual beresolusi tinggi.
+  2. `presentation.html`: Slide deck interaktif berbasis web lengkap dengan kontrol tombol, navigasi keyboard, dan mode layar penuh.
+**File yang diubah/dibuat:**
+- `Presentation_PA_Bagus_Alfian.pptx`
+- `presentation.html`
+- `generate_presentation.py`
+- `generate_html_presentation.py`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+**Belum selesai / next steps:**
+- Pengguna dapat melatih pembacaan slide dan melakukan penyesuaian durasi waktu bicara per slide (rata-rata ~1 hingga 1.5 menit per slide untuk total 15 menit).
+**Catatan/masalah:**
+- Seluruh aset gambar dan teks tersusun presisi sesuai instruksi.
+
+---
+
 ## [2026-11-04 12:35] Implementasi Fitur Client (SSO, Multi-Tenant, Batch Kamar) & Update Deployment Server ALLVVNT
 **Status:** Selesai
 **Dikerjakan:**
