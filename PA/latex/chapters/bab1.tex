@@ -1,0 +1,90 @@
+%============================================================
+% BAB 1: PENDAHULUAN
+% Struktur:
+%   Proposal/Progres (\ifbukupa = false):
+%     1.1 Latar Belakang, 1.2 Permasalahan, 1.3 Tujuan,
+%     1.4 Manfaat, 1.5 Sistematika Penulisan
+%   Buku PA (\ifbukupa = true):
+%     1.1 Latar Belakang, 1.2 Permasalahan, 1.3 Batasan Masalah,
+%     1.4 Tujuan, 1.5 Manfaat, 1.6 Sistematika Penulisan
+%============================================================
+\chapter{PENDAHULUAN}
+
+\section{LATAR BELAKANG}
+
+Pengelolaan rumah kost kini menuntut pencatatan dan tata kelola operasional yang tertib karena telah berkembang menjadi bisnis properti sewa mikro~\cite{tjahjanto2025}. Seiring meningkatnya kebutuhan hunian sementara di kawasan perkotaan, banyak pemilik properti mulai mengelola lebih dari satu gedung kost (\textit{multi-building properties}) di lokasi yang berbeda~\cite{wahyuni2025}.
+
+Ketika beberapa gedung kost masih dikelola menggunakan buku catatan manual, lembar sebar (\textit{spreadsheet}), dan aplikasi pesan instan, muncul empat kendala operasional utama:
+\begin{enumerate}[label=\arabic*., leftmargin=*]
+  \item \textbf{Pencatatan data tercecer:} Informasi kamar, penghuni, dan riwayat pembayaran tersimpan terpisah, sehingga pemilik sulit memantau ketersediaan kamar, penghuni aktif, dan tunggakan lintas gedung secara serentak~\cite{tjahjanto2025}.
+  \item \textbf{Pemesanan ganda (\textit{double booking}):} Kesepakatan sewa melalui pesan instan tanpa penguncian kamar terpusat sering memicu bentrok jadwal hunian~\cite{jati2025}.
+  \item \textbf{Penagihan dan rekonsiliasi manual:} Pemeriksaan bukti transfer satu per satu memakan waktu, rawan terlewat, dan menghambat pemantauan arus kas (\textit{cash flow})~\cite{ayyubi2024}.
+  \item \textbf{Penanganan kerusakan fasilitas tidak terpantau:} Keluhan kerusakan yang disampaikan lewat obrolan pesan mudah tertimbun sehingga perbaikan terlambat dan aset fisik cepat menurun kualitasnya~\cite{ayyubi2024}.
+\end{enumerate}
+
+Upaya digitalisasi sebelumnya telah dirintis pada Juni 2025 melalui \textbf{empat proyek akhir terpisah} yang masing-masing menangani penghuni dan tamu, kamar dan reservasi, keuangan, serta operasional pemeliharaan~\cite{rasyidatur2025,roihanah2025,rizal2025,bagus2025}. Namun, hasil evaluasi terhadap sistem lama tersebut menunjukkan bahwa keempatnya masih berjalan sebagai \textbf{empat modul/aplikasi yang terfragmentasi tanpa batas arsitektur yang tegas}, dengan basis data yang membengkak hingga \textbf{34 tabel domain} (42+ tabel termasuk tabel infrastruktur \textit{framework}), hanya melayani satu gedung (\textit{single-tenant}), belum menggunakan autentikasi standar, serta belum menyediakan antarmuka analitik berbasis kecerdasan buatan~\cite{alqoran2025,sakimura2014}. Rincian evaluasi sistem lama dibahas pada Bab~II.
+
+Untuk mengatasi keterbatasan tersebut, Proyek Akhir ini merancang ulang (\textit{rewrite}) sistem lama ke dalam satu backend terpadu berbasis arsitektur \textbf{\textit{Modular Monolithic} yang \textit{event-driven}} dengan total \textbf{10 modul terenkapsulasi} (4 modul inti/\textit{core} dan 6 modul \textit{opsional}, termasuk \textbf{1 modul \textit{Artificial Intelligence} berbasis \textit{Model Context Protocol}})~\cite{tjahjanto2025,ayyubi2024,alqoran2025}. Dengan pendekatan ini, setiap domain bisnis terisolasi dengan jelas tanpa ketergantungan \textit{Foreign Key} lintas modul, mendukung pengelolaan banyak gedung dalam satu basis data (\textit{multi-tenancy}), serta siap diintegrasikan dengan asisten AI untuk mempercepat pengambilan keputusan operasional.
+
+\section{PERMASALAHAN}
+
+Berdasarkan latar belakang tersebut, permasalahan yang diangkat dalam Proyek Akhir ini dirumuskan menjadi lima poin berikut:
+\begin{enumerate}[label=\arabic*., leftmargin=*]
+  \item Bagaimana merancang dan menerapkan arsitektur \textbf{\textit{Modular Monolith} pada NestJS} dengan sepuluh modul terenkapsulasi tanpa \textit{Foreign Key} fisik lintas modul, serta antarmuka \textbf{Flutter Web} berbasis \textit{Clean Architecture} dan kontrak API yang seragam?
+  \item Bagaimana menjamin isolasi data antar gedung kost melalui mekanisme \textbf{\textit{Multi-Tenant Row-Level Scoping}} (\texttt{building\_id}) yang terintegrasi dengan autentikasi \textbf{\textit{Single Sign-On} (SSO) berbasis Keycloak OpenID Connect}?
+  \item Bagaimana menyederhanakan \textbf{proses bisnis sewa menjadi berbasis bulanan} dengan integrasi gerbang pembayaran digital \textbf{Midtrans SNAP} yang aman dan idempoten?
+  \item Bagaimana merancang dan mengintegrasikan \textbf{satu modul \textit{Artificial Intelligence} (\texttt{AI / MCP Assistant})} ke dalam arsitektur \textit{Modular Monolith} untuk menjawab kueri operasional secara \textit{read-only} tanpa melanggar batas hak akses gedung?
+  \item Bagaimana mengukur keandalan sistem secara menyeluruh melalui pengujian \textit{black-box} fungsional, pengujian kombinasi modul, pengujian isolasi \textit{multi-tenant}, pengujian idempotensi \textit{webhook}, serta pengujian akurasi dan keamanan Modul AI?
+\end{enumerate}
+
+% Batasan Masalah: hanya tampil di Buku PA
+\ifbukupa
+\section{BATASAN MASALAH}
+
+Ruang lingkup dan batasan dalam Proyek Akhir ini mencakup:
+\begin{enumerate}[label=\arabic*., leftmargin=*]
+  \item \textbf{Lingkup Domain Sistem (10 Modul):} Sistem mencakup \textbf{4 modul \textit{core}} yaitu Pengguna (\texttt{Auth}), Gedung (\texttt{Building}), Kamar (\texttt{Room}), dan Kontrak Sewa (\texttt{Lease}), serta \textbf{6 modul \textit{opsional}} yaitu Keuangan (\texttt{Finance}), Komplain Kerusakan (\texttt{Maintenance}), Buku Tamu (\texttt{Guest}), Inventaris (\texttt{Inventory}), Notifikasi WhatsApp (\texttt{Notification}), dan Asisten Kecerdasan Buatan (\texttt{AI / MCP Assistant}).
+  \item \textbf{Satuan dan Skema Sewa:} Sistem hanya melayani masa sewa dalam satuan \textbf{bulan penuh}. Batas minimal durasi sewa ditentukan per gedung melalui pengaturan sistem (\texttt{min\_rental\_months}). Pemesanan unit mendukung pembayaran penuh bulan pertama maupun uang tanda jadi (\textit{Down Payment} / DP flat) per gedung melalui skema \textit{Two-Phase Invoicing}, serta pembatalan reservasi melalui pengajuan \textit{refund} semi-manual berlampiran bukti transfer resmi. Skema sewa harian, mingguan, dan tahunan tidak didukung.
+  \item \textbf{Peran Pengguna (\textit{Roles}):} Hak akses dibatasi untuk tiga kategori pengguna: Pemilik (\textit{Owner} seluruh gedung), Pengelola (\textit{Admin} yang ditugaskan pada gedung tertentu), dan Penghuni (\textit{Resident} kamar aktif).
+  \item \textbf{Platform Antarmuka:} Pengujian fungsionalitas dan antarmuka difokuskan pada platform \textbf{Web (Flutter Web)} untuk peramban desktop dan tablet. Kode antarmuka dirancang dengan \textit{Clean Architecture} agar siap dikompilasi ke aplikasi mobile di kemudian hari, namun evaluasi kinerja aplikasi mobile fisik berada di luar ruang lingkup pengujian proyek akhir ini.
+  \item \textbf{Model Multi-Tenancy:} Pemisahan data multi-gedung memakai pendekatan \textit{Shared Database with Row-Level Scoping} (\texttt{building\_id}), bukan pemisahan basis data fisik per gedung.
+  \item \textbf{Autentikasi dan Manajemen Identitas Pengguna:} Autentikasi terpusat dikelola server Keycloak berbasis protokol OpenID Connect (OIDC). Backend NestJS berperan sebagai \textit{Resource Server} yang memvalidasi token JWT secara \textit{stateless} melalui JWKS lalu memetakan klaim token ke peran sistem (\textit{Owner}, \textit{Admin}, \textit{Resident}) beserta batas gedung (\texttt{building\_id}).
+  \item \textbf{Batasan Modul \textit{Artificial Intelligence} (\texttt{AI / MCP Assistant}):} Modul AI berjalan pada lingkup \textit{read-only tool calls} melalui \textit{Module Gateway} untuk menyuplai data faktual bagi \textit{Large Language Model} (LLM), serta tidak diberi wewenang mengubah data operasional secara otomatis tanpa persetujuan pengguna (\textit{human-in-the-loop}).
+  \item \textbf{Integrasi Eksternal:} Layanan pihak ketiga mencakup gerbang pembayaran Midtrans SNAP (Virtual Account dan QRIS) serta pengiriman notifikasi transaksi melalui WhatsApp Gateway (Fonnte/Open-WA).
+  \item \textbf{Metodologi Pengembangan:} Sistem dikembangkan menggunakan kerangka kerja Scrum dalam 4 siklus \textit{sprint}.
+\end{enumerate}
+\fi
+
+\section{TUJUAN}
+
+Selaras dengan permasalahan yang dirumuskan, tujuan yang ingin dicapai pada Proyek Akhir ini adalah:
+\begin{enumerate}[label=\arabic*., leftmargin=*]
+  \item Menghasilkan sistem manajemen rumah kost dengan backend \textbf{\textit{Modular Monolith} berbasis NestJS} yang memisahkan domain ke dalam sepuluh modul mandiri tanpa \textit{Foreign Key} fisik lintas modul, serta antarmuka \textbf{Flutter Web} berbasis \textit{Clean Architecture} dengan kontrak API yang seragam dan terdokumentasi OpenAPI.
+  \item Mewujudkan mekanisme \textbf{\textit{Multi-Tenancy} (\texttt{building\_id})} yang terintegrasi dengan \textbf{\textit{Single Sign-On} (SSO) Keycloak OpenID Connect} dan verifikasi token \textit{stateless} JWKS untuk menjamin keamanan serta isolasi data antar gedung.
+  \item Mengimplementasikan \textbf{proses bisnis sewa bulanan} (\textit{Two-Phase Invoicing} dan penagihan otomatis) yang terintegrasi dengan pembayaran digital \textbf{Midtrans SNAP} bervalidasi \textit{webhook} yang idempoten.
+  \item Membangun \textbf{satu modul mandiri \texttt{AI / MCP Assistant}} di dalam arsitektur \textit{Modular Monolith} yang mampu melayani kueri data operasional pemilik/pengelola secara \textit{read-only} dan mematuhi batas hak akses gedung.
+  \item Membuktikan keandalan dan kesesuaian rancangan sistem melalui \textbf{lima skenario evaluasi terukur}, meliputi pengujian \textit{black-box} fungsional, pengujian kombinasi modul (\textit{plug-and-play}), pengujian isolasi \textit{multi-tenant}, pengujian idempotensi \textit{webhook} Midtrans, serta pengujian akurasi dan keamanan \textit{read-only} Modul AI.
+\end{enumerate}
+
+\section{MANFAAT}
+
+Manfaat yang diharapkan dari Proyek Akhir ini terbagi menjadi dua kelompok pengguna:
+
+\subsubsection{Bagi Pemilik dan Pengelola Properti}
+\begin{enumerate}[label=\arabic*., leftmargin=*]
+  \item \textbf{Kemudahan pemantauan terpusat:} Memudahkan pemantauan operasional banyak gedung kost melalui satu dasbor web.
+  \item \textbf{Percepatan pengambilan keputusan via Modul AI (\texttt{AI / MCP Assistant}):} Pemilik dan pengelola dapat menanyakan ringkasan okupansi, tagihan tertunggak, atau status komplain lewat percakapan bahasa alami tanpa membuka menu satu per satu.
+  \item \textbf{Otomasi finansial dan rekonsiliasi:} Mengurangi pencatatan manual dan kesalahan verifikasi pembayaran lewat penagihan berkala otomatis serta verifikasi Midtrans.
+\end{enumerate}
+
+\subsubsection{Bagi Penghuni}
+\begin{enumerate}[label=\arabic*., leftmargin=*]
+  \item Memudahkan pemilihan kamar, reservasi unit tanpa risiko pemesanan ganda, serta pembayaran tagihan resmi lewat kanal digital.
+  \item Memberikan transparansi penanganan komplain fasilitas melalui tiket laporan kerusakan berlampiran foto.
+\end{enumerate}
+
+\section{SISTEMATIKA PENULISAN}
+
+Sistematika pembahasan dalam laporan Proyek Akhir ini disusun sebagai berikut:
+
+\input{\SistematikaFile}

@@ -4,6 +4,73 @@
 
 ---
 
+## [2026-11-22 22:20] Revisi Pasca-Sidang Penguji (BAB 1–3, Modul AI ke-10, Evaluasi, & 2 Diagram Baru)
+**Status:** Selesai (seluruh revisi BAB 1–3 & 28 diagram di `PA/latex/` terverifikasi)
+**Dikerjakan:**
+- **BAB 1 (`bab1.tex`, `bab1/README.md`):** Menyederhanakan Permasalahan & Tujuan ke **5 poin sinkron 1-ke-1**, memperjelas perbandingan 4 proyek lama (34 tabel domain) vs 10 modul baru (4 Core + 6 Opsional termasuk `AI / MCP Assistant`), memperbarui Batasan Masalah (10 modul), dan mengubah *bullets* Manfaat menjadi *numbering*.
+- **BAB 2 (`bab2.tex`, `bab2/README.md`):** Membuat diagram ERD sistem lama baru `08-design-lama/erd_sistem_lama.{html,svg,png}` berformat standar `erd_sistem_dinamis.png` (34 tabel domain & RBAC aktual), menyalin ke `bab2_02_erd_lama.png`, menambah `Tabel 2.2 Perbandingan Sistem Lama vs Baru`, dan mengubah seluruh `itemize` menjadi `enumerate`.
+- **BAB 3 (`bab3.tex`):** Menata ulang menjadi 7 sub-bab (`3.1 Rancangan Penelitian Scrum 4 Sprint` s.d. `3.7 Timeline Pengerjaan`), meresmikan `O6 · AI / MCP Assistant` sebagai modul ke-10, membuat `07-Evaluasi/flowchart_evaluasi.{html,svg,png}` (`bab3_18_flowchart_evaluasi.png`), melengkapi rancangan evaluasi 5 aspek tanpa UAT/SUS (`Tabel 3.5` & `Tabel 3.6` Skenario A–E), serta mengubah seluruh 19 blok `itemize` menjadi `enumerate`.
+- **Verifikasi:** Skrip Python `PA/latex/` lulus 100% (0 `itemize`, 28/28 diagram PNG terpakai, 69 `\ref` cocok, 25 `\cite` cocok di `references.bib`).
+**File yang diubah/dibuat:**
+- `PA/latex/chapters/bab1.tex`, `bab2.tex`, `bab3.tex`
+- `PA/docs/modules/bab1/README.md`, `bab2/README.md`, `figures_to_images.py`
+- `PA/docs/System design/08-design-lama/erd_sistem_lama.{html,svg,png}`, `PA/docs/System design/07-Evaluasi/flowchart_evaluasi.{html,svg,png}`
+- `PA/latex/assets/diagrams/bab2_02_erd_lama.png`, `bab3_18_flowchart_evaluasi.png`
+**Belum selesai / next steps:**
+- Compile PDF di `PA/latex/` via MacTeX lokal (`brew install --cask mactex-no-gui`) atau Overleaf.
+
+---
+
+## [2026-11-22 21:15] Restrukturisasi Naskah BAB 1–2 & Setup LaTeX (`PA/latex/`) sebagai Source of Truth Baru
+**Status:** Sebagian (naskah & proyek LaTeX siap terverifikasi; kompilasi PDF menunggu instalasi MacTeX atau Overleaf)
+**Dikerjakan:**
+- Merestrukturisasi `PA/docs/modules/bab1/README.md` (ringkas §1.1 tanpa `1.1.1`/`1.1.2`, `1.3 Batasan Masalah` sebelum `1.4 Tujuan`, `1.5 Manfaat` 2 kelompok, sitasi awal `[1]`) dan `bab2/README.md` (memindahkan `Tabel 2.1` sistem lama & 8 temuan ke `2.1.1`, `2.1.2 Evolusi Desain Sistem`, penomoran `Gambar 2.1`–`2.10` + `Tabel 2.2` Penelitian Terkait, `2.3.1 Sintesis`), lalu menyelaraskan rujukan di `bab3/README.md` dan membangun ulang `full_draft.md` (27 gambar ter-embed).
+- Melakukan setup template resmi PENS `jhiven/buku-pa-pens-latex` di `PA/latex/` sebagai **Source of Truth** baru:
+  - Konfigurasi identitas & paket `listings` (`config/variables.tex`, `config/packages.tex`).
+  - Menghapus 4 gambar contoh template dan menyalin seluruh 27 diagram `.png` dari `PA/docs/System design/` ke `PA/latex/assets/diagrams/`.
+  - Menyusun `PA/latex/refs/references.bib` (28 entri IEEE `IEEEtranN.bst`), mengonversi penuh `chapters/bab1.tex`–`bab3.tex`, dan menyiapkan kerangka bersih `bab4.tex`–`bab5.tex`.
+  - Verifikasi skrip Python: brace & env seimbang, 27 gambar valid & terpakai, seluruh `\cite`/`\ref` cocok, urutan sitasi Bab 1 dimulai dari `[1]`, 0 string sisa template.
+**File yang diubah/dibuat:**
+- `PA/docs/modules/bab1/README.md`, `bab2/README.md`, `bab3/README.md`, `full_draft.md`
+- `PA/latex/` (`config/variables.tex`, `config/packages.tex`, `refs/references.bib`, `chapters/bab1.tex`–`bab5.tex`, `assets/diagrams/`)
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+- `PA/docs/00_overview/STATE.md`
+- `PA/docs/00_overview/ARCHITECTURE.md`
+**Belum selesai / next steps:**
+- Kompilasi PDF (`make proposal-v2` / `make progres-v2` / `make buku`) setelah instalasi `mactex-no-gui` lokal atau via Overleaf.
+- Mengisi `pages/abstrak.tex`, `pages/abstract.tex`, `pages/kata_pengantar.tex`, `pages/biodata.tex`, nama Penguji 1–2 di `config/variables.tex`, dan isi Bab 4–5 saat fase Buku PA.
+**Catatan/masalah:**
+- `pdflatex`, `latexmk`, `bibtex`, dan `gs` belum terinstal di mesin lokal sehingga build PDF belum dapat dieksekusi di sesi ini.
+
+---
+
+## [2026-11-22 19:17] Sinkronisasi Naskah Markdown BAB 1–3 & Daftar Pustaka dengan PDF Master (`Naskah Proyek Akhir 1.0.pdf`)
+**Status:** Selesai
+**Dikerjakan:**
+- Menyinkronkan `PA/docs/modules/bab1/README.md`, `bab2/README.md`, `bab3/README.md`, dan `referensi/DAFTAR_PUSTAKA_LENGKAP.md` terhadap `PA/master/Naskah Proyek Akhir 1.0.pdf` sebelum migrasi ke template LaTeX `jhiven/buku-pa-pens-latex`.
+- Memperbaiki seluruh tautan gambar: `Gambar 2.3` (`c4_level3_flutter_clean_architecture.png`), `Gambar 3.1`–`3.3` (`.png`), `Gambar 3.4`–`3.12` (9 diagram BPMN `.png`), dan `Gambar 3.19` (`diagram_klasifikasi_modul.png`).
+- Membersihkan artefak PDF Master (duplikasi baris 1–5 di `Tabel 2.1`, teks nyasar `"Naskah Proyek Akhir 1.0"` di §2.2.12, serta typo di BAB 2 & Daftar Pustaka `[5]`–`[8]`).
+- Memperbarui `figures_to_images.py` (`erd_sistem_dinamis.html`, `diagram_klasifikasi_modul.html`, proteksi `.png` BPMN dari overwrite `.mmd`) dan meregenerasi `full_draft.md` dengan seluruh 27 gambar ter-embed.
+**File yang diubah:**
+- `PA/docs/modules/bab1/README.md`
+- `PA/docs/modules/bab2/README.md`
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/modules/referensi/DAFTAR_PUSTAKA_LENGKAP.md`
+- `PA/docs/modules/figures_to_images.py`
+- `PA/docs/modules/full_draft.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+- `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Setup template LaTeX (`jhiven/buku-pa-pens-latex`) dan konversi naskah BAB 1–3 + BibTeX + 27 aset gambar.
+
+---
+
 ## [2026-10-29 09:50] Ratifikasi Final Skema 21 Tabel Domain dan Sinkronisasi Naskah Bab 1–3
 **Status:** Selesai
 **Dikerjakan:**

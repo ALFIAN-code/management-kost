@@ -1,0 +1,154 @@
+%============================================================
+% RUNNER: PROGRES PROYEK AKHIR
+% Output : output/progres/Progres_PA_*.pdf
+%
+% Isi:
+%   - Cover Progres PA (putih, logo grayscale)
+%   - Bab 1 (Pendahuluan) s.d. Bab 5 (Penutup)
+%   - Daftar Pustaka, Lampiran
+%
+% Format: single-sided, margin 2.5/3.0cm (Panduan PASPE-2022)
+%============================================================
+
+\documentclass[12pt, a4paper, oneside, fleqn]{report}
+
+% ============================================================
+% KONFIGURASI OPSIONAL: Uncomment untuk mengaktifkan
+% ============================================================
+% V1 (default PENS) = semua off. Untuk V2 (abstrak + daftar isi/
+% gambar/tabel + halaman ganjil) cukup jalankan `make progres-v2`;
+% preset-nya ada di config/preset_v2.tex.
+%
+% Front matter (default semua off):
+% \showabstraktrue         % Tampilkan Abstrak Bahasa Indonesia
+% \showabstracttrue        % Tampilkan Abstract Bahasa Inggris
+% \showdaftarisitrue       % Tampilkan Daftar Isi
+% \showdaftargambartrue    % Tampilkan Daftar Gambar
+% \showdaftartabeltrue     % Tampilkan Daftar Tabel
+%
+% Paksa setiap konten baru ke halaman ganjil (default off):
+% \showforceoddpagetrue
+% ============================================================
+
+% Konfigurasi (urutan penting)
+\input{config/variables}
+\input{config/toggles}
+
+
+% Versi V2 (permintaan beberapa RG): abstrak, daftar isi/gambar/tabel,
+% dan halaman ganjil. V1 (default PENS) tidak terpengaruh.
+% Diaktifkan oleh main_progres_v2.tex (`make progres-v2`).
+\ifdefined\VersiDua \input{config/preset_v2}\fi
+% ── Opsi Front Matter & Layout ─────────────────────────────────
+% Secara default dinonaktifkan. Hapus tanda % (uncomment) pada
+% baris di bawah ini untuk mengaktifkan fitur yang diinginkan.
+% Baca [README.md](README.md) untuk detail selengkapnya.
+% \showabstraktrue         % Tampilkan Abstrak Bahasa Indonesia
+% \showabstracttrue        % Tampilkan Abstract Bahasa Inggris
+% \showkatapengantartrue   % Tampilkan Kata Pengantar
+% \showdaftarisitrue       % Tampilkan Daftar Isi
+% \showdaftargambartrue    % Tampilkan Daftar Gambar
+% \showdaftartabeltrue     % Tampilkan Daftar Tabel
+% \showforceoddpagetrue    % Paksa setiap konten baru ke halaman ganjil
+
+\input{config/packages}
+\input{config/fonts}         % ukuran font per peran
+\input{config/formatting}       % base layer: aturan shared
+\input{formats/format_progres}  % per-dokumen: geometry + spacing
+
+%============================================================
+\begin{document}
+%============================================================
+
+% Cover Progres
+\input{formats/cover_progres}
+
+% ── Front Matter: penomoran Romawi kecil ─────────────────────
+% Halaman kosong di belakang cover TIDAK bernomor (thispagestyle empty).
+% Penomoran Romawi mulai dari i pada konten front matter pertama.
+\pagestyle{fancy}
+% Spasi sudah diatur di formats/format_progres.tex — jangan duplikasi di sini
+\ifshowforceoddpage
+% Sisipkan halaman kosong tanpa nomor di belakang cover
+\clearpage
+\hbox{}
+\vspace*{\fill}
+\begin{center}\textit{Halaman ini sengaja dikosongkan}
+\end{center}
+\vspace{\fill}
+\thispagestyle{empty}
+\newpage
+\fi
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+% Front Matter Opsional
+\ifshowabstrak
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\input{pages/abstrak}
+\fi
+
+\ifshowabstract
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\input{pages/abstract}
+\fi
+
+\ifshowkatapengantar
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\input{pages/kata_pengantar}
+\fi
+
+\ifshowdaftarisi
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\begingroup
+\renewcommand{\addcontentsline}[3]{}
+\tableofcontents
+\endgroup
+\fi
+
+\ifshowdaftargambar
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\begingroup
+\renewcommand*{\addvspace}[1]{}
+\listoffigures
+\endgroup
+\addcontentsline{toc}{chapter}{DAFTAR GAMBAR}
+\fi
+
+\ifshowdaftartabel
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\begingroup
+\renewcommand*{\addvspace}[1]{}
+\listoftables
+\endgroup
+\addcontentsline{toc}{chapter}{DAFTAR TABEL}
+\fi
+
+% ── Isi Utama: penomoran Arab dimulai dari 1 ─────────────────
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\makeatletter\@mainmattertrue\makeatother
+
+% Bab Utama (Progres: Bab 1-5)
+\newcommand{\SistematikaFile}{pages/sistematika_5bab}
+\input{chapters/bab1}
+\input{chapters/bab2}
+\input{chapters/bab3}
+\input{chapters/bab4}
+\input{chapters/bab5}
+
+% Daftar Pustaka
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\addcontentsline{toc}{chapter}{DAFTAR PUSTAKA}
+\renewcommand{\bibname}{DAFTAR PUSTAKA}
+\bibliographystyle{refs/IEEEtranN}
+\bibliography{refs/references}
+
+% Lampiran
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\input{pages/lampiran}
+
+%============================================================
+\end{document}
+%============================================================

@@ -2,9 +2,9 @@
 
 > Ringkasan 1 halaman untuk AI & manusia agar cepat paham konteks tanpa baca semua `docs/`. Update tiap sesi (bagian dari `AGENTS.md:3` checklist). Maks 400 kata.
 
-**Terakhir diupdate:** 2026-10-23
-**Fase:** **REWRITE TOTAL (ADR-007, ADR-011)** — Generalisasi Domain Kost Multi-Gedung, Backend NestJS, Frontend Web-First (Flutter Web).
-**Progress keseluruhan:** 80% PA naskah (penyelarasan BAB 1–3 ke arsitektur NestJS & generalisasi kost), 40% Project/kode (persiapan scaffolding repo NestJS).
+**Terakhir diupdate:** 2026-11-22
+**Fase:** **Revisi Penguji Selesai pada `PA/latex/` (BAB 1–3, 10 Modul + AI, 28 Diagram Terverifikasi)**
+**Progress keseluruhan:** 90% PA naskah (revisi penguji BAB 1–3, ERD sistem lama 34 tabel, Flowchart Evaluasi, 28 diagram `.png`, & 28 entri BibTeX selesai dan terverifikasi di `PA/latex/`), 40% Project/kode.
 
 ## Pilar Arsitektur Terpadu (ADR-007, ADR-011)
 
@@ -33,11 +33,12 @@
 - ✅ **Redesain 9 Alur BPMN ke Format HTML Interaktif & Bebas Whitespace** (2026-10-22): seluruh 9 alur bisnis dikonversi dari diagram sekuens/mermaid kaku menjadi diagram kolaborasi BPMN 2.0 (Pool/Lane) berorientasi proses bisnis (non-teknis), dilengkapi tombol download SVG dan PNG 2x resolusi tinggi.
 - ✅ **Penyempurnaan Total Routing Panah & Resolusi Overlap BPMN** (2026-10-23): revisi menyeluruh terhadap 6 diagram BPMN (alur 01, 02, 03, 04, 06, 08) untuk mengeliminasi overlap panah, memastikan arah panah vertikal hanya keluar dari sisi atas/bawah yang tepat, memisahkan koridor vertikal, dan menunggalkan titik akhir alur.
 - ✅ **UML 2.5 Use Case Diagram Global** (2026-10-23): implementasi diagram interaktif HTML di `PA/docs/System design/05-Use-Case/use_case_global.html` beserta ekspor SVG dan PNG 2x resolusi cetak (1560x1380 px) berdesain super kompak bebas celah horizontal (780x690 px), mencakup 4 aktor manusia, 4 sistem eksternal, dan 17 use case (13 primer, 4 sub-use case terintegrasi).
-- 🟡 **Blocker sitasi** masih terbuka: `[36]`, `[41]`, dan urutan kemunculan `[1]`.
+- ✅ **Sinkronisasi BAB 1–3 & Daftar Pustaka dengan PDF Master** (2026-11-22): `PA/docs/modules/bab1..bab3`, `DAFTAR_PUSTAKA_LENGKAP.md`, `figures_to_images.py`, dan `full_draft.md` telah diselaraskan dengan `PA/master/Naskah Proyek Akhir 1.0.pdf` beserta 27 gambar `.png` ter-embed.
+- ✅ **Restrukturisasi BAB 1–2 & Setup Proyek LaTeX `PA/latex/` (`buku-pa-pens-latex`)** (2026-11-22): `bab1` & `bab2` dirapikan sesuai struktur resmi PENS (sitasi awal BAB 1 kini berurutan mulai `[1]`, blocker sitasi `[2]` sebelum `[1]` terselesaikan). `PA/latex/` kini menjadi **Source of Truth** baru naskah PA berisi `variables.tex`, `packages.tex` (`listings`), `references.bib` (28 entri), 27 gambar `.png` di `assets/diagrams/`, konversi penuh `bab1.tex`–`bab3.tex`, dan kerangka `bab4.tex`–`bab5.tex` bersih (terverifikasi via skrip Python).
 
 ## Roadmap Kerja Terkini
 
-1. 🟡 **Fase Naskah:** Sinkronisasi BAB 1 (selesai draf), revisi BAB 2 & 3 mengikuti arsitektur NestJS 13 tabel dan Flutter Web.
+1. 🟡 **Fase Naskah (LaTeX):** `PA/latex/` siap — kompilasi PDF (`make proposal-v2` / `make progres-v2` / `make buku`) menunggu instalasi `mactex-no-gui` lokal atau upload ke Overleaf, serta pengisian `pages/` prelim & BAB 4–5 saat fase Buku PA.
 2. ⚪ **Fase Desain Teknis:** Finalisasi spesifikasi kontrak endpoint REST API & skema event bus NestJS.
 3. ⚪ **Fase Implementasi:** Scaffolding basis kode backend baru berbasis NestJS modular & Flutter Web.
 4. 🟡 **Operasionalisasi:** Menulis panduan deploy repeatable di `Docs/`, memperbaiki letak workflow CI ke root repo, dan mengisi kredensial Midtrans.

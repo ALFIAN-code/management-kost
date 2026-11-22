@@ -1,63 +1,75 @@
-# BAB 2 — Kajian Pustaka
+# BAB 2 — KAJIAN PUSTAKA
 
 > Dokumen Resmi Naskah Proyek Akhir — Departemen Teknik Informatika dan Komputer, PENS.
-> Format sitasi mengacu pada IEEE numeric `[1]`-`[22]` terurut sesuai kemunculan pertama pada teks.
+> Format sitasi mengacu pada IEEE numeric `[1]`-`[28]` terurut sesuai kemunculan pertama pada teks.
+
+Bab ini menguraikan rincian permasalahan pada sistem manajemen rumah kost yang telah dikembangkan sebelumnya, dilanjutkan dengan teori-teori penunjang yang menjadi landasan perancangan ulang arsitektur, serta ulasan penelitian terkait untuk mempertegas posisi dan kebaruan Proyek Akhir ini.
 
 ---
 
 ## 2.1 Deskripsi Permasalahan
 
-Penelitian ini berfokus pada **refactoring** sistem informasi manajemen rumah kost yang sebelumnya telah dikembangkan sebagai *previous work* oleh empat mahasiswa [5][6][7][8]. Sebelum merancang ulang, sistem lama dianalisis lebih dahulu untuk menemukan hambatan teknis yang menjadi dasar rewrite ini. Lima masalah berikut merupakan temuan utama yang menjadi dasar pemetaan kelemahan pada BAB 1 dan pemetaan solusi pada BAB 3:
+Penelitian ini berfokus pada perancangan ulang (*refactoring* / *rewrite*) sistem informasi manajemen rumah kost yang sebelumnya diinisiasi pada Juni 2025 sebagai *previous work* melalui empat proyek akhir terpisah [5][6][7][8]. Pembagian ruang lingkup keempat sistem lama tersebut dirangkum pada Tabel 2.1.
+
+**Tabel 2.1 : Penelitian Sistem Lama**
+
+| No | Proposal / Domain | Peneliti & NRP | Fokus Awal |
+|---|---|---|---|
+| 1 | Manajemen Penghuni & Tamu | Rasyidatur (3123500039) | Profil penghuni, buku tamu, dan riwayat sewa [5]. |
+| 2 | Kamar & Reservasi | Roihanah (3123500005) | Master kamar, ketersediaan unit, dan validasi bentrok [6]. |
+| 3 | Keuangan & Transaksi | Rizal (3123500060) | Tagihan berkala, pembayaran Midtrans, dan rekap keuangan [7]. |
+| 4 | Operasional & Pemeliharaan | Bagus (3123500031) | Tiket komplain kerusakan, inventaris kamar, dan jadwal servis [8]. |
+
+### 2.1.1 Temuan Kelemahan Struktural Sistem Lama
+
+Meskipun keempat proposal di atas mengusulkan arsitektur modular, penelusuran langsung terhadap kode dan skema basis data sistem lama mengungkap delapan kelemahan struktural yang menjadi dasar perancangan solusi pada Bab III:
 
 1. **Modularitas Semu dan *Tight Coupling* Antar-Domain:**
-   Sistem lama memisahkan domain Penghuni, Kamar, Keuangan, dan Operasional ke dalam folder-modul terpisah, tetapi pemanggilan dari satu modul masih diakses langsung oleh modul lain tanpa adanya lapisan penengah (*layer*) yang memisahkan keduanya [9]. Service pada modul keuangan, misalnya, memanggil langsung model milik modul kamar, dan relasi *Foreign Key* fisik dipasang melintasi batas domain. Akibatnya, perubahan pada satu modul berisiko merusak modul lain, dan tidak ada modul yang dapat diuji secara independen [9].
+   Sistem lama membagi domain Penghuni, Kamar, Keuangan, dan Operasional ke dalam folder modul Laravel menggunakan pustaka pihak ketiga, namun pemisahan tersebut tidak ditegakkan oleh kerangka kerja [9]. *Service* pada modul keuangan memanggil langsung model milik modul kamar, dan relasi *Foreign Key* fisik dipasang melintasi batas domain. Akibatnya, perubahan di satu modul berisiko merusak modul lain, dan tidak ada modul yang dapat dipisahkan atau diuji secara mandiri [9].
+2. **Model Bisnis Bercabang dan Pembengkakan Basis Data (34 Tabel Domain):**
+   Skema basis data sistem lama mencoba melayani varian sewa harian, mingguan, bulanan, dan tahunan sekaligus, lengkap dengan skema uang muka (*down payment*) dan pengembalian dana (*refund*). Model tersebut membuat skema domain membengkak hingga **34 tabel domain dan RBAC** (serta lebih dari 42 tabel secara keseluruhan di basis data aktual termasuk tabel infrastruktur bawaan *framework*) dengan banyak duplikasi struktur (dua mekanisme penerbitan tagihan antara `invoices` dan `guest_bills`, dua tabel *cache* penghuni aktif antara `finance_active_tenants` dan `guest_active_contexts`, serta tabel gemuk `room_schedules` yang mencampur biodata penghuni dengan jadwal sewa) [6][7]. Pelacakan riwayat transaksi dan pemeliharaan skema pun menjadi rumit [7][8].
+3. **Ketiadaan Dukungan Multi-Gedung (*Multi-Tenancy*):**
+   Kode dan skema basis data dirancang hanya untuk satu gedung fisik. Ketika pemilik menambah cabang properti baru, tidak ada mekanisme pemisahan data penyewa (*tenant isolation*), sehingga pengembang terpaksa memasang instalasi server dan basis data terpisah untuk tiap gedung. Biaya pemeliharaan ikut berlipat dan laporan keuangan gabungan seluruh properti sulit disusun [18].
+4. **Kontrak Respons API Tidak Baku dan Hak Akses Belum Dinamis:**
+   Setiap *endpoint* REST mengembalikan struktur JSON yang berbeda-beda pada format `status`, paginasi, dan pesan kesalahan validasi HTTP 422, sehingga sisi antarmuka web harus menangani setiap kasus secara terpisah [18]. Di sisi otorisasi, hak akses pengguna masih ditanam kaku di dalam kode (*hardcoded*) dan belum dibatasi per gedung, sehingga pengelola satu gedung dapat melihat atau mengubah data gedung lain dan pemilik tidak leluasa mengatur izin staf sesuai tugas lapangan [5][6][16].
+5. **Mekanisme Autentikasi Masih Primitif:**
+   Pengelolaan akun hanya memakai autentikasi dasar berupa kombinasi email dan kata sandi. Belum tersedia validasi email saat pendaftaran, pemulihan lupa kata sandi (*forgot password*), pengaturan masa berlaku sesi terstandarisasi, maupun autentikasi dua faktor (*multi-factor authentication*). Selain berisiko terhadap kebocoran akun, waktu pengembangan juga habis terserap untuk membangun fitur autentikasi standar dari nol [5][6][19].
+6. **Struktur Antarmuka (*Frontend*) Tidak Terisolasi:**
+   Lapisan presentasi (BLoC) pada aplikasi Flutter lama mengakses *repository* secara langsung tanpa perantara *UseCase*. Logika bisnis bercampur dengan komponen antarmuka, sehingga sulit diuji melalui *unit test* [16].
+7. **Integrasi Pembayaran Belum Memenuhi Standar Produksi:**
+   Pembayaran digital via Midtrans baru berjalan di lingkungan uji coba (*sandbox*) tanpa pencegahan transaksi ganda (*idempotency key*) dan tanpa verifikasi tanda tangan kriptografis pada *webhook* [25].
+8. **Ketiadaan Antarmuka Kueri Cepat Berbasis AI:**
+   Untuk mengetahui tingkat keterisian kamar atau total tunggakan sewa, pemilik dan pengelola harus membuka beberapa menu satu per satu secara manual. Sistem lama belum menyediakan antarmuka kueri berbasis *Model Context Protocol* (MCP) yang menghubungkan model kecerdasan buatan (*Large Language Model* / LLM) dengan data operasional secara aman [21].
 
-2. **Basis Data yang Bercabang dan Menggandakan Data:**
-   Skema basis data dari sistem lama mendukung varian sewa harian, bulanan, dan tahunan sekaligus, lengkap dengan mekanisme uang muka (*down payment*) dan pengembalian dana (*refund*). Model ini menyebabkan basis data membengkak menjadi 41 tabel, dengan banyak tabel turunan yang saling menggandakan (dua mekanisme penerbitan tagihan, dua cache penghuni aktif, dan dua tabel penguncian kamar) serta kolom-kolom yang sudah tidak lagi dipakai pemanya [6][7]. Struktur seperti ini membuat pemeliharaan skema dan pelacakan riwayat transaksi semakin sulit dilakukan [7][8].
+### 2.1.2 Evolusi Desain Sistem Sebelum *Rewrite*
 
-3. **Kontrak Data dan Hak Akses yang Tidak Seragam:**
-   Setiap endpoint REST mengembalikan struktur JSON yang tidak konsisten, perbedaan muncul pada format `status`, struktur paginasi, dan pesan kesalahan validasi. Akibatnya, sisi antarmuka web harus menangani setiap kasus secara berbeda [18]. Selain itu, meskipun pembagian peran sudah ada, belum ada pembatasan akses berbasis gedung, sehingga pengelola pada satu gedung dapat melihat atau mengubah data gedung lain [5][6][16].
+Bagian ini menyajikan dua artefak desain sistem sebelum *rewrite* (*before*) agar pembaca melihat konteks di balik keputusan arsitektur baru (*after*) yang dirancang pada Subbab 3.2 dan Subbab 3.6 di Bab III.
 
-4. **Mekanisme Autentikasi yang Belum Matang:**
-   Sistem lama hanya mengandalkan autentikasi sederhana berupa kombinasi email dan kata sandi. Belum ada verifikasi email saat pendaftaran, belum ada mekanisme pemulihan kata sandi ketika pengguna lupa (*forgot password*), belum ada pengaturan masa berlaku sesi, dan belum ada lapisan keamanan tambahan seperti autentikasi dua faktor (*multi-factor authentication*). Akibatnya, risiko kebocoran dan penyalahgunaan akun cukup tinggi, dan Sebagian besar anggaran pengembangan pun teralokasikan untuk membangun fitur autentikasi dari nol [5][6][19].
+#### 1. Arsitektur Sebelum *Rewrite* (Sistem Lama)
 
-5. **Keterbatasan Dukungan Multi-Gedung (*Multi-Tenancy*):**
-   Rancangan awal mengasumsikan hanya satu gedung fisik. Ketika bisnis berkembang ke beberapa properti, pendekatan tanpa pemisahan data penyewa (*tenant isolation*) memaksa pengembang memasang instalasi server dan basis data terpisah untuk setiap gedung baru. Pendekatan ini melipatgandakan biaya pemeliharaan dan menyulitkan pemilik untuk melihat laporan keuangan gabungan seluruh portofolio [18].
+Sistem lama merupakan gabungan dari **4 proyek akhir terpisah** yang diimplementasikan menggunakan Laravel dan basis data MySQL dengan pembagian **8 kelompok modul** (`Auth/RBAC`, `Room`, `Schedule`, `Finance`, `Guest`, `Maintenance`, `Setting`, dan `Inventory/Notification`), namun pemisahannya hanya sebatas struktur folder dan tidak ditegakkan kerangka kerja. Modul keuangan masih bisa memanggil langsung model milik modul kamar, dan relasi *Foreign Key* fisik dipasang melintasi batas domain. Seluruh komponen berjalan dalam satu aplikasi monolitik tanpa batas isolasi teknis dan satu basis data MySQL, seperti ditunjukkan pada Gambar 2.1. Hasil perombakannya menjadi **1 arsitektur *Modular Monolith* berbasis NestJS berisi 10 modul terenkapsulasi (4 modul *core* dan 6 modul *opsional*, termasuk Modul `AI / MCP Assistant`)** disajikan pada Subbab 3.2 (Gambar 3.1 dan Gambar 3.2) di Bab III.
 
----
+> **Gambar 2.1 — Arsitektur Keseluruhan Sistem Sebelum Rewrite:** `PA/docs/System design/08-design-lama/desain_sistem-1. Arsitektur Keseluruhan.drawio.png`
 
-### 2.1.6 Evolusi Desain Sistem Sebelum dan Sesudah Rewrite
+#### 2. Basis Data Sebelum *Rewrite* (ERD Sistem Lama)
 
-Bagian ini menjelaskan bagaimana desain sistem berkembang dari versi lama ke versi baru, agar pembaca memahami konteks di balik setiap keputusan arsitektur di BAB 3. Dua gambar berikut adalah artefak desain sistem sebelum rewrite.
+Karena dirancang untuk mendukung sewa harian, mingguan, bulanan, dan tahunan sekaligus beserta cabang skema *down payment* dan *refund*, basis data domain sistem lama membengkak hingga **34 tabel domain dan RBAC** dengan berbagai duplikasi tabel turunan serta relasi *Foreign Key* fisik lintas modul. Struktur ERD sistem lama ditunjukkan pada Gambar 2.2. Penyederhanaan skema 34 tabel ini menjadi rancangan basis data baru yang ramping (**21 tabel domain utama**), bebas duplikasi, dan tanpa *Foreign Key* lintas modul dibahas rinci pada Subbab 3.6.1 (Gambar 3.18) di Bab III.
 
-#### 1. Arsitektur Sebelum Rewrite (Sistem Lama)
+> **Gambar 2.2 — Entity Relationship Diagram Sistem Sebelum Rewrite:** `PA/docs/System design/08-design-lama/erd_sistem_lama.png`
 
-Sistem yang sebelumnya telah dikembangkan berbasis Laravel dengan basis data MySQL. Sistem dibagi ke dalam 12 modul sesuai domain bisnis, tetapi pemisahan itu hanya bersifat struktural (struktur folder), bukan ditegakkan oleh kerangka kerja. Hasilnya, modul keuangan masih dapat memanggil langsung model milik modul kamar, dan relasi Foreign Key fisik dipasang melintasi batas domain. Semua komponen berjalan dalam satu aplikasi monolitik tanpa batas teknis antar modul.
+Perbedaan struktural antara sistem lama (*existing system*) dan sistem baru yang diusulkan dirangkum pada Tabel 2.2.
 
-Desain arsitektur keseluruhan sistem lama ditunjukkan pada Gambar 2.10. Dalam desain ini, tidak ada isolasi antar modul yang dipaksakan oleh kode, dan seluruh data tersimpan dalam satu basis data MySQL.
+#### Tabel 2.2 : Perbandingan Sistem Lama (*Existing System*) dan Sistem Baru
 
-> **Gambar 2.10 — Arsitektur Keseluruhan Sistem Sebelum Rewrite:** `PA/docs/System design/08-design-lama/desain_sistem-1. Arsitektur Keseluruhan.drawio.png`
-
-#### 2. Basis Data Sebelum Rewrite (ERD Sistem Lama)
-
-Basis data sistem lama dirancang untuk mendukung berbagai varian sewa — harian, mingguan, bulanan, dan tahunan — sekaligus, lengkap dengan mekanisme uang muka (*down payment*) dan pengembalian dana (*refund*). Model ini menyebabkan skema basis data membengkak hingga 41 tabel, dengan banyak tabel turunan yang saling menggandakan, dua mekanisme penerbitan tagihan, dua cache penghuni aktif, dan dua tabel penguncian kamar. Banyak kolom juga sudah tidak lagi digunakan oleh pemiliknya.
-
-ERD sistem lama ditunjukkan pada Gambar 2.11. Dengan jumlah tabel yang besar dan relasi yang kompleks, pemeliharaan skema serta pelacakan riwayat transaksi menjadi sulit dilakukan.
-
-> **Gambar 2.11 — Entity Relationship Diagram Sistem Sebelum Rewrite (41 Tabel):** `PA/docs/System design/08-design-lama/erd_fix_2.drawio.png`
-
-#### 3. Perubahan Desain dari Sistem Lama ke Baru
-
-Dari titik lemah sistem lama, desain baru dirancang ulang dengan pendekatan yang berbeda. Detail spesifikasi teknis basis data baru dijelaskan lebih lanjut pada **BAB 3 §3.6 Rancangan Basis Data** dan **§3.6.1 ERD**. Ringkasan perubahannya dapat dilihat pada Tabel 2.x.
-
-| No | Aspek | Sistem Sebelum Rewrite | Sistem Baru |
-|---|---|---|---|
-| 1 | Framework backend | Laravel (paket modular pihak ketiga) | NestJS (modular monolith native) |
-| 2 | Basis data | MySQL, 41 tabel | PostgreSQL, skema 21 tabel domain utama (ADR-014 / `erd_sistem_dinamis.html`) |
-| 3 | Batas modul | Struktur folder saja, mudah dilanggar | Ditegakkan oleh kerangka NestJS (nol FK lintas modul) |
-| 4 | Autentikasi | Email + kata sandi, bawaan aplikasi | Keycloak OIDC / SSO |
-| 5 | Dukungan gedung | Satu gedung | Multi-gedung dengan row-level scoping |
-| 6 | Model sewa | Harian, mingguan, bulanan, tahunan | Bulanan, aturan per gedung |
+| Aspek Perbandingan | Sistem Lama (*Existing System*) | Sistem Baru (Usulan Proyek Akhir) |
+|---|---|---|
+| **Jumlah & Struktur Modul** | **4 proyek akhir terpisah** (implementasi gabungan **8 kelompok modul** hanya sebatas folder tanpa isolasi teknis) | **1 backend *Modular Monolithic* NestJS** berisi **10 modul terenkapsulasi** (**4 *Core* + 6 *Opsional***) |
+| **Komunikasi Antar-Modul** | Pemanggilan langsung model lintas modul & *Foreign Key* fisik lintas domain | Terisolasi via ***Module Gateway*** dan ***Event Bus*** tanpa *Foreign Key* fisik lintas modul |
+| **Skema Basis Data** | **34 tabel domain & RBAC** (42+ tabel aktual termasuk tabel infrastruktur), terdapat tabel gemuk & duplikasi *cache* aktif | **21 tabel domain utama**, ramping, terisolasi per modul, dan bebas duplikasi |
+| **Dukungan Multi-Gedung** | *Single-tenant* (1 gedung per instalasi server/basis data) | ***Multi-Tenant Row-Level Scoping*** (`building_id`) dalam 1 basis data terpadu |
+| **Autentikasi & Otorisasi** | Email dan kata sandi dasar tanpa verifikasi email/SSO | ***Single Sign-On* (SSO) Keycloak OIDC**, verifikasi *stateless* JWKS, dan RBAC dinamis |
+| **Integrasi Pembayaran** | Midtrans *sandbox* tanpa *idempotency key* & verifikasi *webhook* | Midtrans SNAP siap produksi dengan *idempotency key* dan verifikasi *signature webhook* |
+| **Dukungan Asisten AI** | Belum tersedia | **1 Modul Mandiri `AI / MCP Assistant`** berbasis *Model Context Protocol* (*read-only*) |
 
 ---
 
@@ -81,9 +93,9 @@ Prinsip batas tersebut diambil dari konsep *bounded context* dalam Domain-Driven
 
 PA ini memakai pendekatan ini karena alasan utamanya adalah kemudahan waktu depan. Ketika bisnis berkembang dan muncul kebutuhan baru, misalnya perlu menambah modul laporan keuangan atau modul pengarsipan dokumen, penambahan tersebut cukup dilakukan dengan membuat modul terpisah dan mendaftarkannya, tanpa mengubah modul yang sudah berjalan. Sebaliknya, ketika ada modul yang tidak lagi dibutuhkan, modul itu bisa dihapus beserta seluruh isinya tanpa meninggalkan jejak di modul lain.
 
-Kemudahan inilah yang tidak dimiliki sistem lama. Folder modulnya memang ada, tetapi karena batasnya tidak ditegakkan, modul keuangan tetap bisa membaca tabel modul kamar. Akibatnya tidak ada satu pun bagian yang bisa dilepas atau diuji sendiri tanpa menarik bagian lain ikutcampur. Batas yang benar-benar dipaksakan oleh kerangka kerja membuat penambahan dan penghapusan modul menjadi pekerjaan yang biasa, bukan proses yang perlu dikhawatirkan.
+Kemudahan inilah yang tidak dimiliki sistem lama. Folder modulnya memang ada, tetapi karena batasnya tidak ditegakkan, modul keuangan tetap bisa membaca tabel modul kamar. Akibatnya tidak ada satu pun bagian yang bisa dilepas atau diuji sendiri tanpa melibatkan modul lain. Batas yang benar-benar dipaksakan oleh kerangka kerja membuat penambahan dan penghapusan modul menjadi pekerjaan yang biasa, bukan proses yang perlu dikhawatirkan.
 
-> **Gambar 2.1 — Arsitektur Modular Monolithic:** `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.png`
+> **Gambar 2.3 — Arsitektur Modular Monolithic:** `PA/docs/System design/01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.png`
 
 ---
 
@@ -95,7 +107,7 @@ Dua mekanisme membuat hal itu bekerja. Pertama, *encapsulation*. Layanan yang ti
 
 PA ini memilih NestJS karena pemisahan antar modul ditegakkan oleh kerangka kerjanya sendiri, bukan oleh disiplin tim. Ketika modul keuangan mencoba menulis kueri ke tabel milik modul kamar, kode itu akan gagal sejak tahap build, bukan baru ketahuan saat pengujian. Pengalaman sistem lama menunjukkan bahwa pemisahan yang hanya dijaga lewat aturan tertulis akan cepat dilanggar ketika waktu pengembangan sedang menekan. Dengan NestJS, pelanggaran aturan menjadi kesalahan teknis, bukan pilihan penyusun kode.
 
-> **Gambar 2.2 — Struktur Modul dan Dependency Injection pada NestJS:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_3_nestjs_modul_di.png`
+> **Gambar 2.4 — Struktur Modul dan Dependency Injection pada NestJS:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_3_nestjs_modul_di.png`
 
 ---
 
@@ -115,7 +127,7 @@ Pada aplikasi Flutter, pemisahan ini menjawab satu masalah yang sering muncul. K
 
 PA ini memakai Clean Architecture pada sisi antarmuka karena pemisahan tersebut memudahkan dua hal. Pertama, pengujian: setiap lapisan punya fokus yang jelas, sehingga aturan bisnis dapat diuji tanpa lapisan lain, dan pengujian antarmuka cukup memeriksa pemetaan state ke tampilan. Kedua, perubahan pada bagian tertentu tidak menimpa bagian lain. Contohnya, apabila format jawaban API berubah, cukup ubah lapisan data; lapisan domain dan lapisan presentasi tidak perlu disentuh karena keduanya tidak tahu bentuk data mentah.
 
-> **Gambar 2.3 — Penerapan Clean Architecture pada Aplikasi Flutter:** `PA/docs/System design/01-Gambaran-umum/03_arsitektur_frontend/clean_architecture_frontend.png`
+> **Gambar 2.5 — Penerapan Clean Architecture pada Aplikasi Flutter:** `PA/docs/System design/01-Gambaran-umum/03_arsitektur_frontend/c4_level3_flutter_clean_architecture.png`
 
 ---
 
@@ -123,11 +135,11 @@ PA ini memakai Clean Architecture pada sisi antarmuka karena pemisahan tersebut 
 
 BLoC adalah pola pengelolaan *state* pada Flutter yang memisahkan pemicu perubahan state dari proses perubahannya [15]. Alurnya sederhana: widget mengirim *event*, *bloc* yang menerima event itu memanggil use case, lalu *bloc* memancarkan *state* baru dalam bentuk objek yang tidak bisa diubah setelah dibuat.
 
-Pola ini membuat aliran data pada antarmuka berjalan satu arah dan mudah dilacak.urutannya bisa dibaca langsung dari kode: dari widget, ke event, ke use case, ke state, lalu kembali ke widget. Berbeda dengan pemanggilan `setState` yang menyatukan pemicu dan perubahan di dalam satu widget, BLoC memisahkannya sehingga transisi state bisa diuji tanpa menampilkan antarmuka sama sekali.
+Pola ini membuat aliran data pada antarmuka berjalan satu arah dan mudah dilacak. Urutannya dapat dibaca langsung dari kode: dari widget, ke event, ke use case, ke state, lalu kembali ke widget. Berbeda dengan pemanggilan `setState` yang menyatukan pemicu dan perubahan di dalam satu widget, BLoC memisahkannya sehingga transisi state bisa diuji tanpa menampilkan antarmuka sama sekali.
 
 PA ini memakai BLoC karena pola ini sebenarnya memaksa struktur kode menjadi tertata. BLoC hanya bekerja jika logika bisnis berada di use case terpisah dari widget yang memunculkannya. Umumnya, pengembang yang langsung memuat data dan memprosesnya di dalam widget akan membuat pola ini mustahil diterapkan. Dengan BLoC, pemisahan antara logika bisnis dan tampilan bukan lagi pilihan disiplin, melainkan syarat agar pola tersebut berjalan.
 
-> **Gambar 2.4 — Alur Pengelolaan State Menggunakan Pola BLoC:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_4_bloc_flow.png`
+> **Gambar 2.6 — Alur Pengelolaan State Menggunakan Pola BLoC:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_4_bloc_flow.png`
 
 ---
 
@@ -143,13 +155,15 @@ Mekanisme penguncian itulah yang dipakai untuk mencegah dua orang memesan kamar 
 
 ### 2.2.8 Multi-Tenancy dengan Row-Level Scoping
 
-Multi-tenancy adalah pola arsitektur yang membuat satu instalasi aplikasi melayani banyak unit bisnis independen dengan jaminan pemisahan data [18]. Pada sistem properti sewa, unit bisnisnya adalah gedung. Artinya, data kamar gedung A tidak boleh bisa dibaca atau diubah oleh pengelola gedung B.
+Dalam pengembangan aplikasi berbasis *SaaS* (*Software as a Service*) untuk properti multi-gedung, pemilihan model *multi-tenancy* menentukan bagaimana data antar-gedung (*tenant*) diisolasi dalam satu ekosistem *backend*. Secara arsitektur, terdapat dua pendekatan utama dalam menangani pemisahan data ini: *Database-Level Isolation* (pemisahan database fisik per gedung) dan *Application-Level Isolation* melalui *Shared Database with Row-Level Scoping*.
 
-Tiga model yang lazim adalah *database per tenant*, *schema per tenant*, dan *shared database dengan row-level scoping*. Model pertama memberi isolasi paling kuat tetapi membutuhkan server khusus untuk setiap gedung. Model kedua mengurangi jumlah server, tetapi pemeliharaan strukturnya menambah pekerjaan setiap kali ada gedung baru. Model ketiga menyimpan seluruh data di satu basis data dan menambahkan kolom `building_id` pada setiap tabel sebagai penanda.
+Pendekatan pertama memberikan isolasi tingkat tinggi, namun tidak efisien secara operasional karena setiap penambahan gedung baru menuntut migrasi skema terpisah dan membebani pengelolaan koneksi basis data. Oleh karena itu, Proyek Akhir ini menerapkan model **Shared Database dengan Row-Level Scoping** berbasis kolom penanda `building_id`.
 
-PA ini memilih model ketiga karena tiga alasannya. Migrasi skema cukup dijalankan satu kali untuk seluruh gedung, bukan diulang tiap kali ada properti baru. Biaya server tidak bertambah seiring jumlah gedung. Dan yang paling penting, laporan gabungan seluruh portofolio bisa disusun dengan satu kueri, sedangkan pada model terpisah data harus digabungkan lebih dahulu. Keterbatasan model ini juga diketahui: pemisahan data harus dijaga di lapisan aplikasi, bukan oleh basis data, sehingga setiap kueri wajib menyertakan `building_id`.
+1. **Efisiensi Migrasi Skema:** Perubahan struktur tabel atau pembaruan migrasi basis data cukup dieksekusi sekali secara global tanpa perlu mengulang skrip migrasi per database gedung.
+2. **Optimalisasi Agregasi Portofolio:** Pemilik properti membutuhkan laporan keuangan dan tingkat okupansi lintas gedung secara *real-time*. Dengan basis data bersama, laporan gabungan dapat ditarik menggunakan kueri agregasi tunggal tanpa mekanisme *distributed join*.
+3. **Integritas di Lapisan Aplikasi:** Isolasi data ditegakkan secara ketat melalui penambahan filter `building_id` secara otomatis pada setiap kueri ORM di tingkat *backend* NestJS, yang dipetakan langsung dari klaim token akses JWT pengguna.
 
-> **Gambar 2.5 — Pendekatan Multi-Tenancy Shared Database dengan Row-Level Scoping:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_8_row_level_scoping.png`
+> **Gambar 2.7 — Pendekatan Multi-Tenancy Shared Database dengan Row-Level Scoping:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_8_row_level_scoping.png`
 
 ---
 
@@ -163,7 +177,7 @@ Keycloak adalah *identity and access management* open-source yang mendukung OIDC
 
 PA ini memakai Keycloak karena tiga alasan. Pertama, fitur keamanan yang dibutuhkan sudah tersedia sehingga waktu pengembangan bisa dipakai untuk aturan bisnis sewa. Kedua, peran pengguna seperti pemilik, pengelola, dan penghuni cukup diatur di satu tempat, lalu diteruskan ke backend lewat isi token. Ketiga, backend cukup memverifikasi tanda tangan token tanpa perlu menghubungi Keycloak pada setiap permintaan, sehingga waktu tanggap tidak bertambah. Perlu dicatat bahwa Keycloak menambah satu layanan yang harus dijalankan dan dipelihara, dan pembagian peran harus disusun di Keycloak dengan cermat supaya tetap sinkron dengan aturan pada sistem.
 
-> **Gambar 2.6 — Alur Autentikasi SSO Berbasis OpenID Connect dengan Keycloak:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_9_oidc_jwks.png`
+> **Gambar 2.8 — Alur Autentikasi SSO Berbasis OpenID Connect dengan Keycloak:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_9_oidc_jwks.png`
 
 ---
 
@@ -183,64 +197,87 @@ Midtrans adalah penyedia layanan gerbang pembayaran yang menghubungkan aplikasi 
 
 Integrasi berjalan dua arah. Dari sisi sistem, backend meminta token pembayaran lalu meneruskannya ke antarmuka SNAP, dan penghuni menyelesaikan pembayaran di sana. Dari sisi Midtrans, setiap kali status pembayaran berubah, Midtrans mengirim *webhook* ke alamat yang didaftarkan. Di sinilah bagian yang perlu diperhatikan berada: *webhook* adalah permintaan yang masuk dari luar, sehingga harus diperiksa sebelum dipercayai.
 
-Ada dua perlindungan yang dipakai pada sistem ini. Yang pertama, penomoran pesanan. Setiap permintaan pembayaran diberi nomor unik, sehingga ketika jaringan membuatkan permintaan terkirim ulang, Midtrans mengenali bahwa itu transaksi yang sama dan tidak membuat tagihan ganda. Yang kedua, verifikasi tanda tangan. Setiap *webhook* disertai tanda tangan yang dihitung dari nomor pesanan, kode status, jumlah pembayaran, dan kunci rahasia. Backend menghitung ulang tanda tangan itu; kalau tidak cocok, permintaan ditolak dan status tagihan tidak diubah. Tanpa dua perlindungan ini, siapa pun yang mengetahui alamat *webhook* bisa memalsukan pembayaran.
+Ada dua perlindungan yang dipakai pada sistem ini. Yang pertama, penomoran pesanan. Setiap permintaan pembayaran diberi nomor unik, sehingga ketika gangguan jaringan memicu pengiriman ulang permintaan, Midtrans mengenali bahwa itu transaksi yang sama dan tidak membuat tagihan ganda. Yang kedua, verifikasi tanda tangan. Setiap *webhook* disertai tanda tangan yang dihitung dari nomor pesanan, kode status, jumlah pembayaran, dan kunci rahasia. Backend menghitung ulang tanda tangan itu; kalau tidak cocok, permintaan ditolak dan status tagihan tidak diubah. Tanpa dua perlindungan ini, siapa pun yang mengetahui alamat *webhook* bisa memalsukan pembayaran.
 
-> **Gambar 2.7 — Alur Transaksi dan Pembayaran Digital via Midtrans SNAP:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_11_midtrans_webhook.png`
+> **Gambar 2.9 — Alur Transaksi dan Pembayaran Digital via Midtrans SNAP:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_11_midtrans_webhook.png`
 
 ---
 
 ### 2.2.12 Standar Kontrak Input-Output REST API
 
-REST API adalah gaya komunikasi yang paling umum dipakai antar aplikasi web. Yang dikirim berupa permintaan HTTP, dan jawabannya berupa *response* dengan kode status yang menyatakan berhasil atau gagal. Kelemahannya, setiap pengembang bebas membuat format jawabannya sendiri, sehingga satu endpoint bisa berbeda dengan endpoint lain. Pengembang yang membuat program harusnya mengelola semua kemungkinan format itu.
+REST API adalah gaya komunikasi yang paling umum dipakai antaraplikasi web. Yang dikirim berupa permintaan HTTP, dan jawabannya berupa *response* dengan kode status yang menyatakan berhasil atau gagal. Kelemahannya, pengembang kerap membuat format respons secara bebas, sehingga struktur antar-endpoint menjadi tidak konsisten. Hal ini membebani lapisan antarmuka (*frontend*) karena harus menangani berbagai pola respons dan pesan galat yang bervariasi secara redundan.
 
-Standar yang dipakai pada sistem ini mengatasi masalah tersebut: setiap *endpoint* mengembalikan *response* dengan lima kunci yang selalu sama. Kunci `status` menyatakan berhasil atau gagal, `message` berisi keterangan yang bisa dibaca manusia, `data` berisi isi jawaban, `meta` berisi informasi tambahan seperti penomoran halaman, dan `errors` berisi rincian kesalahan validasi. Format kesalahan mengikuti kebiasaan *Problem Details*. Contoh jawaban berhasil:
+Untuk mengatasi permasalahan tersebut, sistem ini menerapkan standar kontrak input-output yang tersentralisasi melalui *uniform response envelope*. Setiap *endpoint* diatur agar selalu mengembalikan respons dengan lima kunci utama yang seragam: `status` (menunjukkan status berhasil/gagal), `message` (keterangan yang dapat dibaca manusia), `data` (isi *payload* utama), `meta` (informasi tambahan seperti penomoran halaman), dan `errors` (rincian kesalahan validasi yang mengacu pada standar *Problem Details*).
 
-```json
-{
-  "status": true,
-  "message": "Kontrak sewa berhasil dibuat",
-  "data": {
-    "lease_id": 12,
-    "room_number": "A-02",
-    "duration_months": 3,
-    "total_amount": 2550000,
-    "status": "pending"
-  }
-}
-```
+Sebagai perbandingan langsung, berikut adalah kontras antara format respons sistem lama yang tidak terstandarisasi dengan format baru yang diterapkan pada kasus pembuatan kontrak sewa (*Create Lease*):
 
-Contoh jawaban gagal karena masukan tidak sesuai:
+1. **Contoh Respons Gagal (*Error* / Gagal Validasi):**
+   - *Format Lama (Tidak Standar):* Setiap *endpoint* mengembalikan struktur yang berbeda-beda dan tidak spesifik pada kolom input yang bermasalah.
 
-```json
-{
-  "status": false,
-  "message": "Validasi masukan gagal",
-  "errors": {
-    "duration_months": ["Durasi sewa minimal untuk gedung ini adalah 3 bulan."],
-    "room_id": ["Kamar sudah sedang disewa pada periode tersebut."]
-  }
-}
-```
+     ```json
+     {
+       "success": false,
+       "error_message": "Durasi kurang dari minimal gedung dan kamar sudah terisi."
+     }
+     ```
 
-Kode status yang dipakai mengikuti ketetapan umum HTTP. Kode 200 dan 201 berarti permintaan berhasil diproses atau data baru dibuat. Kode 400 berarti permintaan tidak sesuai format. Kode 401 berarti token tidak ada atau sudah kedaluwarsa. Kode 403 berarti pengguna tidak berhak mengakses data gedung tersebut. Kode 404 berarti data tidak ditemukan. Kode 422 berarti masukan melanggar aturan bisnis, misalnya durasi sewa di bawah minimal. Dengan seluruh kemungkinan kesalahan mengikuti pola yang sama, sisi antarmuka cukup menulis satu fungsi untuk menangani semuanya.
+   - *Format Baru (Sistem Ini - Standar Problem Details):* Mengembalikan rincian *field* yang mengalami kesalahan validasi (kode HTTP 422) sehingga aplikasi Flutter dapat langsung memetakannya ke masing-masing kolom form input secara presisi.
+
+     ```json
+     {
+       "status": false,
+       "message": "Validasi masukan gagal",
+       "errors": {
+         "duration_months": [
+           "Durasi sewa minimal untuk gedung ini adalah 3 bulan."
+         ],
+         "room_id": [
+           "Kamar sedang disewa atau tidak tersedia pada periode tersebut."
+         ]
+       }
+     }
+     ```
+
+2. **Contoh Respons Berhasil (*Success*):**
+   - *Format Lama (Tidak Standar):* Properti data yang dikembalikan tidak konsisten (kadang menggunakan `camelCase` atau `snake_case` secara acak) dan seringkali hanya mengembalikan ID tanpa rincian objek.
+
+     ```json
+     {
+       "code": 200,
+       "msg": "OK",
+       "data": 12
+     }
+     ```
+
+   - *Format Baru (Sistem Ini):* Mengembalikan struktur objek data secara lengkap, konsisten, dan menggunakan kode HTTP 201 (*Created*) untuk data baru.
+
+     ```json
+     {
+       "status": true,
+       "message": "Kontrak sewa berhasil dibuat",
+       "data": {
+         "lease_id": 12,
+         "room_number": "A-02",
+         "duration_months": 3,
+         "total_amount": 2550000,
+         "status": "pending"
+       }
+     }
+     ```
+
+Kode status yang dipakai pada sistem ini mengikuti ketetapan umum HTTP:
+- **Kode 200 dan 201:** Permintaan berhasil diproses atau data baru berhasil dibuat.
+- **Kode 400:** Permintaan tidak sesuai format (*bad request*).
+- **Kode 401:** Token autentikasi tidak tersedia atau sudah kedaluwarsa (*unauthorized*).
+- **Kode 403:** Pengguna tidak memiliki hak akses (*forbidden*) terhadap data gedung tersebut.
+- **Kode 404:** Data yang diminta tidak ditemukan (*not found*).
+- **Kode 422:** Masukan data melanggar aturan bisnis (*unprocessable entity*), misalnya durasi sewa di bawah batas minimum gedung.
+
+Dengan seluruh kemungkinan respons yang mengikuti pola amplop seragam ini, sisi antarmuka (*frontend* Flutter Web) cukup menuliskan satu fungsi penanganan global untuk mengelola seluruh status dan galat API secara bersih.
 
 ---
 
-### 2.2.13 Pengujian Perangkat Lunak Otomatis
-
-Pengujian program adalah proses menjalankan program dengan masukan khusus untuk memeriksa apakah hasilnya sesuai dengan yang diharapkan [22]. Dalam metode *black-box*, pengujian hanya melihat hasil dari luar, sehingga program bisa menghasilkan jawaban yang benar tetapi salah cara.
-
-Pola pengujian yang umum adalah *testing pyramid* [22]. Di bagian paling bawah ada pengujian unit, yaitu menguji satu aturan bisnis tanpa jaringan, tanpa basis data, dan tanpa antarmuka. Di atasnya ada pengujian kontrak, yang memeriksa apakah setiap endpoint mengembalikan bentuk jawaban sesuai kesepakatan. Di bagian paling atas ada pengujian integrasi, yang menyalakan beberapa bagian sekaligus untuk memeriksa alur keseluruhan.
-
-Jumlah pengujian berbanding terbalik dengan tingginya. Makin ke atas, makin sedikit pengujiannya, makin lama waktunya, dan makin sulit melacak kesalahan. Inilah alasan pengujian unit ditulis paling banyak: cepat dijalankan dan kesalahannya mudah ditemukan.
-
-PA ini memakai susunan itu dengan target cakupan kode minimal 80 persen. Ada satu jenis pengujian yang khas untuk sistem ini, yaitu uji isolasi gedung. Tujuannya membuktikan bahwa pengelola gedung satu tidak dapat membaca data gedung lain, termasuk ketika keduanya mencoba mengakses pada saat bersamaan.
-
-> **Gambar 2.8 — Piramida Pengujian Perangkat Lunak (Testing Pyramid):** `PA/docs/System design/06-Teori-Penunjang/gambar_2_13_piramida_pengujian.png`
-
----
-
-### 2.2.14 Model Context Protocol
+### 2.2.13 Model Context Protocol
 
 Model Context Protocol (MCP) adalah standar terbuka yang menghubungkan model kecerdasan buatan dengan sumber data dan fungsi di luar model tersebut [21]. Sebagian besar pertanyaan operasional membutuhkan data nyata yang tidak ada di dalam model, sehingga tanpa akses ke data itu model hanya bisa menebak.
 
@@ -250,7 +287,7 @@ Server MCP mengekspos tiga jenis kemampuan. *Resources* berisi data yang bisa di
 
 Oleh karena itu, pada sistem ini semua *tools* yang diekspos hanya berfungsi membaca. Tidak ada satu pun fungsi yang mengubah data. Dengan begitu, jawaban yang muncul di kolom tanya-jawab pasti berdasarkan angka yang benar-benar ada di basis data, dan keputusan penting tetap diambil manusia.
 
-> **Gambar 2.9 — Integrasi Model Context Protocol (MCP) dengan Basis Data Operasional:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_14_mcp.png`
+> **Gambar 2.10 — Integrasi Model Context Protocol (MCP) dengan Basis Data Operasional:** `PA/docs/System design/06-Teori-Penunjang/gambar_2_14_mcp.png`
 
 ---
 
@@ -274,50 +311,44 @@ Empat proposal previous work juga ditinjau sebagai pembanding [5] sampai [8]. Ke
 
 Berdasarkan telaah tersebut, terlihat pola yang berulang. Sebagian besar sistem hanya mampu melayani satu gedung. Sebagian sudah mengotomasi tagihan tetapi belum menguji tiap modul secara terpisah. Autentikasi masih berupa email dan kata sandi tanpa pemulihan akun.
 
-*Sumber: Tabel 2.1 Penelitian terkait*
+**Tabel 2.2 : Penelitian Terkait**
 
-| Judul Penelitian | Tahun | Penulis | Tujuan | Metode | Hasil |
-|---|---|---|---|---|---|
-| Prototype Sistem Informasi Reservasi Kos (Studi Kasus: Kos Wisma Cirebon Bandung) | 2019 | Abdussamad, N. dan Hasugian, L. P. | Membangun sistem prototype reservasi kos | Deskriptif, OOP, UML, Prototyping | Sistem hanya mendukung proses reservasi tanpa fitur maintenance |
-| Perancangan Aplikasi Manajemen Indekos Berbasis Mobile dengan Metode Microservice | 2021 | Nofianto, R. | Merancang aplikasi manajemen indekos mobile | Microservice | Berbasis mobile saja, belum mendukung pengelolaan operasional |
-| Aplikasi AturKost Berbasis Web untuk Pengelola dan Penghuni Kost (Studi Kasus: Kost Jura) | 2021 | Steven dan Christianto | Membantu pengelolaan dan interaksi penghuni | SDLC Waterfall | Menyediakan fitur pengelolaan umum, belum fokus pada maintenance operasional |
-| Sistem Informasi Pengelolaan Data Kos Annisa Menggunakan Framework Codeigniter 4 | 2022 | Azizah, dkk. | Membangun sistem informasi kos berbasis web untuk pemasaran, pembayaran, ketersediaan kamar | CodeIgniter 4, Waterfall | Fokus pemasaran dan ketersediaan kamar, belum mengelola maintenance dan inventaris |
-| e-Kos sebagai Sistem Informasi Pengelolaan Kos pada Mazaki's House | 2022 | Rahmatya, M. D., dkk. | Membangun e-kos untuk booking kamar, pembayaran bulanan, dan pencatatan pengeluaran pemeliharaan | OOP, Waterfall | e-Kos untuk booking, pembayaran, dan pencatatan biaya pemeliharaan |
-| Sistem Informasi Manajemen Kost Putra Trisula Berbasis Web (Studi Kasus: Asrama Putra Trisula) | 2023 | Darlin, W., dkk. | Mengatasi pencatatan manual penyewa, pembayaran, dan keluhan fasilitas rusak | Prototyping, MVC, Codeigniter | Menangani keluhan, belum fokus pada penjadwalan dan manajemen inventaris |
-| Sistem Informasi Manajemen Rumah Kos Damara Putri Jember Berbasis Web | 2024 | Diana, W. N. | Mengembangkan sistem informasi manajemen rumah kos berbasis web | Tidak dijelaskan | Hanya mencakup manajemen umum, belum mencakup fitur maintenance mendalam |
-| Perancangan Aplikasi Manajemen Proyek Sistem Informasi dalam Pengelolaan Kosan D2 Berbasis Web | 2024 | Andini, N. R. dan Yahfizham | Manajemen penyewaan dan pemeliharaan inventaris | Kualitatif, Waterfall, UML | Belum secara eksplisit menangani penjadwalan perawatan atau pelacakan detail inventaris |
-| Implementasi Sistem Informasi Pengelolaan Kos-Kosan untuk Peningkatan Efisiensi Operasional di Sekitar UNS | 2024 | Ramadhan, A. A. | Meningkatkan efisiensi pengelolaan data penyewa, kamar, dan fasilitas | Waterfall | Belum memiliki modul khusus untuk operasional proaktif seperti penjadwalan perawatan rutin serta absensinya integrasi antara pelaporan kerusakan fasilitas dengan pelacakan inventaris |
-| Pengembangan Sistem Manajemen Penghuni dan Tamu | 2025 | Rasyidatur | Mencatat data penghuni, tamu, dan riwayat sewa | Scrum, modular semu | Modul tersusun atas domain Penghuni dan Tamu, tetapi pemisahan antar modul tidak ditegakkan |
-| Pengembangan Sistem Manajemen Kamar dan Reservasi | 2025 | Roihanah | Mengelola kamar dan reservasi | Scrum, modular semu | Modul tersusun atas domain Kamar dan Reservasi, tetapi pemanggilan antar modul tanpa perantara |
-| Pengembangan Sistem Keuangan dan Transaksi | 2025 | Rizal | Mengelola tagihan dan transaksi sewa | Scrum, modular semu | Modul keuangan membaca tabel modul kamar secara langsung, pembayaran masih di lingkungan uji coba |
-| Pengembangan Sistem Operasional dan Pemeliharaan | 2025 | Bagus | Mengelola keluhan kerusakan dan inventaris | Scrum, modular semu | Modul operasional terpisah tetapi tidak terhubung dengan modul lain |
-| Pengembangan Sistem Informasi Manajemen Rumah Kost (Penelitian Ini) | 2026 | Peneliti | Menyatukan operasional sewa multi-gedung dalam satu sistem | Scrum, Modular Monolithic NestJS, Flutter Web, PostgreSQL, Docker | Pemisahan antar modul ditegakkan kerangka kerja, autentikasi standar Keycloak OIDC, asisten Artificial Intelligence lewat MCP read-only |
+| No | Peneliti & Tahun | Judul Penelitian | Metode & Teknologi | Hasil & Keterbatasan (Gap) |
+|---|---|---|---|---|
+| 1 | Wahyuni (2025) [2] | Pengembangan Sistem Informasi Pengelolaan Kos Berbasis Website Dengan Menggunakan Framework Codeigniter Pada Wisma Mutiara Selaras | Prototyping, CodeIgniter, MySQL | Mencatat data kamar dan penghuni berbasis web, tetapi hanya mendukung satu gedung dan belum memisahkan hak akses per peran. |
+| 2 | JATI (2025) [3] | Pengembangan Sistem Manajemen Kos Berbasis Aplikasi Mobile pada Kos SidoRame12 | Prototyping, Flutter, Laravel | Menyediakan pencatatan status kamar dan pengingat pembayaran mobile, tetapi belum mendukung multi-gedung dan tanpa pengujian otomatis. |
+| 3 | Ayyubi (2024) [4] | Rancang Bangun Sistem Informasi Pembayaran Kost Berbasis Mobile pada Kost WS Barokah Selokaton | Waterfall, Flutter, Midtrans SNAP | Menyediakan pembayaran sewa digital, tetapi integrasi Midtrans masih sebatas lingkungan uji coba (*sandbox*) tanpa *idempotency key* dan validasi *webhook*. |
+| 4 | JSCR (2025) [26] | Kelola Kosku: Sistem Informasi Akuntansi Mobile dengan Anniversary Billing, Auto-Penalty, Security Deposit, dan Depresiasi PMK 72/2023 | MVVM, Flutter, Supabase | Mencakup tagihan bulanan otomatis, denda, dan deposit, namun model bisnis terlalu bercabang dan integritas transaksi relasional lemah. |
+| 5 | Bintang dkk. (2026) [27] | Transformasi Digital Pengelolaan Kos: Sistem Berbasis Laravel dengan Integrasi Pembayaran Non-tunai | Scrum, Laravel, Midtrans, WhatsApp | Mengotomasi penagihan dan notifikasi WhatsApp, tetapi batas modul pada backend belum ditegakkan secara teknis. |
+| 6 | Nurfaqih dkk. (2026) [28] | Rancang Bangun Sistem Informasi Manajemen Kost Berbasis Web Menggunakan Framework Laravel | Waterfall, Laravel 12, MySQL | Menyediakan info ketersediaan kamar, pengingat tagihan, dan tiket komplain, tetapi hanya melayani satu gedung tunggal. |
+| 7 | Rasyidatur [5], Roihanah [6], Rizal [7], Bagus [8] (2025) | Empat Proposal Sistem Informasi Manajemen Rumah Kost (Penghuni & Tamu, Kamar & Reservasi, Keuangan, Operasional) | Scrum, Laravel 11, Flutter, MySQL (41 Tabel) | Modularitas masih semu (*tight coupling* dan FK lintas modul), skema membengkak hingga 41 tabel, hanya satu gedung, dan autentikasi masih primitif. |
+| 8 | Bagus Alfian (2026) – Penelitian Ini | Arsitektur Modular Monolithic Berbasis Event-Driven untuk Sistem Informasi Manajemen Rumah Kost Terintegrasi | Scrum, Modular Monolith NestJS, Flutter Web (Clean Arch), PostgreSQL, Keycloak OIDC, MCP | 9 modul terenkapsulasi (nol FK lintas modul), multi-gedung (*row-level scoping*), sewa bulanan fleksibel per gedung, SSO Keycloak, Midtrans idempoten, dan asisten AI via MCP *read-only*. |
 
 ---
 
-## 2.4 Sintesis dan Gap Statement
+### 2.3.1 Sintesis dan Gap Statement
 
 Berdasarkan telaah atas penelitian terkait pada §2.3 dan evaluasi terhadap empat proposal *previous work*, ditemukan lima kesenjangan yang belum diselesaikan oleh penelitian terdahulu.
 
 **1. Modular Monolithic yang Belum Diterapkan dengan Benar**
 
-Hampir semua penelitian yang memakai istilah *modular monolithic* pada tabel §2.3 membaginya hanya pada level struktur folder. Modul keuangan tetap bisa membaca tabel modul kamar secara langsung. Relasi *Foreign Key* juga dipasang melintasi batas domain. Akibatnya, tidak ada bagian yang bisa diuji atau dilepas tanpa menarik bagian lain. Empat *previous work* mengalami hal yang sama [5] sampai [8].
+Hampir semua penelitian yang memakai istilah *modular monolithic* pada Tabel 2.2 membaginya hanya pada level struktur folder. Modul keuangan tetap bisa membaca tabel modul kamar secara langsung. Relasi *Foreign Key* juga dipasang melintasi batas domain. Akibatnya, tidak ada bagian yang bisa diuji atau dilepas tanpa menarik bagian lain. Empat *previous work* mengalami hal yang sama [5] sampai [8].
 
 Masalahnya bukan pada istilah yang dipakai, melainkan pada cara penerapannya. Pemisahan antar modul yang hanya berupa kesepakatan tertulis akan dilanggar ketika waktu pengembangan sedang menekan. Pada penelitian kost, pemisahan yang dipaksakan oleh kerangka kerja belum pernah dipakai.
 
 **2. Hanya Mendukung Satu Gedung**
 
-Tiga dari enam penelitian eksternal pada tabel §2.3 menghasilkan sistem untuk satu gedung fisik. Ketika pemilik menambah properti, satu-satunya pilihan adalah memasang instalasi dan basis data terpisah untuk setiap gedung [2] [3] [28]. Akibatnya, laporan gabungan seluruh portofolio tidak bisa disusun tanpa menggabungkan data dari beberapa tempat.
+Tiga dari enam penelitian eksternal pada Tabel 2.2 menghasilkan sistem untuk satu gedung fisik. Ketika pemilik menambah properti, satu-satunya pilihan adalah memasang instalasi dan basis data terpisah untuk setiap gedung [2] [3] [28]. Akibatnya, laporan gabungan seluruh portofolio tidak bisa disusun tanpa menggabungkan data dari beberapa tempat.
 
 **3. Autentikasi Masih Bersifat Primitif**
 
-Semua penelitian pada tabel §2.3 mengelola kredensial pengguna secara mandiri di dalam basis data. Tidak satu pun menyediakan verifikasi email, pemulihan kata sandi, dan manajemen sesi yang terstandarisasi. Akibatnya, risiko kebocoran akun tinggi, dan waktu pengembangan tersedot untuk membangun fitur keamanan yang seharusnya tersedia siap pakai [5] sampai [8].
+Semua penelitian pada Tabel 2.2 mengelola kredensial pengguna secara mandiri di dalam basis data. Tidak satu pun menyediakan verifikasi email, pemulihan kata sandi, dan manajemen sesi yang terstandarisasi. Akibatnya, risiko kebocoran akun tinggi, dan waktu pengembangan tersedot untuk membangun fitur keamanan yang seharusnya tersedia siap pakai [5] sampai [8].
 
 **4. Model Sewa Terlalu Bercabang**
 
 Kelola Kosku, misalnya, menangani tagihan bulanan otomatis, denda keterlambatan, dan uang jaminan sekaligus [26]. Fitur itu dibuat sangat lengkap, sementara fitur lain pada sistem yang sama masih sederhana. Justru kedalaman satu fitur inilah yang menjadi masalah. Model bisnis yang bercabang memaksa skema basis data ikut bercabang.
 
-Pada *previous work*, hal ini terlihat paling jelas. Sistem harus melayani satuan sewa harian, bulanan, dan tahunan sekaligus, sampai basis data tumbuh menjadi empat puluh satu tabel dengan banyak kolom yang sudah tidak dipakai [5] sampai [8]. Kekesenjangan ini bukan pada jumlah fiturnya, melainkan pada cara aturan bisnisnya ditata. Aturan yang berbeda antar gedung lebih tepat disimpan sebagai konfigurasi.
+Pada *previous work*, hal ini terlihat paling jelas. Sistem harus melayani satuan sewa harian, bulanan, dan tahunan sekaligus, sampai basis data tumbuh menjadi empat puluh satu tabel dengan banyak kolom yang sudah tidak dipakai [5] sampai [8]. Kesenjangan ini bukan pada jumlah fiturnya, melainkan pada cara aturan bisnisnya ditata. Aturan yang berbeda antar gedung lebih tepat disimpan sebagai konfigurasi.
 
 **5. Belum Tersedia Jawaban Cepat lewat Asisten *Artificial Intelligence***
 

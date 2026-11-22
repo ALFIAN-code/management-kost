@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>ERD — Sistem Lama Sebelum Rewrite (34 Tabel Domain &amp; RBAC)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #0f172a; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; }
+  .bar { width: 100%; max-width: 1420px; display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+  .bar h1 { font-size: 1.2rem; } .bar p { font-size: .85rem; color: #64748b; }
+  .btn { padding: 8px 16px; font-weight: 600; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; margin-left: 8px; }
+  .btn.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .wrap { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; max-width: 1420px; width: 100%; overflow-x: auto; display: flex; justify-content: center; }
+  .note { max-width: 1420px; width: 100%; margin-top: 20px; background: #fff; padding: 18px 24px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: .85rem; line-height: 1.6; color: #475569; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div><h1>ERD — Sistem Lama Sebelum Rewrite (34 Tabel Domain &amp; RBAC, 8 Kelompok Modul)</h1>
+  <p>Garis hijau = FK intra-modul · Tag merah = FK fisik lintas modul (tight coupling) · Tanpa isolasi multi-gedung</p></div>
+  <div>
+    <button class="btn" onclick="exportSVG()">Download SVG</button>
+    <button class="btn primary" onclick="exportPNG(2)">Download PNG (2x)</button>
+  </div>
+</div>
+<div class="wrap"><svg id="erd" xmlns="http://www.w3.org/2000/svg" width="1420" height="100"></svg></div>
+<div class="note">
+  <b>Cara baca:</b> Skema migrasi backend Laravel lama (34 tabel domain &amp; RBAC; di luar 8 tabel infrastruktur bawaan framework seperti <code>sessions</code>, <code>cache</code>, <code>jobs</code>). Terlihat pembengkakan tabel akibat duplikasi cache aktif (<code>finance_active_tenants</code> &amp; <code>guest_active_contexts</code>), duplikasi tagihan (<code>invoices</code> &amp; <code>guest_bills</code>), serta ketergantungan FK fisik lintas modul (tag merah <code>→ tabel</code>).
+</div>
+
+<script>
+// ===== DATA — kolom: [nama, tipe, key]  key: PK | FK | UK | PFK | '>tabel' (FK lintas modul)
+const M = [
+ { id:'L1', name:'Auth, Users & RBAC', warn:false, A:['users','roles','permissions','model_has_permissions'], B:['user_profiles','email_verification_tokens','user_roles_pivot','role_has_permissions'],
+   T:{ users:[['id','bigint','PK'],['name','string'],['email','string','UK'],['password','string'],['is_active','bool']],
+       user_profiles:[['id','bigint','PK'],['user_id','bigint','FK'],['full_name','string'],['nik_ktp','string'],['phone','string'],['address','text'],['photo_url','string']],
+       email_verification_tokens:[['id','bigint','PK'],['user_id','bigint','FK'],['token','string'],['expires_at','timestamp']],
+       roles:[['id','bigint','PK'],['name','string','UK'],['guard_name','string']],
+       permissions:[['id','bigint','PK'],['name','string','UK'],['guard_name','string']],
+       user_roles_pivot:[['role_id','bigint','PFK'],['model_type','string','PFK'],['model_id','bigint','PFK']],
+       model_has_permissions:[['permission_id','bigint','PFK'],['model_type','string','PFK'],['model_id','bigint','PFK']],
+       role_has_permissions:[['permission_id','bigint','PFK'],['role_id','bigint','PFK']] },
+   R:[['users','user_profiles','user_id','1'],['users','email_verification_tokens','user_id','N'],['roles','user_roles_pivot','role_id','N'],['roles','role_has_permissions','role_id','N'],['permissions','role_has_permissions','permission_id','N'],['permissions','model_has_permissions','permission_id','N']] },
+
+ { id:'L2', name:'Room Management', warn:false, A:['rooms'], B:['room_images'],
+   T:{ rooms:[['id','bigint','PK'],['room_number','string','UK'],['floor','int'],['status','enum'],['daily_price','decimal'],['weekly_price','decimal'],['monthly_price','decimal'],['yearly_price','decimal'],['description','text']],
+       room_images:[['id','bigint','PK'],['room_id','bigint','FK'],['image_path','string'],['is_primary','bool'],['sort_order','int']] },
+   R:[['rooms','room_images','room_id','N']] },
+
+ { id:'L3', name:'Room Schedule (Campur)', warn:true, A:['room_schedules'], B:[],
+   T:{ room_schedules:[['id','bigint','PK'],['room_id','bigint','>rooms'],['tenant_user_id','bigint','>users'],['type','enum'],['status','enum'],['start_date','date'],['end_date','date'],['tenant_name','string'],['tenant_id_number','string'],['tenant_phone','string'],['agreed_price','decimal'],['payment_scheme','enum'],['dp_amount','decimal'],['activated_at','timestamp'],['finished_at','timestamp']] },
+   R:[] },
+
+ { id:'L4', name:'Finance & Billing', warn:true, A:['invoices','fines','expenses','finance_active_tenants'], B:['payments','fine_invoice','fixed_expense_entries','refund_requests'],
+   T:{ invoices:[['id','bigint','PK'],['user_id','bigint','>users'],['room_schedule_id','bigint','>room_sched'],['invoice_number','string','UK'],['amount','decimal'],['due_date','date'],['status','enum']],
+       payments:[['id','bigint','PK'],['invoice_id','bigint','FK'],['payment_method','string'],['amount','decimal'],['status','enum'],['snap_token','string'],['paid_at','timestamp']],
+       fines:[['id','bigint','PK'],['user_id','bigint','>users'],['amount','decimal'],['reason','string'],['status','enum']],
+       fine_invoice:[['fine_id','bigint','PFK'],['invoice_id','bigint','PFK']],
+       expenses:[['id','bigint','PK'],['category','string'],['amount','decimal'],['expense_date','date'],['description','text']],
+       fixed_expense_entries:[['id','bigint','PK'],['title','string'],['amount','decimal'],['billing_day','int'],['is_active','bool']],
+       finance_active_tenants:[['id','bigint','PK'],['room_id','bigint','>rooms'],['user_id','bigint','>users'],['room_schedule_id','bigint','>room_sched']],
+       refund_requests:[['id','bigint','PK'],['invoice_id','bigint','FK'],['amount','decimal'],['proof_path','string'],['status','enum'],['approved_by','bigint','>users']] },
+   R:[['invoices','payments','invoice_id','N'],['invoices','refund_requests','invoice_id','N'],['invoices','fine_invoice','invoice_id','N'],['fines','fine_invoice','fine_id','N']] },
+
+ { id:'L5', name:'Guest Management', warn:true, A:['guests','guest_active_contexts'], B:['guest_bills'],
+   T:{ guests:[['id','bigint','PK'],['room_id','bigint','>rooms'],['tenant_user_id','bigint','>users'],['guest_name','string'],['id_number','string'],['check_in','timestamp'],['check_out','timestamp'],['status','enum']],
+       guest_bills:[['id','bigint','PK'],['guest_id','bigint','FK'],['amount','decimal'],['payment_status','enum'],['paid_at','timestamp']],
+       guest_active_contexts:[['id','bigint','PK'],['room_id','bigint','>rooms'],['tenant_user_id','bigint','>users'],['room_schedule_id','bigint','>room_sched']] },
+   R:[['guests','guest_bills','guest_id','N']] },
+
+ { id:'L6', name:'Maintenance', warn:false, A:['maintenance_requests','maintenance_request_updates','maintenance_schedules'], B:['maintenance_request_images','maintenance_update_images','maintenance_schedule_updates'],
+   T:{ maintenance_requests:[['id','bigint','PK'],['room_id','bigint','>rooms'],['user_id','bigint','>users'],['title','string'],['priority','enum'],['status','enum'],['assigned_to','bigint','>users']],
+       maintenance_request_images:[['id','bigint','PK'],['maintenance_request_id','bigint','FK'],['image_path','string'],['caption','string']],
+       maintenance_request_updates:[['id','bigint','PK'],['maintenance_request_id','bigint','FK'],['updated_by','bigint','>users'],['status_from','string'],['status_to','string'],['notes','text']],
+       maintenance_update_images:[['id','bigint','PK'],['maintenance_request_update_id','bigint','FK'],['image_path','string']],
+       maintenance_schedules:[['id','bigint','PK'],['room_id','bigint','>rooms'],['task_name','string'],['frequency','string'],['next_due_date','date'],['status','enum']],
+       maintenance_schedule_updates:[['id','bigint','PK'],['maintenance_schedule_id','bigint','FK'],['completed_at','timestamp'],['notes','text']] },
+   R:[['maintenance_requests','maintenance_request_images','maintenance_request_id','N'],['maintenance_requests','maintenance_request_updates','maintenance_request_id','N'],['maintenance_request_updates','maintenance_update_images','maintenance_request_update_id','N'],['maintenance_schedules','maintenance_schedule_updates','maintenance_schedule_id','N']] },
+
+ { id:'L7', name:'Setting & Feature Toggles', warn:false, A:['app_settings','feature_toggles'], B:['bank_accounts','feature_toggle_logs'],
+   T:{ app_settings:[['id','bigint','PK'],['key','string','UK'],['value','text'],['type','string']],
+       bank_accounts:[['id','bigint','PK'],['bank_name','string'],['account_no','string'],['account_holder','string'],['is_active','bool']],
+       feature_toggles:[['id','bigint','PK'],['feature_key','string','UK'],['is_enabled','bool']],
+       feature_toggle_logs:[['id','bigint','PK'],['feature_toggle_id','bigint','FK'],['changed_by','bigint','>users'],['old_state','bool'],['new_state','bool']] },
+   R:[['feature_toggles','feature_toggle_logs','feature_toggle_id','N']] },
+
+ { id:'L8', name:'Inventory & Notification', warn:false, A:['inventories'], B:['notification_logs'],
+   T:{ inventories:[['id','bigint','PK'],['room_id','bigint','>rooms'],['item_name','string'],['quantity','int'],['condition','enum']],
+       notification_logs:[['id','bigint','PK'],['user_id','bigint','>users'],['channel','enum'],['recipient','string'],['payload','text'],['status','enum'],['sent_at','timestamp']] },
+   R:[] },
+];
+
+// Rename display label for model_has_roles (keeps internal key clean)
+const DISPLAY_NAME = { user_roles_pivot: 'model_has_roles' };
+
+// ===== LAYOUT (Identik dengan erd_sistem_dinamis.html)
+const NS='http://www.w3.org/2000/svg', svg=document.getElementById('erd');
+const W=1420, COLS=3, PW=450, PG=16, X0=14, TW=190, TG=42, RH=22, HH=28, TOP=75, PAD=14;
+function el(t,a,txt,parent){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!==undefined)e.textContent=txt;(parent||svg).appendChild(e);return e;}
+const tH=rows=>HH+rows.length*RH+6;
+const stackH=(m,list)=>list.reduce((s,n)=>s+tH(m.T[n])+18,0)-18;
+const panelH=m=>42+Math.max(stackH(m,m.A),m.B.length?stackH(m,m.B):0)+PAD;
+
+el('text',{x:14,y:36,'font-size':24,'font-weight':'bold','font-family':'Times New Roman, serif','text-decoration':'underline'},'ENTITY RELATIONSHIP DIAGRAM (SISTEM LAMA)');
+// legenda
+const lg=[['#1e3a8a','PK'],['#15803d','FK (intra-modul)'],['#dc2626','→ FK fisik lintas modul']];
+lg.forEach(([c,t],i)=>{el('rect',{x:750+i*215,y:20,width:28,height:18,rx:4,fill:c});el('text',{x:786+i*215,y:34,'font-size':14,'font-weight':700},t);});
+
+const colY=[TOP,TOP,TOP]; const pos={};
+M.forEach(m=>{
+  const c=colY.indexOf(Math.min(...colY)); const px=X0+c*(PW+PG), py=colY[c], ph=panelH(m);
+  colY[c]+=ph+PG;
+  el('rect',{x:px,y:py,width:PW,height:ph,rx:12,fill:m.warn?'#fef2f2':'#f8fafc',stroke:m.warn?'#ef4444':'#94a3b8','stroke-width':1.6,'stroke-dasharray':m.warn?'6 4':''});
+  el('text',{x:px+14,y:py+24,'font-size':15,'font-weight':800,fill:m.warn?'#991b1b':'#334155'},`${m.id} · ${m.name} (${Object.keys(m.T).length} Tabel)`);
+  const place=(list,tx)=>{let ty=py+40;list.forEach(n=>{pos[n]={x:tx,y:ty,col:tx};drawTable(DISPLAY_NAME[n]||n,m.T[n],tx,ty);ty+=tH(m.T[n])+18;});};
+  const ax=px+PAD, bx=ax+TW+TG; place(m.A,ax); place(m.B,bx);
+  // relasi FK
+  const G='#15803d', fromCount={}; let gapLane=0, sideLane=0;
+  const rowY=(t,name)=>pos[t].y+HH+m.T[t].findIndex(r=>r[0]===name)*RH+RH/2+1;
+  const gapEdges=m.R.filter(([p,ch])=>pos[p].x!==pos[ch].x).sort((a,b)=>rowY(a[1],a[2])-rowY(b[1],b[2]));
+  const laneOf=e=>gapEdges.length-1-gapEdges.indexOf(e);
+  m.R.forEach(e=>{ const [p,ch,fk,card]=e;
+    const P=pos[p], C=pos[ch];
+    const j=fromCount[p]=(fromCount[p]||0)+1;
+    const y1=rowY(p,'id')+(j-1)*5-2, y2=rowY(ch,fk);
+    let d, x1, x2, dir;
+    if(P.x!==C.x){
+      x1=P.x+TW; x2=C.x; const mx=x1+8+laneOf(e)*8; dir=1;
+      d=`M${x1} ${y1} H${mx} V${y2} H${x2}`;
+    } else {
+      x1=P.x+TW; x2=C.x+TW; const mx=x1+8+sideLane*7; sideLane++; dir=-1;
+      d=`M${x1} ${y1} H${mx} V${y2} H${x2}`;
+    }
+    el('path',{d,fill:'none',stroke:G,'stroke-width':1.8});
+    el('line',{x1:x1+5,y1:y1-5,x2:x1+5,y2:y1+5,stroke:G,'stroke-width':1.8});
+    if(card==='N') [-5,0,5].forEach(o=>el('line',{x1:x2-dir*9,y1:y2,x2:x2,y2:y2+o,stroke:G,'stroke-width':1.8}));
+    else el('line',{x1:x2-dir*5,y1:y2-5,x2:x2-dir*5,y2:y2+5,stroke:G,'stroke-width':1.8});
+  });
+});
+
+function drawTable(n,rows,x,y){
+  const h=tH(rows);
+  el('rect',{x,y,width:TW,height:h,rx:6,fill:'#fff',stroke:'#334155','stroke-width':1.4});
+  el('path',{d:`M${x} ${y+HH} V${y+4} Q${x} ${y} ${x+4} ${y} H${x+TW-4} Q${x+TW} ${y} ${x+TW} ${y+4} V${y+HH} Z`,fill:'#1e293b'});
+  const tblNm=el('text',{x:x+TW/2,y:y+18,'font-size':13,'font-weight':800,fill:'#fff','text-anchor':'middle'},n);
+  if(tblNm.getComputedTextLength()>TW-12){tblNm.setAttribute('textLength',TW-12);tblNm.setAttribute('lengthAdjust','spacingAndGlyphs');}
+  rows.forEach(([c,t,k],i)=>{
+    const ry=y+HH+i*RH+15; const sr=k&&k[0]==='>';
+    const col=k==='PK'||k==='PFK'?'#1e3a8a':k==='FK'?'#15803d':sr?'#dc2626':'#0f172a';
+    const tag=el('text',{x:x+TW-6,y:ry,'font-size':10.5,'font-weight':700,fill:sr?'#dc2626':'#64748b','text-anchor':'end'},sr?'→'+k.slice(1):(k==='UK'?'UK':k==='PFK'?'PK,FK':t));
+    const nm=el('text',{x:x+6,y:ry,'font-size':12,'font-weight':k&&k!=='UK'?800:600,fill:col,'font-family':'Menlo, Consolas, monospace'},c);
+    const room=TW-12-tag.getComputedTextLength()-6;
+    if(nm.getComputedTextLength()>room){nm.setAttribute('textLength',room);nm.setAttribute('lengthAdjust','spacingAndGlyphs');}
+  });
+}
+const H=Math.max(...colY);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+
+// ===== EXPORT
+function src(){let s=new XMLSerializer().serializeToString(svg);if(!s.includes('xmlns='))s=s.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"');return s;}
+function dl(h,n){const a=document.createElement('a');a.href=h;a.download=n;document.body.appendChild(a);a.click();a.remove();}
+function exportSVG(){dl(URL.createObjectURL(new Blob([src()],{type:'image/svg+xml'})),'erd_sistem_lama.svg');}
+function exportPNG(s){const w=+svg.getAttribute('width'),h=+svg.getAttribute('height'),c=document.createElement('canvas');c.width=w*s;c.height=h*s;
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.scale(s,s);const img=new Image();
+  img.onload=()=>{x.drawImage(img,0,0);dl(c.toDataURL('image/png'),'erd_sistem_lama@'+s+'x.png');};
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(src());}
+</script>
+</body>
+</html>

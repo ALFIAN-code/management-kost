@@ -1,0 +1,74 @@
+%============================================================
+% FORMAT: PROPOSAL PROYEK AKHIR
+% Aturan layout khusus Proposal PA.
+% Di-input SETELAH config/formatting.tex agar bisa override.
+%
+% Panduan: PASPE-2022
+%============================================================
+
+% Geometri: single-sided, margin PASPE-2022
+\geometry{
+  a4paper,
+  top    = 2.5cm,
+  bottom = 2.5cm,
+  left   = 3.0cm,
+  right  = 2.5cm
+}
+
+% Spasi Baris (1.15 — lebih kompak dari Buku PA yang pakai 1.5)
+\setstretch{1.15}
+
+% Indentasi Paragraf (lebih kecil dari Buku PA)
+% Buku PA: 1.27cm. Proposal: 0.75cm (~3 karakter Times 12pt)
+\setlength{\parindent}{0.75cm}
+
+% Paksa Setiap \chapter ke Halaman Ganjil (opsional)
+% Aktif hanya jika \showforceoddpagetrue diset di main_proposal.tex.
+% Default: off.
+\makeatletter
+\let\old@chapter\@chapter
+\renewcommand{\@chapter}[2][\@empty]{%
+  \ifshowforceoddpage\cleartooddpage\fi
+  \old@chapter[#1]{#2}%
+}
+\makeatother
+
+% ============================================================
+% OVERRIDE FONT SIZE: 12pt SEMUA (Heading, Caption, TOC, dll)
+% ============================================================
+% Ukuran font: semua 12pt (nilai default Buku PA ada di config/fonts.tex)
+\renewcommand{\FontJudulBab}{\fontsize{12}{14}\selectfont}
+\renewcommand{\FontJudulSubbab}{\fontsize{12}{14}\selectfont}
+\renewcommand{\FontJudulSubSubbab}{\fontsize{12}{14}\selectfont}
+\renewcommand{\FontJudulSubSubSubbab}{\fontsize{12}{14}\selectfont}
+\renewcommand{\FontJudulDaftar}{\fontsize{12}{14}\selectfont}
+\renewcommand{\FontKutipanPanjang}{\fontsize{12}{14}\selectfont}
+
+\titleformat{\chapter}[display]
+{\centering\FontJudulBab\bfseries}
+{BAB \thechapter}
+{0pt}
+{}
+\titlespacing*{\chapter}{0pt}{0pt}{12pt}
+
+\titleformat{\section}
+{\FontJudulSubbab\bfseries}
+{\thesection}
+{1em}
+{}
+[\SelaraskanIndentAsli{\thesection}]
+\titlespacing*{\section}{0pt}{12pt}{12pt}
+
+% ── Subsubsection: flush left (mepet margin), tanpa bintang (khusus Proposal) ──
+% Left = 0pt → subsubsection rata kiri sesuai margin, tidak ikut parindent.
+\titleformat{\subsubsection}
+{\FontJudulSubSubSubbab\bfseries}
+{}
+{0pt}
+{}
+\titlespacing{\subsubsection}{0pt}{3pt}{2pt}
+
+\captionsetup[figure]{font=normalsize}
+\captionsetup[table]{font=normalsize}
+\SetTblrStyle{caption-tag}{font=\normalsize\itshape}
+\SetTblrStyle{caption-text}{font=\normalsize\itshape}

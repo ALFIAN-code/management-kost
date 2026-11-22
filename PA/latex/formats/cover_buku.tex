@@ -1,0 +1,103 @@
+%============================================================
+% HALAMAN SAMPUL (Cover Berwarna)
+% Dimensi sesuai Panduan Rev05:
+%   Logo     : lebar 3,5 cm
+%   Header   : tinggi 5 cm (area putih)
+%   Garis    : tebal 0,5 cm (warna emas)
+%   Konten   : latar belakang biru PENS
+%============================================================
+\begin{titlepage}
+  \newgeometry{top=0pt, bottom=0pt, left=0pt, right=0pt}
+  \setlength{\fboxsep}{0pt}
+  \pagecolor{pensbiru}
+
+  % ── Bagian 1: Header Putih (tinggi 5 cm) ─────────────────────
+  \noindent
+  \colorbox{white}{%
+    \begin{minipage}[c][5cm][c]{\textwidth}
+      \hspace*{3cm}
+      \begin{minipage}[c]{4cm}
+        \includegraphics[width=3.5cm, keepaspectratio]{assets/pens/logo_pens.png}
+      \end{minipage}
+      \hfill
+      \begin{minipage}[c]{8cm}
+        \raggedleft
+        {\color{pensbiru}\FontCoverBukuLabel\bfseries PROYEK AKHIR}
+      \end{minipage}
+      \hspace*{3.5cm}
+    \end{minipage}
+  }\par\nointerlineskip
+
+  % ── Bagian 2: Garis Emas (tinggi 0,5 cm) ─────────────────────
+  \noindent
+  \colorbox{penskuning}{%
+    \makebox[\textwidth][l]{\rule{0pt}{0.5cm}}%
+  }\par\nointerlineskip
+
+  % ── Bagian 3: Konten Biru ─────────────────────────────────────
+  \begin{center}
+    \color{white}
+
+    \vspace*{1.6cm}
+
+    \begin{minipage}{\dimexpr\paperwidth-6cm\relax}
+      \centering
+      \FontCoverBukuJudul\bfseries\MakeUppercase{\JudulPA}
+    \end{minipage}
+    \par
+
+    \vspace{1cm}
+
+    % Identitas mahasiswa: 16pt, bold
+    {\FontCoverBukuIsi\bfseries \NamaMahasiswa\par}
+    {\FontCoverBukuIsi\bfseries NRP. \NRP\par}
+
+    \vspace{0.8cm}
+
+    % --- Di dalam blok "Dosen Pembimbing" ---
+    {\FontCoverBukuIsi\bfseries DOSEN PEMBIMBING\par}
+    {\FontCoverBukuIsi \textbf{\NamaPembimbingSatu}\par}
+    {\FontCoverBukuIsi \textbf{NIP. \NIPPembimbingSatu}\par}
+    \vspace{0.5cm}
+    {\FontCoverBukuIsi \textbf{\NamaPembimbingDua}\par}
+    {\FontCoverBukuIsi \textbf{NIP. \NIPPembimbingDua}\par}
+
+    % Logika Pembimbing ke-3 (Akademik)
+    \ifcsvoid{NamaPembimbingTiga}{}{%
+      \vspace{0.3cm}
+      {\FontCoverBukuIsi \textbf{\NamaPembimbingTiga}\par}
+      {\FontCoverBukuIsi \textbf{NIP. \NIPPembimbingTiga}\par}
+    }
+
+    % Logika Pembimbing Industri/Dosen Tambahan
+    \ifcsvoid{NamaPembimbingIndustri}{}{%
+      \vspace{0.8cm}
+      {\FontCoverBukuIsi\bfseries PEMBIMBING INDUSTRI\par}
+      {\FontCoverBukuIsi \textbf{\NamaPembimbingIndustri}\par}
+      \ifcsvoid{NIPPembimbingIndustri}{}{%
+        {\FontCoverBukuIsi \textbf{NIP. \NIPPembimbingIndustri}\par}
+      }
+      \ifcsvoid{NamaPerusahaanIndustri}{}{%
+        {\FontCoverBukuIsi \textbf{\NamaPerusahaanIndustri}\par}
+      }
+
+    }
+
+    \vspace{1cm}
+
+    % Program studi: 16pt, bold, kapital
+    {\FontCoverBukuIsi\bfseries PROGRAM STUDI SARJANA TERAPAN\par}
+    {\FontCoverBukuIsi\bfseries \MakeUppercase{\NamaProdi}\par}
+    {\FontCoverBukuIsi\bfseries \MakeUppercase{\NamaDepartemen}\par}
+
+    \vspace{0.5cm}
+
+    % Institusi dan tahun: 16pt, bold, kapital
+    {\FontCoverBukuIsi\bfseries POLITEKNIK ELEKTRONIKA NEGERI SURABAYA\par}
+    {\FontCoverBukuIsi\bfseries \TahunLulus\par}
+
+  \end{center}
+
+  \restoregeometry
+\end{titlepage}
+\pagecolor{white}

@@ -10,7 +10,7 @@
 
 Sistem dibagi 4 domain layanan + core global, diimplementasi sebagai **Laravel Modules (nwidart/laravel-modules)** di backend dan **Flutter (BLoC + GetIt + AutoRoute)** di frontend — namun tetap terintegrasi dalam satu deployment. Dokumentasi skripsi (PA) dan kode (Project) difederasi via hub ini.
 
-> Ringkasan 1 halaman ada di `STATE.md`. Detail per domain ada di `Project/docs/modules/*`, detail per BAB ada di `PA/docs/modules/*`.
+> Ringkasan 1 halaman ada di `STATE.md`. Detail per domain ada di `Project/docs/modules/*`, naskah PA aktif ada di `PA/latex/` (dengan arsip Markdown di `PA/docs/modules/*`).
 
 ## Tech Stack
 
@@ -57,6 +57,8 @@ PA-Management-kost/
 │       └── operational-maintenance.md
 │
 ├── PA/                                # SKRIPSI
+│   ├── latex/                         # SOURCE OF TRUTH NASKAH AKTIF (buku-pa-pens-latex)
+│   ├── master/                        # PDF Master acuan awal (Naskah Proyek Akhir 1.0.pdf)
 │   ├── old-files/                     # 4 PDF proposal (sumber knowledge)
 │   └── docs/                          # Docs PA komprehensif
 │       ├── 00_overview/
@@ -65,8 +67,8 @@ PA-Management-kost/
 │       ├── 03_logs/
 │       ├── System design/             # PUSAT DESAIN SISTEM (Single Source of Truth)
 │       │   ├── DAFTAR_FITUR.md        # Spesifikasi 17 Fitur (F01–F17)
-│       │   └── BPMN/                  # 8 Subfolder Alur Proses Bisnis Terisolasi
-│       └── modules/bab1..bab5/
+│       │   └── BPMN/                  # Alur Proses Bisnis Terisolasi
+│       └── modules/bab1..bab5/        # Arsip/referensi Markdown per BAB + full_draft.md
 
 │
 └── Project/                           # KODE

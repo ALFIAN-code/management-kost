@@ -38,7 +38,10 @@ HTML_DIAGRAMS = [
     "01-Gambaran-umum/02_arsitektur_backend/arsitektur_backend_modulith.html",
     "03-DFD/dfd_level_0_context.html",
     "03-DFD/dfd_level_1_dekomposisi.html",
-    "04-ERD/erd_13_tabel.html",
+    "04-ERD/erd_sistem_dinamis.html",
+    "04-ERD/diagram_klasifikasi_modul.html",
+    "07-Evaluasi/flowchart_evaluasi.html",
+    "08-design-lama/erd_sistem_lama.html",
 ]
 
 
@@ -172,7 +175,10 @@ def render_mermaid():
             if not f.endswith(".mmd"):
                 continue
             src = os.path.join(dirpath, f)
-            png = os.path.splitext(src)[0] + ".png"
+            stem = os.path.splitext(src)[0]
+            if os.path.exists(stem + ".html") or os.path.exists(stem + ".svg"):
+                continue
+            png = stem + ".png"
             subprocess.run(["mmdc", "-i", src, "-o", png, "-b", "white", "-s", "3"],
                            env=env, capture_output=True, timeout=300)
             print(f"  {'OK ' if os.path.exists(png) else '!  '}{os.path.relpath(png, REPO)}")

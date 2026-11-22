@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg id="dfd0-svg" viewBox="0 0 1200 1000" width="1200" height="1000" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <style>
-          .title-text { font-family: "Times New Roman", Times, Georgia, serif; font-size: 22px; font-weight: bold; text-decoration: underline; fill: #000000; }
-          .legend-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; font-weight: 700; fill: #000000; }
-          .proc-no { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 28px; font-weight: 800; fill: #1e3a8a; text-anchor: middle; }
-          .proc-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 15px; font-weight: 800; fill: #0f172a; text-anchor: middle; }
-          .proc-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13.5px; font-weight: 700; fill: #2563eb; text-anchor: middle; }
-          .entity-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 17px; font-weight: 800; fill: #0f172a; text-anchor: middle; }
-          .entity-role { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13.5px; font-weight: 600; fill: #475569; text-anchor: middle; }
-          .flow-label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12.5px; font-weight: 700; fill: #1e293b; text-anchor: middle; }
-        </style>
+         
 
         <marker id="arr-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
           <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"></path>
@@ -29,7 +20,7 @@
         <text x="75" y="40" class="legend-text">Output Info</text>
       </g>
 
-      <!-- PROSES SENTRAL 0.0 -->
+       
       <g id="proc-context">
         <circle cx="600" cy="500" r="155" fill="#f8fafc" stroke="#334155" stroke-width="3"></circle>
         <line x1="472" y1="420" x2="728" y2="420" stroke="#cbd5e1" stroke-width="1.8"></line>
@@ -40,7 +31,7 @@
         <text x="600" y="528" class="proc-sub">9 Modul Terenkapsulasi · 13 Tabel</text>
       </g>
 
-      <!-- ENTITAS LUAR KIRI -->
+       
       <g id="ent-pemilik" transform="translate(40, 150)">
         <rect width="190" height="75" rx="6" fill="#f1f5f9" stroke="#334155" stroke-width="2"></rect>
         <text x="95" y="35" class="entity-title">Pemilik Properti</text>
@@ -57,7 +48,7 @@
         <text x="95" y="55" class="entity-role">(&amp; Calon Penghuni)</text>
       </g>
 
-      <!-- ENTITAS LUAR KANAN -->
+       
       <g id="ent-keycloak" transform="translate(970, 140)">
         <rect width="190" height="75" rx="6" fill="#f1f5f9" stroke="#334155" stroke-width="2"></rect>
         <text x="95" y="35" class="entity-title">Keycloak</text>
@@ -79,7 +70,7 @@
         <text x="95" y="55" class="entity-role">(MCP Host / LLM)</text>
       </g>
 
-      <!-- ALIRAN KIRI -->
+       
       <path d="M 230 170 L 490 170 L 490 391" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"></path>
       <text x="360" y="160" class="flow-label">Data Gedung, Kebijakan Sewa &amp; Peran</text>
 
@@ -98,7 +89,7 @@
       <path d="M 520 633 L 520 805 L 230 805" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arr-red)"></path>
       <text x="375" y="824" class="flow-label">Konfirmasi Sewa &amp; Bukti Pembayaran</text>
 
-      <!-- ALIRAN KANAN -->
+       
       <path d="M 970 170 L 690 170 L 690 374" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"></path>
       <text x="830" y="158" class="flow-label">Kunci JWKS &amp; Metadata Klien</text>
 

@@ -4,7 +4,7 @@
 > Format mengikuti gaya IEEE numeric pada naskah. Nomor urut mengikuti **kemunculan pertama pada BAB 1 → BAB 2 → BAB 3**.
 > Untuk keperluan debugging (peta nomor, status verifikasi, daftar cacat), lihat `PEMETAAN_SITASI.md`.
 
-**Terakhir diupdate:** 2026-10-18
+**Terakhir diupdate:** 2026-11-22
 
 [1] B. Tjahjanto et al., *Buku Sistem Informasi Manajemen*. Widina Media Utama, 2025.
 
@@ -14,13 +14,13 @@
 
 [4] R. A. Ayyubi, "Rancang Bangun Sistem Informasi Pembayaran Kost Berbasis Mobile pada Kost WS Barokah Selokaton," Skripsi, Universitas Duta Bangsa, 2024. [Online]. Tersedia: https://eprints.udb.ac.id/id/eprint/2731/
 
-[5] Rasyidatur, "Pengembangan Sistem Informasi Manajemen Penghuni dan Tamu," Skripsi, Institut Teknologi Sepuluh Nopember, 2025. NRP 3123500039.
+[5] Rasyidatur, "Pengembangan Sistem Informasi Manajemen Penghuni dan Tamu," Proyek Akhir, Politeknik Elektronika Negeri Surabaya, 2025. NRP 3123500039.
 
-[6] Roihanah, "Pengembangan Sistem Informasi Manajemen Kamar dan Reservasi," Skripsi, Institut Teknologi Sepuluh Nopember, 2025. NRP 3123500005.
+[6] Roihanah, "Pengembangan Sistem Informasi Manajemen Kamar dan Reservasi," Proyek Akhir, Politeknik Elektronika Negeri Surabaya, 2025. NRP 3123500005.
 
-[7] Rizal, "Pengembangan Sistem Informasi Keuangan dan Transaksi," Skripsi, Institut Teknologi Sepuluh Nopember, 2025. NRP 3123500060.
+[7] Rizal, "Pengembangan Sistem Informasi Keuangan dan Transaksi," Proyek Akhir, Politeknik Elektronika Negeri Surabaya, 2025. NRP 3123500060.
 
-[8] Bagus, "Pengembangan Sistem Informasi Operasional dan Pemeliharaan," Skripsi, Institut Teknologi Sepuluh Nopember, 2025. NRP 3123500031.
+[8] Bagus, "Pengembangan Sistem Informasi Operasional dan Pemeliharaan," Proyek Akhir, Politeknik Elektronika Negeri Surabaya, 2025. NRP 3123500031.
 
 [9] L. F. Al-Qora'n and A. A. Ahmad, "Modular Monolith Architecture in Cloud Environments: A Systematic Literature Review," *Future Internet*, vol. 17, no. 11, Art. no. 496, 2025, doi: 10.3390/fi17110496.
 

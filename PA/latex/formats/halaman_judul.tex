@@ -1,0 +1,73 @@
+%============================================================
+% HALAMAN JUDUL DALAM
+% Sama dengan cover tetapi tanpa warna (hitam-putih).
+% "PROYEK AKHIR" rata kanan, sisanya rata tengah.
+%============================================================
+\newpage
+\thispagestyle{empty}
+\addtocontents{toc}{\protect\cftpagenumbersoff{chapter}}
+\addcontentsline{toc}{chapter}{HALAMAN JUDUL}
+\addtocontents{toc}{\protect\cftpagenumberson{chapter}}
+
+% "PROYEK AKHIR" rata kanan
+\begin{flushright}
+  {\FontJudulDalamLabel\bfseries PROYEK AKHIR\par}
+\end{flushright}
+
+\vspace{1.5cm}
+
+\begin{center}
+
+  \begin{minipage}{1\textwidth}
+    \centering
+    \FontJudulDalamJudul\bfseries\MakeUppercase{\JudulPA}
+  \end{minipage}
+  \par
+
+  \vspace{1.2cm}
+
+  % Identitas mahasiswa: 16pt, bold
+  {\FontJudulDalamIsi\bfseries \NamaMahasiswa\par}
+  {\FontJudulDalamIsi\bfseries NRP. \NRP\par}
+
+  \vspace{0.8cm}
+
+  % --- Di dalam blok "Dosen Pembimbing" ---
+  {\FontJudulDalamIsi\bfseries DOSEN PEMBIMBING\par}
+  {\FontJudulDalamIsi \NamaPembimbingSatu\par}
+  {\FontJudulDalamIsi NIP. \NIPPembimbingSatu\par}
+  \vspace{0.5cm}
+  {\FontJudulDalamIsi \NamaPembimbingDua\par}
+  {\FontJudulDalamIsi NIP. \NIPPembimbingDua\par}
+
+  % Logika Pembimbing ke-3 (Akademik)
+  \ifcsvoid{NamaPembimbingTiga}{}{%
+    \vspace{0.3cm}
+    {\FontJudulDalamIsi \NamaPembimbingTiga\par}
+    {\FontJudulDalamIsi NIP. \NIPPembimbingTiga\par}
+  }
+
+  % Logika Pembimbing Industri
+  \ifcsvoid{NamaPembimbingIndustri}{}{%
+    \vspace{0.8cm}
+    {\FontJudulDalamIsi\bfseries PEMBIMBING INDUSTRI\par}
+    {\FontJudulDalamIsi \NamaPembimbingIndustri\par}
+    \ifcsvoid{NamaPerusahaanIndustri}{}{%
+      {\FontJudulDalamIsi \NamaPerusahaanIndustri\par}
+    }
+  }
+
+  \vspace{1cm}
+
+  % Program studi: 16pt, bold, kapital
+  {\FontJudulDalamIsi\bfseries PROGRAM STUDI SARJANA TERAPAN\par}
+  {\FontJudulDalamIsi\bfseries \MakeUppercase{\NamaProdi}\par}
+  {\FontJudulDalamIsi\bfseries \MakeUppercase{\NamaDepartemen}\par}
+
+  \vspace{0.5cm}
+
+  % Institusi dan tahun: 16pt, bold, kapital
+  {\FontJudulDalamIsi\bfseries POLITEKNIK ELEKTRONIKA NEGERI SURABAYA\par}
+  {\FontJudulDalamIsi\bfseries \TahunLulus\par}
+
+\end{center}

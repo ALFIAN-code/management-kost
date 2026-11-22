@@ -2,10 +2,10 @@
 
 > 1 halaman. Update tiap sesi bimbingan/revisi.
 
-**Terakhir diupdate:** 2026-10-21
-**Fase:** **Penyelarasan Naskah BAB 1–3 (Rewrite NestJS & Generalisasi Domain)**
+**Terakhir diupdate:** 2026-11-22
+**Fase:** **Revisi Penguji Selesai pada `PA/latex/` (BAB 1–3, 10 Modul + AI, 28 Diagram Terverifikasi)**
 
-**Progress:** 80% PA naskah (BAB 1 selesai draf ulang natural, persiapan BAB 2 & 3).
+**Progress:** 90% PA naskah (revisi penguji untuk BAB 1–3, ERD sistem lama 34 tabel, Flowchart Evaluasi, 28 gambar PNG, dan 28 entri BibTeX selesai dan terverifikasi di `PA/latex/`).
 
 ## Judul PA
 
@@ -29,7 +29,8 @@
 - ✅ **Diagram BAB 3 terintegrasi**: 15 diagram aktif (HTML & Mermaid PNG) tertanam secara otomatis via `figures_to_images.py`, dengan 6 placeholder untuk diagram visual yang belum dibuat.
 - ✅ **Cakupan fitur & Skema 18–19 Tabel (ADR-014)**: F02, F11, dan F13 diakomodasi melalui perluasan skema tabel domain, dengan Diagram Klasifikasi Modul disahkan sebagai Gambar 3.19.
 - ✅ **Pipeline docx**: `PA/docs/modules/build-docx.sh` merender seluruh diagram (Mermaid dan HTML) menjadi PNG lalu menyisipkannya ke naskah sebelum konversi. `template_pens.docx` belum ada, sehingga style bawaan Pandoc masih dipakai.
-- 🟡 **Blocker sitasi**: `[36]` dan `[41]` dipakai di BAB 2 tetapi tidak ada di daftar pustaka; urutan kemunculan di BAB 1 masih mulai dari `[2]`.
+- ✅ **Sinkronisasi Total dengan PDF Master (`Naskah Proyek Akhir 1.0.pdf`) (2026-11-22)**: `bab1/README.md`, `bab2/README.md`, `bab3/README.md`, `referensi/DAFTAR_PUSTAKA_LENGKAP.md`, `figures_to_images.py`, dan `full_draft.md` telah selaras dengan PDF Master beserta 27 gambar `.png` ter-embed otomatis.
+- ✅ **Restrukturisasi BAB 1–2 & Setup LaTeX `PA/latex/` (`buku-pa-pens-latex`) (2026-11-22)**: Struktur `bab1` & `bab2` disesuaikan dengan template PENS (urutan sitasi pertama BAB 1 dimulai dari `[1]`, blocker sitasi terdahulu selesai). `PA/latex/` menjadi **Source of Truth** baru naskah PA dengan `variables.tex`, `packages.tex`, 28 entri di `refs/references.bib`, 27 diagram `.png` di `assets/diagrams/`, konversi lengkap `chapters/bab1.tex`–`bab3.tex`, dan kerangka bersih `bab4.tex`–`bab5.tex`.
 
 ## Roadmap Perancangan & Implementasi Baru
 
@@ -37,14 +38,15 @@
 2. ✅ **Step 2 (Selesai):** Pendefinisian alur proses bisnis lengkap (BPMN).
 3. ✅ **Step 3 (Selesai):** Pemodelan data (ERD Dinamis) & aliran data (DFD L0 & L1).
 4. ✅ **Step Konseptual Arsitektur (Selesai):** Desain Modular Monolith, Keycloak SSO, Outbound Adapters (disetujui untuk bekal sidang proposal).
-5. 🟡 **Next PR / Task Utama:** Revisi dan penulisan ulang naskah modul `bab1` hingga `bab3` untuk menyesuaikan dengan keseluruhan desain sistem konseptual terbaru di atas. (Akan dikerjakan di sesi berikutnya).
-6. ⚪ **Step Lanjutan (Pasca Proposal):** Spesifikasi Kontrak API REST, Event Bus, dan Scaffolding kode.
+5. ✅ **Step Sinkronisasi & Restrukturisasi Naskah (Selesai):** Sinkronisasi terhadap `PA/master/Naskah Proyek Akhir 1.0.pdf`, restrukturisasi BAB 1–2, dan konversi penuh ke `PA/latex/`.
+6. 🟡 **Next Task Utama:** Kompilasi PDF di `PA/latex/` (`make proposal-v2` / `make progres-v2` / `make buku`) via MacTeX lokal (`brew install --cask mactex-no-gui`) atau Overleaf, serta melengkapi `pages/` prelim dan BAB 4–5 saat masuk fase Buku PA.
+7. ⚪ **Step Lanjutan (Pasca Proposal):** Spesifikasi Kontrak API REST, Event Bus, dan Scaffolding kode.
 
 ## Blocker / Keputusan Pending
 
-- Judul dipertahankan tanpa perubahan.
-- Format sitasi IEEE numeric `[1]`-`[22]` konsisten.
-- Lingkup MCP dibatasi read-only untuk keamanan data.
+- Judul PA aktif di naskah & `PA/latex/config/variables.tex`: **Arsitektur Modular Monolithic Berbasis Event-Driven untuk Sistem Informasi Manajemen Rumah Kost Terintegrasi** (riwayat perubahan judul dari fase awal tetap tercatat di log/ADR).
+- Format sitasi IEEE numeric `[1]`–`[28]` (`IEEEtranN.bst`, 23 tersitasi di BAB 1–3 + 5 entri cadangan di `references.bib`).
+- `pdflatex`/`latexmk`/`bibtex` belum terpasang di macOS lokal sehingga kompilasi PDF menunggu instalasi MacTeX atau unggah ke Overleaf.
 
 ## Link Cepat
 

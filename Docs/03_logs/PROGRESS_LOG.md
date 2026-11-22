@@ -4,6 +4,86 @@
 
 ---
 
+## [2026-11-22 22:20] Revisi Pasca-Sidang Penguji (BAB 1–3, Modul AI ke-10, Evaluasi, & 2 Diagram Baru)
+**Status:** Selesai (seluruh revisi naskah BAB 1–3 & diagram di `PA/latex/` selesai dan terverifikasi)
+**Dikerjakan:**
+- Menyelaraskan seluruh catatan revisi penguji (`online.mis.pens.ac.id`) pada naskah LaTeX (`PA/latex/chapters/bab1.tex`–`bab3.tex`) melalui persetujuan bertahap per bab:
+  1. **BAB 1 (`bab1.tex` & `bab1/README.md`):** Menyederhanakan Permasalahan & Tujuan dari 8/7 poin menjadi **5 poin sinkron 1-ke-1**, mempertajam alur Latar Belakang dengan perbandingan eksplisit **4 proyek/aplikasi lama (34 tabel domain)** vs **10 modul terenkapsulasi (4 Core + 6 Opsional termasuk `AI / MCP Assistant`)**, memperbarui Batasan Masalah (10 modul), serta mengubah seluruh *bullets* Manfaat menjadi *numbering*.
+  2. **BAB 2 (`bab2.tex` & `bab2/README.md`) & Diagram ERD Lama Baru:** Membuat diagram ERD sistem lama baru [erd_sistem_lama.html](file:///Users/allvvnt/alfianSpace/Kampus/PA-Management-kost/PA/docs/System%20design/08-design-lama/erd_sistem_lama.html) → `erd_sistem_lama.png` (berformat standar `erd_sistem_dinamis.png` dengan 34 tabel domain & RBAC aktual dari migrasi Laravel), menyalin ke `PA/latex/assets/diagrams/bab2_02_erd_lama.png`, menambahkan `Tabel 2.2 Perbandingan Sistem Lama dan Sistem Baru`, serta mengubah seluruh `itemize` di §2.2.12 menjadi `enumerate`.
+  3. **BAB 3 (`bab3.tex`) & Flowchart Evaluasi Baru:** Menata ulang Bab 3 menjadi 7 sub-bab (`3.1 Rancangan Penelitian Scrum 4 Sprint`, `3.2 Deskripsi Solusi & Arsitektur 10 Modul`, `3.3 Alur Proses Bisnis`, `3.4 Pemodelan Fungsional & Aliran Data`, `3.5 Rancangan Basis Data`, `3.6 Rancangan Evaluasi Sistem`, `3.7 Timeline Pengerjaan`); meresmikan `O6 · AI / MCP Assistant` sebagai modul ke-10; membuat diagram [flowchart_evaluasi.html](file:///Users/allvvnt/alfianSpace/Kampus/PA-Management-kost/PA/docs/System%20design/07-Evaluasi/flowchart_evaluasi.html) → `bab3_18_flowchart_evaluasi.png`; melengkapi 5 aspek evaluasi & parameternya tanpa UAT/SUS (`Tabel 3.5` & `Tabel 3.6` Skenario A–E); dan mengubah seluruh 19 blok `itemize` di `bab3.tex` menjadi `enumerate`.
+  4. **Verifikasi Skrip Python `PA/latex/`:** 0 `itemize`, brace/env seimbang, seluruh 28 gambar PNG ada & direferensikan, seluruh 69 `\ref` punya `\label`/`label`, seluruh 25 `\cite` cocok di `references.bib` (plus 3 cadangan).
+**File yang diubah/dibuat:**
+- `PA/latex/chapters/bab1.tex`, `bab2.tex`, `bab3.tex`
+- `PA/docs/modules/bab1/README.md`, `bab2/README.md`, `figures_to_images.py`
+- `PA/docs/System design/08-design-lama/erd_sistem_lama.{html,svg,png}` & `PA/latex/assets/diagrams/bab2_02_erd_lama.png`
+- `PA/docs/System design/07-Evaluasi/flowchart_evaluasi.{html,svg,png}` & `PA/latex/assets/diagrams/bab3_18_flowchart_evaluasi.png`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`, `PA/docs/03_logs/PROGRESS_LOG.md`, `Docs/00_overview/STATE.md`, `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Instalasi `mactex-no-gui` (atau upload `PA/latex/` ke Overleaf) untuk compile PDF (`make proposal-v2` / `make buku`), serta opsi tambahan target `make docx` bila diperlukan review dosen via Word.
+
+---
+
+## [2026-11-22 21:15] Restrukturisasi Naskah BAB 1–2 & Setup LaTeX (`PA/latex/`) sebagai Source of Truth Baru
+**Status:** Sebagian (naskah & proyek LaTeX siap terverifikasi; kompilasi PDF menunggu instalasi MacTeX atau Overleaf)
+**Dikerjakan:**
+- Merestrukturisasi dan memperbarui `PA/docs/modules/bab1/README.md`, `bab2/README.md`, `bab3/README.md`, serta `full_draft.md` sesuai persetujuan pengguna terhadap draft revisi template PENS:
+  1. **BAB 1:** Meringkas §1.1 Latar Belakang menjadi 3 paragraf + 4 kendala operasional (tanpa sub-anak `1.1.1`/`1.1.2`), memindahkan `1.3 Batasan Masalah` sebelum `1.4 Tujuan`, membagi `1.5 Manfaat` menjadi 2 kelompok (Pemilik & Penghuni/Pengelola), memperbarui §1.6 Sistematika Penulisan, dan memastikan urutan kemunculan sitasi dimulai dari `[1]`.
+  2. **BAB 2:** Menambahkan pengantar Bab 2, memindahkan `Tabel 2.1 Penelitian Sistem Lama` beserta 8 temuan kelemahan ke `2.1.1`, mengubah `2.1.6` menjadi `2.1.2 Evolusi Desain Sistem Sebelum Rewrite` (`Gambar 2.1`–`2.2`), merapikan penomoran gambar §2.2 menjadi `Gambar 2.3`–`2.10` (menghapus §2.2.13 Testing Pyramid), mengganti `Tabel 2.1` penelitian terkait menjadi `Tabel 2.2`, dan mengubah `2.4` menjadi `2.3.1 Sintesis dan Gap Statement`.
+  3. **BAB 3 & Pipeline:** Menyelaraskan rujukan silang ke `Subbab 2.1.2` / `Gambar 2.1`–`2.2` dan meregenerasi `full_draft.md` (27 gambar ter-embed).
+- Melakukan setup template resmi PENS `jhiven/buku-pa-pens-latex` di `PA/latex/` (non-git) sebagai **Source of Truth** baru naskah PA:
+  1. Mengisi identitas mahasiswa, judul PA, pembimbing 1 & 2, prodi, dan departemen pada `PA/latex/config/variables.tex`, serta menambahkan paket `listings` di `PA/latex/config/packages.tex` untuk blok JSON REST API.
+  2. Menghapus 4 gambar contoh bawaan template dan menyalin seluruh 27 diagram `.png` dari `PA/docs/System design/` ke `PA/latex/assets/diagrams/` (`bab2_*.png`, `bab3_*.png`).
+  3. Menyusun `PA/latex/refs/references.bib` berisi 28 entri BibTeX (DOI ditempatkan di `note` sesuai `IEEEtranN.bst`; entri tanpa penulis memakai `key` untuk kompatibilitas `natbib`).
+  4. Mengonversi penuh `bab1.tex`–`bab3.tex` (`tblr`/`longtblr`, `\begin{figure}`, `\cite`, `\ref`, `\ifbukupa...\fi`, `lstlisting`) dan menyiapkan kerangka `bab4.tex`–`bab5.tex` bersih tanpa teks/rumus contoh template.
+  5. Menjalankan verifikasi skrip Python pada `PA/latex/`: kurung kurawal & environment `\begin`/`\end` seimbang, seluruh 27 diagram terpasang dan direferensikan, seluruh `\cite` cocok dengan `.bib` (23 tersitasi berurutan dari `[1]` + 5 entri cadangan), seluruh `\ref` memiliki label padanan, 0 string sisa template.
+**File yang diubah/dibuat:**
+- `PA/docs/modules/bab1/README.md`
+- `PA/docs/modules/bab2/README.md`
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/modules/full_draft.md`
+- `PA/latex/` (`config/variables.tex`, `config/packages.tex`, `refs/references.bib`, `chapters/bab1.tex`–`bab5.tex`, `assets/diagrams/bab2_*.png` & `bab3_*.png`)
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+- `PA/docs/00_overview/STATE.md`
+- `PA/docs/00_overview/ARCHITECTURE.md`
+**Belum selesai / next steps:**
+- Kompilasi PDF (`make proposal-v2` / `make progres-v2` / `make buku`) dengan menginstal `mactex-no-gui` secara lokal atau mengunggah `PA/latex/` ke Overleaf.
+- Melengkapi `pages/abstrak.tex`, `pages/abstract.tex`, `pages/kata_pengantar.tex`, `pages/biodata.tex`, data Penguji 1–2 di `config/variables.tex`, serta isi Bab 4–5 saat memasuki fase Buku PA.
+**Catatan/masalah:**
+- `pdflatex`, `latexmk`, `bibtex`, dan `gs` belum terinstal di lingkungan macOS lokal sehingga kompilasi PDF tidak dapat dijalankan secara lokal pada sesi ini.
+
+---
+
+## [2026-11-22 19:17] Sinkronisasi Naskah Markdown BAB 1–3 & Daftar Pustaka dengan PDF Master (`Naskah Proyek Akhir 1.0.pdf`)
+**Status:** Selesai
+**Dikerjakan:**
+- Menyinkronkan naskah lokal `PA/docs/modules/bab1/README.md`, `bab2/README.md`, dan `bab3/README.md` dengan `PA/master/Naskah Proyek Akhir 1.0.pdf` sebagai persiapan migrasi ke template LaTeX `jhiven/buku-pa-pens-latex`:
+  1. **BAB 1:** Menambahkan 2 paragraf pengantar §1.1, menyelaraskan Tabel 1.1 & 8 kelemahan di §1.1.2, menyelaraskan 7 tujuan di §1.3, menghapus §1.5.3, dan memperbarui §1.6 Sistematika Penulisan.
+  2. **BAB 2:** Menambahkan butir ke-6 pada §2.1, menyederhanakan §2.1.6, memperbaiki path `Gambar 2.3` (`c4_level3_flutter_clean_architecture.png`), memperbarui §2.2.8 dan §2.2.12 (beserta perbandingan JSON format lama vs baru tanpa artefak copy-paste), menghapus §2.2.13 beserta `Gambar 2.8`, memperbarui `Tabel 2.1` menjadi 8 baris penelitian terkait (2024–2026) tanpa duplikasi, dan memperbaiki typo pada §2.1/§2.2/§2.4.
+  3. **BAB 3:** Memindahkan `3.2.1 Klasifikasi Modul: Core dan Opsional` (`Tabel 3.5` + `Gambar 3.19` Lego) ke bawah `3.2`, memperbarui path seluruh 17 gambar di BAB 3 ke berkas `.png` (termasuk 9 diagram BPMN swimlane di §3.3), menyelaraskan §3.1/§3.2/§3.3/§3.6, mengganti §3.6.2 ke `Tabel 3.6 Hasil Pengujian Kombinasi Modul Lego` (Skenario A–D), serta menghapus placeholder §3.7 dan aturan integritas lama.
+  4. **Daftar Pustaka & Pipeline:** Memperbaiki afiliasi sitasi `[5]`–`[8]` di `DAFTAR_PUSTAKA_LENGKAP.md` ke PENS, memperbarui `figures_to_images.py` agar merender `erd_sistem_dinamis.html` & `diagram_klasifikasi_modul.html` serta tidak menimpa `.png` BPMN dari `.mmd`, dan membangun ulang `full_draft.md` dengan verifikasi seluruh 27 gambar ter-embed sempurna.
+**File yang diubah:**
+- `PA/docs/modules/bab1/README.md`
+- `PA/docs/modules/bab2/README.md`
+- `PA/docs/modules/bab3/README.md`
+- `PA/docs/modules/referensi/DAFTAR_PUSTAKA_LENGKAP.md`
+- `PA/docs/modules/figures_to_images.py`
+- `PA/docs/modules/full_draft.md`
+**Dokumen yang diupdate:**
+- `Docs/03_logs/PROGRESS_LOG.md`
+- `PA/docs/03_logs/PROGRESS_LOG.md`
+- `Docs/00_overview/STATE.md`
+- `PA/docs/00_overview/STATE.md`
+**Belum selesai / next steps:**
+- Menyiapkan folder template LaTeX (`jhiven/buku-pa-pens-latex`) dan mengonversi naskah BAB 1–3 + aset gambar + referensi BibTeX ke `.tex`.
+**Catatan/masalah:**
+- PDF Master memiliki 27 gambar aktual (10 di BAB 2, 17 di BAB 3), dan seluruh 27 file `.png` terverifikasi tersedia dan ter-embed di `full_draft.md`. Pada `Tabel 3.5` di §3.2.1, baris `Notification Service` tetap dipertahankan di Markdown (meski terpotong di PDF Master hal. 42) agar konsisten dengan `Gambar 3.19` dan narasi 5 modul opsional.
+
+---
+
 ## [2026-11-05 01:35] Pembuatan Slide Presentasi PPTX & HTML Deck untuk Sidang/Presentasi Proyek Akhir
 **Status:** Selesai
 **Dikerjakan:**
